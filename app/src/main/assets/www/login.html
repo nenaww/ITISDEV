@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>KABALIKAT - Login</title>
+
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link
+            href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="login.css" />
+</head>
+<body class="scroll-page auth-page login-screen login-preparing">
+<main class="phone-page login-page-shell">
+    <header class="top-header login-top-header">
+        <button id="backToWelcome" class="back-icon" type="button" aria-label="Back">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+
+        <button id="languageToggle" class="language-pill" type="button">
+            <i class="bi bi-translate"></i>
+            <span id="languageText">English</span>
+        </button>
+    </header>
+
+    <section class="login-hero">
+        <div class="roof-stage">
+            <div class="roof-glow"></div>
+
+            <img
+                    id="roofArmLeft"
+                    class="roof-arm roof-arm-left"
+                    src="images/arm-left.png"
+                    alt="Left arm forming a roof"
+            />
+
+            <img
+                    id="roofArmRight"
+                    class="roof-arm roof-arm-right"
+                    src="images/arm-right.png"
+                    alt="Right arm forming a roof"
+            />
+        </div>
+    </section>
+
+    <section class="auth-content login-auth-content">
+        <div class="auth-heading login-heading">
+            <h1 id="loginTitle">Login here</h1>
+            <p id="loginSubtitle">
+                Welcome back. Continue managing your family budget.
+            </p>
+        </div>
+
+        <form class="form-card" id="loginForm">
+            <label for="emailInput" id="emailLabel">Email</label>
+            <div class="input-box">
+                <i class="bi bi-envelope"></i>
+                <input
+                        id="emailInput"
+                        type="email"
+                        placeholder="example@email.com"
+                        required
+                />
+            </div>
+
+            <label for="passwordInput" id="passwordLabel">Password</label>
+            <div class="input-box">
+                <i class="bi bi-lock"></i>
+                <input
+                        id="passwordInput"
+                        type="password"
+                        placeholder="Enter password"
+                        required
+                />
+                <button
+                        id="togglePassword"
+                        class="eye-button"
+                        type="button"
+                        aria-label="Show password"
+                >
+                    <i class="bi bi-eye"></i>
+                </button>
+            </div>
+
+            <button class="main-button form-button" type="submit" id="signInButton">
+                Sign in
+            </button>
+        </form>
+
+        <div class="auth-footer login-footer">
+            <p class="bottom-text" id="signupLine">
+                Don’t have an account?
+                <button id="goRegisterBtn" type="button">Signup</button>
+            </p>
+        </div>
+    </section>
+</main>
+
+<script src="login.js"></script>
+</body>
+</html>

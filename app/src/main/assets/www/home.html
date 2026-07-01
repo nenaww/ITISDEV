@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KABALIKAT Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="home">
+
+<main class="phone-page home-page">
+
+    <header class="top-header">
+        <button class="logo-button" type="button">
+            <img src="images/logo.png" alt="KABALIKAT logo" onerror="this.style.display='none'">
+            <span>KABALIKAT</span>
+        </button>
+
+        <button class="language-pill" type="button" onclick="toggleLanguage()">
+            <i class="bi bi-translate"></i>
+            <span id="languageLabel">English</span>
+        </button>
+    </header>
+
+    <section class="home-content">
+        <div class="success-circle">
+            <i class="bi bi-check2-circle"></i>
+        </div>
+
+        <h1 id="homeName">Welcome!</h1>
+        <p id="homeRole">Account Type</p>
+
+        <div class="summary-list">
+            <div class="summary-card">
+                <span id="summaryFamilyNameLabel">Family Name</span>
+                <strong id="homeFamilyName">---</strong>
+            </div>
+
+            <div class="summary-card">
+                <span id="summaryFamilyCodeLabel">Family Code</span>
+                <strong id="homeFamilyCode">---</strong>
+            </div>
+
+            <div class="summary-card">
+                <span id="summaryBudgetLabel">Monthly Budget</span>
+                <strong id="homeBudget">---</strong>
+            </div>
+        </div>
+
+        <div class="prototype-note">
+            <i class="bi bi-info-circle"></i>
+            <p id="prototypeNote">
+                Login and registration are working. The main dashboard will be added next.
+            </p>
+        </div>
+
+        <button class="main-button form-button" id="logoutButton">Logout</button>
+    </section>
+
+    <div id="toast" class="toast"></div>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
