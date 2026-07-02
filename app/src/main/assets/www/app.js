@@ -126,10 +126,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (page === "register") {
         setupRegisterPage();
     }
-
-    if (page === "home") {
-        await setupHomePage();
-    }
 });
 
 function goToPage(page, delay = 150) {
@@ -147,10 +143,6 @@ function toggleLanguage() {
 
     if (document.body.dataset.page === "welcome") {
         setupWelcomePage();
-    }
-
-    if (document.body.dataset.page === "home") {
-        setupHomePage();
     }
 }
 
@@ -228,28 +220,6 @@ function setupRegisterPage() {
 
     form.addEventListener("submit", registerUser);
     selectRole("head");
-}
-
-async function setupHomePage() {
-    const user = await getCurrentUser();
-
-    if (!user) {
-        goToPage("index.html", 0);
-        return;
-    }
-
-    const family = await getRecord("families", user.familyCode);
-
-    document.getElementById("homeName").textContent = currentLanguage === "en"
-        ? `Hello, ${user.name}`
-        : `Kumusta, ${user.name}`;
-
-    document.getElementById("homeRole").textContent = user.role;
-    document.getElementById("homeFamilyName").textContent = family ? family.familyName : "---";
-    document.getElementById("homeFamilyCode").textContent = user.familyCode;
-    document.getElementById("homeBudget").textContent = family ? peso(family.monthlyBudget) : "---";
-
-    document.getElementById("logoutButton").addEventListener("click", logoutUser);
 }
 
 function togglePassword(inputId, button) {

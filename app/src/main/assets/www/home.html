@@ -2,69 +2,213 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>KABALIKAT Home</title>
+    <title>KABALIKAT Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="home.css">
 </head>
 <body data-page="home">
 
-<main class="phone-page home-page">
+<main class="home-dashboard-page">
 
-    <header class="top-header">
-        <button class="logo-button" type="button">
-            <img src="images/logo.png" alt="KABALIKAT logo" onerror="this.style.display='none'">
-            <span>KABALIKAT</span>
+    <div class="home-scroll-area">
+
+        <header class="home-header">
+            <div class="home-profile-picture">
+                <span id="homeProfileInitials">KB</span>
+            </div>
+
+            <div class="home-greeting">
+                <span id="homeDateText">Today</span>
+                <h1 id="homeGreetingName">Welcome</h1>
+            </div>
+
+            <button id="homeLanguageButton" class="language-pill home-language" type="button">
+                <i class="bi bi-translate"></i>
+                <span id="languageLabel">English</span>
+            </button>
+        </header>
+
+        <section class="home-role-row">
+            <span id="homeRoleChip" class="home-role-chip">Household Head</span>
+            <span id="homeFamilyCodeChip" class="home-family-chip">Code: ----</span>
+        </section>
+
+        <section id="homeBudgetCard" class="home-budget-card">
+            <div class="home-card-header">
+                <div>
+                    <span id="homeMonthLabel">This Month</span>
+                    <h2 id="homeBudgetTitle">Family Budget</h2>
+                </div>
+
+                <button id="homeBudgetViewButton" class="home-small-button" type="button">
+                    View
+                </button>
+            </div>
+
+            <strong id="homeBudgetAmount">₱0</strong>
+
+            <div class="home-budget-track">
+                <div id="homeBudgetFill" class="home-budget-fill"></div>
+            </div>
+
+            <div class="home-budget-stats">
+                <div>
+                    <span id="homeSpentLabel">Spent</span>
+                    <strong id="homeSpentAmount">₱0</strong>
+                </div>
+
+                <div>
+                    <span id="homeRemainingLabel">Remaining</span>
+                    <strong id="homeRemainingAmount">₱0</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="home-quick-actions">
+            <button id="quickAddExpense" class="quick-action-expense" type="button">
+                <i class="bi bi-plus-circle"></i>
+                <span>Add Expense</span>
+            </button>
+
+            <button id="quickBills" class="quick-action-bills" type="button">
+                <i class="bi bi-calendar2-check"></i>
+                <span>Bills</span>
+            </button>
+
+            <button id="quickMembers" class="quick-action-members" type="button">
+                <i class="bi bi-people"></i>
+                <span>Members</span>
+            </button>
+        </section>
+
+        <section class="home-section">
+            <div class="home-section-heading">
+                <h2 id="debtHeading">Debt Summary</h2>
+                <button id="debtViewAll" type="button">View All</button>
+            </div>
+
+            <div class="home-debt-card">
+                <div class="home-debt-main">
+                    <div>
+                        <span id="debtTotalLabel">Total Debt Balance</span>
+                        <strong id="debtTotalAmount">₱0</strong>
+                    </div>
+
+                    <div class="home-debt-icon">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+                </div>
+
+                <div class="home-debt-grid">
+                    <div>
+                        <span id="debtPaidLabel">Paid This Month</span>
+                        <strong id="debtPaidAmount">₱0</strong>
+                    </div>
+
+                    <div>
+                        <span id="debtOwedToYouLabel">Owed to You</span>
+                        <strong id="debtOwedToYouAmount">₱0</strong>
+                    </div>
+                </div>
+
+                <div class="home-debt-status">
+                    <div class="home-debt-status-top">
+                        <span id="debtProgressLabel">Payment Status</span>
+                        <strong id="debtProgressPercent">0%</strong>
+                    </div>
+
+                    <div class="home-debt-track">
+                        <div id="debtProgressFill" class="home-debt-fill"></div>
+                    </div>
+
+                    <p id="debtProgressText">₱0 paid of ₱0 tracked</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="home-section">
+            <div class="home-section-heading">
+                <h2 id="overviewHeading">Spending Overview</h2>
+                <button id="overviewFilter" type="button">This Month</button>
+            </div>
+
+            <div class="home-spending-card">
+                <div class="home-spending-chart-wrap">
+                    <div id="homeDonutChart" class="home-spending-donut">
+                        <div class="home-spending-center">
+                            <span id="donutCenterLabel">This Month</span>
+                            <strong id="donutCenterAmount">₱0</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="homeDonutLegend" class="home-donut-legend"></div>
+
+                <div class="home-family-spending-header">
+                    <h3 id="familySpendingHeading">Family Spending</h3>
+                    <button id="familySpendingViewAll" type="button">View All</button>
+                </div>
+
+                <div id="homeFamilySpendingStack" class="home-family-stack"></div>
+            </div>
+        </section>
+
+        <section class="home-section">
+            <div class="home-section-heading">
+                <h2 id="transactionsHeading">Recent Transactions</h2>
+                <button id="transactionsViewAll" type="button">View All</button>
+            </div>
+
+            <div id="homeRecentTransactions" class="home-transaction-list"></div>
+        </section>
+
+        <section class="home-section home-events-section home-last-section">
+            <div class="home-section-heading">
+                <h2 id="eventsHeading">Upcoming Events</h2>
+                <button id="eventsViewAll" type="button">View All</button>
+            </div>
+
+            <div id="homeEventViewport" class="home-event-viewport"></div>
+            <div id="homeEventDots" class="home-event-dots"></div>
+        </section>
+
+    </div>
+
+    <nav class="home-bottom-nav">
+        <button class="active" type="button">
+            <i class="bi bi-house-fill"></i>
+            <span>Home</span>
         </button>
 
-        <button class="language-pill" type="button" onclick="toggleLanguage()">
-            <i class="bi bi-translate"></i>
-            <span id="languageLabel">English</span>
+        <button id="navExpenses" type="button">
+            <i class="bi bi-receipt"></i>
+            <span>Expenses</span>
         </button>
-    </header>
 
-    <section class="home-content">
-        <div class="success-circle">
-            <i class="bi bi-check2-circle"></i>
-        </div>
+        <button id="navScan" class="home-nav-scan" type="button" aria-label="Scan receipt">
+            <i class="bi bi-upc-scan"></i>
+        </button>
 
-        <h1 id="homeName">Welcome!</h1>
-        <p id="homeRole">Account Type</p>
+        <button id="navBills" type="button">
+            <i class="bi bi-calendar-check"></i>
+            <span>Bills</span>
+        </button>
 
-        <div class="summary-list">
-            <div class="summary-card">
-                <span id="summaryFamilyNameLabel">Family Name</span>
-                <strong id="homeFamilyName">---</strong>
-            </div>
-
-            <div class="summary-card">
-                <span id="summaryFamilyCodeLabel">Family Code</span>
-                <strong id="homeFamilyCode">---</strong>
-            </div>
-
-            <div class="summary-card">
-                <span id="summaryBudgetLabel">Monthly Budget</span>
-                <strong id="homeBudget">---</strong>
-            </div>
-        </div>
-
-        <div class="prototype-note">
-            <i class="bi bi-info-circle"></i>
-            <p id="prototypeNote">
-                Login and registration are working. The main dashboard will be added next.
-            </p>
-        </div>
-
-        <button class="main-button form-button" id="logoutButton">Logout</button>
-    </section>
+        <button id="navProfile" type="button">
+            <i class="bi bi-person"></i>
+            <span>Profile</span>
+        </button>
+    </nav>
 
     <div id="toast" class="toast"></div>
 
 </main>
 
-<script src="app.js"></script>
+<script src="home.js"></script>
 </body>
 </html>
