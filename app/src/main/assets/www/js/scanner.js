@@ -4,6 +4,8 @@ let currentReceiptImage = "";
 let currentDetectedItems = [];
 let pendingDeleteItemId = null;
 let currentReceiptAdjustment = null;
+let currentReceiptTotalDue = 0;
+let currentReceiptRawText = "";
 
 let mlKitProgressTimer = null;
 let mlKitFakeProgress = 0;
@@ -296,7 +298,7 @@ async function handleMlKitOcrResult(payload) {
             mlKitProgressMessage = "Loading product database...";
             showScanningModal(mlKitProgressMessage, Math.max(mlKitFakeProgress, 78));
 
-            await window.KabalikatProductMatcher.load();
+            await window.KabalikatProductMatcher.load({ forceRefresh: true });
         }
 
         window.KABALIKAT_USE_DB_FOR_PRODUCT_NAMES = true;
@@ -320,6 +322,17 @@ async function handleMlKitOcrResult(payload) {
         await finishMlKitProgress();
 
         renderReview(parsedReceipt, mlKitText);
+        console.table(currentDetectedItems.map(item => ({
+            shownName: item.name,
+            rawName: item.rawName,
+            cleanedText: item.cleanedText,
+            matchedProductId: item.matchedProductId,
+            matchedAliasText: item.matchedAliasText,
+            matchScore: item.matchScore,
+            matchStatus: item.matchStatus,
+            price: item.price,
+            quantity: item.quantity
+        })));
         hideScanningModal();
         showReviewView();
         isScanning = false;
@@ -501,10 +514,81 @@ function isNonProductDetectedItem(item) {
     );
 }
 
+function getReceiptTotalDue(rawText, receipt) {
+    if (
+        window.ParserUtils &&
+        typeof window.ParserUtils.extractTotalAmount === "function"
+    ) {
+        const total = window.ParserUtils.extractTotalAmount(rawText);
+
+        if (Number.isFinite(total) && total > 0) {
+            return roundMoney(total);
+        }
+    }
+
+    if (receipt && Number(receipt.subtotal || 0) > 0) {
+        return roundMoney(receipt.subtotal);
+    }
+
+    return 0;
+}
+
+function itemNeedsManualName(item) {
+    return false;
+}
+
+function getItemsSubtotal(items) {
+    return roundMoney(
+        (items || []).reduce((sum, item) => {
+            return sum + Number(item.price || 0);
+        }, 0)
+    );
+}
+
+function totalsMatch(first, second) {
+    return Math.abs(Number(first || 0) - Number(second || 0)) < 0.08;
+}
+
+function applyLinePriceFallbackIfBetter(rawText, detectedItems, receiptImage) {
+    return Array.isArray(detectedItems)
+        ? detectedItems.filter(item => Number(item.price || 0) > 0)
+        : [];
+}
+
+function calculateSafeUnitPrice(totalPrice, quantity) {
+    const qty = Number(quantity || 1);
+
+    if (!qty || qty <= 0) {
+        return Number(totalPrice || 0);
+    }
+
+    return roundMoney(Number(totalPrice || 0) / qty);
+}
+
+function syncManualNameInputs() {
+    return;
+}
+
+function getManualNameMissingCount() {
+    return 0;
+}
+
 function renderReview(receipt, rawText) {
     const parsedItems = Array.isArray(receipt.items) ? receipt.items : [];
 
-    currentDetectedItems = parsedItems.filter(item => !isNonProductDetectedItem(item));
+    currentReceiptRawText = rawText || "";
+    currentReceiptTotalDue = getReceiptTotalDue(rawText, receipt);
+
+    currentDetectedItems = parsedItems
+        .filter(item => !isNonProductDetectedItem(item))
+        .filter(item => Number(item.price || 0) > 0);
+
+    currentDetectedItems = applyLinePriceFallbackIfBetter(
+        rawText,
+        currentDetectedItems,
+        currentReceiptImage
+    );
+
     currentReceiptAdjustment = calculateReceiptAdjustment(rawText, currentDetectedItems);
 
     const receiptPaper = document.getElementById("receiptPaper");
@@ -584,13 +668,21 @@ function renderDetectedItems(items) {
     list.innerHTML = items.map(item => {
         const itemId = item.id || makeItemId();
         const itemCategory = item.category || "Others";
+        const hasDatabaseMatch = Boolean(item.matchedProductId || item.matchedAliasId);
 
         item.id = itemId;
         item.category = itemCategory;
 
+        const displayName =
+            item.name ||
+            item.suggestedName ||
+            item.cleanedText ||
+            item.rawName ||
+            "Unmatched scanned item";
+
         return `
             <article
-                class="receipt-item-card"
+                class="receipt-item-card ${hasDatabaseMatch ? "matched-db" : "unmatched-db"}"
                 data-item-id="${escapeHtml(itemId)}"
                 data-category="${escapeHtml(itemCategory)}">
 
@@ -601,7 +693,23 @@ function renderDetectedItems(items) {
                 <div class="receipt-item-inner">
                     <div class="receipt-item-line">
                         <span class="receipt-item-qty">${escapeHtml(item.quantity || 1)}</span>
-                        <span class="receipt-item-name">${escapeHtml(item.name || "Unnamed Item")}</span>
+
+                        <div class="receipt-item-name-editor">
+                            <span class="receipt-item-name">
+                                ${escapeHtml(displayName)}
+                            </span>
+
+                            ${hasDatabaseMatch ? `
+                                <small class="receipt-match-note">
+                                    Matched from product database
+                                </small>
+                            ` : `
+                                <small class="receipt-review-note">
+                                    Not matched in database. Showing scanned text.
+                                </small>
+                            `}
+                        </div>
+
                         <span class="receipt-item-price">${peso(item.price)}</span>
                     </div>
 
@@ -620,39 +728,29 @@ function renderDetectedItems(items) {
     bindItemControls();
 }
 
-function bindItemControls() {
-    const list = document.getElementById("detectedItemsList");
+list.querySelectorAll("[data-name-input]").forEach(input => {
+    autoResizeNameTextarea(input);
 
-    if (!list) return;
+    input.addEventListener("input", () => {
+        const item = findItem(input.dataset.nameInput);
 
-    list.querySelectorAll("select").forEach(select => {
-        select.addEventListener("change", () => {
-            const item = findItem(select.dataset.categorySelect);
-            const card = select.closest(".receipt-item-card");
+        if (item) {
+            item.name = input.value.trim();
+        }
 
-            if (item) {
-                item.category = select.value;
-            }
-
-            if (card) {
-                card.setAttribute("data-category", select.value);
-            }
-        });
+        autoResizeNameTextarea(input);
     });
-
-    list.querySelectorAll(".receipt-delete-button").forEach(button => {
-        button.addEventListener("click", () => {
-            openDeleteModal(button.dataset.deleteId);
-        });
-    });
-
-    list.querySelectorAll(".receipt-item-card").forEach(card => {
-        attachSwipeDelete(card);
-    });
-}
+});
 
 function findItem(itemId) {
     return currentDetectedItems.find(item => item.id === itemId);
+}
+
+function autoResizeNameTextarea(textarea) {
+    if (!textarea) return;
+
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
 }
 
 function attachSwipeDelete(card) {
@@ -1390,24 +1488,42 @@ function saveExpenses() {
 
     const savedExpenses = JSON.parse(localStorage.getItem("kabalikat_scanned_expenses")) || [];
 
-    const newExpenses = currentDetectedItems.map(item => ({
-        id: item.id || makeItemId(),
-        title: item.name || "Unnamed Item",
-        rawTitle: item.rawName || item.name || "Unnamed Item",
-        quantity: Number(item.quantity || 1),
-        category: item.category || "Others",
-        amount: Number(item.price || 0),
-        receiptImage: item.receiptImage || currentReceiptImage,
-        addedBy: "Shared",
-        source: "OCR Receipt Scanner",
-        createdAt: new Date().toISOString()
-    }));
+    const newExpenses = currentDetectedItems
+        .filter(item => Number(item.price || 0) > 0)
+        .map(item => ({
+            id: item.id || makeItemId(),
+            title: String(item.name || "Unnamed Item").trim(),
+            rawTitle: item.rawName || item.name || "Unnamed Item",
+            quantity: Number(item.quantity || 1),
+            category: item.category || "Others",
+            amount: Number(item.price || 0),
+            receiptImage: item.receiptImage || currentReceiptImage,
+            addedBy: "Shared",
+            source: item.priceOnlyFallback
+                ? "OCR Receipt Scanner - Line Price Fallback"
+                : "OCR Receipt Scanner",
+            matchStatus: item.matchStatus || "manual-review",
+            needsReview: item.needsReview === true,
+            createdAt: new Date().toISOString()
+        }));
 
     if (currentReceiptAdjustment && currentReceiptAdjustment.amount > 0) {
         newExpenses.push({
             id: makeItemId(),
-            title: currentReceiptAdjustment.label,
-            rawTitle: currentReceiptAdjustment.label,
+            title: String(
+                item.name ||
+                item.suggestedName ||
+                item.cleanedText ||
+                item.rawName ||
+                "Unmatched scanned item"
+            ).trim(),
+
+            rawTitle: String(
+                item.rawName ||
+                item.cleanedText ||
+                item.name ||
+                "Unmatched scanned item"
+            ).trim(),
             quantity: 1,
             category: "Others",
             amount: -Number(currentReceiptAdjustment.amount || 0),
@@ -1423,7 +1539,11 @@ function saveExpenses() {
         JSON.stringify([...newExpenses, ...savedExpenses])
     );
 
-    showToast("Scanned expenses saved.");
+    showToast("Receipt expenses saved.");
+
+    setTimeout(() => {
+        window.location.href = "home.html";
+    }, 650);
 }
 
 function showScanningModal(message, percent = 0) {

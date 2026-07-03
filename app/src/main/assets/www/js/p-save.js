@@ -783,20 +783,23 @@ function parseSavemoreProductRow(row, receiptImage = "") {
 }
 
 function extractSavemoreRowPrice(productText, quantity) {
-    const utils = window.ParserUtils;
     let text = String(productText || "").trim();
     let price = 0;
     let unitPrice = null;
 
-    const explicitAtMatch = text.match(/@\s*(\d{1,3}(?:,\d{3})*[.,]\d{2}|\d{1,6}(?:[.,]\d{2})?)/);
+    const ocrMoneyToken = "[0-9OoQqDdIiLl!|SsEeBbGgZz]";
+    const ocrMoneyPattern = `${ocrMoneyToken}{1,3}(?:,${ocrMoneyToken}{3})*[.,]${ocrMoneyToken}{2}|${ocrMoneyToken}{1,8}(?:[.,]${ocrMoneyToken}{2})?`;
+    const ocrMoneyWithRequiredDecimal = `${ocrMoneyToken}{1,3}(?:,${ocrMoneyToken}{3})*[.,]${ocrMoneyToken}{2}|${ocrMoneyToken}{1,8}[.,]${ocrMoneyToken}{2}`;
+
+    const explicitAtRegex = new RegExp(`@\\s*(${ocrMoneyPattern})`, "i");
+    const explicitAtMatch = text.match(explicitAtRegex);
 
     if (explicitAtMatch) {
         unitPrice = parseSavemoreMoney(explicitAtMatch[1]);
         price = roundMoney(unitPrice * Number(quantity || 1));
 
         text = text
-            .replace(/@\s*\d{1,3}(?:,\d{3})*[.,]\d{2}/g, "")
-            .replace(/@\s*\d{1,6}(?:[.,]\d{2})?/g, "")
+            .replace(new RegExp(`@\\s*${ocrMoneyPattern}`, "gi"), "")
             .trim();
 
         return {
@@ -806,7 +809,8 @@ function extractSavemoreRowPrice(productText, quantity) {
         };
     }
 
-    const trailingPriceMatch = text.match(/(?:^|\s)(\d{1,3}(?:,\d{3})*[.,]\d{2}|\d{1,6}[.,]\d{2})\s*$/);
+    const trailingPriceRegex = new RegExp(`(?:^|\\s)(${ocrMoneyWithRequiredDecimal})\\s*$`, "i");
+    const trailingPriceMatch = text.match(trailingPriceRegex);
 
     if (trailingPriceMatch) {
         const amountText = trailingPriceMatch[1];
@@ -1010,19 +1014,47 @@ function extractStandaloneSavemoreMoneyValue(line) {
         .replace(/^PHP\s+/i, "")
         .trim();
 
-    const standaloneMoneyPattern = /^(\d{1,3}(?:,\d{3})*[.,]\d{2}|\d{1,6}[.,]\d{2}|\d{1,3}(?:,\d{3})+,\d{2})$/;
+    if (!clean) return 0;
 
-    const match = clean.match(standaloneMoneyPattern);
+    const repaired = window.ParserUtils &&
+        typeof window.ParserUtils.repairOcrMoneyText === "function"
+        ? window.ParserUtils.repairOcrMoneyText(clean)
+        : clean
+            .replace(/[OoQqDd]/g, "0")
+            .replace(/[IiLl!|]/g, "1")
+            .replace(/[SsEe]/g, "5")
+            .replace(/[Bb]/g, "8")
+            .replace(/[Gg]/g, "6")
+            .replace(/[Zz]/g, "2");
 
-    if (!match) return 0;
+    const valid =
+        /^-?\d{1,3}(?:,\d{3})*[.,]\d{2}$/.test(repaired) ||
+        /^-?\d{1,8}[.,]\d{2}$/.test(repaired);
 
-    return parseSavemoreMoney(match[1]);
+    if (!valid) return 0;
+
+    return parseSavemoreMoney(repaired);
 }
 
 function parseSavemoreMoney(value) {
-    let text = String(value || "")
-        .trim()
-        .replace(/[₱\s]/g, "");
+    let text = "";
+
+    if (
+        window.ParserUtils &&
+        typeof window.ParserUtils.repairOcrMoneyText === "function"
+    ) {
+        text = window.ParserUtils.repairOcrMoneyText(value);
+    } else {
+        text = String(value || "")
+            .trim()
+            .replace(/[₱\s]/g, "")
+            .replace(/[OoQqDd]/g, "0")
+            .replace(/[IiLl!|]/g, "1")
+            .replace(/[SsEe]/g, "5")
+            .replace(/[Bb]/g, "8")
+            .replace(/[Gg]/g, "6")
+            .replace(/[Zz]/g, "2");
+    }
 
     if (!text) return 0;
 
@@ -1043,7 +1075,7 @@ function parseSavemoreMoney(value) {
 
     const number = Number(text);
 
-    return isNaN(number) ? 0 : roundMoney(number);
+    return Number.isFinite(number) ? roundMoney(number) : 0;
 }
 
 function isSavemoreFinancialPriceLine(upper) {

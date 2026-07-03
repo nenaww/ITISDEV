@@ -1114,6 +1114,9 @@ body[data-page="scanner"] {
     display: none !important;
 }
 
+/*CHECK IF OK*/
+
+
 /*TO BE DELETED AFTER*/
 .raw-text-output {
     display: block !important;

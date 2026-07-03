@@ -37,6 +37,16 @@ function parseKabalikatReceipt(rawText, receiptImage = "", options = {}) {
         items = parseGenericReceiptItems(rawText, store, receiptImage);
     }
 
+    if (
+        window.KabalikatProductMatcher &&
+        typeof window.KabalikatProductMatcher.matchItems === "function"
+    ) {
+        items = window.KabalikatProductMatcher.matchItems(items, {
+            storeId: store.id,
+            storeName: store.name
+        });
+    }
+
     const subtotal = items.reduce((sum, item) => sum + Number(item.price || 0), 0);
 
     return {
