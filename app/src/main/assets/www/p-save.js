@@ -565,6 +565,124 @@ const SAVEMORE_DETAIL_RULES = SAVEMORE_RULE_DATA.map(([name, category, patterns]
     patterns
 }));
 
+const SAVEMORE_OCR_DIGIT_CLASS = "0-9OoQqDdIiLl!|SsEeBbGgZz";
+
+const SAVEMORE_OCR_MONEY_REQUIRED_DECIMAL =
+    `(?:[${SAVEMORE_OCR_DIGIT_CLASS}]{1,3}(?:,[${SAVEMORE_OCR_DIGIT_CLASS}]{3})*[.,][${SAVEMORE_OCR_DIGIT_CLASS}]{2}|[${SAVEMORE_OCR_DIGIT_CLASS}]{1,8}[.,][${SAVEMORE_OCR_DIGIT_CLASS}]{2})`;
+
+const SAVEMORE_OCR_MONEY_OPTIONAL_DECIMAL =
+    `(?:[${SAVEMORE_OCR_DIGIT_CLASS}]{1,3}(?:,[${SAVEMORE_OCR_DIGIT_CLASS}]{3})*(?:[.,][${SAVEMORE_OCR_DIGIT_CLASS}]{2})?|[${SAVEMORE_OCR_DIGIT_CLASS}]{1,8}(?:[.,][${SAVEMORE_OCR_DIGIT_CLASS}]{2})?)`;
+
+function repairSavemoreOcrMoneyText(value) {
+    let text = String(value || "")
+        .trim()
+        .replace(/[₱\s]/g, "")
+        .replace(/^PHP/i, "")
+        .trim();
+
+    if (!text) return "";
+
+    return text
+        .replace(/[OoQqDd]/g, "0")
+        .replace(/[IiLl!|]/g, "1")
+        .replace(/[SsEe]/g, "5")
+        .replace(/[Bb]/g, "8")
+        .replace(/[Gg]/g, "6")
+        .replace(/[Zz]/g, "2");
+}
+
+function isStandaloneSavemoreOcrMoneyLine(line) {
+    const clean = String(line || "")
+        .trim()
+        .replace(/[₱]/g, "")
+        .replace(/^PHP\s+/i, "")
+        .trim();
+
+    if (!clean) return false;
+
+    const repaired = repairSavemoreOcrMoneyText(clean);
+
+    return (
+        /^-?\d{1,3}(?:,\d{3})*[.,]\d{2}$/.test(repaired) ||
+        /^-?\d{1,8}[.,]\d{2}$/.test(repaired)
+    );
+}
+
+function getFoldedSavemoreUnitPrice(amountText, quantity, productText) {
+    const qty = Number(quantity || 1);
+
+    if (!qty || qty <= 1) {
+        return 0;
+    }
+
+    if (!looksLikeUnitPriceOnly(productText, 0, qty)) {
+        return 0;
+    }
+
+    const repaired = repairSavemoreOcrMoneyText(amountText);
+
+    if (!repaired) {
+        return 0;
+    }
+
+    const normalized = repaired.replace(/,/g, "");
+    const decimalIndex = Math.max(
+        normalized.lastIndexOf("."),
+        normalized.lastIndexOf(",")
+    );
+
+    if (decimalIndex <= 0) {
+        return 0;
+    }
+
+    const wholePart = normalized.slice(0, decimalIndex);
+    const decimalPart = normalized.slice(decimalIndex + 1);
+
+    if (!/^\d+$/.test(wholePart) || !/^\d{2}$/.test(decimalPart)) {
+        return 0;
+    }
+
+    /*
+        Folded/crumpled receipts sometimes turn:
+        @39.50 into 839.50
+
+        This only corrects the narrow case where the first digit is 8,
+        because @ is commonly misread as 8.
+    */
+    if (!wholePart.startsWith("8") || wholePart.length < 3) {
+        return 0;
+    }
+
+    const strippedWholePart = wholePart.slice(1);
+
+    if (!strippedWholePart) {
+        return 0;
+    }
+
+    const possibleUnitPrice = Number(`${strippedWholePart}.${decimalPart}`);
+    const originalValue = Number(`${wholePart}.${decimalPart}`);
+
+    if (!Number.isFinite(possibleUnitPrice) || possibleUnitPrice <= 0) {
+        return 0;
+    }
+
+    if (!Number.isFinite(originalValue) || originalValue <= 0) {
+        return 0;
+    }
+
+    const correctedLineTotal = roundMoney(possibleUnitPrice * qty);
+
+    if (possibleUnitPrice > 300) {
+        return 0;
+    }
+
+    if (correctedLineTotal >= originalValue) {
+        return 0;
+    }
+
+    return roundMoney(possibleUnitPrice);
+}
+
 function parseSavemoreItems(rawText, receiptImage = "") {
     return parseSavemoreStrict(rawText, receiptImage);
 }
@@ -783,20 +901,19 @@ function parseSavemoreProductRow(row, receiptImage = "") {
 }
 
 function extractSavemoreRowPrice(productText, quantity) {
-    const utils = window.ParserUtils;
     let text = String(productText || "").trim();
     let price = 0;
     let unitPrice = null;
 
-    const explicitAtMatch = text.match(/@\s*(\d{1,3}(?:,\d{3})*[.,]\d{2}|\d{1,6}(?:[.,]\d{2})?)/);
+    const explicitAtRegex = new RegExp(`@\\s*(${SAVEMORE_OCR_MONEY_OPTIONAL_DECIMAL})`, "i");
+    const explicitAtMatch = text.match(explicitAtRegex);
 
     if (explicitAtMatch) {
         unitPrice = parseSavemoreMoney(explicitAtMatch[1]);
         price = roundMoney(unitPrice * Number(quantity || 1));
 
         text = text
-            .replace(/@\s*\d{1,3}(?:,\d{3})*[.,]\d{2}/g, "")
-            .replace(/@\s*\d{1,6}(?:[.,]\d{2})?/g, "")
+            .replace(new RegExp(`@\\s*${SAVEMORE_OCR_MONEY_OPTIONAL_DECIMAL}`, "gi"), "")
             .trim();
 
         return {
@@ -806,7 +923,8 @@ function extractSavemoreRowPrice(productText, quantity) {
         };
     }
 
-    const trailingPriceMatch = text.match(/(?:^|\s)(\d{1,3}(?:,\d{3})*[.,]\d{2}|\d{1,6}[.,]\d{2})\s*$/);
+    const trailingPriceRegex = new RegExp(`(?:^|\\s)(${SAVEMORE_OCR_MONEY_REQUIRED_DECIMAL})\\s*$`, "i");
+    const trailingPriceMatch = text.match(trailingPriceRegex);
 
     if (trailingPriceMatch) {
         const amountText = trailingPriceMatch[1];
@@ -814,14 +932,21 @@ function extractSavemoreRowPrice(productText, quantity) {
         const characterBeforeAmount = text.charAt(amountStart - 1);
 
         if (!/[A-Za-z0-9]/.test(characterBeforeAmount)) {
-            const value = parseSavemoreMoney(amountText);
+            const foldedUnitPrice = getFoldedSavemoreUnitPrice(amountText, quantity, text);
 
-            if (Number(quantity || 1) > 1 && looksLikeUnitPriceOnly(text, value, quantity)) {
-                unitPrice = value;
-                price = roundMoney(value * Number(quantity || 1));
+            if (foldedUnitPrice > 0) {
+                unitPrice = foldedUnitPrice;
+                price = roundMoney(foldedUnitPrice * Number(quantity || 1));
             } else {
-                price = value;
-                unitPrice = calculateUnitPrice(price, quantity);
+                const value = parseSavemoreMoney(amountText);
+
+                if (Number(quantity || 1) > 1 && looksLikeUnitPriceOnly(text, value, quantity)) {
+                    unitPrice = value;
+                    price = roundMoney(value * Number(quantity || 1));
+                } else {
+                    price = value;
+                    unitPrice = calculateUnitPrice(price, quantity);
+                }
             }
 
             text = text.slice(0, amountStart).trim();
@@ -1010,19 +1135,17 @@ function extractStandaloneSavemoreMoneyValue(line) {
         .replace(/^PHP\s+/i, "")
         .trim();
 
-    const standaloneMoneyPattern = /^(\d{1,3}(?:,\d{3})*[.,]\d{2}|\d{1,6}[.,]\d{2}|\d{1,3}(?:,\d{3})+,\d{2})$/;
+    if (!clean) return 0;
 
-    const match = clean.match(standaloneMoneyPattern);
+    if (!isStandaloneSavemoreOcrMoneyLine(clean)) {
+        return 0;
+    }
 
-    if (!match) return 0;
-
-    return parseSavemoreMoney(match[1]);
+    return parseSavemoreMoney(clean);
 }
 
 function parseSavemoreMoney(value) {
-    let text = String(value || "")
-        .trim()
-        .replace(/[₱\s]/g, "");
+    let text = repairSavemoreOcrMoneyText(value);
 
     if (!text) return 0;
 
@@ -1043,7 +1166,7 @@ function parseSavemoreMoney(value) {
 
     const number = Number(text);
 
-    return isNaN(number) ? 0 : roundMoney(number);
+    return Number.isFinite(number) ? roundMoney(number) : 0;
 }
 
 function isSavemoreFinancialPriceLine(upper) {
@@ -1174,10 +1297,9 @@ function cleanSavemoreRawProductText(productText) {
     const utils = window.ParserUtils;
 
     return utils.removeTrailingReceiptCodes(String(productText || ""))
-        .replace(/@\s*\d{1,3}(?:,\d{3})*[.,]\d{2}/g, "")
-        .replace(/@\s*\d{1,6}(?:[.,]\d{2})?/g, "")
-        .replace(/\s+\$?\d{1,6}(?:[.,]\d{2})?\s*$/g, "")
-        .replace(/\s+P?\d{1,6}(?:[.,]\d{2})?\s*$/gi, "")
+        .replace(new RegExp(`@\\s*${SAVEMORE_OCR_MONEY_OPTIONAL_DECIMAL}`, "gi"), "")
+        .replace(new RegExp(`\\s+\\$?${SAVEMORE_OCR_MONEY_OPTIONAL_DECIMAL}\\s*$`, "gi"), "")
+        .replace(new RegExp(`\\s+P?${SAVEMORE_OCR_MONEY_OPTIONAL_DECIMAL}\\s*$`, "gi"), "")
         .replace(/^#+/, "")
         .replace(/^[{(\[]+/, "")
         .replace(/\*+/g, "")
@@ -1344,7 +1466,7 @@ function mergeBrokenSavemoreLines(lines) {
 
         const startsLikeItem = /^([0-9]{1,3}|[Iil!jJ§({\[])[\s"']*#?\s*[A-Za-z]/.test(current);
         const currentHasPrice = hasEndingPriceLoose(current);
-        const nextIsPrice = /^\d{1,6}[.,]\d{2}$/.test(next);
+        const nextIsPrice = isStandaloneSavemoreOcrMoneyLine(next);
 
         if (startsLikeItem && !currentHasPrice && nextIsPrice) {
             merged.push(`${current} ${next}`);
@@ -1555,7 +1677,9 @@ function normalizeSavemoreLineForParsing(line) {
 }
 
 function hasEndingPriceLoose(line) {
-    return /(-?\d{1,3}(?:,\d{3})*[.,]\d{2}|-?\d{1,6}[.,]\d{2})(?:\s*[A-Za-z)]{0,3})?\s*$/.test(String(line || ""));
+    const regex = new RegExp(`(-?${SAVEMORE_OCR_MONEY_REQUIRED_DECIMAL})(?:\\s*[A-Za-z)]{0,3})?\\s*$`, "i");
+
+    return regex.test(String(line || ""));
 }
 
 function parseSavemoreQuantity(value) {
