@@ -1399,6 +1399,7 @@ function getContinuousOrderCoverage(shortText, longText) {
 
 function calculateAliasMatchScore(candidateText, aliasRecord) {
     const candidate = normalizeProductText(candidateText);
+
     const alias = normalizeProductText(
         aliasRecord.normalizedAlias ||
         aliasRecord.aliasText ||
@@ -1409,50 +1410,160 @@ function calculateAliasMatchScore(candidateText, aliasRecord) {
         return 0;
     }
 
-    if (candidate === alias) {
-        return 1;
-    }
-
     const candidateLoose = normalizeProductTextLoose(candidate);
     const aliasLoose = normalizeProductTextLoose(alias);
 
-    if (candidateLoose === aliasLoose) {
-        return 0.98;
-    }
-
-    if (candidate.includes(alias) || alias.includes(candidate)) {
-        return 0.94;
-    }
-
-    if (candidateLoose.includes(aliasLoose) || aliasLoose.includes(candidateLoose)) {
-        return 0.90;
-    }
-
-    const forwardCoverage = getContinuousOrderCoverage(candidate, alias);
-    const reverseCoverage = getContinuousOrderCoverage(alias, candidate);
-
-    let score = Math.max(forwardCoverage, reverseCoverage);
-
-    const candidateSizes = extractProductSizeTokens(candidate).map(normalizeSizeToken);
+    const candidateSizes = extractProductSizeTokens(candidateText).map(normalizeSizeToken);
 
     const aliasSizes = [
         ...extractProductSizeTokens(aliasRecord.aliasText || ""),
+        ...extractProductSizeTokens(aliasRecord.normalizedAlias || ""),
         ...extractProductSizeTokens(aliasRecord.canonicalName || ""),
         ...extractProductSizeTokens(aliasRecord.sizeText || ""),
         ...extractProductSizeTokens(aliasRecord.variantText || "")
     ].map(normalizeSizeToken);
 
-    if (candidateSizes.length > 0 && aliasSizes.length > 0) {
-        const hasSizeMatch = candidateSizes.some(size => aliasSizes.includes(size));
+    const hasCandidateSize = candidateSizes.length > 0;
+    const hasAliasSize = aliasSizes.length > 0;
 
-        if (hasSizeMatch) {
-            score = Math.min(1, score + 0.08);
-        } else {
-            score = Math.max(0, score - 0.20);
+    const hasSizeMatch =
+        hasCandidateSize &&
+        hasAliasSize &&
+        candidateSizes.some(size => aliasSizes.includes(size));
+
+    const hasSizeConflict =
+        hasCandidateSize &&
+        hasAliasSize &&
+        !hasSizeMatch;
+
+    if (hasSizeConflict) {
+        return 0;
+    }
+
+    /*
+        Important safety rule:
+        If the OCR code contains a size like 180ML, 200ML, 720ML, 1KG, etc.,
+        do not let a very short alias win.
+
+        This prevents:
+        CreamSilkCon180ml -> BCREAM -> Magic Flakes Butter Cream
+    */
+    const aliasIsTooShort =
+        candidate.length >= 10 &&
+        alias.length < 8 &&
+        !hasSizeMatch;
+
+    const aliasIsTooSmallComparedToCandidate =
+        candidate.length >= 12 &&
+        alias.length / candidate.length < 0.45 &&
+        !hasSizeMatch;
+
+    if (aliasIsTooShort || aliasIsTooSmallComparedToCandidate) {
+        return 0;
+    }
+
+    if (candidate === alias) {
+        return 1;
+    }
+
+    if (candidateLoose === aliasLoose) {
+        return 0.98;
+    }
+
+    let score = 0;
+
+    if (candidate.includes(alias) || alias.includes(candidate)) {
+        if (alias.length >= 8 || hasSizeMatch) {
+            score = Math.max(score, 0.94);
         }
     }
 
-    return roundMatcherScore(score * Number(aliasRecord.confidence || 1));
+    if (candidateLoose.includes(aliasLoose) || aliasLoose.includes(candidateLoose)) {
+        if (aliasLoose.length >= 8 || hasSizeMatch) {
+            score = Math.max(score, 0.90);
+        }
+    }
+
+    const forwardCoverage = getContinuousOrderCoverage(candidate, alias);
+    const reverseCoverage = getContinuousOrderCoverage(alias, candidate);
+
+    score = Math.max(score, forwardCoverage, reverseCoverage);
+
+    /*
+        If candidate has a size but alias does not, make weak matches harder.
+        Exact or long aliases can still pass, but short aliases cannot steal the item.
+    */
+    if (hasCandidateSize && !hasAliasSize && score < 0.95) {
+        score = score - 0.20;
+    }
+
+    if (hasSizeMatch) {
+        score = Math.min(1, score + 0.08);
+    }
+
+    return roundMatcherScore(Math.max(0, score) * Number(aliasRecord.confidence || 1));
+}
+
+function isAliasPrefixCompatible(candidateText, aliasRecord) {
+    const candidate = normalizeProductText(candidateText);
+
+    const alias = normalizeProductText(
+        aliasRecord.normalizedAlias ||
+        aliasRecord.aliasText ||
+        ""
+    );
+
+    const canonical = normalizeProductText(aliasRecord.canonicalName || "");
+
+    if (!candidate || !alias) {
+        return false;
+    }
+
+    if (candidate === alias) {
+        return true;
+    }
+
+    if (candidate.includes(alias) || alias.includes(candidate)) {
+        return true;
+    }
+
+    if (canonical && (candidate.includes(canonical) || canonical.includes(candidate))) {
+        return true;
+    }
+
+    const aliasText = String(aliasRecord.aliasText || aliasRecord.canonicalName || "");
+    const tokens = splitProductNameTokens(aliasText)
+        .filter(token => token && !isSizeToken(token));
+
+    if (tokens.length === 0) {
+        return false;
+    }
+
+    const firstToken = normalizeProductText(tokens[0]);
+
+    if (firstToken && candidate.slice(0, 3) === firstToken.slice(0, 3)) {
+        return true;
+    }
+
+    const firstTokenVariants = getAutoTokenVariants(firstToken)
+        .filter(value => value.length >= 2 && value.length <= 6);
+
+    if (firstTokenVariants.some(value => candidate.startsWith(value))) {
+        return true;
+    }
+
+    for (let length = 2; length <= Math.min(5, tokens.length); length++) {
+        const acronym = tokens
+            .slice(0, length)
+            .map(token => normalizeProductText(token).charAt(0))
+            .join("");
+
+        if (acronym.length >= 2 && candidate.startsWith(acronym)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 function findBestAliasMatch(candidateTexts, options = {}) {
@@ -1485,6 +1596,26 @@ function findBestAliasMatch(candidateTexts, options = {}) {
             }
 
             let score = calculateAliasMatchScore(candidate, alias);
+
+            /*
+                Safety rule:
+                Weak aliases are only allowed when the beginning of the OCR code
+                agrees with the alias/product identity.
+
+                This prevents:
+                Creamsi1kCon180ml -> Sunsilk Shampoo 180ml
+
+                But still allows:
+                GTWHTCOTTWN10S -> Great Taste White Coffee Twin Pack 10s
+                because GT matches the acronym of Great Taste.
+            */
+            if (
+                score >= 0.70 &&
+                score < 0.90 &&
+                !isAliasPrefixCompatible(candidate, alias)
+            ) {
+                score = 0;
+            }
 
             if (
                 requestedStore &&

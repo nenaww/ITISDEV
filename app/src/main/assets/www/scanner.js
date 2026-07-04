@@ -376,15 +376,26 @@ function applyFinalDatabaseProductNames(items, receipt) {
 
             if (!match) continue;
 
+            const candidateKey = normalizeScannerProductKey(candidate);
+            const currentNameKey = normalizeScannerProductKey(item.name || "");
+
+            /*
+                Do not allow the current displayed name to reinforce itself
+                if rawName/cleanedText exists and points elsewhere.
+            */
+            const candidateIsCurrentDisplayedName =
+                currentNameKey &&
+                candidateKey === currentNameKey;
+
+            if (candidateIsCurrentDisplayedName && candidates.length > 1) {
+                continue;
+            }
+
             if (!best || Number(match.score || 0) > Number(best.score || 0)) {
                 best = match;
             }
         }
 
-        /*
-            Alias match should win.
-            This is the "final say comes from database" part.
-        */
         if (best && Number(best.score || 0) >= 0.70) {
             return {
                 ...item,
@@ -409,16 +420,35 @@ function applyFinalDatabaseProductNames(items, receipt) {
 }
 
 function getFinalMatcherCandidates(item) {
-    const values = [
+    /*
+        Priority:
+        1. rawName / cleanedText / normalizedText / sourceLine
+        2. only use item.name last
+
+        Why:
+        item.name may already be wrong from an earlier weak match.
+        Example:
+        rawName = CreamSilkCon180ml
+        item.name = Magic Flakes Butter Cream
+
+        We should trust OCR/raw code before the existing displayed name.
+    */
+    const primaryValues = [
         item?.rawName,
         item?.cleanedText,
         item?.normalizedText,
-        item?.sourceLine,
-        item?.name,
-        item?.suggestedName
+        item?.sourceLine
     ];
 
-    const candidates = values
+    const fallbackValues = [
+        item?.suggestedName,
+        item?.name
+    ];
+
+    const candidates = [
+        ...primaryValues,
+        ...fallbackValues
+    ]
         .map(value => String(value || "").trim())
         .filter(Boolean)
         .flatMap(value => {
@@ -1841,6 +1871,16 @@ function renderReview(receipt, rawText) {
 
     currentDetectedItems = dedupeAndSortReceiptItems(
         parsedItems.filter(item => !isNonProductDetectedItem(item)),
+        rawText
+    );
+
+    currentDetectedItems = applyFinalDatabaseProductNames(
+        currentDetectedItems,
+        receipt
+    );
+
+    currentDetectedItems = dedupeAndSortReceiptItems(
+        currentDetectedItems,
         rawText
     );
     currentReceiptAdjustment = calculateReceiptAdjustment(rawText, currentDetectedItems);
