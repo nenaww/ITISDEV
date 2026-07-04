@@ -17,6 +17,20 @@ function parseKabalikatReceipt(rawText, receiptImage = "", options = {}) {
         };
     }
 
+    if (
+        store.id === "unknown" &&
+        window.MercuryParser &&
+        typeof window.MercuryParser.looksLike === "function" &&
+        window.MercuryParser.looksLike(rawText)
+    ) {
+        store = window.KABALIKAT_STORES.find(item => item.id === "mercury") || {
+            id: "mercury",
+            name: "Mercury Drug",
+            logo: "images/mercury.png",
+            keywords: []
+        };
+    }
+
     let items = [];
 
     if (store.id === "savemore" && window.SavemoreParser) {

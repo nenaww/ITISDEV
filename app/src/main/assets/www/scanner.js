@@ -296,14 +296,31 @@ async function handleMlKitOcrResult(payload) {
             mlKitProgressMessage = "Loading product database...";
             showScanningModal(mlKitProgressMessage, Math.max(mlKitFakeProgress, 78));
 
-            await window.KabalikatProductMatcher.load();
+            await window.KabalikatProductMatcher.load({ forceRefresh: true });
+            console.log("Product matcher stats:", window.KabalikatProductMatcher.stats());
         }
 
         window.KABALIKAT_USE_DB_FOR_PRODUCT_NAMES = true;
 
-        const parsedReceipt = parseKabalikatReceipt(mlKitText, currentReceiptImage, {
+        let parsedReceipt = parseKabalikatReceipt(mlKitText, currentReceiptImage, {
             primarySource: "mlkit"
         });
+
+        parsedReceipt = repairReceiptItemsFromRawProductSequence(parsedReceipt, mlKitText);
+
+        if (!parsedReceipt.sequenceRepaired) {
+            parsedReceipt = rescueStandaloneProductCodeRows(parsedReceipt, mlKitText);
+        }
+
+        /*
+            Final database authority pass.
+            This makes sure the UI receives the canonical product name from Supabase,
+            even after parser repair/rescue changed the item list.
+        */
+        parsedReceipt.items = applyFinalDatabaseProductNames(
+            parsedReceipt.items,
+            parsedReceipt
+        );
 
         if (!isLikelyReceipt(mlKitText, parsedReceipt)) {
             stopMlKitProgressLoop();
@@ -332,7 +349,1325 @@ async function handleMlKitOcrResult(payload) {
     }
 }
 
-window.handleMlKitOcrResult = handleMlKitOcrResult;
+function applyFinalDatabaseProductNames(items, receipt) {
+    if (!Array.isArray(items)) {
+        return [];
+    }
+
+    if (
+        !window.KabalikatProductMatcher ||
+        typeof window.KabalikatProductMatcher.findBest !== "function"
+    ) {
+        return items;
+    }
+
+    const storeName = getReceiptStoreNameForMatcher(receipt);
+
+    return items.map(item => {
+        const candidates = getFinalMatcherCandidates(item);
+
+        let best = null;
+
+        for (const candidate of candidates) {
+            const match = window.KabalikatProductMatcher.findBest(candidate, {
+                storeName,
+                storeId: storeName
+            });
+
+            if (!match) continue;
+
+            if (!best || Number(match.score || 0) > Number(best.score || 0)) {
+                best = match;
+            }
+        }
+
+        /*
+            Alias match should win.
+            This is the "final say comes from database" part.
+        */
+        if (best && Number(best.score || 0) >= 0.70) {
+            return {
+                ...item,
+                name: best.canonicalName || item.name,
+                suggestedName: best.canonicalName || item.suggestedName || item.name,
+                category: best.category || item.category || "Groceries",
+                matchedProductId: best.productId || item.matchedProductId || null,
+                matchedAliasId: best.aliasId || item.matchedAliasId || null,
+                matchedAliasText: best.aliasText || item.matchedAliasText || "",
+                matchScore: best.score || item.matchScore || 0,
+                matchStatus: Number(best.score || 0) >= 0.90 ? "matched" : "suggested",
+                matchSource: best.source || item.matchSource || "",
+                matchReason: best.reason || item.matchReason || "",
+                productFamily: best.productFamily || item.productFamily || "",
+                variantText: best.variantText || item.variantText || "",
+                productBrand: best.brand || item.productBrand || ""
+            };
+        }
+
+        return item;
+    });
+}
+
+function getFinalMatcherCandidates(item) {
+    const values = [
+        item?.rawName,
+        item?.cleanedText,
+        item?.normalizedText,
+        item?.sourceLine,
+        item?.name,
+        item?.suggestedName
+    ];
+
+    const candidates = values
+        .map(value => String(value || "").trim())
+        .filter(Boolean)
+        .flatMap(value => {
+            return [
+                value,
+                stripFinalCandidateNoise(value)
+            ];
+        })
+        .map(value => String(value || "").trim())
+        .filter(Boolean);
+
+    const normalizedSeen = new Set();
+
+    return candidates.filter(candidate => {
+        const key = normalizeScannerProductKey(candidate);
+
+        if (!key || normalizedSeen.has(key)) {
+            return false;
+        }
+
+        normalizedSeen.add(key);
+        return true;
+    });
+}
+
+function stripFinalCandidateNoise(value) {
+    return String(value || "")
+        .split("|")[0]
+        .replace(/price from savemore price column/gi, " ")
+        .replace(/repaired by subtotal check/gi, " ")
+        .replace(/[₱]/g, " ")
+        .replace(/\bPHP\b/gi, " ")
+        .replace(/@\s*\d{1,6}(?:[.,]\d{2})?/g, " ")
+        .replace(/\d{1,3}(?:,\d{3})*[.,]\d{2}/g, " ")
+        .replace(/\d{1,6}[.,]\d{2}/g, " ")
+        .replace(/^\s*\d{1,3}\s+/, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function repairReceiptItemsFromRawProductSequence(receipt, rawText) {
+    if (!receipt || !Array.isArray(receipt.items)) {
+        return receipt;
+    }
+
+    const rawRows = extractRawProductSequenceRows(rawText);
+
+    if (rawRows.length === 0) {
+        return receipt;
+    }
+
+    const expectedQuantity = getExpectedItemQuantityFromReceipt(receipt, rawText);
+    const parsedQuantity = receipt.items.reduce((sum, item) => {
+        return sum + Number(item.quantity || 0);
+    }, 0);
+
+    const expectedTotal = getExpectedTotalFromReceipt(receipt, rawText);
+
+    const shouldRepair =
+        rawRows.length >= receipt.items.length ||
+        (expectedQuantity > 0 && parsedQuantity < expectedQuantity);
+
+    if (!shouldRepair) {
+        return receipt;
+    }
+
+    const repairedRows = inferMissingQuantitiesForRawRows(rawRows, receipt, rawText);
+    const rawUnitPriceQueue = extractRawUnitPriceQueue(rawText);
+    const alignedUnitPrices = alignUnitPriceQueueToProductRows(repairedRows, rawUnitPriceQueue);
+
+    const parserPriceQueue = receipt.items
+        .map(item => Number(item.price || item.lineTotal || 0))
+        .filter(price => price > 0);
+
+    let repairedItems = repairedRows.map((row, index) => {
+        const quantity = Number(row.quantity || 1);
+
+        let unitPrice = Number(row.unitPrice || 0);
+        let lineTotal = Number(row.lineTotal || 0);
+
+        /*
+            Do not blindly use rawUnitPriceQueue[index].
+            If one item row has missing @ price, index-based price assignment shifts everything.
+        */
+        if (unitPrice <= 0 && alignedUnitPrices[index] > 0) {
+            unitPrice = alignedUnitPrices[index];
+        }
+
+        if (lineTotal <= 0 && unitPrice > 0) {
+            lineTotal = roundMoney(unitPrice * quantity);
+        }
+
+        /*
+            Only use old parser price queue when item counts line up exactly.
+            Otherwise it can shift prices to the wrong products.
+        */
+        if (
+            lineTotal <= 0 &&
+            parserPriceQueue.length === repairedRows.length &&
+            parserPriceQueue[index] > 0
+        ) {
+            lineTotal = parserPriceQueue[index];
+            unitPrice = quantity > 0 ? roundMoney(lineTotal / quantity) : lineTotal;
+        }
+
+        const tempItem = {
+            id: makeItemId(),
+            name: row.code,
+            rawName: row.code,
+            cleanedText: row.code,
+            normalizedText: normalizeScannerProductKey(row.code),
+            quantity,
+            unitPrice,
+            price: lineTotal,
+            lineTotal,
+            category: "Groceries",
+            sourceLine: row.originalLine,
+            ocrLineIndex: row.lineIndex,
+            ocrPosition: row.position,
+            sequenceRepaired: true,
+            quantitySmartRepaired: row.quantitySmartRepaired === true,
+            needsReview: lineTotal <= 0
+        };
+
+        if (
+            window.KabalikatProductMatcher &&
+            typeof window.KabalikatProductMatcher.matchItem === "function"
+        ) {
+            return window.KabalikatProductMatcher.matchItem(tempItem, {
+                storeName: getReceiptStoreNameForMatcher(receipt),
+                storeId: getReceiptStoreNameForMatcher(receipt)
+            });
+        }
+
+        return tempItem;
+    });
+
+    /*
+        Example:
+        LKYMEPCNTONKLM60G has no quantity/price line, but the item count says
+        there are 14 total quantities. If it is the only missing price, infer it
+        from receipt math or from a nearby same-family item.
+    */
+    repairedItems = inferMissingPricesFromReceiptMathOrNearbyProduct(
+        repairedItems,
+        expectedTotal
+    );
+
+    const repairedQuantity = repairedItems.reduce((sum, item) => {
+        return sum + Number(item.quantity || 0);
+    }, 0);
+
+    const repairedTotal = roundMoney(
+        repairedItems.reduce((sum, item) => {
+            return sum + Number(item.price || item.lineTotal || 0);
+        }, 0)
+    );
+
+    const quantityLooksValid =
+        expectedQuantity <= 0 ||
+        repairedQuantity === expectedQuantity;
+
+    const totalLooksValid =
+        expectedTotal <= 0 ||
+        Math.abs(repairedTotal - expectedTotal) <= 0.05;
+
+    const hasZeroPricedProduct =
+        repairedItems.some(item => Number(item.price || item.lineTotal || 0) <= 0);
+
+    if (
+        repairedItems.length >= receipt.items.length &&
+        quantityLooksValid &&
+        totalLooksValid &&
+        !hasZeroPricedProduct
+    ) {
+        receipt.items = dedupeAndSortReceiptItems(repairedItems, rawText);
+        receipt.sequenceRepaired = true;
+        return receipt;
+    }
+
+    console.warn("Sequence repair rejected.", {
+        rawRows,
+        repairedRows,
+        rawUnitPriceQueue,
+        alignedUnitPrices,
+        repairedQuantity,
+        expectedQuantity,
+        repairedTotal,
+        expectedTotal
+    });
+
+    receipt.sequenceRepaired = false;
+    return receipt;
+}
+
+function extractRawUnitPriceQueue(rawText) {
+    const lines = String(rawText || "")
+        .split(/\n+/)
+        .map(line => line.trim())
+        .filter(Boolean);
+
+    const prices = [];
+
+    lines.forEach(line => {
+        const matches = [...String(line).matchAll(/@\s*(\d{1,4}(?:[.,]\d{2})?)/g)];
+
+        matches.forEach(match => {
+            const value = parseReceiptMoney(match[1]);
+
+            if (value > 0) {
+                prices.push(value);
+            }
+        });
+    });
+
+    return prices;
+}
+
+function alignUnitPriceQueueToProductRows(rows, rawUnitPriceQueue) {
+    const result = new Array(rows.length).fill(0);
+
+    if (!Array.isArray(rows) || rows.length === 0) {
+        return result;
+    }
+
+    if (!Array.isArray(rawUnitPriceQueue) || rawUnitPriceQueue.length === 0) {
+        return result;
+    }
+
+    let queueIndex = 0;
+    const missingQueueCount = rows.length - rawUnitPriceQueue.length;
+
+    rows.forEach((row, index) => {
+        if (Number(row.unitPrice || 0) > 0) {
+            result[index] = Number(row.unitPrice || 0);
+            return;
+        }
+
+        const shouldSkipThisRow =
+            missingQueueCount > 0 &&
+            (
+                row.quantitySmartRepaired === true ||
+                row.quantityMissing === true
+            );
+
+        /*
+            If one OCR item row has no @ price, skip that row instead of shifting
+            all later prices.
+        */
+        if (shouldSkipThisRow) {
+            result[index] = 0;
+            return;
+        }
+
+        result[index] = Number(rawUnitPriceQueue[queueIndex] || 0);
+        queueIndex++;
+    });
+
+    return result;
+}
+
+function inferMissingPricesFromReceiptMathOrNearbyProduct(items, expectedTotal) {
+    if (!Array.isArray(items) || items.length === 0) {
+        return items;
+    }
+
+    const missingIndexes = [];
+
+    items.forEach((item, index) => {
+        const price = Number(item.price || item.lineTotal || 0);
+
+        if (price <= 0) {
+            missingIndexes.push(index);
+        }
+    });
+
+    if (missingIndexes.length !== 1) {
+        return items;
+    }
+
+    const missingIndex = missingIndexes[0];
+    const missingItem = items[missingIndex];
+    const quantity = Number(missingItem.quantity || 1);
+
+    if (!quantity || quantity <= 0) {
+        return items;
+    }
+
+    const knownTotal = roundMoney(
+        items.reduce((sum, item, index) => {
+            if (index === missingIndex) {
+                return sum;
+            }
+
+            return sum + Number(item.price || item.lineTotal || 0);
+        }, 0)
+    );
+
+    /*
+        Best case: OCR found the printed TOTAL DUE.
+    */
+    if (expectedTotal > 0) {
+        const missingTotal = roundMoney(expectedTotal - knownTotal);
+
+        if (missingTotal > 0 && missingTotal < 10000) {
+            return items.map((item, index) => {
+                if (index !== missingIndex) {
+                    return item;
+                }
+
+                return {
+                    ...item,
+                    price: missingTotal,
+                    lineTotal: missingTotal,
+                    unitPrice: roundMoney(missingTotal / quantity),
+                    priceMissing: false,
+                    needsReview: true,
+                    smartPriceRepaired: true,
+                    repairReason: "Price inferred from receipt total."
+                };
+            });
+        }
+    }
+
+    /*
+        Fallback: if the missing item is near another same-family item,
+        use the nearby unit price.
+
+        This handles:
+        1 Lucky Me Pancit Canton Original 60g @16.50
+        2 Lucky Me Pancit Canton Kalamansi 60g missing @ price
+    */
+    const nearbyUnitPrice = findNearbyCompatibleUnitPrice(items, missingIndex);
+
+    if (nearbyUnitPrice > 0) {
+        const inferredTotal = roundMoney(nearbyUnitPrice * quantity);
+
+        return items.map((item, index) => {
+            if (index !== missingIndex) {
+                return item;
+            }
+
+            return {
+                ...item,
+                price: inferredTotal,
+                lineTotal: inferredTotal,
+                unitPrice: nearbyUnitPrice,
+                priceMissing: false,
+                needsReview: true,
+                smartPriceRepaired: true,
+                repairReason: "Price inferred from nearby same-family product."
+            };
+        });
+    }
+
+    return items;
+}
+
+function findNearbyCompatibleUnitPrice(items, missingIndex) {
+    const missingItem = items[missingIndex];
+
+    for (let distance = 1; distance <= 3; distance++) {
+        const left = items[missingIndex - distance];
+
+        if (
+            left &&
+            Number(left.unitPrice || 0) > 0 &&
+            areLikelySameProductFamily(missingItem, left)
+        ) {
+            return roundMoney(left.unitPrice);
+        }
+
+        const right = items[missingIndex + distance];
+
+        if (
+            right &&
+            Number(right.unitPrice || 0) > 0 &&
+            areLikelySameProductFamily(missingItem, right)
+        ) {
+            return roundMoney(right.unitPrice);
+        }
+    }
+
+    return 0;
+}
+
+function areLikelySameProductFamily(firstItem, secondItem) {
+    const firstName = String(firstItem?.name || firstItem?.rawName || "");
+    const secondName = String(secondItem?.name || secondItem?.rawName || "");
+
+    const firstFamily = normalizeScannerProductKey(firstItem?.productFamily || "");
+    const secondFamily = normalizeScannerProductKey(secondItem?.productFamily || "");
+
+    const firstSize = extractScannerSizeToken(firstName);
+    const secondSize = extractScannerSizeToken(secondName);
+
+    if (firstSize && secondSize && firstSize !== secondSize) {
+        return false;
+    }
+
+    if (firstFamily && secondFamily && firstFamily === secondFamily) {
+        return true;
+    }
+
+    const firstTokens = getComparableProductTokens(firstName);
+    const secondTokens = getComparableProductTokens(secondName);
+
+    let sharedCount = 0;
+
+    firstTokens.forEach(token => {
+        if (secondTokens.includes(token)) {
+            sharedCount++;
+        }
+    });
+
+    return sharedCount >= 3;
+}
+
+function getComparableProductTokens(value) {
+    const ignored = new Set([
+        "ORIGINAL",
+        "KALAMANSI",
+        "CHILIMANSI",
+        "SWEET",
+        "SPICY",
+        "HOT",
+        "MILD",
+        "REGULAR",
+        "CLASSIC",
+        "FLAVOR",
+        "FLAVOUR"
+    ]);
+
+    return String(value || "")
+        .toUpperCase()
+        .replace(/(\d+)\s*(KG|G|ML|L|S)\b/g, "$1$2")
+        .replace(/[^A-Z0-9]+/g, " ")
+        .trim()
+        .split(/\s+/)
+        .map(token => normalizeScannerProductKey(token))
+        .filter(Boolean)
+        .filter(token => !ignored.has(token));
+}
+
+function extractScannerSizeToken(value) {
+    const text = normalizeScannerProductKey(value);
+    const match = text.match(/\d+(KG|G|ML|L|S)\b/);
+
+    return match ? match[0] : "";
+}
+
+function extractRawProductSequenceRows(rawText) {
+    const lines = String(rawText || "")
+        .split(/\n+/)
+        .map((line, index) => ({
+            originalLine: line.trim(),
+            lineIndex: index
+        }))
+        .filter(row => row.originalLine);
+
+    const rows = [];
+    let insideItemSection = false;
+
+    lines.forEach(row => {
+        const original = row.originalLine;
+        const upper = original.toUpperCase();
+
+        if (
+            upper.includes("QTY") ||
+            upper.includes("ITEM DESCRIPTION") ||
+            upper.includes("UNIT PRICE") ||
+            upper.includes("AMOUNT")
+        ) {
+            insideItemSection = true;
+            return;
+        }
+
+        if (
+            upper.includes("ITEM COUNT") ||
+            upper.includes("TOTAL DUE") ||
+            upper.includes("VATABLE") ||
+            upper.includes("CASH") ||
+            upper.includes("CHANGE")
+        ) {
+            insideItemSection = false;
+        }
+
+        /*
+            For Savemore generated receipts, item lines can still appear even if
+            OCR does not preserve the item header well, so we do not require
+            insideItemSection strictly. We use product-code validation instead.
+        */
+        const parsed = parseRawProductCodeLine(original);
+
+        if (!parsed) {
+            return;
+        }
+
+        rows.push({
+            ...parsed,
+            originalLine: original,
+            lineIndex: row.lineIndex,
+            position: getRawTextLinePosition(rawText, original, row.lineIndex)
+        });
+    });
+
+    return dedupeRawProductRows(rows);
+}
+
+function parseRawProductCodeLine(line) {
+    const original = String(line || "").trim();
+
+    if (!original) return null;
+
+    if (isExactReceiptMetaCode(original)) {
+        return null;
+    }
+
+    if (isReceiptNoiseLine(original)) {
+        return null;
+    }
+
+    const quantityMatch = original.match(/^\s*(\d{1,3})\s+(.+)$/);
+
+    if (quantityMatch) {
+        const quantity = Number(quantityMatch[1]);
+        let productPart = quantityMatch[2] || "";
+
+        const unitPriceMatch = productPart.match(/@\s*(\d{1,4}(?:[.,]\d{2})?)/);
+        const unitPrice = unitPriceMatch ? parseReceiptMoney(unitPriceMatch[1]) : 0;
+
+        const moneyValues = extractReceiptMoneyValues(productPart);
+        const lineTotal = moneyValues.length > 0
+            ? moneyValues[moneyValues.length - 1]
+            : 0;
+
+        productPart = productPart
+            .split("@")[0]
+            .replace(/[₱]/g, " ")
+            .replace(/\bPHP\b/gi, " ")
+            .replace(/\d{1,3}(?:,\d{3})*[.,]\d{2}/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+
+        const code = normalizeScannerProductKey(productPart);
+
+        if (isStandaloneProductCode(code)) {
+            return {
+                quantity,
+                quantityMissing: false,
+                code,
+                unitPrice,
+                lineTotal
+            };
+        }
+    }
+
+    const compact = normalizeScannerProductKey(original);
+    const attached = splitAttachedQuantityFromCode(compact);
+
+    if (attached.quantity > 0 && isStandaloneProductCode(attached.code)) {
+        return {
+            quantity: attached.quantity,
+            quantityMissing: false,
+            code: attached.code,
+            unitPrice: 0,
+            lineTotal: 0
+        };
+    }
+
+    if (isStandaloneProductCode(compact)) {
+        return {
+            quantity: null,
+            quantityMissing: true,
+            code: compact,
+            unitPrice: 0,
+            lineTotal: 0
+        };
+    }
+
+    return null;
+}
+
+function splitAttachedQuantityFromCode(value) {
+    const text = normalizeScannerProductKey(value);
+
+    /*
+        Handles OCR cases like:
+        1DATUPTISOY1L
+
+        But do not strip codes like 555SARDSPANSH155 because 555 is part of the product.
+    */
+    const match = text.match(/^([1-9])([A-Z][A-Z0-9]{6,})$/);
+
+    if (!match) {
+        return {
+            quantity: 0,
+            code: text
+        };
+    }
+
+    const quantity = Number(match[1]);
+    const code = match[2];
+
+    if (quantity > 0 && isStandaloneProductCode(code)) {
+        return {
+            quantity,
+            code
+        };
+    }
+
+    return {
+        quantity: 0,
+        code: text
+    };
+}
+
+function inferMissingQuantitiesForRawRows(rows, receipt, rawText) {
+    const expectedQuantity = getExpectedItemQuantityFromReceipt(receipt, rawText);
+
+    if (expectedQuantity <= 0) {
+        return rows.map(row => ({
+            ...row,
+            quantity: Number(row.quantity || 1)
+        }));
+    }
+
+    const knownQuantity = rows.reduce((sum, row) => {
+        return sum + Number(row.quantity || 0);
+    }, 0);
+
+    const unknownRows = rows.filter(row => !Number(row.quantity || 0));
+    const missingQuantity = expectedQuantity - knownQuantity;
+
+    if (unknownRows.length === 1 && missingQuantity > 0) {
+        return rows.map(row => {
+            if (row === unknownRows[0]) {
+                return {
+                    ...row,
+                    quantity: missingQuantity,
+                    quantityMissing: false,
+                    quantitySmartRepaired: true
+                };
+            }
+
+            return row;
+        });
+    }
+
+    return rows.map(row => ({
+        ...row,
+        quantity: Number(row.quantity || 1)
+    }));
+}
+
+function dedupeRawProductRows(rows) {
+    const map = new Map();
+
+    rows.forEach(row => {
+        const attached = splitAttachedQuantityFromCode(row.code);
+        const cleanCode = attached.quantity > 0 ? attached.code : row.code;
+        const key = normalizeScannerProductKey(cleanCode);
+
+        if (!key) return;
+
+        const cleanedRow = {
+            ...row,
+            code: cleanCode,
+            quantity: Number(row.quantity || 0) > 0
+                ? row.quantity
+                : attached.quantity || row.quantity
+        };
+
+        if (!map.has(key)) {
+            map.set(key, cleanedRow);
+            return;
+        }
+
+        const existing = map.get(key);
+
+        if (!existing.quantity && cleanedRow.quantity) {
+            map.set(key, cleanedRow);
+            return;
+        }
+
+        if (
+            Number(cleanedRow.lineTotal || 0) > Number(existing.lineTotal || 0)
+        ) {
+            map.set(key, cleanedRow);
+        }
+    });
+
+    return [...map.values()]
+        .sort((a, b) => a.position - b.position);
+}
+
+function isReceiptNoiseLine(line) {
+    const text = normalizeScannerProductKey(line);
+
+    if (!text) return true;
+
+    const blocked = [
+        "SAVEMORE",
+        "MARKET",
+        "RECEIPT",
+        "INVOICE",
+        "PERMIT",
+        "TERMINAL",
+        "TOTAL",
+        "CASH",
+        "CHANGE",
+        "VATABLE",
+        "VATEXEMPT",
+        "ZERORATED",
+        "AMOUNT",
+        "BALANCE",
+        "AUTHCODE",
+        "DATE",
+        "TIME",
+        "TIN",
+        "THANKYOU",
+        "OFFICIALRECEIPT"
+    ];
+
+    return blocked.some(word => text.includes(word));
+}
+
+function isExactReceiptMetaCode(text) {
+    const value = normalizeScannerProductKey(text);
+
+    return (
+        value === "MIN" ||
+        value === "TIN" ||
+        value === "SI" ||
+        value === "OR" ||
+        value === "VAT"
+    );
+}
+
+function rescueStandaloneProductCodeRows(receipt, rawText) {
+    if (!receipt || !Array.isArray(receipt.items)) {
+        return receipt;
+    }
+
+    const normalItems = receipt.items.map((item, index) => {
+        return {
+            ...item,
+            ocrPosition: getItemOcrPosition(item, rawText, index),
+            rescueOnly: false
+        };
+    });
+
+    const existingKeys = new Set(
+        normalItems
+            .map(item => getLooseItemIdentityKey(item))
+            .filter(Boolean)
+    );
+
+    const standaloneRows = extractStandaloneProductCodeRows(rawText)
+        .filter(row => !existingKeys.has(normalizeScannerProductKey(row.code)));
+
+    if (standaloneRows.length === 0) {
+        receipt.items = dedupeAndSortReceiptItems(normalItems, rawText);
+        return receipt;
+    }
+
+    const rescuedItems = standaloneRows.map(row => {
+        const tempItem = {
+            id: makeItemId(),
+            name: row.code,
+            rawName: row.code,
+            cleanedText: row.code,
+            normalizedText: normalizeScannerProductKey(row.code),
+            quantity: 1,
+            unitPrice: 0,
+            price: 0,
+            category: "Groceries",
+            sourceLine: row.originalLine,
+            ocrLineIndex: row.lineIndex,
+            ocrPosition: row.position,
+            rescueOnly: true,
+            priceMissing: true,
+            quantityMissing: true,
+            needsReview: true
+        };
+
+        if (
+            window.KabalikatProductMatcher &&
+            typeof window.KabalikatProductMatcher.matchItem === "function"
+        ) {
+            return window.KabalikatProductMatcher.matchItem(tempItem, {
+                storeName: getReceiptStoreNameForMatcher(receipt),
+                storeId: getReceiptStoreNameForMatcher(receipt)
+            });
+        }
+
+        return tempItem;
+    });
+
+    const cleanedRescuedItems = rescuedItems.filter(item => {
+        const key = getLooseItemIdentityKey(item);
+
+        if (!key) return false;
+
+        if (existingKeys.has(key)) {
+            return false;
+        }
+
+        existingKeys.add(key);
+        return true;
+    });
+
+    const inferredRescuedItems = inferMissingQuantityAndPriceIfSafe(
+        cleanedRescuedItems,
+        normalItems,
+        receipt,
+        rawText
+    );
+
+    receipt.items = dedupeAndSortReceiptItems(
+        [
+            ...normalItems,
+            ...inferredRescuedItems
+        ],
+        rawText
+    );
+
+    return receipt;
+}
+
+function extractStandaloneProductCodeRows(rawText) {
+    const lines = String(rawText || "")
+        .split(/\n+/)
+        .map((line, index) => ({
+            originalLine: line.trim(),
+            lineIndex: index
+        }))
+        .filter(row => row.originalLine);
+
+    const rows = [];
+
+    lines.forEach(row => {
+        const original = row.originalLine;
+
+        /*
+            Rescue only standalone product-code lines.
+            This prevents duplicating normal rows like:
+            2 LM PC Kalamansi @49.50
+            1 VITASOY SOYA OAT
+        */
+        if (/[₱@]/.test(original)) return;
+        if (/\d+[.,]\d{2}/.test(original)) return;
+        if (/^\s*\d{1,3}\s+[A-Z]/i.test(original)) return;
+
+        const compact = normalizeScannerProductKey(original);
+
+        if (!isStandaloneProductCode(compact)) return;
+
+        rows.push({
+            code: compact,
+            originalLine: original,
+            lineIndex: row.lineIndex,
+            position: getRawTextLinePosition(rawText, original, row.lineIndex)
+        });
+    });
+
+    return rows;
+}
+
+function isStandaloneProductCode(value) {
+    const text = normalizeScannerProductKey(value);
+
+    if (!text) return false;
+
+    const blockedWords = [
+        "SAVEMORE",
+        "MARKET",
+        "RECEIPT",
+        "INVOICE",
+        "PERMIT",
+        "TERMINAL",
+        "TOTAL",
+        "CASH",
+        "CHANGE",
+        "VATABLE",
+        "VATEXEMPT",
+        "ZERORATED",
+        "AMOUNT",
+        "BALANCE",
+        "AUTHCODE",
+        "DATE",
+        "TIME",
+        "TIN"
+    ];
+
+    if (blockedWords.some(word => text.includes(word))) {
+        return false;
+    }
+
+    const hasLetters = /[A-Z]/.test(text);
+    const hasDigits = /\d/.test(text);
+    const hasSizeEnding = /\d+(KG|G|ML|L|S)$/.test(text);
+
+    return (
+        hasLetters &&
+        hasDigits &&
+        hasSizeEnding &&
+        text.length >= 8 &&
+        text.length <= 30
+    );
+}
+
+function inferMissingQuantityAndPriceIfSafe(rescuedItems, normalItems, receipt, rawText) {
+    if (!Array.isArray(rescuedItems) || rescuedItems.length === 0) {
+        return [];
+    }
+
+    const expectedQuantity = getExpectedItemQuantityFromReceipt(receipt, rawText);
+    const currentQuantity = normalItems.reduce((sum, item) => {
+        return sum + Number(item.quantity || 0);
+    }, 0);
+
+    const expectedTotal = getExpectedTotalFromReceipt(receipt, rawText);
+    const currentTotal = normalItems.reduce((sum, item) => {
+        return sum + Number(item.price || item.lineTotal || 0);
+    }, 0);
+
+    const missingQuantity = expectedQuantity > 0
+        ? Math.max(0, expectedQuantity - currentQuantity)
+        : 0;
+
+    const missingTotal = expectedTotal > 0
+        ? roundMoney(expectedTotal - currentTotal)
+        : 0;
+
+    /*
+        Smart repair rule:
+        Only infer quantity and price when exactly one standalone product code is missing.
+        This prevents assigning another product's price to the wrong item.
+    */
+    if (
+        rescuedItems.length === 1 &&
+        missingQuantity > 0 &&
+        missingTotal > 0.009 &&
+        missingTotal < 10000
+    ) {
+        const item = {
+            ...rescuedItems[0]
+        };
+
+        item.quantity = missingQuantity;
+        item.price = missingTotal;
+        item.lineTotal = missingTotal;
+        item.unitPrice = roundMoney(missingTotal / missingQuantity);
+
+        item.quantityMissing = false;
+        item.priceMissing = false;
+        item.needsReview = true;
+        item.smartRepaired = true;
+        item.repairReason = "Quantity and price inferred from receipt item count and total due.";
+
+        return [item];
+    }
+
+    /*
+        If there are multiple rescued rows, do not distribute prices.
+        Show them for review instead.
+    */
+    return rescuedItems.map(item => ({
+        ...item,
+        price: Number(item.price || 0),
+        lineTotal: Number(item.lineTotal || item.price || 0),
+        unitPrice: Number(item.unitPrice || 0),
+        priceMissing: true,
+        quantityMissing: true,
+        needsReview: true,
+        smartRepaired: false
+    }));
+}
+
+function dedupeAndSortReceiptItems(items, rawText) {
+    const ranked = (items || []).map((item, index) => {
+        return {
+            item,
+            originalIndex: index,
+            receiptPosition: Number.isFinite(Number(item.ocrPosition))
+                ? Number(item.ocrPosition)
+                : getItemOcrPosition(item, rawText, index),
+            qualityScore: getDetectedItemQualityScore(item)
+        };
+    });
+
+    ranked.sort((a, b) => {
+        if (a.receiptPosition !== b.receiptPosition) {
+            return a.receiptPosition - b.receiptPosition;
+        }
+
+        return a.originalIndex - b.originalIndex;
+    });
+
+    const map = new Map();
+
+    ranked.forEach(entry => {
+        const key = getDetectedItemDedupeKey(entry.item);
+
+        if (!key) {
+            map.set(`unique-${entry.originalIndex}`, entry);
+            return;
+        }
+
+        const existing = map.get(key);
+
+        if (!existing || entry.qualityScore > existing.qualityScore) {
+            map.set(key, entry);
+        }
+    });
+
+    return [...map.values()]
+        .sort((a, b) => {
+            if (a.receiptPosition !== b.receiptPosition) {
+                return a.receiptPosition - b.receiptPosition;
+            }
+
+            return a.originalIndex - b.originalIndex;
+        })
+        .map(entry => entry.item);
+}
+
+function getDetectedItemDedupeKey(item) {
+    /*
+        Dedupe by product identity only.
+        Do not include quantity or price here because zero-price rescued items
+        should collapse into the real priced version of the same product.
+    */
+    const identity = getLooseItemIdentityKey(item);
+
+    return identity || "";
+}
+
+function getLooseItemIdentityKey(item) {
+    return normalizeScannerProductKey(
+        item.matchedProductId ||
+        item.matchedAliasId ||
+        item.suggestedName ||
+        item.name ||
+        item.rawName ||
+        item.cleanedText ||
+        item.sourceLine ||
+        ""
+    );
+}
+
+function getDetectedItemQualityScore(item) {
+    let score = 0;
+
+    if (!item.rescueOnly) score += 100;
+    if (Number(item.price || item.lineTotal || 0) > 0) score += 80;
+    if (item.smartRepaired) score += 70;
+    if (item.matchedProductId) score += 60;
+    if (item.matchedAliasId) score += 50;
+    if (item.matchStatus === "matched") score += 30;
+    if (item.matchStatus === "suggested") score += 20;
+    if (!item.priceMissing) score += 10;
+    if (!item.quantityMissing) score += 10;
+
+    const name = String(item.name || "");
+    const raw = String(item.rawName || "");
+
+    if (name && name !== raw) score += 10;
+
+    return score;
+}
+
+function getItemOcrPosition(item, rawText, fallbackIndex) {
+    const normalizedRaw = normalizeScannerProductKey(rawText);
+
+    const candidates = [
+        item.sourceLine,
+        item.rawName,
+        item.cleanedText,
+        item.name,
+        item.suggestedName
+    ]
+        .map(normalizeScannerProductKey)
+        .filter(Boolean)
+        .sort((a, b) => b.length - a.length);
+
+    for (const candidate of candidates) {
+        const index = normalizedRaw.indexOf(candidate);
+
+        if (index >= 0) {
+            return index;
+        }
+    }
+
+    return Number.MAX_SAFE_INTEGER - fallbackIndex;
+}
+
+function getRawTextLinePosition(rawText, lineText, lineIndex) {
+    const lines = String(rawText || "").split(/\n+/);
+    let position = 0;
+
+    for (let index = 0; index < lines.length; index++) {
+        if (index === lineIndex) {
+            return position;
+        }
+
+        position += lines[index].length + 1;
+    }
+
+    const fallback = String(rawText || "").indexOf(lineText);
+    return fallback >= 0 ? fallback : Number.MAX_SAFE_INTEGER;
+}
+
+function getExpectedItemQuantityFromReceipt(receipt, rawText) {
+    const text = String(rawText || "");
+
+    /*
+        Raw OCR must be trusted first.
+        The receipt object may already contain the wrong parsed item count.
+    */
+    const rawPatterns = [
+        /ITEM\s*COUNT\s*:?\s*(\d{1,3})/i,
+        /(\d{1,3})\s*ITEM\s*\(?S?\)?/i,
+        /(\d{1,3})\s*ITEMS?\b/i
+    ];
+
+    for (const pattern of rawPatterns) {
+        const match = text.match(pattern);
+
+        if (match) {
+            const value = Number(match[1] || 0);
+
+            if (Number.isFinite(value) && value > 0) {
+                return value;
+            }
+        }
+    }
+
+    /*
+        Use parsed receipt count only as fallback.
+    */
+    const direct =
+        Number(receipt?.itemCount || 0) ||
+        Number(receipt?.itemsCount || 0) ||
+        Number(receipt?.totalItems || 0);
+
+    return Number.isFinite(direct) && direct > 0 ? direct : 0;
+}
+
+function getExpectedTotalFromReceipt(receipt, rawText) {
+    const text = String(rawText || "");
+    const lines = text
+        .split(/\n+/)
+        .map(line => line.trim())
+        .filter(Boolean);
+
+    const sameLinePatterns = [
+        /TOTAL\s+DUE\s+(?:PHP\s*)?(\d{1,3}(?:,\d{3})*[.,]\d{2}|\d{1,6}[.,]\d{2})/i,
+        /TOTAL\s+DU\s+(?:PHP\s*)?(\d{1,3}(?:,\d{3})*[.,]\d{2}|\d{1,6}[.,]\d{2})/i,
+        /AMOUNT\s+DUE\s+(?:PHP\s*)?(\d{1,3}(?:,\d{3})*[.,]\d{2}|\d{1,6}[.,]\d{2})/i
+    ];
+
+    for (const pattern of sameLinePatterns) {
+        const match = text.match(pattern);
+
+        if (match) {
+            const value = parseReceiptMoney(match[1]);
+
+            if (value > 0) {
+                return value;
+            }
+        }
+    }
+
+    for (let index = 0; index < lines.length; index++) {
+        const upper = lines[index].toUpperCase();
+
+        if (
+            upper.includes("TOTAL DUE") ||
+            upper.includes("TOTAL DU") ||
+            upper.includes("AMOUNT DUE")
+        ) {
+            const sameLineValue = extractAnyReceiptMoney(lines[index]);
+
+            if (sameLineValue > 0) {
+                return sameLineValue;
+            }
+
+            for (let offset = 1; offset <= 6; offset++) {
+                const nextLine = lines[index + offset];
+
+                if (!nextLine) continue;
+
+                const nextUpper = nextLine.toUpperCase();
+
+                if (
+                    nextUpper.includes("CASH") ||
+                    nextUpper.includes("CHANGE") ||
+                    nextUpper.includes("VATABLE") ||
+                    nextUpper.includes("VAT AMOUNT") ||
+                    nextUpper.includes("ZERO-RATED") ||
+                    nextUpper.includes("VAT-EXEMPT")
+                ) {
+                    break;
+                }
+
+                const value = extractAnyReceiptMoney(nextLine);
+
+                if (value > 0) {
+                    return value;
+                }
+            }
+        }
+    }
+
+    /*
+        Do not fall back to receipt.total/subtotal here.
+        That value may already be the wrong subtotal from shifted item prices.
+    */
+    return 0;
+}
+
+function getReceiptStoreNameForMatcher(receipt) {
+    return String(
+        receipt?.storeName ||
+        receipt?.store?.name ||
+        receipt?.store?.storeName ||
+        receipt?.store ||
+        "Savemore"
+    );
+}
+
+function normalizeScannerProductKey(value) {
+    if (
+        window.KabalikatProductMatcher &&
+        typeof window.KabalikatProductMatcher.normalize === "function"
+    ) {
+        return window.KabalikatProductMatcher.normalize(value);
+    }
+
+    return String(value || "")
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, "");
+}
+
+function roundMoney(value) {
+    return Math.round(Number(value || 0) * 100) / 100;
+}
 
 window.handleMlKitOcrResult = handleMlKitOcrResult;
 
@@ -504,7 +1839,10 @@ function isNonProductDetectedItem(item) {
 function renderReview(receipt, rawText) {
     const parsedItems = Array.isArray(receipt.items) ? receipt.items : [];
 
-    currentDetectedItems = parsedItems.filter(item => !isNonProductDetectedItem(item));
+    currentDetectedItems = dedupeAndSortReceiptItems(
+        parsedItems.filter(item => !isNonProductDetectedItem(item)),
+        rawText
+    );
     currentReceiptAdjustment = calculateReceiptAdjustment(rawText, currentDetectedItems);
 
     const receiptPaper = document.getElementById("receiptPaper");
