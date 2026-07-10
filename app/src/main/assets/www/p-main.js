@@ -63,10 +63,12 @@ function parseKabalikatReceipt(rawText, receiptImage = "", options = {}) {
 
     const subtotal = items.reduce((sum, item) => sum + Number(item.price || 0), 0);
 
+    const isMercuryReceipt = store.id === "mercury";
+
     return {
         store,
-        receiptNumber: utils.extractReceiptNumber(rawText),
-        receiptDate: utils.extractReceiptDate(rawText),
+        receiptNumber: isMercuryReceipt ? "-" : utils.extractReceiptNumber(rawText),
+        receiptDate: isMercuryReceipt ? "-" : utils.extractReceiptDate(rawText),
         items,
         subtotal
     };

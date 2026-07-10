@@ -93,6 +93,30 @@ body[data-page="home"] {
     box-shadow: var(--soft-shadow);
 }
 
+.home-pet-button {
+    width: 58px;
+    height: 58px;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    display: grid;
+    place-items: center;
+}
+
+.home-pet-button img {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+    display: block;
+    border-radius: 18px;
+    filter: drop-shadow(0 8px 12px rgba(92, 83, 78, 0.10));
+}
+
+.home-pet-button:active {
+    transform: scale(0.94);
+}
+
 .home-role-row {
     margin-top: 20px;
     display: flex;

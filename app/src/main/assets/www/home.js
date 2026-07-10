@@ -3,6 +3,18 @@ let homeCurrentEventIndex = 0;
 let homeCurrentEvents = [];
 let expandedFamilyMemberIndex = -1;
 
+const KABALIKAT_PET_KEY = "kabalikat_pet_state_v1";
+
+const defaultPetState = {
+    ownerName: "Elena",
+    pigName: "Porky",
+    equippedIcon: "images/icon1.png",
+    level: 1,
+    exp: 80,
+    streak: 3,
+    mood: "Happy"
+};
+
 const homeText = {
     en: {
         language: "English",
@@ -252,7 +264,6 @@ function renderHomeDashboard() {
     setText("homeRemainingLabel", homeText[homeCurrentLanguage].remaining);
     setText("homeRemainingAmount", peso(sampleDashboard.remaining));
 
-    setText("languageLabel", homeText[homeCurrentLanguage].language);
 
     setText("debtHeading", homeText[homeCurrentLanguage].debtSummary);
     setText("debtViewAll", homeText[homeCurrentLanguage].viewAll);
@@ -289,11 +300,12 @@ function renderHomeDashboard() {
     renderTransactions(sampleDashboard.expenses);
 
     homeCurrentEvents = sampleDashboard.events;
+    renderHomePetIcon();
     renderEventCarousel();
 }
 
 function bindHomeActions() {
-    const languageButton = document.getElementById("homeLanguageButton");
+    const petButton = document.getElementById("homePetButton");
     const scanButton = document.getElementById("navScan");
 
     const actionButtons = [
@@ -311,11 +323,9 @@ function bindHomeActions() {
         "eventsViewAll"
     ];
 
-    if (languageButton) {
-        languageButton.addEventListener("click", () => {
-            homeCurrentLanguage = homeCurrentLanguage === "en" ? "tl" : "en";
-            localStorage.setItem("kabalikat_language", homeCurrentLanguage);
-            renderHomeDashboard();
+    if (petButton) {
+        petButton.addEventListener("click", () => {
+            window.location.href = "farm.html";
         });
     }
 
@@ -334,6 +344,33 @@ function bindHomeActions() {
             });
         }
     });
+}
+
+function getPetState() {
+    try {
+        const saved = localStorage.getItem(KABALIKAT_PET_KEY);
+
+        if (!saved) {
+            localStorage.setItem(KABALIKAT_PET_KEY, JSON.stringify(defaultPetState));
+            return { ...defaultPetState };
+        }
+
+        return {
+            ...defaultPetState,
+            ...JSON.parse(saved)
+        };
+    } catch (error) {
+        return { ...defaultPetState };
+    }
+}
+
+function renderHomePetIcon() {
+    const pet = getPetState();
+    const icon = document.getElementById("homePetIcon");
+
+    if (icon) {
+        icon.src = pet.equippedIcon || "images/icon1.png";
+    }
 }
 
 function renderQuickActions() {

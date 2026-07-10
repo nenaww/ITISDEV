@@ -575,9 +575,9 @@ body[data-page="scanner"] {
 }
 
 .receipt-total-row {
-    margin-top: 10px;
-    padding-top: 0;
-    border-top: none;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed rgba(92, 83, 78, 0.18);
     display: flex;
     justify-content: space-between;
     align-items: center;
