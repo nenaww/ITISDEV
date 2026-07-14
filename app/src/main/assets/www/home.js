@@ -307,19 +307,14 @@ function renderHomeDashboard() {
 function bindHomeActions() {
     const petButton = document.getElementById("homePetButton");
     const scanButton = document.getElementById("navScan");
-
+    const expenseButtons = ["quickAddExpense", "navExpenses", "homeBudgetViewButton", "overviewFilter", "transactionsViewAll"];
     const actionButtons = [
-        "quickAddExpense",
         "quickBills",
         "quickMembers",
-        "navExpenses",
         "navBills",
         "navProfile",
-        "homeBudgetViewButton",
         "debtViewAll",
-        "overviewFilter",
         "familySpendingViewAll",
-        "transactionsViewAll",
         "eventsViewAll"
     ];
 
@@ -334,6 +329,16 @@ function bindHomeActions() {
             window.location.href = "scanner.html";
         });
     }
+
+    expenseButtons.forEach(id => {
+        const button = document.getElementById(id);
+
+        if (button) {
+            button.addEventListener("click", () => {
+                window.location.href = "expenses.html";
+            });
+        }
+    });
 
     actionButtons.forEach(id => {
         const button = document.getElementById(id);

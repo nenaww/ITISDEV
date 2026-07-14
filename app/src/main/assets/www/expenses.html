@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KABALIKAT Expenses</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="expenses.css">
+</head>
+<body data-page="expenses">
+
+<main class="expenses-page">
+    <div class="expenses-scroll-area">
+
+        <header class="expenses-header">
+            <h1>Expenses</h1>
+            <button id="openAddExpense" class="expenses-add-top" type="button">
+                <i class="bi bi-plus-lg"></i>
+                <span>Add Expense</span>
+            </button>
+        </header>
+
+        <section class="period-section" aria-label="Period selection">
+            <button id="periodPicker" class="period-picker" type="button" aria-label="Choose month and year">
+                <span id="periodPickerText">July 2026</span>
+                <i class="bi bi-calendar3"></i>
+            </button>
+        </section>
+
+        <section class="budget-overview-section" aria-label="Monthly spending progress">
+            <h2 class="budget-overview-title">Budget Overview</h2>
+            <div class="budget-gauge-card">
+            <div class="budget-gauge-wrap">
+                <svg class="budget-gauge-svg" viewBox="0 0 320 210" aria-hidden="true">
+                    <path id="budgetGaugeTextArc" class="budget-gauge-text-arc" d="M38 154 A122 122 0 0 1 282 154"></path>
+                    <text class="budget-gauge-curve-text">
+                        <textPath id="budgetCurveLabel" href="#budgetGaugeTextArc" startOffset="50%" text-anchor="middle">Overall Spent: 23%</textPath>
+                    </text>
+                    <path class="budget-gauge-track" pathLength="100" d="M50 170 A110 110 0 0 1 270 170"></path>
+                    <path id="budgetGaugeProgress" class="budget-gauge-progress" pathLength="100" d="M50 170 A110 110 0 0 1 270 170"></path>
+                </svg>
+
+                <div class="budget-gauge-center">
+                    <strong id="remainingMoneyInfo">₱19,150</strong>
+                    <span>left this month</span>
+                </div>
+
+                <div class="budget-gauge-label budget-gauge-label-left">
+                    <span>Spent</span>
+                    <strong id="totalSpent">₱5,850</strong>
+                </div>
+
+                <div class="budget-gauge-label budget-gauge-label-right">
+                    <span>Budget</span>
+                    <strong id="budgetAmount">₱25,000</strong>
+                </div>
+            </div>
+            </div>
+        </section>
+
+        <section class="expense-section seasonal-finance-section">
+            <div class="seasonal-finance-grid">
+                <article class="seasonal-card seasonal-overview-card">
+                    <div class="seasonal-card-head">
+                        <div>
+                            <h2>Seasonal Spending</h2>
+                            <p id="seasonalSummaryText">₱0 spent</p>
+                        </div>
+                        <button id="openSeasonalPanel" type="button">View All</button>
+                    </div>
+
+                    <div class="seasonal-progress-bar">
+                        <span id="seasonalProgressFill"></span>
+                    </div>
+                    <p id="seasonalActiveLabel" class="seasonal-subtext">Active this month</p>
+
+                    <div id="seasonalMiniPlans" class="seasonal-mini-plans"></div>
+                </article>
+
+                <article class="seasonal-card thirteenth-card">
+                    <div class="seasonal-card-head">
+                        <div>
+                            <h2>13th Month Pay</h2>
+                            <p id="thirteenthStatusText">Status</p>
+                        </div>
+                        <button id="openThirteenthPanel" type="button">View</button>
+                    </div>
+
+                    <div class="thirteenth-main-row">
+                        <div>
+                            <strong id="thirteenthReceivedMain">Not yet</strong>
+                            <small id="thirteenthRemainingSummary">Create an allocation plan after receiving</small>
+                        </div>
+                    </div>
+
+                    <div id="thirteenthActions" class="thirteenth-action-list" hidden></div>
+                </article>
+            </div>
+        </section>
+
+        <section class="expense-section">
+            <div class="section-heading">
+                <h2>Category Breakdown</h2>
+                <button id="openCategoryBreakdown" type="button">View All</button>
+            </div>
+
+            <div class="category-card category-grid-card">
+                <div id="categoryLegend" class="category-legend category-grid"></div>
+            </div>
+        </section>
+
+        <section class="expense-section household-section">
+            <div class="section-heading">
+                <h2>Household Spending</h2>
+            </div>
+
+            <div id="householdSpendingList" class="household-spending-list"></div>
+        </section>
+
+    </div>
+
+    <nav class="expenses-bottom-nav">
+        <button id="navHome" type="button">
+            <i class="bi bi-house"></i>
+            <span>Home</span>
+        </button>
+
+        <button class="active" type="button">
+            <i class="bi bi-receipt"></i>
+            <span>Expenses</span>
+        </button>
+
+        <button id="navScan" class="expenses-nav-scan" type="button" aria-label="Scan receipt">
+            <i class="bi bi-upc-scan"></i>
+        </button>
+
+        <button id="navBills" type="button">
+            <i class="bi bi-calendar-check"></i>
+            <span>Bills</span>
+        </button>
+
+        <button id="navProfile" type="button">
+            <i class="bi bi-person"></i>
+            <span>Profile</span>
+        </button>
+    </nav>
+</main>
+
+<div id="sheetBackdrop" class="sheet-backdrop" hidden></div>
+
+<section id="periodSheet" class="bottom-sheet" hidden aria-modal="true">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">
+        <h2>Select Month</h2>
+        <button data-close-sheet type="button"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <div class="month-year-picker-groups">
+        <div>
+            <h3 class="sheet-group-title">Year</h3>
+            <div id="periodYearOptions" class="period-options period-year-options"></div>
+        </div>
+        <div>
+            <h3 class="sheet-group-title">Month</h3>
+            <div id="periodOptions" class="period-options period-month-options"></div>
+        </div>
+    </div>
+
+    <div class="sheet-actions">
+        <button data-close-sheet class="secondary" type="button">Cancel</button>
+        <button id="applyPeriod" class="primary" type="button">Apply</button>
+    </div>
+</section>
+
+<section id="allExpensesPanel" class="full-panel" hidden>
+    <header>
+        <button data-close-panel type="button"><i class="bi bi-arrow-left"></i></button>
+        <h2>All Expenses</h2>
+        <button id="allExpensesOpenPeriod" type="button"><i class="bi bi-calendar3"></i></button>
+    </header>
+
+    <div class="panel-content">
+        <label class="search-box">
+            <i class="bi bi-search"></i>
+            <input id="expenseSearch" type="search" placeholder="Search expenses...">
+        </label>
+
+        <div id="allExpenseCategories" class="inline-chips"></div>
+        <div id="allExpensesList" class="expense-list"></div>
+    </div>
+</section>
+
+<section id="categoryBreakdownPanel" class="full-panel" hidden>
+    <header>
+        <button data-close-panel type="button"><i class="bi bi-arrow-left"></i></button>
+        <h2>Category Breakdown</h2>
+        <button id="categoryPanelOpenPeriod" type="button"><i class="bi bi-calendar3"></i></button>
+    </header>
+
+    <div class="panel-content">
+        <div class="category-panel-summary">
+            <span id="categoryPanelPeriodLabel">July 2026</span>
+            <strong id="categoryPanelTotal">₱5,850</strong>
+            <p>Total spent across all categories</p>
+        </div>
+
+        <div id="breakdownFilterChips" class="inline-chips"></div>
+        <div class="panel-subheading">
+            <h3>Categories</h3>
+            <span>Tap a card for details</span>
+        </div>
+        <div id="categoryListCards" class="category-list-cards"></div>
+    </div>
+</section>
+
+<section id="categoryDetailsPanel" class="full-panel" hidden>
+    <header>
+        <button data-close-panel type="button"><i class="bi bi-arrow-left"></i></button>
+        <h2 id="categoryDetailsTitle">Category Details</h2>
+        <button id="categoryDetailsOpenPeriod" type="button"><i class="bi bi-calendar3"></i></button>
+    </header>
+
+    <div id="categoryDetailsContent" class="panel-content"></div>
+</section>
+
+<section id="memberDetailsPanel" class="full-panel" hidden>
+    <header>
+        <button data-close-panel type="button"><i class="bi bi-arrow-left"></i></button>
+        <h2>Member Details</h2>
+        <button id="memberDetailsCalendar" type="button"><i class="bi bi-calendar3"></i></button>
+    </header>
+    <div id="memberDetailsContent" class="panel-content"></div>
+</section>
+
+<section id="seasonalSpendingPanel" class="full-panel" hidden>
+    <header>
+        <button data-close-panel type="button"><i class="bi bi-arrow-left"></i></button>
+        <h2>Seasonal Spending</h2>
+        <button id="seasonalInfoBtn" type="button"><i class="bi bi-info-circle"></i></button>
+    </header>
+
+    <div class="panel-content">
+        <section class="seasonal-panel-summary">
+            <span id="seasonalPanelPeriod">Current season</span>
+            <strong id="seasonalPanelTotalSpent">₱0</strong>
+            <p><span id="seasonalPanelTotalBudget">₱0</span> total planned budget</p>
+            <div class="seasonal-progress-bar large"><span id="seasonalPanelProgressFill"></span></div>
+        </section>
+
+        <div class="panel-subheading">
+            <h3>This Month's Plans</h3>
+            <span>Tap a plan for details</span>
+        </div>
+        <div id="seasonalPlanList" class="seasonal-plan-list"></div>
+        <button id="addCustomSeasonalPlan" class="custom-seasonal-plan-button" type="button">
+            <i class="bi bi-plus-lg"></i> Add Custom Seasonal Plan
+        </button>
+
+        <div class="panel-subheading">
+            <h3>Recent Seasonal Expenses</h3>
+            <button id="openSeasonalExpenses" class="subtle-link" type="button">View All</button>
+        </div>
+        <div id="seasonalRecentExpenses" class="expense-list"></div>
+    </div>
+</section>
+
+<section id="seasonalPlanDetailsPanel" class="full-panel" hidden>
+    <header>
+        <button data-close-panel type="button"><i class="bi bi-arrow-left"></i></button>
+        <h2 id="seasonalPlanTitle">Seasonal Plan</h2>
+        <button id="seasonalPlanInfoBtn" type="button"><i class="bi bi-info-circle"></i></button>
+    </header>
+    <div id="seasonalPlanDetailsContent" class="panel-content"></div>
+</section>
+
+<section id="thirteenthMonthPanel" class="full-panel" hidden>
+    <header>
+        <button data-close-panel type="button"><i class="bi bi-arrow-left"></i></button>
+        <h2>13th Month Pay</h2>
+        <button id="thirteenthInfoBtn" type="button"><i class="bi bi-info-circle"></i></button>
+    </header>
+
+    <div class="panel-content">
+        <section class="thirteenth-panel-hero">
+            <div>
+                <span>13th Month Pay</span>
+                <strong id="thirteenthHeroAmount">₱0</strong>
+                <p id="thirteenthHeroDate">Received on Dec 15, 2026</p>
+            </div>
+            <div class="thirteenth-gift-icon large"><i class="bi bi-gift"></i></div>
+        </section>
+
+        <div class="thirteenth-summary-grid">
+            <article>
+                <span>Allocated</span>
+                <strong id="thirteenthGridAllocated">₱0</strong>
+                <small id="thirteenthGridAllocatedPct">0%</small>
+            </article>
+            <article>
+                <span>Spent</span>
+                <strong id="thirteenthGridSpent">₱0</strong>
+                <small id="thirteenthGridSpentPct">0%</small>
+            </article>
+            <article>
+                <span>Remaining</span>
+                <strong id="thirteenthGridRemaining">₱0</strong>
+                <small id="thirteenthGridRemainingPct">0%</small>
+            </article>
+        </div>
+
+        <div class="panel-subheading">
+            <h3>Allocation Plan</h3>
+            <span>How your 13th month pay is distributed</span>
+        </div>
+        <div id="thirteenthAllocationList" class="allocation-list"></div>
+    </div>
+</section>
+
+<section id="addExpensePanel" class="full-panel" hidden>
+    <header>
+        <button data-close-panel type="button"><i class="bi bi-x-lg"></i></button>
+        <h2>Add Expense</h2>
+        <button id="saveExpenseTop" class="header-save" type="button"><i class="bi bi-check-lg"></i></button>
+    </header>
+
+    <form id="addExpenseForm" class="panel-content add-form">
+        <div>
+            <label class="field-label">Category</label>
+            <div id="addCategoryPicker" class="add-category-picker"></div>
+        </div>
+
+        <label class="form-field">
+            <span>Amount</span>
+            <div class="amount-input">
+                <b>₱</b>
+                <input id="newExpenseAmount" type="number" min="0" step="0.01" placeholder="0.00" required>
+            </div>
+        </label>
+
+        <label class="form-field">
+            <span>Description</span>
+            <textarea id="newExpenseDescription" placeholder="Enter description" required></textarea>
+        </label>
+
+        <label class="form-field">
+            <span>Date</span>
+            <input id="newExpenseDate" type="date" required>
+        </label>
+
+        <label class="form-field">
+            <span>Paid by</span>
+            <select id="newExpensePayer">
+                <option>Elena</option>
+                <option>Ana</option>
+                <option>Marco</option>
+                <option>Lolo Ben</option>
+            </select>
+        </label>
+
+        <label class="form-field">
+            <span>Seasonal plan (optional)</span>
+            <select id="newExpenseSeasonalPlan">
+                <option value="">Not seasonal</option>
+            </select>
+        </label>
+
+        <label class="form-field">
+            <span>Notes (optional)</span>
+            <textarea id="newExpenseNotes" placeholder="Add any notes..."></textarea>
+        </label>
+
+        <button class="save-expense-button" type="submit">Save Expense</button>
+    </form>
+</section>
+
+<div id="expenseToast" class="expense-toast"></div>
+
+<script src="expenses.js"></script>
+</body>
+</html>
