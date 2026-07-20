@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - KABALIKAT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="register">
+
+<main class="phone-page auth-page scroll-page">
+
+    <header class="top-header">
+        <button class="back-icon" type="button" onclick="goToPage('index.html')">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+
+        <button class="language-pill" type="button" onclick="toggleLanguage()">
+            <i class="bi bi-translate"></i>
+            <span id="languageLabel">English</span>
+        </button>
+    </header>
+
+    <section class="auth-content">
+        <div class="auth-heading">
+            <h1 id="registerTitle">Create Account</h1>
+            <p id="registerSubtitle">Create or join a family budgeting space.</p>
+        </div>
+
+        <form id="registerForm" class="form-card">
+            <label for="regName" id="nameLabel">Full Name</label>
+            <div class="input-box">
+                <i class="bi bi-person"></i>
+                <input id="regName" type="text" placeholder="Enter your full name" required>
+            </div>
+
+            <label for="regEmail" id="regEmailLabel">Email</label>
+            <div class="input-box">
+                <i class="bi bi-envelope"></i>
+                <input id="regEmail" type="email" placeholder="example@email.com" required>
+            </div>
+
+            <label for="regPassword" id="regPasswordLabel">Password</label>
+            <div class="input-box">
+                <i class="bi bi-lock"></i>
+                <input id="regPassword" type="password" placeholder="At least 6 characters" minlength="6" required>
+                <button type="button" class="eye-button" onclick="togglePassword('regPassword', this)">
+                    <i class="bi bi-eye"></i>
+                </button>
+            </div>
+
+            <label for="regConfirmPassword" id="confirmPasswordLabel">Confirm Password</label>
+            <div class="input-box">
+                <i class="bi bi-shield-lock"></i>
+                <input id="regConfirmPassword" type="password" placeholder="Re-enter password" minlength="6" required>
+                <button type="button" class="eye-button" onclick="togglePassword('regConfirmPassword', this)">
+                    <i class="bi bi-eye"></i>
+                </button>
+            </div>
+
+            <label id="roleLabel">Account Role</label>
+            <div class="role-selector">
+                <button type="button" id="headRoleBtn" class="role-option active" onclick="selectRole('head')">
+                    <i class="bi bi-person-badge"></i>
+                    <span id="headRoleText">Household Head</span>
+                </button>
+
+                <button type="button" id="memberRoleBtn" class="role-option" onclick="selectRole('member')">
+                    <i class="bi bi-people"></i>
+                    <span id="memberRoleText">Family Member</span>
+                </button>
+            </div>
+
+            <div id="headFields" class="conditional-fields active">
+                <label for="familyName" id="familyNameLabel">Family Name</label>
+                <div class="input-box">
+                    <i class="bi bi-house"></i>
+                    <input id="familyName" type="text" placeholder="Dela Cruz Family">
+                </div>
+
+                <label for="monthlyBudget" id="budgetLabel">Total Monthly Budget</label>
+                <div class="input-box">
+                    <i class="bi bi-cash-stack"></i>
+                    <input id="monthlyBudget" type="number" placeholder="25000" min="1">
+                </div>
+            </div>
+
+            <div id="memberFields" class="conditional-fields">
+                <label for="joinFamilyCode" id="familyCodeLabel">Family Code</label>
+                <div class="input-box">
+                    <i class="bi bi-key"></i>
+                    <input id="joinFamilyCode" type="text" placeholder="KABA-4821">
+                </div>
+
+                <p class="helper-text" id="familyCodeHelper">
+                    Ask the household head for the family code.
+                </p>
+            </div>
+
+            <button class="main-button form-button" type="submit" id="signupButton">Sign up</button>
+        </form>
+    </section>
+
+    <footer class="auth-footer">
+        <p class="bottom-text">
+            <span id="alreadyAccountText">Already have an account?</span>
+            <button type="button" onclick="goToPage('login.html')" id="signinLinkText">Sign in</button>
+        </p>
+    </footer>
+
+    <div id="toast" class="toast"></div>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

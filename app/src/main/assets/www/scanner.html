@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KABALIKAT Scanner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="scanner.css">
+</head>
+
+<body data-page="scanner">
+
+<main class="scanner-page">
+
+    <div class="scanner-scroll-area">
+
+        <section id="scanView" class="scan-view active">
+            <section class="scan-camera-screen">
+
+                <button id="scanBackBtn" class="scan-back-button" type="button" aria-label="Go back">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+
+                <section id="scannerCameraCard" class="scanner-camera-card">
+                    <video id="cameraPreview" autoplay playsinline muted></video>
+
+                    <div id="scannerOverlay" class="scanner-overlay">
+                        <span class="scan-corner top-left"></span>
+                        <span class="scan-corner top-right"></span>
+                        <span class="scan-corner bottom-left"></span>
+                        <span class="scan-corner bottom-right"></span>
+
+                        <div class="scan-line"></div>
+
+                        <div id="scanInstruction" class="scan-instruction">
+                            Position the receipt inside the frame
+                        </div>
+                    </div>
+
+                    <div id="cameraPlaceholder" class="camera-placeholder">
+                        <i class="bi bi-camera-video-off"></i>
+                        <strong>Camera unavailable</strong>
+                        <span>Use receipt upload below.</span>
+                    </div>
+                </section>
+
+                <section class="scan-controls">
+                    <label class="scan-action-button upload-action">
+                        <i class="bi bi-cloud-arrow-up"></i>
+                        <span>UPLOAD</span>
+                        <input id="receiptUpload" type="file" accept="image/*">
+                    </label>
+
+                    <button id="captureScanBtn" class="scan-action-button capture-action" type="button">
+                        <i class="bi bi-camera"></i>
+                        <span>Capture</span>
+                    </button>
+                </section>
+
+                <p class="scanner-tip-text">
+                    <strong>Tip:</strong> Make sure the receipt is flat, clear, and well-lit for better item detection.
+                </p>
+
+            </section>
+        </section>
+
+        <section id="reviewView" class="review-view">
+            <header class="scanner-title-area review-heading">
+                <h1>Review Receipt</h1>
+                <p>Review and confirm your expenses</p>
+            </header>
+
+            <section id="receiptPaper" class="receipt-paper" data-store="unknown">
+                <div class="receipt-teeth"></div>
+
+                <div class="receipt-brand-area">
+                    <div class="receipt-logo-box">
+                        <img id="storeLogoImage" src="" alt="Store logo">
+                        <i id="storeLogoFallback" class="bi bi-shop"></i>
+                    </div>
+
+                    <h2 id="storeNameText">Unknown Store</h2>
+                    <p id="storeSubText">Detected receipt</p>
+                </div>
+
+                <div class="receipt-meta-grid">
+                    <div>
+                        <span>Receipt No.</span>
+                        <strong id="receiptNumberText">N/A</strong>
+                    </div>
+
+                    <div>
+                        <span>Date</span>
+                        <strong id="receiptDateText">N/A</strong>
+                    </div>
+
+                    <div>
+                        <span>Items</span>
+                        <strong id="itemCountText">0 items</strong>
+                    </div>
+                </div>
+
+                <div class="receipt-table-header">
+                    <span>QTY</span>
+                    <span>ITEM</span>
+                    <span>PRICE</span>
+                </div>
+
+                <div id="detectedItemsList" class="receipt-items-list"></div>
+
+                <section id="receiptAdjustmentSummary" class="receipt-adjustment-summary hidden">
+                    <div class="receipt-breakdown-row">
+                        <span>Product Subtotal</span>
+                        <strong id="productSubtotalText">₱0.00</strong>
+                    </div>
+
+                    <div id="discountAdjustmentRow" class="receipt-breakdown-row discount-row hidden">
+                        <span id="discountAdjustmentLabel">Receipt Discount</span>
+                        <strong id="discountAdjustmentAmount">-₱0.00</strong>
+                    </div>
+                </section>
+
+                <div class="receipt-total-row">
+                    <span>Total Amount</span>
+                    <strong id="totalSubtotalText">₱0.00</strong>
+                </div>
+
+                <div class="receipt-bottom-teeth"></div>
+            </section>
+
+            <section class="receipt-attach-note">
+                <i class="bi bi-image"></i>
+                <span>The receipt image will be attached to each detected item for reference.</span>
+            </section>
+
+            <textarea id="rawTextOutput" class="raw-text-output" readonly></textarea>
+        </section>
+
+        <canvas id="captureCanvas"></canvas>
+
+    </div>
+
+    <section id="reviewActionBar" class="review-action-bar hidden">
+        <button id="rescanBtn" class="review-secondary-button" type="button">
+            <i class="bi bi-arrow-clockwise"></i>
+            <span>Scan Again</span>
+        </button>
+
+        <button id="saveExpensesBtn" class="review-primary-button" type="button">
+            <i class="bi bi-check-circle"></i>
+            <span>Save</span>
+        </button>
+    </section>
+
+    <section id="scanningModal" class="scanning-modal hidden">
+        <div class="scanning-modal-card">
+            <h2>Scanning Receipt</h2>
+            <p>Please wait while we read your receipt.</p>
+
+            <div class="mini-printer-wrap">
+                <div id="miniReceipt" class="mini-receipt">
+                    <div class="mini-receipt-teeth"></div>
+
+                    <div class="mini-receipt-logo">
+                        <span>KB</span>
+                    </div>
+
+                    <div class="mini-receipt-scribbles">
+                        <span class="scribble wide"></span>
+                        <span class="scribble medium"></span>
+                        <span class="scribble short"></span>
+                        <span class="scribble wide"></span>
+                        <span class="scribble medium"></span>
+                        <span class="scribble short"></span>
+                    </div>
+                </div>
+
+                <div class="mini-printer-body">
+                    <div id="scanPercentText" class="scan-percent-text">0%</div>
+
+                    <div class="mini-progress-track">
+                        <div id="miniProgressFill" class="mini-progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <small id="scanningModalText">Reading receipt text...</small>
+        </div>
+    </section>
+
+    <section id="deleteConfirmModal" class="delete-confirm-modal hidden">
+        <div class="delete-confirm-card">
+            <div class="delete-confirm-icon">
+                <i class="bi bi-trash"></i>
+            </div>
+
+            <h2>Delete item?</h2>
+            <p>This item will be removed from the detected receipt list.</p>
+
+            <div class="delete-confirm-actions">
+                <button id="cancelDeleteBtn" type="button">Cancel</button>
+                <button id="confirmDeleteBtn" type="button">Delete</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="invalidReceiptModal" class="invalid-receipt-modal hidden">
+        <div class="invalid-receipt-card">
+            <div class="invalid-receipt-icon">
+                <i class="bi bi-exclamation-circle"></i>
+            </div>
+
+            <h2>Not a receipt</h2>
+            <p>Please upload or capture a clear store receipt. Make sure the total, date, and item lines are visible.</p>
+
+            <button id="closeInvalidReceiptBtn" type="button">
+                Try Again
+            </button>
+        </div>
+    </section>
+
+    <div id="toast" class="toast"></div>
+
+</main>
+<script src="p-utils.js"></script>
+<script src="p-save.js"></script>
+<script src="p-mercury.js"></script>
+<script src="product-matcher.js"></script>
+<script src="p-main.js"></script>
+<script src="scanner.js"></script>
+</body>
+</html>

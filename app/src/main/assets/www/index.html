@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KABALIKAT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="welcome">
+
+<main class="phone-page welcome-page">
+
+    <div id="loginWarmTransition" class="warm-transition">
+        <div class="warm-heart">
+            <i class="bi bi-heart-fill"></i>
+        </div>
+    </div>
+
+    <header class="top-header">
+        <button class="logo-button" type="button">
+            <img src="images/logo.png" alt="KABALIKAT logo" onerror="this.style.display='none'">
+            <span>KABALIKAT</span>
+        </button>
+
+        <button class="language-pill" type="button" onclick="toggleLanguage()">
+            <i class="bi bi-translate"></i>
+            <span id="languageLabel">English</span>
+        </button>
+    </header>
+
+    <section class="welcome-content">
+        <div class="carousel-frame">
+            <img id="carouselImage" src="images/onboarding-1.png" alt="KABALIKAT illustration">
+
+            <div id="carouselFallback" class="carousel-fallback">
+                <div class="fallback-bubble">
+                    <i class="bi bi-house-heart-fill"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="welcome-copy">
+            <h1 id="welcomeTitle">Welcome to KABALIKAT!</h1>
+            <p id="welcomeSubtitle">
+                A simple family budgeting companion for shared household expenses.
+            </p>
+        </div>
+
+        <div class="carousel-dots">
+            <span id="dot0" class="active"></span>
+            <span id="dot1"></span>
+            <span id="dot2"></span>
+        </div>
+    </section>
+
+    <footer class="welcome-actions">
+        <button class="main-button" type="button" onclick="warmLoginTransition()">
+            <span id="loginButtonText">Log In</span>
+        </button>
+
+        <p class="bottom-text">
+            <span id="signupQuestion">Don’t have an account?</span>
+            <button type="button" onclick="goToPage('register.html')" id="signupLink">Signup</button>
+        </p>
+    </footer>
+
+    <div id="toast" class="toast"></div>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

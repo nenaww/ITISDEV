@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PIGGERY LEADERBOARD</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="farm.css">
+</head>
+
+<body data-page="farm">
+
+<main class="piggery-page">
+    <header class="piggery-header">
+        <button id="farmBackButton" class="piggery-icon-button" type="button" aria-label="Back">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+
+        <div class="piggery-title">
+            <h1>PIGGERY<br>LEADERBOARD</h1>
+            <p>Tap a pig to view its profile.</p>
+        </div>
+
+        <button id="openCustomizeButton" class="piggery-icon-button" type="button" aria-label="Edit pig">
+            <i class="bi bi-brush"></i>
+        </button>
+    </header>
+
+    <section class="piggery-farm-card">
+        <div id="farmRaceArea" class="farm-race-area"></div>
+    </section>
+
+    <section class="piggery-profile-card">
+        <div class="piggery-profile-main">
+            <div class="piggery-avatar-frame">
+                <img id="profilePigIcon" src="images/piggery/run1.png" alt="Your pig">
+            </div>
+
+            <div class="piggery-profile-info">
+                <span>Your Pig</span>
+                <h2 id="profilePigName">Porky</h2>
+                <p id="profilePigOwner">Elena • Head</p>
+            </div>
+        </div>
+
+        <div class="piggery-profile-stats">
+            <div class="profile-stat-line">
+                <span>Level</span>
+                <strong id="profilePigLevel">1</strong>
+            </div>
+
+            <div class="profile-exp-block">
+                <div class="profile-exp-top">
+                    <span>EXP</span>
+                    <strong id="profilePigExpText">80 / 500</strong>
+                </div>
+
+                <div class="profile-exp-track">
+                    <div id="profilePigExpFill" class="profile-exp-fill"></div>
+                </div>
+            </div>
+
+            <div class="profile-stat-line">
+                <span>Mood</span>
+                <strong id="profilePigMood">Happy</strong>
+            </div>
+
+            <div class="profile-streak-card">
+                <div class="profile-streak-icon">🔥</div>
+                <div>
+                    <strong id="profilePigStreak">3 day streak</strong>
+                    <p>Keep tracking to help your pig grow.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="piggery-accessories-card">
+        <div class="piggery-section-heading">
+            <div>
+                <span>Accessories</span>
+                <h2>Unlocked Items</h2>
+            </div>
+
+            <p id="profileAccessoryCount">6 / 6</p>
+        </div>
+
+        <div id="equippedAccessoryPreview" class="equipped-accessory-preview"></div>
+        <div id="accessoryPreviewGrid" class="accessory-preview-grid"></div>
+    </section>
+</main>
+
+<section id="customizeModal" class="customize-modal hidden">
+    <div class="customize-card">
+        <div class="customize-header">
+            <div>
+                <span>Edit Pig</span>
+                <h2>Customize Your Pig</h2>
+            </div>
+
+            <button id="closeCustomizeButton" type="button" aria-label="Close">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <label for="pigNameInput">Pig Name</label>
+        <div class="customize-input-box">
+            <i class="bi bi-pencil"></i>
+            <input id="pigNameInput" type="text" maxlength="18" placeholder="Enter pig name">
+        </div>
+
+        <div id="customizePigPreview" class="customize-pig-preview"></div>
+
+        <div class="accessory-group-block">
+            <div class="accessory-group-title">
+                <span>Hat</span>
+                <strong>Choose one</strong>
+            </div>
+            <div id="hatChoiceGrid" class="accessory-choice-grid"></div>
+        </div>
+
+        <div class="accessory-group-block">
+            <div class="accessory-group-title">
+                <span>Neck</span>
+                <strong>Choose one</strong>
+            </div>
+            <div id="neckChoiceGrid" class="accessory-choice-grid"></div>
+        </div>
+
+        <div class="accessory-group-block">
+            <div class="accessory-group-title">
+                <span>Eyewear</span>
+                <strong>Choose one</strong>
+            </div>
+            <div id="eyesChoiceGrid" class="accessory-choice-grid"></div>
+        </div>
+
+        <button id="saveCustomizeButton" class="customize-save-button" type="button">
+            Save Changes
+        </button>
+    </div>
+</section>
+
+<section id="pigProfileModal" class="pig-profile-modal hidden"></section>
+
+<div id="toast" class="toast"></div>
+
+<script src="farm.js"></script>
+</body>
+</html>

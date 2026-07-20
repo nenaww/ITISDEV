@@ -1,0 +1,299 @@
+.login-screen {
+    background: var(--primary-soft);
+}
+
+.login-page-shell {
+    background:
+        linear-gradient(
+            180deg,
+            #FFF1E8 0%,
+            #FFF7F2 24%,
+            #FFFDFB 54%,
+            #FFFFFF 100%
+        );
+    overflow-x: hidden;
+    position: relative;
+}
+
+.login-page-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 50% 18%, rgba(233, 139, 95, 0.12), transparent 34%),
+        linear-gradient(180deg, rgba(233, 139, 95, 0.08), transparent 34%);
+    pointer-events: none;
+    opacity: 1;
+}
+
+.login-top-header {
+    position: relative;
+    z-index: 8;
+}
+
+.login-top-header .back-icon {
+    background: rgba(255, 249, 245, 0.95);
+    color: var(--neutral-dark);
+    border: 1px solid rgba(92, 83, 78, 0.12);
+    box-shadow: 0 10px 24px rgba(92, 83, 78, 0.08);
+}
+
+.login-top-header .back-icon i {
+    color: var(--neutral-dark);
+    font-size: 22px;
+}
+
+.login-top-header .language-pill {
+    background: rgba(255, 249, 245, 0.95);
+    border: 1px solid rgba(92, 83, 78, 0.10);
+    color: var(--neutral);
+    box-shadow: 0 10px 24px rgba(92, 83, 78, 0.08);
+}
+
+/* HERO */
+
+.login-hero {
+    padding-top: 0;
+    margin-top: -28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 220px;
+    position: relative;
+    z-index: 4;
+}
+
+.roof-stage {
+    position: relative;
+    width: 430px;
+    height: 215px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    overflow: visible;
+}
+
+.roof-glow {
+    position: absolute;
+    top: 58px;
+    left: 50%;
+    width: 220px;
+    height: 126px;
+    border-radius: 999px;
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(233, 139, 95, 0.10) 0%,
+            rgba(255, 241, 232, 0.25) 48%,
+            rgba(255, 255, 255, 0) 78%
+        );
+    transform: translateX(-50%) scale(0.75);
+    opacity: 0;
+}
+
+.roof-arm {
+    position: absolute;
+    height: auto;
+    object-fit: contain;
+    opacity: 0;
+    transform-origin: center center;
+    filter: drop-shadow(0 8px 14px rgba(92, 83, 78, 0.05));
+}
+
+/* LEFT ARM */
+
+.roof-arm-left {
+    width: 230px;
+    left: -42px;
+    top: 32px;
+    transform: translateX(-72px) translateY(18px) rotate(-14deg) scale(0.74);
+}
+
+/* RIGHT ARM */
+
+.roof-arm-right {
+    width: 270px;
+    right: -48px;
+    top: -10px;
+    transform: translateX(72px) translateY(18px) rotate(14deg) scale(0.74);
+}
+
+/* PREVENT FIRST-FRAME FLASH */
+
+.login-preparing .roof-glow,
+.login-preparing .roof-arm,
+.login-preparing .login-auth-content {
+    opacity: 0;
+}
+
+/* FORM */
+
+.login-auth-content {
+    opacity: 0;
+    transform: translateY(0);
+    position: relative;
+    z-index: 6;
+    padding-top: 0;
+    margin-top: -28px;
+}
+
+.login-screen.login-intro-finished .login-auth-content {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.48s ease, transform 0.48s ease;
+}
+
+.login-heading {
+    text-align: center;
+}
+
+.login-heading h1 {
+    font-size: 30px;
+    margin-bottom: 0;
+}
+
+.login-heading p {
+    margin: 10px auto 0;
+    max-width: 330px;
+}
+
+.login-footer {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 4px);
+}
+
+.login-hero,
+.login-auth-content {
+    transform: translateY(-32px);
+}
+
+/* INPUTS */
+
+.login-screen .input-box {
+    background: #F7F1EE;
+    border: 1px solid rgba(92, 83, 78, 0.06);
+}
+
+.login-screen .input-box:focus-within {
+    background: var(--white);
+    border-color: rgba(233, 139, 95, 0.42);
+    box-shadow: 0 12px 24px rgba(233, 139, 95, 0.10);
+}
+
+.login-screen .input-box input {
+    color: var(--neutral-dark);
+}
+
+.login-screen .input-box input::placeholder {
+    color: var(--neutral-light);
+}
+
+.login-screen .input-box i,
+.login-screen .eye-button i {
+    color: var(--muted);
+}
+
+/* ANIMATION */
+
+.login-screen.login-warm-start .roof-glow {
+    animation: roofGlowIn 0.62s ease 0.08s forwards;
+}
+
+.login-screen.login-warm-start .roof-arm-left {
+    animation: armLeftIn 0.86s cubic-bezier(.22, .9, .2, 1) 0.14s forwards;
+}
+
+.login-screen.login-warm-start .roof-arm-right {
+    animation: armRightIn 0.86s cubic-bezier(.22, .9, .2, 1) 0.14s forwards;
+}
+
+.login-screen.login-warm-start .login-auth-content {
+    animation: loginFormIn 0.48s ease 0.84s forwards;
+}
+
+/* DIRECT LOGIN PAGE OPEN */
+
+.login-screen:not(.login-warm-start):not(.login-preparing) .roof-glow {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+.login-screen:not(.login-warm-start):not(.login-preparing) .roof-arm-left {
+    opacity: 1;
+    transform: translateX(0) translateY(0) rotate(18deg) scale(1);
+}
+
+.login-screen:not(.login-warm-start):not(.login-preparing) .roof-arm-right {
+    opacity: 1;
+    transform: translateX(0) translateY(0) rotate(-18deg) scale(1);
+}
+
+.login-screen:not(.login-warm-start):not(.login-preparing) .login-auth-content {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* KEYFRAMES */
+
+@keyframes roofGlowIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) scale(0.75);
+    }
+
+    65% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1.05);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
+}
+
+@keyframes armLeftIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-72px) translateY(18px) rotate(-14deg) scale(0.74);
+    }
+
+    58% {
+        opacity: 1;
+        transform: translateX(8px) translateY(-3px) rotate(20deg) scale(1.04);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0) translateY(0) rotate(18deg) scale(1);
+    }
+}
+
+@keyframes armRightIn {
+    0% {
+        opacity: 0;
+        transform: translateX(72px) translateY(18px) rotate(14deg) scale(0.74);
+    }
+
+    58% {
+        opacity: 1;
+        transform: translateX(-8px) translateY(-3px) rotate(-20deg) scale(1.04);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0) translateY(0) rotate(-18deg) scale(1);
+    }
+}
+
+@keyframes loginFormIn {
+    0% {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
