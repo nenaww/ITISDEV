@@ -309,14 +309,13 @@ function bindHomeActions() {
     const scanButton = document.getElementById("navScan");
     const expenseButtons = ["quickAddExpense", "navExpenses", "homeBudgetViewButton", "overviewFilter", "transactionsViewAll"];
     const actionButtons = [
-        "quickBills",
         "quickMembers",
-        "navBills",
         "navProfile",
         "debtViewAll",
         "familySpendingViewAll",
         "eventsViewAll"
     ];
+    const billsButtons = ["quickBills", "navBills"];
 
     if (petButton) {
         petButton.addEventListener("click", () => {
@@ -346,6 +345,16 @@ function bindHomeActions() {
         if (button) {
             button.addEventListener("click", () => {
                 showToast(homeText[homeCurrentLanguage].comingSoon);
+            });
+        }
+    });
+
+    billsButtons.forEach(id => {
+        const button = document.getElementById(id);
+
+        if (button) {
+            button.addEventListener("click", () => {
+                window.location.href = "bills.html";
             });
         }
     });

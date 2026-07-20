@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KABALIKAT Bills & Debt</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="bills.css">
+</head>
+<body data-page="bills">
+
+<main class="bills-page">
+    <div class="bills-scroll-area">
+        <header class="bills-header">
+            <div>
+                <h1>Bills &amp; Debt</h1>
+                <p>Manage your recurring bills and debt payments</p>
+            </div>
+
+            <div class="bills-header-actions">
+                <button id="openAddBill" class="bills-primary-action" type="button">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>Add Bill</span>
+                </button>
+                <button id="openAddDebt" class="bills-secondary-action" type="button">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>Add Debt</span>
+                </button>
+            </div>
+        </header>
+
+        <section class="bills-summary-card" aria-label="Monthly bills summary">
+            <div class="summary-top-row">
+                <div class="summary-amount-block">
+                    <span>Total Due This Month</span>
+                    <strong id="totalDueAmount">₱0</strong>
+                </div>
+
+                <div class="summary-paid-block">
+                    <div class="summary-paid-copy">
+                        <span>Paid</span>
+                        <strong id="paidCountText">0 of 0</strong>
+                    </div>
+                    <div class="summary-calendar-icon">
+                        <i class="bi bi-calendar3"></i>
+                    </div>
+                    <div class="summary-progress-track">
+                        <div id="paidProgressFill" class="summary-progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-type-grid">
+                <div>
+                    <span>Bills Due</span>
+                    <strong id="billsDueAmount">₱0</strong>
+                </div>
+                <div>
+                    <span>Debt Due</span>
+                    <strong id="debtDueAmount">₱0</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="bills-filter-row" aria-label="Bills filters">
+            <div class="bills-type-filter" role="group" aria-label="Filter by type">
+                <button class="active" type="button" data-type-filter="all">All</button>
+                <button type="button" data-type-filter="bill">Bills</button>
+                <button type="button" data-type-filter="debt">Debt</button>
+            </div>
+
+            <div class="bills-period-filters">
+                <label class="bills-select-pill">
+                    <span class="sr-only">Period type</span>
+                    <select id="periodScopeSelect">
+                        <option value="month">Month</option>
+                        <option value="year">Year</option>
+                        <option value="all">All</option>
+                    </select>
+                    <i class="bi bi-chevron-down"></i>
+                </label>
+
+                <label class="bills-select-pill period-value-pill">
+                    <span class="sr-only">Selected period</span>
+                    <select id="periodValueSelect"></select>
+                    <i class="bi bi-chevron-down"></i>
+                </label>
+            </div>
+        </section>
+
+        <section class="bills-section">
+            <div class="bills-section-heading">
+                <h2>Upcoming Payments</h2>
+                <button id="viewAllPayments" type="button">View All</button>
+            </div>
+
+            <div id="paymentsList" class="payments-list"></div>
+        </section>
+
+        <section class="bills-section debt-overview-section">
+            <div class="bills-section-heading simple-heading">
+                <h2>Debt Overview</h2>
+            </div>
+
+            <article class="debt-overview-card">
+                <div class="debt-overview-copy">
+                    <span>Owed to You</span>
+                    <strong id="owedToYouAmount">₱1,600</strong>
+                    <small><i class="bi bi-people"></i> From <b id="owedPeopleCount">2</b> people</small>
+                </div>
+
+                <div class="debt-overview-art" aria-hidden="true">
+                    <i class="bi bi-cash-coin"></i>
+                </div>
+
+                <button id="viewDebtDetails" type="button">
+                    <span>View Details</span>
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </article>
+        </section>
+    </div>
+
+    <nav class="bills-bottom-nav" aria-label="Main navigation">
+        <button id="navHome" type="button">
+            <i class="bi bi-house"></i>
+            <span>Home</span>
+        </button>
+        <button id="navExpenses" type="button">
+            <i class="bi bi-receipt"></i>
+            <span>Expenses</span>
+        </button>
+        <button id="navScan" class="bills-nav-scan" type="button" aria-label="Scan receipt">
+            <i class="bi bi-upc-scan"></i>
+        </button>
+        <button class="active" type="button">
+            <i class="bi bi-calendar-check-fill"></i>
+            <span>Bills</span>
+        </button>
+        <button id="navProfile" type="button">
+            <i class="bi bi-person"></i>
+            <span>Profile</span>
+        </button>
+    </nav>
+</main>
+
+<section id="addBillDebtPanel" class="bill-full-panel" hidden>
+    <div class="bill-panel-scroll">
+        <header class="add-panel-header">
+            <button id="closeAddPanelTop" type="button" aria-label="Back to Bills and Debt">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <div>
+                <h2>Add Bill / Debt</h2>
+                <p>Create a recurring bill or track a debt payment</p>
+            </div>
+        </header>
+
+        <div class="entry-type-selector" role="group" aria-label="Entry type">
+            <button class="active" type="button" data-entry-type="bill">
+                <i class="bi bi-receipt"></i>
+                <span>Bill</span>
+            </button>
+            <button type="button" data-entry-type="debt">
+                <i class="bi bi-person"></i>
+                <span>Debt</span>
+            </button>
+        </div>
+
+        <form id="billDebtForm" class="bill-debt-form">
+            <fieldset class="bill-fieldset">
+                <legend id="entryNameLegend">Bill Name</legend>
+                <input id="entryName" type="text" placeholder="e.g., Electric Bill" required>
+            </fieldset>
+
+            <fieldset class="bill-fieldset">
+                <legend id="providerLegend">Provider / Payee</legend>
+                <input id="entryProvider" type="text" placeholder="e.g., Meralco" required>
+            </fieldset>
+
+            <fieldset class="bill-fieldset">
+                <legend>Amount</legend>
+                <div class="currency-input">
+                    <span>₱</span>
+                    <input id="entryAmount" type="number" min="0.01" step="0.01" placeholder="0.00" required>
+                </div>
+            </fieldset>
+
+            <fieldset class="bill-fieldset date-fieldset">
+                <legend>Due Date</legend>
+                <input id="entryDueDate" type="date" required>
+                <i class="bi bi-calendar3"></i>
+            </fieldset>
+
+            <fieldset class="bill-fieldset select-fieldset">
+                <legend>Category</legend>
+                <select id="entryCategory" required>
+                    <option value="">Select category</option>
+                    <option value="Utilities">Utilities</option>
+                    <option value="Housing">Housing</option>
+                    <option value="Internet">Internet</option>
+                    <option value="Subscription">Subscription</option>
+                    <option value="Loan">Loan</option>
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="Education">Education</option>
+                    <option value="Health">Health</option>
+                    <option value="Other">Other</option>
+                </select>
+                <i class="bi bi-chevron-down"></i>
+            </fieldset>
+
+            <div class="frequency-field">
+                <span>Frequency</span>
+                <div class="frequency-options" role="group" aria-label="Payment frequency">
+                    <button type="button" data-frequency="one-time">One-time</button>
+                    <button class="active" type="button" data-frequency="monthly">Monthly</button>
+                    <button type="button" data-frequency="weekly">Weekly</button>
+                </div>
+            </div>
+
+            <div class="settings-list">
+                <label class="setting-row">
+                    <span class="setting-icon reminder-icon"><i class="bi bi-bell"></i></span>
+                    <span class="setting-copy">
+                        <strong>Reminder</strong>
+                        <small>Notify me before the due date</small>
+                    </span>
+                    <input id="reminderToggle" class="switch-input" type="checkbox" checked>
+                    <span class="switch-control" aria-hidden="true"></span>
+                </label>
+
+                <label class="setting-row">
+                    <span class="setting-icon family-icon"><i class="bi bi-people"></i></span>
+                    <span class="setting-copy">
+                        <strong>Shared with Family <em>(optional)</em></strong>
+                        <small>Allow family members to view this item</small>
+                    </span>
+                    <input id="sharedToggle" class="switch-input" type="checkbox">
+                    <span class="switch-control" aria-hidden="true"></span>
+                </label>
+
+                <label class="notes-row">
+                    <span class="setting-icon notes-icon"><i class="bi bi-journal-text"></i></span>
+                    <span class="notes-field-wrap">
+                        <span>Notes <em>(optional)</em></span>
+                        <textarea id="entryNotes" placeholder="Add notes"></textarea>
+                    </span>
+                </label>
+            </div>
+
+            <div id="calendarConnectionNote" class="calendar-connection-note">
+                <i class="bi bi-google"></i>
+                <span>Reminder-enabled items will sync to Google Calendar after authorization.</span>
+            </div>
+
+            <div class="add-panel-actions">
+                <button id="cancelAddEntry" class="cancel-entry-button" type="button">Cancel</button>
+                <button id="saveEntryButton" class="save-entry-button" type="submit">Save Bill</button>
+            </div>
+        </form>
+    </div>
+
+    <nav class="bills-bottom-nav panel-bottom-nav" aria-label="Main navigation">
+        <button type="button" data-panel-nav="home">
+            <i class="bi bi-house"></i>
+            <span>Home</span>
+        </button>
+        <button type="button" data-panel-nav="expenses">
+            <i class="bi bi-receipt"></i>
+            <span>Expenses</span>
+        </button>
+        <button class="bills-nav-scan" type="button" data-panel-nav="scan" aria-label="Scan receipt">
+            <i class="bi bi-upc-scan"></i>
+        </button>
+        <button class="active" type="button">
+            <i class="bi bi-calendar-check-fill"></i>
+            <span>Bills</span>
+        </button>
+        <button type="button" data-panel-nav="profile">
+            <i class="bi bi-person"></i>
+            <span>Profile</span>
+        </button>
+    </nav>
+</section>
+
+<div id="billToast" class="bill-toast" role="status" aria-live="polite"></div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="bills.js"></script>
+</body>
+</html>
