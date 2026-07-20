@@ -189,7 +189,6 @@ function bindEvents() {
         renderThirteenthMonthPanel();
         openPanel('thirteenthMonthPanel');
     });
-    document.getElementById('openSeasonalExpenses').addEventListener('click', () => openPanel('allExpensesPanel'));
     document.getElementById('addCustomSeasonalPlan').addEventListener('click', createCustomSeasonalPlan);
     document.getElementById('memberDetailsCalendar').addEventListener('click', openPeriodSheet);
 
@@ -532,7 +531,7 @@ function renderCategoryDetails(categoryName) {
     setText('categoryDetailsTitle', `${categoryName} Details`);
 
     document.getElementById('categoryDetailsContent').innerHTML = `
-        <section class="category-summary" style="--category-soft:${escapeHtml(meta.soft)}">
+        <section class="category-summary" style="--category-soft:${escapeHtml(meta.soft)}; --category-accent:${escapeHtml(meta.color)}">
             <div class="category-summary-top">
                 <div class="category-summary-icon"><i class="bi ${escapeHtml(meta.icon)}"></i></div>
                 <div>
@@ -581,6 +580,15 @@ function getSeasonalPlanSpent(plan) {
         .filter(expense => expense.seasonalPlanId === plan.id)
         .reduce((sum, expense) => sum + Number(expense.amount || 0), 0);
     return tracked || Number(plan.spent || 0);
+}
+
+
+function getSeasonalDisplayPalette(planId) {
+    const paletteCycle = ['Food', 'Transportation', 'Debt', 'Utilities', 'Health', 'Rent'];
+    const relevantPlans = getRelevantSeasonalPlans();
+    const index = relevantPlans.findIndex(plan => String(plan.id) === String(planId));
+    const paletteKey = paletteCycle[(index >= 0 ? index : 0) % paletteCycle.length];
+    return EXPENSE_CATEGORIES[paletteKey] || EXPENSE_CATEGORIES.Other;
 }
 
 function getRelevantSeasonalPlans() {
@@ -661,20 +669,31 @@ function renderSeasonalOverview() {
 
 function renderSeasonalPanel() {
     const plans = getRelevantSeasonalPlans();
-    const totalBudget = plans.reduce((sum, plan) => sum + plan.budget, 0);
+    const totalBudget = plans.reduce((sum, plan) => sum + Number(plan.budget || 0), 0);
     const totalSpent = plans.reduce((sum, plan) => sum + getSeasonalPlanSpent(plan), 0);
     const ratio = totalBudget > 0 ? totalSpent / totalBudget : 0;
+
     setText('seasonalPanelPeriod', getSelectedPeriodLabel());
     setText('seasonalPanelTotalSpent', peso(totalSpent));
     setText('seasonalPanelTotalBudget', peso(totalBudget));
-    document.getElementById('seasonalPanelProgressFill').style.width = `${Math.min(ratio * 100, 100)}%`;
+
+    const summaryProgress = document.getElementById('seasonalPanelProgressFill');
+    if (summaryProgress) {
+        summaryProgress.style.width = `${Math.min(ratio * 100, 100)}%`;
+    }
 
     const list = document.getElementById('seasonalPlanList');
-    list.innerHTML = plans.map(plan => {
+    list.innerHTML = plans.map((plan) => {
         const planSpent = getSeasonalPlanSpent(plan);
         const percent = plan.budget > 0 ? Math.round((planSpent / plan.budget) * 100) : 0;
+        const displayPalette = getSeasonalDisplayPalette(plan.id);
+
         return `
-            <button class="seasonal-plan-card" type="button" data-seasonal-plan="${escapeHtml(plan.id)}">
+            <button
+                class="seasonal-plan-card"
+                type="button"
+                data-seasonal-plan="${escapeHtml(plan.id)}"
+                style="--plan-soft:${escapeHtml(displayPalette.soft)}; --plan-accent:${escapeHtml(displayPalette.color)}; --plan-percent:${percent};">
                 <div class="seasonal-plan-main">
                     <div class="seasonal-plan-icon"><i class="bi ${escapeHtml(plan.icon)}"></i></div>
                     <div>
@@ -682,14 +701,17 @@ function renderSeasonalPanel() {
                         <p>${escapeHtml(plan.range)}</p>
                     </div>
                 </div>
+
                 <div class="seasonal-plan-ring"><span>${percent}%</span></div>
+
                 <div class="seasonal-plan-values">
-                    <strong>${peso(planSpent)}</strong>
-                    <small>of ${peso(plan.budget)}</small>
+                    <strong>${peso(planSpent)} <small>spent</small></strong>
+                    <span>of ${peso(plan.budget)}</span>
                 </div>
             </button>
         `;
     }).join('') || '<p class="empty-state">No seasonal plans set for this month.</p>';
+
     list.querySelectorAll('[data-seasonal-plan]').forEach(button => {
         button.addEventListener('click', () => {
             state.selectedSeasonalPlanId = button.dataset.seasonalPlan;
@@ -699,79 +721,156 @@ function renderSeasonalPanel() {
     });
 
     const recent = document.getElementById('seasonalRecentExpenses');
-    recent.innerHTML = plans.flatMap(plan => plan.expenses).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 4).map(seasonalExpenseCard).join('') || '<p class="empty-state">No seasonal expenses yet.</p>';
+    const recentExpenses = plans
+        .flatMap(plan => plan.expenses)
+        .sort((first, second) => new Date(second.date) - new Date(first.date))
+        .slice(0, 5);
+
+    recent.innerHTML = recentExpenses.length
+        ? recentExpenses.map(seasonalExpenseCard).join('')
+        : '<p class="empty-state">No seasonal expenses yet.</p>';
 
     if (plans.length) {
         renderSeasonalPlanDetails();
     } else {
         setText('seasonalPlanTitle', 'Seasonal Plan');
         const details = document.getElementById('seasonalPlanDetailsContent');
+
         if (details) {
-            details.innerHTML = '<div class="seasonal-empty-state panel-empty"><span class="seasonal-empty-icon"><i class="bi bi-calendar2-heart"></i></span><div><strong>No seasonal plan selected</strong><small>Create a custom seasonal plan from the Seasonal Spending page.</small></div></div>';
+            details.innerHTML = `
+                <div class="seasonal-empty-state panel-empty">
+                    <span class="seasonal-empty-icon"><i class="bi bi-calendar2-heart"></i></span>
+                    <div>
+                        <strong>No seasonal plan selected</strong>
+                        <small>Create a custom seasonal plan from the Seasonal Spending page.</small>
+                    </div>
+                </div>
+            `;
         }
     }
 }
 
 
 function renderSeasonalPlanDetails() {
-    const plan = SEASONAL_PLANS.find(item => item.id === state.selectedSeasonalPlanId) || SEASONAL_PLANS[0];
+    const plan = SEASONAL_PLANS.find(item => item.id === state.selectedSeasonalPlanId);
+
+    if (!plan) {
+        return;
+    }
+
     const planSpent = getSeasonalPlanSpent(plan);
-        const percent = plan.budget > 0 ? Math.round((planSpent / plan.budget) * 100) : 0;
+    const percent = plan.budget > 0 ? Math.round((planSpent / plan.budget) * 100) : 0;
     const remaining = Math.max(plan.budget - planSpent, 0);
-    const totalCategories = plan.categories.reduce((sum, item) => sum + item.amount, 0);
+    const displayPalette = getSeasonalDisplayPalette(plan.id);
+
     setText('seasonalPlanTitle', `${plan.name} Details`);
-    document.getElementById('seasonalPlanDetailsContent').innerHTML = `
-        <section class="seasonal-detail-hero">
+
+    const container = document.getElementById('seasonalPlanDetailsContent');
+    container.innerHTML = `
+        <section class="seasonal-detail-hero" style="--plan-soft:${escapeHtml(displayPalette.soft)}; --plan-accent:${escapeHtml(displayPalette.color)}; --plan-ring:${escapeHtml(displayPalette.color)}; background:${escapeHtml(displayPalette.soft)};">
             <div class="seasonal-detail-head">
                 <div class="seasonal-plan-icon large"><i class="bi ${escapeHtml(plan.icon)}"></i></div>
-                <div>
+
+                <div class="seasonal-detail-copy">
                     <h3>${escapeHtml(plan.name)}</h3>
                     <p>${escapeHtml(plan.range)}</p>
                 </div>
-                <div class="seasonal-detail-ring"><span>${percent}%</span></div>
+
+                <button
+                    class="seasonal-add-inline"
+                    type="button"
+                    data-add-seasonal-expense
+                    aria-label="Add Seasonal Expense">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>Add</span>
+                </button>
             </div>
+
+            <div class="seasonal-progress-inline">
+                <div class="seasonal-progress-bar">
+                    <span style="width:${Math.min(percent, 100)}%"></span>
+                </div>
+                <strong>${percent}%</strong>
+            </div>
+
             <div class="seasonal-detail-stats">
-                <div><span>Budget</span><strong>${peso(plan.budget)}</strong></div>
-                <div><span>Spent</span><strong>${peso(planSpent)}</strong></div>
-                <div><span>Remaining</span><strong class="green">${peso(remaining)}</strong></div>
+                <div class="seasonal-stat-budget" style="background:#FFFFFF;">
+                    <span>Budget</span>
+                    <strong>${peso(plan.budget)}</strong>
+                </div>
+                <div class="seasonal-stat-spent" style="background:#FFFFFF;">
+                    <span>Spent</span>
+                    <strong>${peso(planSpent)}</strong>
+                </div>
+                <div class="seasonal-stat-remaining" style="background:#FFFFFF;">
+                    <span>Remaining</span>
+                    <strong>${peso(remaining)}</strong>
+                </div>
             </div>
-            <div class="seasonal-progress-bar"><span style="width:${percent}%"></span></div>
         </section>
 
-        <div class="panel-subheading">
+        <div class="panel-subheading seasonal-category-heading">
             <h3>Category Breakdown</h3>
-            <span>${escapeHtml(plan.name)} spending</span>
         </div>
+
         <div class="seasonal-category-list">
             ${plan.categories.map(item => `
                 <div class="seasonal-category-row">
-                    <span class="seasonal-category-name"><i style="background:${item.color}"></i>${escapeHtml(item.name)}</span>
+                    <span class="seasonal-category-name">
+                        <i style="background:${escapeHtml(item.color)}"></i>
+                        ${escapeHtml(item.name)}
+                    </span>
                     <strong>${peso(item.amount)}</strong>
-                    <small>${totalCategories > 0 ? Math.round((item.amount / totalCategories) * 100) : 0}%</small>
                 </div>
-            `).join('')}
+            `).join('') || '<p class="empty-state">No category spending recorded yet.</p>'}
         </div>
 
-        <div class="panel-subheading">
-            <h3>Recent Expenses</h3>
-            <span>${escapeHtml(plan.name)} transactions</span>
+        <div class="panel-subheading seasonal-detail-recent-heading">
+            <h3>Recent Transactions</h3>
         </div>
-        <div class="expense-list">${plan.expenses.map(seasonalExpenseCard).join('')}</div>
 
-        <button class="save-expense-button" type="button">Add Seasonal Expense</button>
+        <div class="expense-list seasonal-detail-transactions">
+            ${plan.expenses.length
+                ? plan.expenses.slice(0, 5).map(seasonalExpenseCard).join('')
+                : '<p class="empty-state">No seasonal transactions yet.</p>'}
+        </div>
     `;
+
+    const addButton = container.querySelector('[data-add-seasonal-expense]');
+    if (addButton) {
+        addButton.addEventListener('click', () => {
+            renderSeasonalPlanOptions();
+            openPanel('addExpensePanel');
+
+            const seasonalSelect = document.getElementById('newExpenseSeasonalPlan');
+            if (seasonalSelect) {
+                seasonalSelect.value = plan.id;
+            }
+
+            const itemInput = document.getElementById('newExpenseItemName');
+            if (itemInput) {
+                window.setTimeout(() => itemInput.focus(), 50);
+            }
+        });
+    }
 }
 
+
 function createCustomSeasonalPlan() {
-    const name = String(prompt('Seasonal plan name:') || '').trim();
+    const name = String(prompt('Enter custom seasonal plan name:') || '').trim();
     if (!name) return;
 
-    const budget = Number(prompt('Seasonal budget:', '1000'));
+    const budget = Number(prompt('Enter allocated budget for this plan:', '1000'));
     if (!(budget > 0)) return;
 
     const monthNumber = getSelectedMonthNumber();
     const selectedDate = getSelectedMonthDate();
     const id = `custom-${Date.now()}`;
+
+    const colorCycle = ['Food', 'Transportation', 'Debt', 'Utilities', 'Health', 'Rent'];
+    const existingCustomCount = SEASONAL_PLANS.filter(plan => String(plan.id).startsWith('custom-')).length;
+    const cycleCategory = colorCycle[existingCustomCount % colorCycle.length];
+    const palette = EXPENSE_CATEGORIES[cycleCategory] || EXPENSE_CATEGORIES.Other;
 
     SEASONAL_PLANS.push({
         id,
@@ -781,8 +880,8 @@ function createCustomSeasonalPlan() {
         range: selectedDate.toLocaleDateString('en-PH', { month: 'long', year: 'numeric' }),
         budget,
         spent: 0,
-        accent: '#E98B5F',
-        soft: '#FBE5D8',
+        accent: palette.color,
+        soft: palette.soft,
         categories: [],
         expenses: []
     });
@@ -903,17 +1002,29 @@ function bindThirteenthActions() {
 }
 
 function seasonalExpenseCard(expense) {
+    const meta = EXPENSE_CATEGORIES[expense.category] || EXPENSE_CATEGORIES.Other;
+
     return `
-        <article class="transaction-card simple seasonal-expense-card">
-            <div class="transaction-icon seasonal-only-icon"><i class="bi ${escapeHtml(expense.icon || 'bi-stars')}"></i></div>
+        <article class="transaction-card seasonal-expense-card">
+            <span class="scan-corner top-left"></span>
+            <span class="scan-corner top-right"></span>
+            <span class="scan-corner bottom-left"></span>
+            <span class="scan-corner bottom-right"></span>
+
+            <div class="transaction-icon seasonal-only-icon" style="--category-soft:${escapeHtml(meta.soft)}">
+                <i class="bi ${escapeHtml(meta.icon || expense.icon || 'bi-stars')}"></i>
+            </div>
+
             <div class="transaction-info">
                 <h3>${escapeHtml(expense.title)}</h3>
-                <p>${escapeHtml(expense.date)} • ${escapeHtml(expense.member)}</p>
+                <p>${escapeHtml(expense.category)} <b>|</b> ${escapeHtml(expense.member)}</p>
             </div>
+
             <div class="transaction-amount">-${peso(expense.amount)}</div>
         </article>
     `;
 }
+
 
 function openPeriodSheet() {
     const [currentMonth, currentYear] = getSelectedPeriodLabel().split(' ');
@@ -994,7 +1105,7 @@ function applyPendingPeriod() {
 function renderAddExpenseCategories() {
     const container = document.getElementById('addCategoryPicker');
     container.innerHTML = Object.entries(EXPENSE_CATEGORIES).map(([categoryName, meta]) => `
-        <button class="add-category-option ${state.selectedAddCategory === categoryName ? 'active' : ''}" type="button" data-add-category="${escapeHtml(categoryName)}" style="--category-soft:${escapeHtml(meta.soft)}">
+        <button class="add-category-option ${state.selectedAddCategory === categoryName ? 'active' : ''}" type="button" data-add-category="${escapeHtml(categoryName)}" style="--category-soft:${escapeHtml(meta.soft)}; --category-accent:${escapeHtml(meta.color)}">
             <i class="bi ${escapeHtml(meta.icon)}"></i>
             <span>${escapeHtml(shortLabel(categoryName))}</span>
         </button>
@@ -1021,7 +1132,7 @@ function saveExpense(event) {
     event.preventDefault();
 
     const amount = Number(document.getElementById('newExpenseAmount').value);
-    const title = document.getElementById('newExpenseDescription').value.trim();
+    const title = document.getElementById('newExpenseItemName').value.trim();
     const date = document.getElementById('newExpenseDate').value;
     const member = document.getElementById('newExpensePayer').value;
     const seasonalPlanId = document.getElementById('newExpenseSeasonalPlan')?.value || '';
@@ -1045,7 +1156,7 @@ function saveExpense(event) {
     document.getElementById('newExpenseDate').value = new Date().toISOString().slice(0, 10);
     document.getElementById('addExpensePanel').hidden = true;
     renderAll();
-    showToast('Expense saved.');
+    showSaveSuccess();
 }
 
 function transactionCard(expense) {
@@ -1095,6 +1206,26 @@ function showToast(message) {
     setTimeout(() => {
         toast.classList.remove('show');
     }, 2400);
+}
+
+function showSaveSuccess() {
+    const overlay = document.getElementById('expenseSuccessOverlay');
+    if (!overlay) {
+        showToast('Expense saved.');
+        return;
+    }
+
+    overlay.hidden = false;
+    overlay.classList.remove('show');
+    void overlay.offsetWidth;
+    overlay.classList.add('show');
+
+    setTimeout(() => {
+        overlay.classList.remove('show');
+        setTimeout(() => {
+            overlay.hidden = true;
+        }, 260);
+    }, 1700);
 }
 
 function getSelectedPeriodLabel() {

@@ -260,9 +260,8 @@
             <i class="bi bi-plus-lg"></i> Add Custom Seasonal Plan
         </button>
 
-        <div class="panel-subheading">
+        <div class="panel-subheading seasonal-recent-heading">
             <h3>Recent Seasonal Expenses</h3>
-            <button id="openSeasonalExpenses" class="subtle-link" type="button">View All</button>
         </div>
         <div id="seasonalRecentExpenses" class="expense-list"></div>
     </div>
@@ -328,10 +327,15 @@
     </header>
 
     <form id="addExpenseForm" class="panel-content add-form">
-        <div>
+        <div class="category-form-field">
             <label class="field-label">Category</label>
             <div id="addCategoryPicker" class="add-category-picker"></div>
         </div>
+
+        <label class="form-field">
+            <span>Item Name</span>
+            <input id="newExpenseItemName" type="text" placeholder="Enter item name" required>
+        </label>
 
         <label class="form-field">
             <span>Amount</span>
@@ -339,11 +343,6 @@
                 <b>₱</b>
                 <input id="newExpenseAmount" type="number" min="0" step="0.01" placeholder="0.00" required>
             </div>
-        </label>
-
-        <label class="form-field">
-            <span>Description</span>
-            <textarea id="newExpenseDescription" placeholder="Enter description" required></textarea>
         </label>
 
         <label class="form-field">
@@ -362,20 +361,32 @@
         </label>
 
         <label class="form-field">
-            <span>Seasonal plan (optional)</span>
+            <span>Seasonal plan <small>(optional)</small></span>
             <select id="newExpenseSeasonalPlan">
                 <option value="">Not seasonal</option>
             </select>
         </label>
 
         <label class="form-field">
-            <span>Notes (optional)</span>
+            <span>Notes <small>(optional)</small></span>
             <textarea id="newExpenseNotes" placeholder="Add any notes..."></textarea>
         </label>
 
-        <button class="save-expense-button" type="submit">Save Expense</button>
     </form>
 </section>
+
+<div id="expenseSuccessOverlay" class="expense-success-overlay" hidden>
+    <div class="expense-success-card">
+        <div class="expense-success-check" aria-hidden="true">
+            <svg viewBox="0 0 52 52">
+                <circle class="success-circle" cx="26" cy="26" r="24"></circle>
+                <path class="success-check" d="M14 27 L22 35 L38 18"></path>
+            </svg>
+        </div>
+        <strong>Expense Recorded</strong>
+        <p>Your expense has been saved successfully.</p>
+    </div>
+</div>
 
 <div id="expenseToast" class="expense-toast"></div>
 

@@ -3995,3 +3995,1236 @@ button {
     background: #FFFFFF;
     box-shadow: var(--soft-shadow);
 }
+
+
+/* =========================================================
+   v25 specialized Expenses views
+   ========================================================= */
+
+/* ---------- Add Expense ---------- */
+
+#addExpensePanel > header {
+    background: #FFF9F5;
+    border-bottom: 1px solid rgba(92, 83, 78, 0.08);
+    box-shadow: 0 7px 18px rgba(92, 83, 78, 0.06);
+}
+
+#addExpenseForm {
+    display: block;
+    padding-top: 22px;
+}
+
+#addExpenseForm > * + * {
+    margin-top: 20px;
+}
+
+#addExpenseForm .category-form-field {
+    margin-top: 4px;
+}
+
+#addExpenseForm .field-label,
+#addExpenseForm .form-field > span {
+    margin-bottom: 10px;
+    font-size: 12px;
+}
+
+.add-category-picker {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.add-category-option {
+    min-width: 0;
+    min-height: 78px;
+    padding: 8px 4px;
+    border: 1.5px solid transparent;
+    border-radius: 16px;
+    background: transparent;
+    color: var(--neutral);
+    font-weight: 600;
+}
+
+.add-category-option i {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+}
+
+.add-category-option span {
+    font-size: 9px;
+    line-height: 1.2;
+    font-weight: 600;
+}
+
+.add-category-option.active {
+    border-color: #9B928D;
+    background: rgba(255, 255, 255, 0.56);
+}
+
+.add-category-option.active i {
+    outline: none;
+}
+
+.add-category-option.active span {
+    color: var(--neutral-dark);
+    font-weight: 800;
+}
+
+#addExpenseForm .form-field input,
+#addExpenseForm .form-field textarea,
+#addExpenseForm .form-field select,
+#addExpenseForm .amount-input {
+    min-height: 50px;
+}
+
+/* ---------- Seasonal Spending full view ---------- */
+
+#seasonalSpendingPanel .seasonal-panel-summary {
+    margin-top: 16px;
+    background: #F7E4D8;
+}
+
+#seasonalSpendingPanel .seasonal-plan-card {
+    background: var(--plan-soft);
+    border: 1px solid rgba(92, 83, 78, 0.04);
+    box-shadow: 0 9px 20px rgba(92, 83, 78, 0.07);
+}
+
+#seasonalSpendingPanel .seasonal-plan-icon {
+    background: rgba(255, 255, 255, 0.58);
+    color: var(--plan-accent);
+}
+
+#seasonalSpendingPanel .seasonal-plan-values strong {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+#seasonalSpendingPanel .seasonal-plan-values strong small {
+    color: var(--neutral);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+#seasonalSpendingPanel .seasonal-plan-values > span {
+    color: var(--neutral);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.custom-seasonal-plan-button {
+    width: 100%;
+    min-height: 54px;
+    margin-top: 14px;
+    border: 2px dashed #BCAEB7;
+    border-radius: 20px;
+    background: transparent;
+    color: var(--neutral);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.seasonal-recent-heading {
+    margin-bottom: 12px;
+}
+
+.seasonal-expense-card .transaction-info p b {
+    margin: 0 5px;
+    color: var(--muted);
+    font-weight: 700;
+}
+
+/* ---------- Seasonal plan details ---------- */
+
+#seasonalPlanDetailsPanel .seasonal-detail-hero {
+    background: var(--plan-soft);
+}
+
+.seasonal-detail-head {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+}
+
+.seasonal-detail-copy {
+    min-width: 0;
+}
+
+.seasonal-add-inline {
+    min-height: 40px;
+    border: none;
+    border-radius: 14px;
+    padding: 0 12px;
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--primary-dark);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    justify-self: end;
+}
+
+.seasonal-progress-inline {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.seasonal-progress-inline .seasonal-progress-bar {
+    margin-top: 0;
+}
+
+.seasonal-progress-inline > strong {
+    min-width: 38px;
+    color: var(--neutral-dark);
+    font-size: 12px;
+    font-weight: 800;
+    text-align: right;
+}
+
+.seasonal-detail-stats {
+    margin-top: 16px;
+}
+
+.seasonal-detail-stats > div {
+    border: 1px solid rgba(92, 83, 78, 0.04);
+}
+
+.seasonal-stat-budget {
+    background: #E2ECF4 !important;
+}
+
+.seasonal-stat-spent {
+    background: #F4DFE9 !important;
+}
+
+.seasonal-stat-remaining {
+    background: #DDEDE1 !important;
+}
+
+.seasonal-stat-remaining strong {
+    color: #527A60 !important;
+}
+
+.seasonal-category-heading,
+.seasonal-detail-recent-heading {
+    justify-content: flex-start;
+}
+
+.seasonal-category-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.seasonal-category-row small {
+    display: none;
+}
+
+.seasonal-detail-transactions {
+    margin-bottom: 8px;
+}
+
+@media (max-width: 380px) {
+    .add-category-picker {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 7px;
+    }
+
+    .add-category-option {
+        min-height: 74px;
+    }
+
+    .seasonal-detail-head {
+        grid-template-columns: 50px minmax(0, 1fr) auto;
+        gap: 10px;
+    }
+
+    .seasonal-add-inline {
+        padding: 0 10px;
+    }
+
+    .seasonal-add-inline span {
+        display: none;
+    }
+
+    .seasonal-detail-stats {
+        gap: 8px;
+    }
+
+    .seasonal-detail-stats > div {
+        padding: 10px 8px;
+    }
+}
+
+
+/* =========================================================
+   v26 specialized-view polish fixes
+   ========================================================= */
+
+/* ---------- Add Expense ---------- */
+
+#addExpensePanel > header {
+    position: sticky;
+    top: 0;
+    z-index: 25;
+    min-height: 64px;
+    padding: calc(env(safe-area-inset-top, 0px) + 8px) 18px 10px;
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    align-items: center;
+    background: #FFF9F5;
+}
+
+#addExpensePanel > header h2 {
+    margin: 0;
+    text-align: center;
+    line-height: 1.1;
+}
+
+#addExpensePanel > header button {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+}
+
+#addExpenseForm .form-field > span small {
+    color: #9B928D;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+#addExpenseForm .amount-input {
+    min-height: 44px;
+}
+
+#addExpenseForm .amount-input input {
+    min-height: 42px;
+}
+
+/* ---------- Seasonal Spending - View More ---------- */
+
+#seasonalSpendingPanel .seasonal-panel-summary .seasonal-progress-bar {
+    background: rgba(167, 112, 86, 0.18);
+}
+
+#seasonalSpendingPanel .seasonal-panel-summary .seasonal-progress-bar span {
+    background: #B87E5D;
+}
+
+#seasonalSpendingPanel .seasonal-plan-icon,
+#seasonalSpendingPanel .seasonal-plan-ring {
+    color: var(--plan-ring);
+}
+
+#seasonalSpendingPanel .seasonal-plan-icon {
+    background: rgba(255, 255, 255, 0.62);
+}
+
+#seasonalSpendingPanel .seasonal-plan-ring {
+    border-color: rgba(92, 83, 78, 0.10);
+    border-top-color: var(--plan-ring);
+    border-right-color: var(--plan-ring);
+}
+
+#seasonalSpendingPanel .seasonal-plan-values strong {
+    color: var(--neutral-dark);
+}
+
+#seasonalSpendingPanel .seasonal-plan-values > span {
+    color: #7A6B63;
+}
+
+.seasonal-expense-card .transaction-icon {
+    border-radius: 18px;
+}
+
+/* ---------- Seasonal Plan Details ---------- */
+
+.seasonal-stat-budget {
+    background: #FBE5D8 !important;
+}
+
+.seasonal-stat-spent {
+    background: #FFFFFF !important;
+}
+
+.seasonal-stat-remaining {
+    background: #FBEFE8 !important;
+}
+
+.seasonal-stat-remaining strong {
+    color: var(--neutral-dark) !important;
+}
+
+/* Category-colored recent transaction icons for detail view share the same card style. */
+.seasonal-detail-transactions .transaction-icon,
+#seasonalRecentExpenses .transaction-icon {
+    box-shadow: none;
+}
+
+/* Minor spacing polish for panel headings */
+#seasonalSpendingPanel .panel-subheading h3,
+#seasonalPlanDetailsPanel .panel-subheading h3 {
+    margin: 0;
+}
+
+
+/* =========================================================
+   v27 requested specialized-view refinements
+   ========================================================= */
+
+/* Add Expense: line sits after title, larger check icon */
+#addExpensePanel > header {
+    position: sticky;
+    top: 0;
+    z-index: 25;
+    background: #FFF9F5;
+    border-bottom: none;
+    box-shadow: none;
+}
+#addExpensePanel > header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: rgba(92, 83, 78, 0.10);
+}
+#addExpensePanel > header h2 {
+    padding-bottom: 8px;
+}
+#saveExpenseTop {
+    font-size: 30px;
+    color: var(--primary);
+}
+#saveExpenseTop i {
+    font-size: 30px;
+    line-height: 1;
+}
+
+/* Animated success check */
+.expense-success-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    background: rgba(37, 31, 29, 0.18);
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+.expense-success-overlay.show {
+    opacity: 1;
+}
+.expense-success-card {
+    width: min(290px, calc(100vw - 48px));
+    border-radius: 28px;
+    background: #FFFFFF;
+    box-shadow: 0 18px 42px rgba(92, 83, 78, 0.18);
+    padding: 24px 22px 22px;
+    text-align: center;
+    transform: translateY(8px) scale(0.96);
+    transition: transform 0.28s ease;
+}
+.expense-success-overlay.show .expense-success-card {
+    transform: translateY(0) scale(1);
+}
+.expense-success-check {
+    width: 74px;
+    height: 74px;
+    margin: 0 auto 14px;
+}
+.expense-success-check svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+.success-circle {
+    fill: none;
+    stroke: #F3CBAF;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 151;
+    stroke-dashoffset: 151;
+}
+.success-check {
+    fill: none;
+    stroke: #E98B5F;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 36;
+    stroke-dashoffset: 36;
+}
+.expense-success-overlay.show .success-circle {
+    animation: successCircleDraw 0.55s ease forwards;
+}
+.expense-success-overlay.show .success-check {
+    animation: successCheckDraw 0.35s ease 0.35s forwards;
+}
+.expense-success-card strong {
+    display: block;
+    color: var(--neutral-dark);
+    font-size: 18px;
+    font-weight: 800;
+}
+.expense-success-card p {
+    margin: 7px 0 0;
+    color: var(--neutral);
+    font-size: 13px;
+    line-height: 1.4;
+    font-weight: 700;
+}
+@keyframes successCircleDraw {
+    to { stroke-dashoffset: 0; }
+}
+@keyframes successCheckDraw {
+    to { stroke-dashoffset: 0; }
+}
+
+/* Seasonal Spending view-more */
+#seasonalSpendingPanel .seasonal-panel-summary .seasonal-progress-bar {
+    background: rgba(153, 120, 108, 0.18);
+}
+#seasonalSpendingPanel .seasonal-panel-summary .seasonal-progress-bar span {
+    background: linear-gradient(90deg, #D79E7E 0%, #B56D8A 100%);
+}
+
+#seasonalSpendingPanel .seasonal-plan-icon {
+    background: color-mix(in srgb, var(--plan-soft) 76%, #ffffff 24%);
+    color: color-mix(in srgb, var(--plan-accent) 86%, #5C534E 14%);
+}
+#seasonalSpendingPanel .seasonal-plan-ring {
+    border-color: color-mix(in srgb, var(--plan-accent) 18%, #ffffff 82%);
+    border-top-color: color-mix(in srgb, var(--plan-accent) 86%, #5C534E 14%);
+    border-right-color: color-mix(in srgb, var(--plan-accent) 86%, #5C534E 14%);
+    color: color-mix(in srgb, var(--plan-accent) 86%, #5C534E 14%);
+}
+
+/* Seasonal expense cards: only panel tinted, icons black */
+.seasonal-expense-card {
+    border: none;
+    box-shadow: none;
+}
+.seasonal-expense-card .transaction-icon {
+    background: transparent !important;
+    color: #251F1D !important;
+}
+.seasonal-expense-card .transaction-icon i {
+    color: #251F1D !important;
+}
+
+/* Seasonal detail stats same as main background color */
+#seasonalPlanDetailsPanel .seasonal-detail-hero .seasonal-detail-stats > div {
+    background: var(--plan-soft) !important;
+    border-color: rgba(92, 83, 78, 0.06);
+}
+#seasonalPlanDetailsPanel .seasonal-detail-hero .seasonal-stat-remaining strong,
+#seasonalPlanDetailsPanel .seasonal-detail-hero .seasonal-stat-budget strong,
+#seasonalPlanDetailsPanel .seasonal-detail-hero .seasonal-stat-spent strong {
+    color: var(--neutral-dark) !important;
+}
+
+/* Detail-view recent expense cards: only panel tinted, icons black */
+.seasonal-detail-transactions .seasonal-expense-card .transaction-icon,
+#seasonalRecentExpenses .seasonal-expense-card .transaction-icon {
+    background: transparent !important;
+    color: #251F1D !important;
+}
+.seasonal-detail-transactions .seasonal-expense-card .transaction-icon i,
+#seasonalRecentExpenses .seasonal-expense-card .transaction-icon i {
+    color: #251F1D !important;
+}
+
+
+/* =========================================================
+   v28 interaction fix
+   The hidden success overlay must not cover the page.
+   ========================================================= */
+
+.expense-success-overlay[hidden] {
+    display: none !important;
+}
+
+.expense-success-overlay {
+    pointer-events: none;
+}
+
+.expense-success-overlay.show {
+    pointer-events: auto;
+}
+
+
+/* =========================================================
+   v29 header underline fix
+   Place the line directly under the "Add Expense" text only.
+   ========================================================= */
+
+#addExpensePanel > header::after {
+    display: none !important;
+}
+
+#addExpensePanel > header h2 {
+    position: relative;
+    display: inline-block;
+    justify-self: center;
+    padding: 0 0 10px;
+    margin: 0;
+}
+
+#addExpensePanel > header h2::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: rgba(92, 83, 78, 0.14);
+}
+
+
+/* =========================================================
+   v30 Add Expense header / overlap fix
+   Prevent CATEGORY from mixing with the close icon while scrolling.
+   ========================================================= */
+
+#addExpensePanel > header {
+    min-height: 76px;
+    padding: calc(env(safe-area-inset-top, 0px) + 14px) 18px 12px;
+    align-items: end;
+    background: #FFF9F5;
+    isolation: isolate;
+}
+
+#addExpensePanel > header h2 {
+    align-self: end;
+    padding-bottom: 12px;
+}
+
+#addExpensePanel > header button {
+    align-self: end;
+    margin-bottom: 4px;
+}
+
+#addExpenseForm {
+    padding-top: 30px;
+}
+
+#addExpenseForm .category-form-field {
+    margin-top: 10px;
+}
+
+#addExpensePanel .bottom-sheet-body {
+    padding-top: 0;
+}
+
+@media (max-width: 380px) {
+    #addExpensePanel > header {
+        min-height: 72px;
+        padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 10px;
+    }
+
+    #addExpenseForm {
+        padding-top: 26px;
+    }
+
+    #addExpenseForm .category-form-field {
+        margin-top: 8px;
+    }
+}
+
+
+/* =========================================================
+   v31 sticky header boundary fix
+   The full-width line is now the bottom edge of the frozen header.
+   ========================================================= */
+
+#addExpensePanel > header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    min-height: 82px;
+    padding: calc(env(safe-area-inset-top, 0px) + 14px) 18px 14px;
+    align-items: end;
+    background: #FFF9F5;
+    border-bottom: 1px solid rgba(92, 83, 78, 0.10);
+    box-shadow: 0 2px 0 rgba(255, 249, 245, 1);
+}
+
+/* remove the small underline under the text itself */
+#addExpensePanel > header::after,
+#addExpensePanel > header h2::after {
+    display: none !important;
+}
+
+#addExpensePanel > header h2 {
+    align-self: end;
+    padding: 0;
+    margin: 0;
+}
+
+#addExpensePanel > header button {
+    align-self: end;
+    margin-bottom: 2px;
+}
+
+#addExpensePanel .bottom-sheet-body {
+    padding-top: 0;
+}
+
+#addExpenseForm {
+    padding-top: 22px;
+}
+
+#addExpenseForm .category-form-field {
+    margin-top: 0;
+}
+
+/* keep the first section clearly below the frozen header line */
+#addExpenseForm > .category-form-field:first-child {
+    padding-top: 2px;
+}
+
+@media (max-width: 380px) {
+    #addExpensePanel > header {
+        min-height: 78px;
+        padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 12px;
+    }
+
+    #addExpenseForm {
+        padding-top: 20px;
+    }
+}
+
+
+/* =========================================================
+   v32 Add Expense frozen-header hard fix
+   Extend the solid sticky area lower so CATEGORY never reaches
+   the X / title zone before crossing the bottom divider.
+   ========================================================= */
+
+#addExpensePanel > header {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    min-height: 110px;
+    padding: calc(env(safe-area-inset-top, 0px) + 14px) 18px 30px;
+    align-items: end;
+    background: #FFF9F5;
+    border-bottom: 1px solid rgba(92, 83, 78, 0.10);
+    box-shadow: 0 6px 0 #FFF9F5;
+}
+
+#addExpensePanel > header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #FFF9F5;
+    z-index: -1;
+}
+
+#addExpensePanel > header::after,
+#addExpensePanel > header h2::after {
+    display: none !important;
+}
+
+#addExpensePanel > header h2 {
+    align-self: end;
+    margin: 0;
+    padding: 0;
+    line-height: 1.05;
+}
+
+#addExpensePanel > header button {
+    align-self: end;
+    margin-bottom: 0;
+}
+
+#addExpensePanel .bottom-sheet-body {
+    padding-top: 0;
+}
+
+#addExpenseForm {
+    padding-top: 26px;
+}
+
+#addExpenseForm > .category-form-field:first-child {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+@media (max-width: 380px) {
+    #addExpensePanel > header {
+        min-height: 102px;
+        padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 26px;
+    }
+
+    #addExpenseForm {
+        padding-top: 22px;
+    }
+}
+
+
+/* =========================================================
+   expenses(6) requested fixes
+   ========================================================= */
+
+/* This Month's Plans */
+#seasonalSpendingPanel .seasonal-plan-card {
+    background: var(--plan-soft) !important;
+}
+
+#seasonalSpendingPanel .seasonal-plan-icon,
+#seasonalSpendingPanel .seasonal-plan-icon.large {
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--plan-accent) !important;
+}
+
+#seasonalSpendingPanel .seasonal-plan-icon i,
+#seasonalSpendingPanel .seasonal-plan-icon.large i {
+    color: var(--plan-accent) !important;
+}
+
+/* Unfilled side of the circular % matches the main app background */
+#seasonalSpendingPanel .seasonal-plan-ring {
+    position: relative;
+    border: none !important;
+    background: conic-gradient(
+        from -90deg,
+        var(--plan-accent) calc(var(--plan-percent) * 1%),
+        #FFF9F5 0
+    ) !important;
+    color: var(--plan-accent) !important;
+    isolation: isolate;
+}
+
+#seasonalSpendingPanel .seasonal-plan-ring::before {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border-radius: 50%;
+    background: var(--plan-soft);
+    z-index: 0;
+}
+
+#seasonalSpendingPanel .seasonal-plan-ring span {
+    position: relative;
+    z-index: 1;
+    color: var(--plan-accent) !important;
+}
+
+/* Recent Seasonal Expenses: same card design as Home sample, but keep "|" */
+.seasonal-expense-card {
+    background: rgba(255, 255, 255, 0.54);
+}
+
+.seasonal-expense-card .transaction-icon {
+    background: transparent;
+    color: #251F1D !important;
+    box-shadow: none;
+}
+
+.seasonal-expense-card .transaction-icon i {
+    color: #251F1D !important;
+}
+
+.seasonal-expense-card .transaction-info h3 {
+    margin: 0;
+    color: var(--neutral-dark);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.seasonal-expense-card .transaction-info p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.seasonal-expense-card .transaction-info p b {
+    margin: 0 4px;
+    color: var(--muted);
+}
+
+.seasonal-expense-card .transaction-amount {
+    color: var(--primary-dark);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   expenses(6) view-more refinements v2
+   ========================================================= */
+
+/* 1) Bigger bootstrap icon for "This Month's Plans" with no surrounding panel */
+#seasonalSpendingPanel .seasonal-plan-icon,
+#seasonalSpendingPanel .seasonal-plan-icon.large {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    display: grid;
+    place-items: center;
+}
+
+#seasonalSpendingPanel .seasonal-plan-icon i,
+#seasonalSpendingPanel .seasonal-plan-icon.large i {
+    font-size: 32px !important;
+    line-height: 1 !important;
+    color: var(--plan-accent) !important;
+}
+
+/* 2) Darker unfilled part of the circular percentage */
+#seasonalSpendingPanel .seasonal-plan-ring {
+    background: conic-gradient(
+        from -90deg,
+        var(--plan-accent) calc(var(--plan-percent) * 1%),
+        #EFE7E0 0
+    ) !important;
+}
+
+/* 3) Recent seasonal expenses: only the icon panel is category-colored.
+   Keep expense panel neutral and the icon itself black. */
+.seasonal-expense-card {
+    background: rgba(255, 255, 255, 0.54) !important;
+}
+
+.seasonal-expense-card .transaction-icon {
+    border-radius: 16px !important;
+    box-shadow: none !important;
+}
+
+#seasonalRecentExpenses .seasonal-expense-card .transaction-icon,
+.seasonal-detail-transactions .seasonal-expense-card .transaction-icon {
+    color: #251F1D !important;
+    background: var(--category-soft, transparent) !important;
+}
+
+#seasonalRecentExpenses .seasonal-expense-card .transaction-icon i,
+.seasonal-detail-transactions .seasonal-expense-card .transaction-icon i {
+    color: #251F1D !important;
+}
+
+
+/* =========================================================
+   expenses(6) view-more refinements v3
+   ========================================================= */
+
+/* Lighter unfilled side of the circular percentage */
+#seasonalSpendingPanel .seasonal-plan-ring {
+    background: conic-gradient(
+        from -90deg,
+        var(--plan-accent) calc(var(--plan-percent) * 1%),
+        #F5EFEB 0
+    ) !important;
+}
+
+
+/* =========================================================
+   expenses(6) view-more refinements v4
+   ========================================================= */
+
+/* This Month's Plans: make the unfilled ring one shade lighter */
+#seasonalSpendingPanel .seasonal-plan-ring {
+    background: conic-gradient(
+        from -90deg,
+        var(--plan-accent) calc(var(--plan-percent) * 1%),
+        #FBF6F2 0
+    ) !important;
+}
+
+/* Specific plan: remove icon panel, make icon bigger */
+#seasonalPlanDetailsPanel .seasonal-plan-icon.large {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    display: grid;
+    place-items: center;
+    color: var(--plan-accent) !important;
+}
+
+#seasonalPlanDetailsPanel .seasonal-plan-icon.large i {
+    font-size: 34px !important;
+    line-height: 1 !important;
+    color: var(--plan-accent) !important;
+}
+
+/* Specific plan: Budget / Spent / Remaining panels use light peach */
+#seasonalPlanDetailsPanel .seasonal-detail-stats > div,
+#seasonalPlanDetailsPanel .seasonal-stat-budget,
+#seasonalPlanDetailsPanel .seasonal-stat-spent,
+#seasonalPlanDetailsPanel .seasonal-stat-remaining {
+    background: #FBE7DB !important;
+    border-color: rgba(92, 83, 78, 0.06) !important;
+}
+
+/* "+ Add" text uses the same color as the bootstrap icon */
+#seasonalPlanDetailsPanel .seasonal-add-inline,
+#seasonalPlanDetailsPanel .seasonal-add-inline span,
+#seasonalPlanDetailsPanel .seasonal-add-inline i {
+    color: var(--plan-accent) !important;
+}
+
+
+/* =========================================================
+   expenses(6) view-more refinements v5
+   ========================================================= */
+
+/* Seasonal Spending and Plan Details headers:
+   match the Add Expense treatment with a frozen solid header
+   and a divider line after the title row. */
+#seasonalSpendingPanel > header,
+#seasonalPlanDetailsPanel > header,
+#seasonalSpendingPanel.full-panel > header,
+#seasonalPlanDetailsPanel.full-panel > header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 80 !important;
+    display: grid !important;
+    grid-template-columns: 40px 1fr 40px !important;
+    align-items: center !important;
+    min-height: 72px !important;
+    padding: calc(env(safe-area-inset-top, 0px) + 8px) 18px 8px !important;
+    background: #FFF9F5 !important;
+    border-bottom: 1px solid rgba(92, 83, 78, 0.12) !important;
+    box-shadow: none !important;
+    isolation: isolate !important;
+}
+
+#seasonalSpendingPanel > header::before,
+#seasonalPlanDetailsPanel > header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #FFF9F5;
+    z-index: -1;
+}
+
+#seasonalSpendingPanel > header::after,
+#seasonalPlanDetailsPanel > header::after,
+#seasonalSpendingPanel > header h2::after,
+#seasonalPlanDetailsPanel > header h2::after {
+    display: none !important;
+    content: none !important;
+}
+
+#seasonalSpendingPanel > header h2,
+#seasonalPlanDetailsPanel > header h2,
+#seasonalSpendingPanel > header button,
+#seasonalPlanDetailsPanel > header button {
+    align-self: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#seasonalSpendingPanel > header h2,
+#seasonalPlanDetailsPanel > header h2 {
+    text-align: center !important;
+    line-height: 1.05 !important;
+    transform: translateY(1px);
+}
+
+#seasonalSpendingPanel > header button,
+#seasonalPlanDetailsPanel > header button {
+    width: 36px !important;
+    height: 36px !important;
+    display: grid !important;
+    place-items: center !important;
+}
+
+#seasonalSpendingPanel .bottom-sheet-body,
+#seasonalPlanDetailsPanel .bottom-sheet-body {
+    padding-top: 0 !important;
+}
+
+/* Detailed Plan stat cards: white-but-not-white warm neutral */
+#seasonalPlanDetailsPanel .seasonal-detail-stats > div,
+#seasonalPlanDetailsPanel .seasonal-stat-budget,
+#seasonalPlanDetailsPanel .seasonal-stat-spent,
+#seasonalPlanDetailsPanel .seasonal-stat-remaining {
+    background: #FFFCFA !important;
+    border-color: rgba(92, 83, 78, 0.06) !important;
+}
+
+@media (max-width: 380px) {
+    #seasonalSpendingPanel > header,
+    #seasonalPlanDetailsPanel > header,
+    #seasonalSpendingPanel.full-panel > header,
+    #seasonalPlanDetailsPanel.full-panel > header {
+        min-height: 68px !important;
+        padding: calc(env(safe-area-inset-top, 0px) + 7px) 16px 7px !important;
+    }
+}
+
+
+/* =========================================================
+   v6 — exact Seasonal header divider placement
+   The line sits immediately after the title row.
+   ========================================================= */
+
+#seasonalSpendingPanel > header,
+#seasonalPlanDetailsPanel > header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+
+    height: auto !important;
+    min-height: 0 !important;
+    padding: env(safe-area-inset-top, 0px) 18px 0 !important;
+
+    display: grid !important;
+    grid-template-columns: 40px minmax(0, 1fr) 40px !important;
+    grid-template-rows: 64px !important;
+    align-items: center !important;
+
+    background: #FFF9F5 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    isolation: isolate !important;
+}
+
+#seasonalSpendingPanel > header::before,
+#seasonalPlanDetailsPanel > header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: #FFF9F5;
+}
+
+#seasonalSpendingPanel > header::after,
+#seasonalPlanDetailsPanel > header::after {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: 1px !important;
+    background: rgba(92, 83, 78, 0.13) !important;
+}
+
+#seasonalSpendingPanel > header h2,
+#seasonalPlanDetailsPanel > header h2 {
+    margin: 0 !important;
+    padding: 0 !important;
+    align-self: center !important;
+    justify-self: center !important;
+    text-align: center !important;
+    line-height: 1.05 !important;
+    transform: none !important;
+}
+
+#seasonalSpendingPanel > header h2::after,
+#seasonalPlanDetailsPanel > header h2::after {
+    content: none !important;
+    display: none !important;
+}
+
+#seasonalSpendingPanel > header button,
+#seasonalPlanDetailsPanel > header button {
+    width: 40px !important;
+    height: 40px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    align-self: center !important;
+    display: grid !important;
+    place-items: center !important;
+}
+
+#seasonalSpendingPanel > .panel-content,
+#seasonalPlanDetailsPanel > .panel-content {
+    padding-top: 18px !important;
+}
+
+@media (max-width: 380px) {
+    #seasonalSpendingPanel > header,
+    #seasonalPlanDetailsPanel > header {
+        padding: env(safe-area-inset-top, 0px) 16px 0 !important;
+        grid-template-rows: 60px !important;
+    }
+
+    #seasonalSpendingPanel > .panel-content,
+    #seasonalPlanDetailsPanel > .panel-content {
+        padding-top: 16px !important;
+    }
+}
+
+
+/* =========================================================
+   v7 — seasonal detail color parity + soft off-white stat cards
+   ========================================================= */
+
+/* Make the detailed seasonal header card match the tapped seasonal plan card color */
+#seasonalPlanDetailsPanel .seasonal-detail-hero {
+    background: var(--plan-soft) !important;
+    border: 1px solid rgba(92, 83, 78, 0.05) !important;
+    box-shadow: 0 10px 22px rgba(92, 83, 78, 0.06) !important;
+}
+
+/* White but not too white for Budget / Spent / Remaining */
+#seasonalPlanDetailsPanel .seasonal-detail-stats > div,
+#seasonalPlanDetailsPanel .seasonal-stat-budget,
+#seasonalPlanDetailsPanel .seasonal-stat-spent,
+#seasonalPlanDetailsPanel .seasonal-stat-remaining {
+    background: #FCF7F3 !important;
+    border: 1px solid rgba(92, 83, 78, 0.06) !important;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.22) !important;
+}
+
+#seasonalPlanDetailsPanel .seasonal-detail-stats span {
+    color: #8B8079 !important;
+}
+
+#seasonalPlanDetailsPanel .seasonal-detail-stats strong {
+    color: var(--neutral-dark) !important;
+}
+
+
+/* =========================================================
+   v7b — selected plan card color parity + white stat panels
+   ========================================================= */
+
+#seasonalPlanDetailsPanel .seasonal-detail-stats > div,
+#seasonalPlanDetailsPanel .seasonal-stat-budget,
+#seasonalPlanDetailsPanel .seasonal-stat-spent,
+#seasonalPlanDetailsPanel .seasonal-stat-remaining {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(92, 83, 78, 0.06) !important;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.4), inset 0 0 0 1px rgba(255,255,255,0.08) !important;
+}
+
+
+/* =========================================================
+   v8 — skip Education palette, match overview/detail seasonal colors,
+   and make Budget / Spent / Remaining white
+   ========================================================= */
+
+#seasonalPlanDetailsPanel .seasonal-detail-hero {
+    background: var(--plan-soft) !important;
+}
+
+#seasonalPlanDetailsPanel .seasonal-detail-stats > div,
+#seasonalPlanDetailsPanel .seasonal-stat-budget,
+#seasonalPlanDetailsPanel .seasonal-stat-spent,
+#seasonalPlanDetailsPanel .seasonal-stat-remaining {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(92, 83, 78, 0.08) !important;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.25) !important;
+}
