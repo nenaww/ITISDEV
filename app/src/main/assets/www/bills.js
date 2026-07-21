@@ -2,17 +2,13 @@
    KABALIKAT Bills & Debt
    - Local persistence through a separate IndexedDB database
    - Reads the signed-in user/family from the existing auth DB
-   - Optional Google Calendar event creation through OAuth 2.0
+   - Opens the Android Calendar app through a native bridge
+   - Schedules Android notification reminders through WorkManager
    ========================================================= */
 
 const AUTH_DB_NAME = "kabalikat_auth_language_db";
 const BILLS_DB_NAME = "kabalikat_bills_db";
 const BILLS_DB_VERSION = 1;
-
-/* Replace this value after creating a Web OAuth Client ID in Google Cloud. */
-const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_WEB_CLIENT_ID.apps.googleusercontent.com";
-const GOOGLE_CALENDAR_SCOPE = "https://www.googleapis.com/auth/calendar.events";
-const GOOGLE_CALENDAR_TIME_ZONE = "Asia/Manila";
 
 let authDb = null;
 let billsDb = null;
@@ -25,12 +21,6 @@ let selectedTypeFilter = "all";
 let selectedEntryType = "bill";
 let selectedFrequency = "monthly";
 let showAllPayments = false;
-
-let googleTokenClient = null;
-let googleAccessToken = "";
-let googleAccessTokenExpiresAt = 0;
-let pendingTokenResolve = null;
-let pendingTokenReject = null;
 
 const PAYMENT_VISUALS = {
     electric: { icon: "bi-lightning-charge", soft: "#FFF1C9", accent: "#D89B15" },
@@ -157,7 +147,6 @@ async function initializeBillsPage() {
         setDefaultFormValues();
         initializePeriodControls();
         updateEntryTypeUI();
-        updateCalendarConnectionNote();
 
         authDb = await openAuthDatabase();
         await loadCurrentUserContext();
@@ -168,7 +157,7 @@ async function initializeBillsPage() {
         await loadEntries();
 
         renderAll();
-        waitForGoogleIdentity();
+        updateCalendarConnectionNote();
     } catch (error) {
         console.error("Bills page initialization failed:", error);
         showToast("The Bills page could not be fully initialized.");
@@ -619,22 +608,47 @@ function getPaymentVisual(entry) {
 }
 
 async function handleEntryClick(id) {
-    const entry = entries.find(item => item.id === id);
-    if (!entry) return;
-
-    const action = window.confirm(
-        `${entry.name}\n${peso(entry.amount)} due ${formatDate(entry.dueDate)}\n\n` +
-        `Press OK to mark this payment as ${entry.paid ? "unpaid" : "paid"}.`
+    const entry = entries.find(
+        item => item.id === id
     );
 
-    if (!action) return;
+    if (!entry) {
+        return;
+    }
+
+    const action = window.confirm(
+        `${entry.name}\n` +
+        `${peso(entry.amount)} due ` +
+        `${formatDate(entry.dueDate)}\n\n` +
+        `Press OK to mark this payment as ` +
+        `${entry.paid ? "unpaid" : "paid"}.`
+    );
+
+    if (!action) {
+        return;
+    }
 
     entry.paid = !entry.paid;
-    entry.updatedAt = new Date().toISOString();
+    entry.updatedAt =
+        new Date().toISOString();
+
+    if (entry.paid) {
+        cancelNativeReminder(entry.id);
+        entry.nativeReminderScheduled = false;
+    } else if (entry.reminder) {
+        scheduleNativeReminder(entry);
+        entry.nativeReminderScheduled = true;
+    }
+
     await putEntry(entry);
     await loadEntries();
     renderAll();
-    showToast(entry.paid ? "Payment marked as paid." : "Payment marked as unpaid.");
+
+    showToast(
+        entry.paid
+            ? "Payment marked as paid. Reminders were cancelled."
+            : "Payment marked as unpaid. Reminders were restored."
+    );
 }
 
 /* =========================================================
@@ -709,18 +723,18 @@ async function saveEntry(event) {
     event.preventDefault();
 
     const formData = collectFormData();
-    if (!formData) return;
 
-    const saveButton = document.getElementById("saveEntryButton");
+    if (!formData) {
+        return;
+    }
+
+    const saveButton =
+        document.getElementById("saveEntryButton");
+
     if (saveButton) {
         saveButton.disabled = true;
         saveButton.textContent = "Saving...";
     }
-
-    /* Request authorization while still inside the user's submit action. */
-    const calendarTokenPromise = isGoogleClientConfigured()
-        ? requestGoogleCalendarAccess()
-        : Promise.reject(new Error("Google Calendar Client ID is not configured."));
 
     const entry = {
         id: createId("payment"),
@@ -742,44 +756,166 @@ async function saveEntry(event) {
     };
 
     try {
+        /*
+         * Save locally before opening Calendar.
+         */
+        await putEntry(entry);
+
+        const nativeResult =
+            sendEntryToAndroid(entry);
+
+        if (nativeResult.ok) {
+            entry.calendarStatus =
+                "calendar-review";
+
+            entry.nativeReminderScheduled =
+                Boolean(entry.reminder);
+
+            entry.calendarRequestedAt =
+                new Date().toISOString();
+
+            showToast(
+                entry.reminder
+                    ? "Saved. Review the Calendar event and allow notifications."
+                    : "Saved. Review the Calendar event and tap Save."
+            );
+        } else {
+            entry.calendarStatus = "local-only";
+            entry.nativeReminderScheduled = false;
+            entry.calendarError =
+                nativeResult.message;
+
+            showToast(
+                "Saved locally. Calendar access is available in the Android app."
+            );
+        }
+
         await putEntry(entry);
         await loadEntries();
         renderAll();
 
-        try {
-            const token = await calendarTokenPromise;
-            const calendarEvent = await createGoogleCalendarEvent(entry, token);
-
-            entry.googleEventId = calendarEvent.id || "";
-            entry.googleEventLink = calendarEvent.htmlLink || "";
-            entry.calendarStatus = "synced";
-            entry.calendarSyncedAt = new Date().toISOString();
-            await putEntry(entry);
-
-            showToast("Saved and added to Google Calendar.");
-        } catch (calendarError) {
-            console.warn("Google Calendar sync was skipped:", calendarError);
-            entry.calendarStatus = "local-only";
-            entry.calendarError = String(calendarError?.message || calendarError);
-            await putEntry(entry);
-
-            showToast(
-                isGoogleClientConfigured()
-                    ? "Saved locally. Google Calendar authorization or sync was not completed."
-                    : "Saved locally. Add your Google OAuth Client ID to enable Calendar sync."
-            );
-        }
-
         closeAddPanel();
         resetForm();
     } catch (error) {
-        console.error("Saving payment failed:", error);
-        showToast("The bill or debt could not be saved.");
+        console.error(
+            "Saving payment failed:",
+            error
+        );
+
+        showToast(
+            "The bill or debt could not be saved."
+        );
     } finally {
         if (saveButton) {
             saveButton.disabled = false;
-            saveButton.textContent = selectedEntryType === "debt" ? "Save Debt" : "Save Bill";
+            saveButton.textContent =
+                selectedEntryType === "debt"
+                    ? "Save Debt"
+                    : "Save Bill";
         }
+    }
+}
+
+function sendEntryToAndroid(entry) {
+    const bridge = window.KabalikatAndroid;
+
+    if (
+        !bridge ||
+        typeof bridge.addBill !== "function"
+    ) {
+        return {
+            ok: false,
+            message:
+                "Android Calendar bridge is unavailable."
+        };
+    }
+
+    try {
+        const result = bridge.addBill(
+            JSON.stringify({
+                id: entry.id,
+                type: entry.type,
+                name: entry.name,
+                provider: entry.provider,
+                amount: Number(entry.amount || 0),
+                dueDate: entry.dueDate,
+                category: entry.category,
+                frequency: entry.frequency,
+                reminder: Boolean(entry.reminder),
+                shared: Boolean(entry.shared),
+                notes: entry.notes || ""
+            })
+        );
+
+        return {
+            ok: result === "ok",
+            message: result || ""
+        };
+    } catch (error) {
+        console.error(
+            "Android Calendar bridge failed:",
+            error
+        );
+
+        return {
+            ok: false,
+            message: String(
+                error?.message || error
+            )
+        };
+    }
+}
+
+function scheduleNativeReminder(entry) {
+    const bridge = window.KabalikatAndroid;
+
+    if (
+        !bridge ||
+        typeof bridge.scheduleBillReminders !==
+            "function"
+    ) {
+        return;
+    }
+
+    try {
+        bridge.scheduleBillReminders(
+            JSON.stringify({
+                id: entry.id,
+                name: entry.name,
+                provider: entry.provider,
+                amount: Number(entry.amount || 0),
+                dueDate: entry.dueDate,
+                frequency: entry.frequency
+            })
+        );
+    } catch (error) {
+        console.error(
+            "Could not schedule Android reminders:",
+            error
+        );
+    }
+}
+
+function cancelNativeReminder(entryId) {
+    const bridge = window.KabalikatAndroid;
+
+    if (
+        !bridge ||
+        typeof bridge.cancelBillReminders !==
+            "function"
+    ) {
+        return;
+    }
+
+    try {
+        bridge.cancelBillReminders(
+            String(entryId)
+        );
+    } catch (error) {
+        console.error(
+            "Could not cancel Android reminders:",
+            error
+        );
     }
 }
 
@@ -801,203 +937,41 @@ function collectFormData() {
     return { name, provider, amount, dueDate, category, notes, reminder, shared };
 }
 
-/* =========================================================
-   Google Calendar OAuth and event insertion
-   ========================================================= */
+function updateCalendarConnectionNote() {
+    const note =
+        document.getElementById(
+            "calendarConnectionNote"
+        );
 
-function isGoogleClientConfigured() {
-    return GOOGLE_CLIENT_ID && !GOOGLE_CLIENT_ID.startsWith("YOUR_");
-}
-
-function waitForGoogleIdentity(attempt = 0) {
-    if (!isGoogleClientConfigured()) {
-        updateCalendarConnectionNote();
+    if (!note) {
         return;
     }
 
-    if (window.google?.accounts?.oauth2) {
-        initializeGoogleTokenClient();
-        updateCalendarConnectionNote();
+    const noteText =
+        note.querySelector("span");
+
+    if (!noteText) {
         return;
     }
 
-    if (attempt < 30) {
-        window.setTimeout(() => waitForGoogleIdentity(attempt + 1), 200);
+    const bridgeAvailable =
+        Boolean(
+            window.KabalikatAndroid &&
+            typeof window.KabalikatAndroid.addBill ===
+                "function"
+        );
+
+    if (bridgeAvailable) {
+        noteText.textContent =
+            "Saving opens your Calendar app and schedules reminders 5 days, 3 days, 1 day, and on the due date.";
+
+        note.classList.remove("warning");
     } else {
-        updateCalendarConnectionNote("Google Identity Services could not be loaded.", true);
+        noteText.textContent =
+            "Calendar and notification reminders are available when running inside the Android app.";
+
+        note.classList.remove("warning");
     }
-}
-
-function initializeGoogleTokenClient() {
-    if (googleTokenClient || !window.google?.accounts?.oauth2 || !isGoogleClientConfigured()) {
-        return;
-    }
-
-    googleTokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: GOOGLE_CLIENT_ID,
-        scope: GOOGLE_CALENDAR_SCOPE,
-        callback: response => {
-            if (response?.error) {
-                finishPendingTokenRequest(new Error(response.error_description || response.error));
-                return;
-            }
-
-            if (!response?.access_token) {
-                finishPendingTokenRequest(new Error("Google did not return an access token."));
-                return;
-            }
-
-            googleAccessToken = response.access_token;
-            const expiresIn = Number(response.expires_in || 3600);
-            googleAccessTokenExpiresAt = Date.now() + Math.max(expiresIn - 60, 60) * 1000;
-            finishPendingTokenRequest(null, googleAccessToken);
-        },
-        error_callback: error => {
-            finishPendingTokenRequest(new Error(error?.message || error?.type || "Google authorization failed."));
-        }
-    });
-}
-
-function finishPendingTokenRequest(error, token = "") {
-    if (error && pendingTokenReject) pendingTokenReject(error);
-    if (!error && pendingTokenResolve) pendingTokenResolve(token);
-
-    pendingTokenResolve = null;
-    pendingTokenReject = null;
-}
-
-function requestGoogleCalendarAccess() {
-    if (googleAccessToken && Date.now() < googleAccessTokenExpiresAt) {
-        return Promise.resolve(googleAccessToken);
-    }
-
-    initializeGoogleTokenClient();
-
-    if (!googleTokenClient) {
-        return Promise.reject(new Error("Google Identity Services is not ready."));
-    }
-
-    if (pendingTokenResolve || pendingTokenReject) {
-        return Promise.reject(new Error("A Google authorization request is already active."));
-    }
-
-    const promise = new Promise((resolve, reject) => {
-        pendingTokenResolve = resolve;
-        pendingTokenReject = reject;
-    });
-
-    googleTokenClient.requestAccessToken({ prompt: googleAccessToken ? "" : "consent" });
-    return promise;
-}
-
-async function createGoogleCalendarEvent(entry, accessToken) {
-    const startDateTime = `${entry.dueDate}T09:00:00`;
-    const endDateTime = `${entry.dueDate}T09:30:00`;
-
-    const event = {
-        summary: `[KABALIKAT] ${entry.name} Due`,
-        description: buildCalendarDescription(entry),
-        start: {
-            dateTime: startDateTime,
-            timeZone: GOOGLE_CALENDAR_TIME_ZONE
-        },
-        end: {
-            dateTime: endDateTime,
-            timeZone: GOOGLE_CALENDAR_TIME_ZONE
-        },
-        transparency: "transparent",
-        visibility: "private",
-        reminders: entry.reminder
-            ? {
-                useDefault: false,
-                overrides: [
-                    { method: "popup", minutes: 4320 },
-                    { method: "popup", minutes: 1440 }
-                ]
-            }
-            : {
-                useDefault: false,
-                overrides: []
-            },
-        extendedProperties: {
-            private: {
-                kabalikatEntryId: entry.id,
-                kabalikatFamilyCode: entry.familyCode,
-                kabalikatEntryType: entry.type
-            }
-        }
-    };
-
-    if (entry.frequency === "monthly") {
-        event.recurrence = ["RRULE:FREQ=MONTHLY"];
-    } else if (entry.frequency === "weekly") {
-        event.recurrence = ["RRULE:FREQ=WEEKLY"];
-    }
-
-    const response = await fetch(
-        "https://www.googleapis.com/calendar/v3/calendars/primary/events?sendUpdates=none",
-        {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(event)
-        }
-    );
-
-    const result = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-        const message = result?.error?.message || `Google Calendar returned HTTP ${response.status}.`;
-        throw new Error(message);
-    }
-
-    return result;
-}
-
-function buildCalendarDescription(entry) {
-    const lines = [
-        `Type: ${capitalize(entry.type)}`,
-        `Provider / Payee: ${entry.provider}`,
-        `Amount: ${peso(entry.amount)}`,
-        `Category: ${entry.category}`,
-        `Frequency: ${formatFrequency(entry.frequency)}`,
-        `Shared with family: ${entry.shared ? "Yes" : "No"}`
-    ];
-
-    if (entry.notes) lines.push(`Notes: ${entry.notes}`);
-    lines.push("Created through KABALIKAT.");
-
-    return lines.join("\n");
-}
-
-function updateCalendarConnectionNote(message = "", warning = false) {
-    const note = document.getElementById("calendarConnectionNote");
-    if (!note) return;
-
-    const fileOrWebView = window.location.protocol === "file:" || /;\s*wv\)/i.test(navigator.userAgent);
-
-    if (message) {
-        note.querySelector("span").textContent = message;
-        note.classList.toggle("warning", warning);
-        return;
-    }
-
-    if (!isGoogleClientConfigured()) {
-        note.querySelector("span").textContent = "Replace GOOGLE_CLIENT_ID in bills.js to enable Google Calendar sync.";
-        note.classList.add("warning");
-        return;
-    }
-
-    if (fileOrWebView) {
-        note.querySelector("span").textContent = "Calendar sync is configured, but Android WebView requires native Google OAuth or an external browser flow.";
-        note.classList.add("warning");
-        return;
-    }
-
-    note.querySelector("span").textContent = "Saved items will be added to Google Calendar after authorization.";
-    note.classList.remove("warning");
 }
 
 /* =========================================================

@@ -174,31 +174,87 @@
         <form id="billDebtForm" class="bill-debt-form">
             <fieldset class="bill-fieldset">
                 <legend id="entryNameLegend">Bill Name</legend>
-                <input id="entryName" type="text" placeholder="e.g., Electric Bill" required>
+
+                <label class="sr-only" for="entryName">
+                    Bill or debt name
+                </label>
+
+                <input
+                        id="entryName"
+                        name="entryName"
+                        type="text"
+                        placeholder="e.g., Electric Bill"
+                        required
+                >
             </fieldset>
 
             <fieldset class="bill-fieldset">
                 <legend id="providerLegend">Provider / Payee</legend>
-                <input id="entryProvider" type="text" placeholder="e.g., Meralco" required>
+
+                <label class="sr-only" for="entryProvider">
+                    Provider, lender, or payee
+                </label>
+
+                <input
+                        id="entryProvider"
+                        name="entryProvider"
+                        type="text"
+                        placeholder="e.g., Meralco"
+                        required
+                >
             </fieldset>
 
             <fieldset class="bill-fieldset">
                 <legend>Amount</legend>
+
+                <label class="sr-only" for="entryAmount">
+                    Payment amount
+                </label>
+
                 <div class="currency-input">
-                    <span>₱</span>
-                    <input id="entryAmount" type="number" min="0.01" step="0.01" placeholder="0.00" required>
+                    <span aria-hidden="true">₱</span>
+
+                    <input
+                            id="entryAmount"
+                            name="entryAmount"
+                            type="number"
+                            min="0.01"
+                            step="0.01"
+                            placeholder="0.00"
+                            required
+                    >
                 </div>
             </fieldset>
 
             <fieldset class="bill-fieldset date-fieldset">
                 <legend>Due Date</legend>
-                <input id="entryDueDate" type="date" required>
-                <i class="bi bi-calendar3"></i>
+
+                <label class="sr-only" for="entryDueDate">
+                    Payment due date
+                </label>
+
+                <input
+                        id="entryDueDate"
+                        name="entryDueDate"
+                        type="date"
+                        required
+                >
+
+                <i class="bi bi-calendar3" aria-hidden="true"></i>
             </fieldset>
 
             <fieldset class="bill-fieldset select-fieldset">
                 <legend>Category</legend>
-                <select id="entryCategory" required>
+
+                <label class="sr-only" for="entryCategory">
+                    Payment category
+                </label>
+
+                <select
+                        id="entryCategory"
+                        name="entryCategory"
+                        required
+                >
                     <option value="">Select category</option>
                     <option value="Utilities">Utilities</option>
                     <option value="Housing">Housing</option>
@@ -210,7 +266,8 @@
                     <option value="Health">Health</option>
                     <option value="Other">Other</option>
                 </select>
-                <i class="bi bi-chevron-down"></i>
+
+                <i class="bi bi-chevron-down" aria-hidden="true"></i>
             </fieldset>
 
             <div class="frequency-field">
@@ -253,8 +310,8 @@
             </div>
 
             <div id="calendarConnectionNote" class="calendar-connection-note">
-                <i class="bi bi-google"></i>
-                <span>Reminder-enabled items will sync to Google Calendar after authorization.</span>
+                <i class="bi bi-calendar-check"></i>
+                <span>Saving opens your Calendar app and schedules Android reminders.</span>
             </div>
 
             <div class="add-panel-actions">
@@ -289,7 +346,6 @@
 
 <div id="billToast" class="bill-toast" role="status" aria-live="polite"></div>
 
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="bills.js"></script>
 </body>
 </html>
