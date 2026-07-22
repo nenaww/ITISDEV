@@ -556,6 +556,15 @@ const SAVEMORE_RULE_DATA = [
         "CHUPROHUPSHYPENO",
         "MLDYPOP",
         "MELODYPOP"
+    ]],
+
+    ["Nutrifam Chia Seeds 10g", "Food", [
+        "NUTRIFAMCHIASDS10G",
+        "NUTRIFAM CHIA SDS 10G",
+        "NUTRIFAMCHIASEEDS10G",
+        "NUTRIFAITIIASDS10G",
+        "NUTRIFAMCHIASDS1OG"
+        "NUTRIFAITIASDS1UG"
     ]]
 ];
 

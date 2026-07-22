@@ -294,7 +294,7 @@ function extractReceiptNumber(text) {
     const patterns = [
         /SI[#:\s-]*([0-9A-Z-]{5,})/i,
         /S1[#:\s-]*([0-9A-Z-]{5,})/i,
-        /(?:OR|REF|TRANS|RECEIPT|INVOICE)\s*(?:NO|#|NUMBER)?[:\s-]*([A-Z0-9-]{5,})/i,
+        /\b(?:OR|REF|TRANS|RECEIPT|IN[UV]OICE)\b\s*(?:NO|#|NUMBER)?[:\s-]*([A-Z0-9-]{5,})/i,
         /#\s*([A-Z0-9-]{5,})/i
     ];
 
