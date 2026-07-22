@@ -74,9 +74,9 @@
                 <span>Add Expense</span>
             </button>
 
-            <button id="quickBills" class="quick-action-bills" type="button">
-                <i class="bi bi-calendar2-check"></i>
-                <span>Bills</span>
+            <button id="quickCalculator" class="quick-action-calculator" type="button">
+                <i class="bi bi-calculator"></i>
+                <span>Calculator</span>
             </button>
 
             <button id="quickMembers" class="quick-action-members" type="button">
@@ -198,11 +198,56 @@
             <span>Bills</span>
         </button>
 
-        <button id="navProfile" type="button">
-            <i class="bi bi-person"></i>
-            <span>Profile</span>
+        <button id="navSavings" type="button">
+            <i class="bi bi-piggy-bank"></i>
+            <span>Savings</span>
         </button>
     </nav>
+
+
+    <div id="homeCalculatorBackdrop" class="home-calculator-backdrop" hidden></div>
+
+    <section id="homeCalculatorSheet" class="home-calculator-sheet" hidden aria-modal="true" aria-label="Calculator">
+        <div class="home-calculator-handle"></div>
+
+        <div class="home-calculator-heading">
+            <div>
+                <span>Quick tool</span>
+                <h2>Calculator</h2>
+            </div>
+            <button id="closeHomeCalculator" type="button" aria-label="Close calculator">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <div id="homeCalculatorDisplay" class="home-calculator-display" aria-live="polite">0</div>
+
+        <div class="home-calculator-grid">
+            <button class="calculator-command" type="button" data-calc-action="clear">C</button>
+            <button class="calculator-command" type="button" data-calc-action="backspace"><i class="bi bi-backspace"></i></button>
+            <button class="calculator-command" type="button" data-calc-value="%">%</button>
+            <button class="calculator-operator" type="button" data-calc-value="/">÷</button>
+
+            <button type="button" data-calc-value="7">7</button>
+            <button type="button" data-calc-value="8">8</button>
+            <button type="button" data-calc-value="9">9</button>
+            <button class="calculator-operator" type="button" data-calc-value="*">×</button>
+
+            <button type="button" data-calc-value="4">4</button>
+            <button type="button" data-calc-value="5">5</button>
+            <button type="button" data-calc-value="6">6</button>
+            <button class="calculator-operator" type="button" data-calc-value="-">−</button>
+
+            <button type="button" data-calc-value="1">1</button>
+            <button type="button" data-calc-value="2">2</button>
+            <button type="button" data-calc-value="3">3</button>
+            <button class="calculator-operator" type="button" data-calc-value="+">+</button>
+
+            <button class="calculator-zero" type="button" data-calc-value="0">0</button>
+            <button type="button" data-calc-value=".">.</button>
+            <button class="calculator-equals" type="button" data-calc-action="equals">=</button>
+        </div>
+    </section>
 
     <div id="toast" class="toast"></div>
 
