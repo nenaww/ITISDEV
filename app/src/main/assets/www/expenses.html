@@ -31,7 +31,7 @@
             </button>
         </section>
 
-        <section id="budget-overview" class="budget-overview-section" aria-label="Monthly spending progress">
+        <section class="budget-overview-section" aria-label="Monthly spending progress">
             <h2 class="budget-overview-title">Budget Overview</h2>
             <div class="budget-gauge-card">
             <div class="budget-gauge-wrap">
@@ -113,7 +113,7 @@
             </div>
         </section>
 
-        <section id="household-spending" class="expense-section household-section">
+        <section class="expense-section household-section">
             <div class="section-heading">
                 <h2>Household Spending</h2>
             </div>
@@ -138,14 +138,14 @@
             <i class="bi bi-upc-scan"></i>
         </button>
 
-        <button id="navBills" type="button">
-            <i class="bi bi-calendar-check"></i>
-            <span>Bills</span>
-        </button>
-
         <button id="navSavings" type="button">
             <i class="bi bi-piggy-bank"></i>
             <span>Savings</span>
+        </button>
+
+        <button id="navProfile" type="button">
+            <i class="bi bi-person"></i>
+            <span>Profile</span>
         </button>
     </nav>
 </main>
@@ -210,10 +210,10 @@
 
         <div id="breakdownFilterChips" class="inline-chips"></div>
         <div class="panel-subheading">
-            <h3>Transaction History</h3>
-            <span id="categoryHistoryFilterLabel">All categories</span>
+            <h3>Categories</h3>
+            <span>Tap a card for details</span>
         </div>
-        <div id="categoryListCards" class="dated-history-list category-history-list"></div>
+        <div id="categoryListCards" class="category-list-cards"></div>
     </div>
 </section>
 

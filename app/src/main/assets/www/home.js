@@ -2,7 +2,6 @@ let homeCurrentLanguage = localStorage.getItem("kabalikat_language") || "en";
 let homeCurrentEventIndex = 0;
 let homeCurrentEvents = [];
 let expandedFamilyMemberIndex = -1;
-let homeCalculatorExpression = "0";
 
 const KABALIKAT_PET_KEY = "kabalikat_pet_state_v1";
 
@@ -32,8 +31,7 @@ const homeText = {
         viewAll: "View All",
         quickExpense: "Add Expense",
         quickBills: "Bills",
-        quickCalculator: "Calculator",
-        quickMembers: "Member",
+        quickMembers: "Members",
         comingSoon: "This feature will be added next.",
         scanReady: "OCR receipt scanner will be added next.",
         noAmount: "No amount",
@@ -66,8 +64,7 @@ const homeText = {
         viewAll: "Tingnan Lahat",
         quickExpense: "Add Expense",
         quickBills: "Bills",
-        quickCalculator: "Calculator",
-        quickMembers: "Member",
+        quickMembers: "Members",
         comingSoon: "Susunod pang idaragdag ang feature na ito.",
         scanReady: "Susunod pang idaragdag ang OCR receipt scanner.",
         noAmount: "Walang amount",
@@ -168,7 +165,6 @@ const sampleDashboard = {
     expenses: [
         {
             title: "Weekly groceries",
-            date: "2026-07-20",
             category: "Food",
             amount: 850,
             addedBy: "Elena",
@@ -177,7 +173,6 @@ const sampleDashboard = {
         },
         {
             title: "Electric bill",
-            date: "2026-07-18",
             category: "Utilities",
             amount: 1420,
             addedBy: "Elena",
@@ -186,7 +181,6 @@ const sampleDashboard = {
         },
         {
             title: "Jeepney fare",
-            date: "2026-07-17",
             category: "Transportation",
             amount: 120,
             addedBy: "Ana",
@@ -195,7 +189,6 @@ const sampleDashboard = {
         },
         {
             title: "Medicine",
-            date: "2026-07-16",
             category: "Health",
             amount: 360,
             addedBy: "Marco",
@@ -314,9 +307,15 @@ function renderHomeDashboard() {
 function bindHomeActions() {
     const petButton = document.getElementById("homePetButton");
     const scanButton = document.getElementById("navScan");
-    const addExpenseButton = document.getElementById("quickAddExpense");
-    const calculatorButton = document.getElementById("quickCalculator");
-    const familyViewAllButton = document.getElementById("familySpendingViewAll");
+    const expenseButtons = ["quickAddExpense", "navExpenses", "homeBudgetViewButton", "overviewFilter", "transactionsViewAll"];
+    const actionButtons = [
+        "quickMembers",
+        "navProfile",
+        "debtViewAll",
+        "familySpendingViewAll",
+        "eventsViewAll"
+    ];
+    const billsButtons = ["quickBills"];
     const savingsButton = document.getElementById("navSavings");
 
     if (petButton) {
@@ -331,56 +330,23 @@ function bindHomeActions() {
         });
     }
 
-    if (addExpenseButton) {
-        addExpenseButton.addEventListener("click", () => {
-            goToExpenses({ view: "add-expense" });
-        });
-    }
-
-    if (calculatorButton) {
-        calculatorButton.addEventListener("click", openHomeCalculator);
-    }
-
-    if (familyViewAllButton) {
-        familyViewAllButton.addEventListener("click", () => {
-            goToExpenses({
-                section: "household-spending",
-                hash: "household-spending"
-            });
-        });
-    }
-
     if (savingsButton) {
         savingsButton.addEventListener("click", () => {
-            goToExpenses({
-                section: "budget-overview",
-                hash: "budget-overview"
-            });
+            window.location.href = "savings.html";
         });
     }
 
-    const transactionsViewAllButton = document.getElementById("transactionsViewAll");
-
-    if (transactionsViewAllButton) {
-        transactionsViewAllButton.addEventListener("click", () => {
-            goToExpenses({
-                view: "category-breakdown",
-                filter: "all"
-            });
-        });
-    }
-
-    ["navExpenses", "homeBudgetViewButton", "overviewFilter"].forEach(id => {
+    expenseButtons.forEach(id => {
         const button = document.getElementById(id);
 
         if (button) {
             button.addEventListener("click", () => {
-                goToExpenses();
+                window.location.href = "expenses.html";
             });
         }
     });
 
-    ["quickMembers", "navBills", "debtViewAll", "eventsViewAll"].forEach(id => {
+    actionButtons.forEach(id => {
         const button = document.getElementById(id);
 
         if (button) {
@@ -390,29 +356,15 @@ function bindHomeActions() {
         }
     });
 
-    bindHomeCalculator();
-}
+    billsButtons.forEach(id => {
+        const button = document.getElementById(id);
 
-function goToExpenses({ view = "", section = "", hash = "", filter = "" } = {}) {
-    const url = new URL("expenses.html", window.location.href);
-
-    if (view) {
-        url.searchParams.set("view", view);
-    }
-
-    if (section) {
-        url.searchParams.set("section", section);
-    }
-
-    if (filter) {
-        url.searchParams.set("filter", filter);
-    }
-
-    if (hash) {
-        url.hash = hash;
-    }
-
-    window.location.href = url.href;
+        if (button) {
+            button.addEventListener("click", () => {
+                window.location.href = "bills.html";
+            });
+        }
+    });
 }
 
 function getPetState() {
@@ -444,7 +396,7 @@ function renderHomePetIcon() {
 
 function renderQuickActions() {
     const addButton = document.getElementById("quickAddExpense");
-    const calculatorButton = document.getElementById("quickCalculator");
+    const billsButton = document.getElementById("quickBills");
     const membersButton = document.getElementById("quickMembers");
 
     if (addButton) {
@@ -454,17 +406,17 @@ function renderQuickActions() {
         `;
     }
 
-    if (calculatorButton) {
-        calculatorButton.innerHTML = `
-            <i class="bi bi-calculator"></i>
-            <span>${homeText[homeCurrentLanguage].quickCalculator}</span>
+    if (billsButton) {
+        billsButton.innerHTML = `
+            <i class="bi bi-calendar2-check"></i>
+            <span>${homeText[homeCurrentLanguage].quickBills}</span>
         `;
     }
 
     if (membersButton) {
         membersButton.innerHTML = `
             <i class="bi bi-people"></i>
-            <span>${homeText[homeCurrentLanguage].quickMembers || "Member"}</span>
+            <span>${homeText[homeCurrentLanguage].quickMembers}</span>
         `;
     }
 }
@@ -615,62 +567,25 @@ function renderTransactions(expenses) {
         return;
     }
 
-    const recentExpenses = expenses.slice(0, 3);
+    container.innerHTML = expenses.slice(0, 3).map(expense => `
+        <article class="home-transaction-scan-card">
+            <span class="scan-corner top-left"></span>
+            <span class="scan-corner top-right"></span>
+            <span class="scan-corner bottom-left"></span>
+            <span class="scan-corner bottom-right"></span>
 
-    container.innerHTML = `
-        <article class="home-bookkeeping-card">
-            <div class="home-bookkeeping-column-head">
-                <span>Date</span>
-                <span>Particulars / Account</span>
-                <span>Amount</span>
+            <div class="home-transaction-icon" style="background: ${escapeHtml(expense.color)};">
+                <i class="bi ${escapeHtml(expense.icon)}"></i>
             </div>
 
-            <div class="home-bookkeeping-rows">
-                ${recentExpenses.map(expense => {
-                    const ledgerDate = formatLedgerDate(expense.date);
-                    const memberLabel = expense.addedBy || "Member";
-                    const signedAmount = `${Number(expense.amount || 0) >= 0 ? "-" : "+"}${peso(Math.abs(Number(expense.amount || 0)))}`;
-
-                    return `
-                        <div class="home-bookkeeping-row">
-                            <time class="home-bookkeeping-date" datetime="${escapeHtml(expense.date || "")}">
-                                <strong>${escapeHtml(ledgerDate.month)}</strong>
-                                <span>${escapeHtml(ledgerDate.day)}</span>
-                            </time>
-
-                            <div class="home-bookkeeping-particulars">
-                                <span class="home-bookkeeping-icon" style="background:${escapeHtml(expense.color)}">
-                                    <i class="bi ${escapeHtml(expense.icon)}"></i>
-                                </span>
-
-                                <div>
-                                    <h3>${escapeHtml(expense.title)}</h3>
-                                    <p>${escapeHtml(expense.category)} <b>|</b> ${escapeHtml(memberLabel)}</p>
-                                </div>
-                            </div>
-
-                            <div class="home-bookkeeping-amount">
-                                <strong>${signedAmount}</strong>
-                            </div>
-                        </div>
-                    `;
-                }).join("")}
+            <div class="home-transaction-info">
+                <h3>${escapeHtml(expense.category)}</h3>
+                <p>${escapeHtml(expense.title)} • ${escapeHtml(expense.addedBy)}</p>
             </div>
+
+            <div class="home-transaction-amount">-${peso(expense.amount)}</div>
         </article>
-    `;
-}
-
-function formatLedgerDate(value) {
-    const date = value ? new Date(`${value}T00:00:00`) : new Date();
-
-    if (Number.isNaN(date.getTime())) {
-        return { month: "---", day: "--" };
-    }
-
-    return {
-        month: date.toLocaleDateString("en-PH", { month: "short" }).toUpperCase(),
-        day: date.toLocaleDateString("en-PH", { day: "2-digit" })
-    };
+    `).join("");
 }
 
 function renderEventCarousel() {
@@ -785,134 +700,6 @@ function moveEvent(direction) {
     }
 
     renderEventCarousel();
-}
-
-function bindHomeCalculator() {
-    const closeButton = document.getElementById("closeHomeCalculator");
-    const backdrop = document.getElementById("homeCalculatorBackdrop");
-    const sheet = document.getElementById("homeCalculatorSheet");
-
-    if (closeButton) {
-        closeButton.addEventListener("click", closeHomeCalculator);
-    }
-
-    if (backdrop) {
-        backdrop.addEventListener("click", closeHomeCalculator);
-    }
-
-    if (!sheet) {
-        return;
-    }
-
-    sheet.querySelectorAll("[data-calc-value]").forEach(button => {
-        button.addEventListener("click", () => {
-            appendCalculatorValue(button.dataset.calcValue || "");
-        });
-    });
-
-    sheet.querySelectorAll("[data-calc-action]").forEach(button => {
-        button.addEventListener("click", () => {
-            const action = button.dataset.calcAction;
-
-            if (action === "clear") {
-                homeCalculatorExpression = "0";
-                updateHomeCalculatorDisplay();
-            } else if (action === "backspace") {
-                homeCalculatorExpression = homeCalculatorExpression.length > 1
-                    ? homeCalculatorExpression.slice(0, -1)
-                    : "0";
-                updateHomeCalculatorDisplay();
-            } else if (action === "equals") {
-                calculateHomeExpression();
-            }
-        });
-    });
-}
-
-function openHomeCalculator() {
-    const backdrop = document.getElementById("homeCalculatorBackdrop");
-    const sheet = document.getElementById("homeCalculatorSheet");
-
-    if (!backdrop || !sheet) {
-        return;
-    }
-
-    backdrop.hidden = false;
-    sheet.hidden = false;
-    requestAnimationFrame(() => {
-        backdrop.classList.add("show");
-        sheet.classList.add("show");
-    });
-}
-
-function closeHomeCalculator() {
-    const backdrop = document.getElementById("homeCalculatorBackdrop");
-    const sheet = document.getElementById("homeCalculatorSheet");
-
-    if (!backdrop || !sheet) {
-        return;
-    }
-
-    backdrop.classList.remove("show");
-    sheet.classList.remove("show");
-
-    window.setTimeout(() => {
-        backdrop.hidden = true;
-        sheet.hidden = true;
-    }, 220);
-}
-
-function appendCalculatorValue(value) {
-    const operators = ["+", "-", "*", "/", "%"];
-    const lastCharacter = homeCalculatorExpression.slice(-1);
-
-    if (homeCalculatorExpression === "0" && !operators.includes(value) && value !== ".") {
-        homeCalculatorExpression = value;
-    } else if (operators.includes(value) && operators.includes(lastCharacter)) {
-        homeCalculatorExpression = homeCalculatorExpression.slice(0, -1) + value;
-    } else {
-        homeCalculatorExpression += value;
-    }
-
-    updateHomeCalculatorDisplay();
-}
-
-function calculateHomeExpression() {
-    const safeExpression = homeCalculatorExpression.replace(/%/g, "/100");
-
-    if (!/^[0-9+\-*/.()\s]+$/.test(safeExpression)) {
-        homeCalculatorExpression = "Error";
-        updateHomeCalculatorDisplay();
-        return;
-    }
-
-    try {
-        const result = Function(`"use strict"; return (${safeExpression})`)();
-
-        if (!Number.isFinite(result)) {
-            throw new Error("Invalid result");
-        }
-
-        homeCalculatorExpression = String(
-            Math.round((result + Number.EPSILON) * 1000000) / 1000000
-        );
-    } catch (error) {
-        homeCalculatorExpression = "Error";
-    }
-
-    updateHomeCalculatorDisplay();
-}
-
-function updateHomeCalculatorDisplay() {
-    const display = document.getElementById("homeCalculatorDisplay");
-
-    if (!display) {
-        return;
-    }
-
-    display.textContent = homeCalculatorExpression
-        .replaceAll("*", "×")
-        .replaceAll("/", "÷");
 }
 
 function getTodayHeaderText() {
