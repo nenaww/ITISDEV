@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KABALIKAT Savings</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="savings.css">
+</head>
+<body data-page="savings">
+
+<main class="savings-page">
+    <div class="savings-scroll-area">
+        <header class="savings-header">
+            <div>
+                <span class="savings-eyebrow">Plan together</span>
+                <h1>Savings</h1>
+            </div>
+
+            <button id="openAllocationForm" class="savings-add-top" type="button">
+                <i class="bi bi-plus-lg"></i>
+                <span>Allocate</span>
+            </button>
+        </header>
+
+        <section class="savings-period-section" aria-label="Allocation month">
+            <button id="monthPickerButton" class="savings-period-picker" type="button">
+                <span>
+                    <small>Allocation month</small>
+                    <strong id="monthPickerText">July 2026</strong>
+                </span>
+                <i class="bi bi-calendar3"></i>
+            </button>
+            <input id="monthPickerInput" class="month-picker-input" type="month" aria-label="Select allocation month">
+        </section>
+
+
+
+        <section class="thirteenth-preview-card" aria-labelledby="thirteenthPreviewTitle">
+            <div class="thirteenth-preview-copy">
+                <span class="thirteenth-preview-kicker">13th Month Pay</span>
+                <h2 id="thirteenthPreviewTitle">Plan it before spending</h2>
+                <p id="thirteenthPreviewStatus">Not yet received • ₱50,000 expected</p>
+            </div>
+
+            <div class="thirteenth-preview-visual" aria-hidden="true">
+                <span class="thirteenth-preview-money"><i class="bi bi-cash-stack"></i></span>
+                <span class="thirteenth-preview-envelope"><i class="bi bi-envelope-heart-fill"></i></span>
+                <i class="bi bi-stars thirteenth-preview-stars"></i>
+            </div>
+
+            <button id="openThirteenthPanel" class="thirteenth-preview-button" type="button">
+                <span>View plan</span>
+                <i class="bi bi-arrow-right"></i>
+            </button>
+        </section>
+
+        <section class="allocation-overview" aria-labelledby="allocationOverviewTitle">
+            <div class="allocation-overview-head">
+                <div>
+                    <span>This month's plan</span>
+                    <h2 id="allocationOverviewTitle">Household Budget</h2>
+                </div>
+
+                <button id="editBudgetButton" class="soft-pill-button" type="button">
+                    Edit budget
+                </button>
+            </div>
+
+            <strong id="monthlyBudgetAmount" class="allocation-budget-total">₱25,000</strong>
+
+            <div class="allocation-progress" aria-label="Allocated budget progress">
+                <div id="allocationProgressSegments" class="allocation-progress-segments"></div>
+            </div>
+
+            <div class="allocation-progress-copy">
+                <span id="allocationProgressText">₱0 of ₱25,000 allocated</span>
+                <strong id="allocationProgressPercent">0%</strong>
+            </div>
+
+            <div class="allocation-stat-grid">
+                <article>
+                    <span>Allocated</span>
+                    <strong id="allocatedAmount">₱0</strong>
+                </article>
+                <article>
+                    <span>Available</span>
+                    <strong id="availableAmount">₱25,000</strong>
+                </article>
+                <article>
+                    <span>Members</span>
+                    <strong id="allocatedMemberCount">0</strong>
+                </article>
+            </div>
+        </section>
+
+        <section class="allocation-section">
+            <div class="allocation-section-heading">
+                <div>
+                    <h2>Household Allocation</h2>
+                    <p>Set how much each family member can use and what it is for.</p>
+                </div>
+                <button id="addAllocationSecondary" class="soft-pill-button" type="button">
+                    <i class="bi bi-plus-lg"></i>
+                    Add
+                </button>
+            </div>
+
+            <div id="memberAllocationList" class="member-allocation-list"></div>
+        </section>
+
+        <section class="allocation-tip-card">
+            <span class="allocation-tip-icon"><i class="bi bi-shield-check"></i></span>
+            <div>
+                <strong>Keep part of the budget unallocated</strong>
+                <p>The available amount can cover unexpected household needs during the month.</p>
+            </div>
+        </section>
+    </div>
+
+    <nav class="savings-bottom-nav">
+        <button id="navHome" type="button">
+            <i class="bi bi-house"></i>
+            <span>Home</span>
+        </button>
+
+        <button id="navExpenses" type="button">
+            <i class="bi bi-receipt"></i>
+            <span>Expenses</span>
+        </button>
+
+        <button id="navScan" class="savings-nav-scan" type="button" aria-label="Scan receipt">
+            <i class="bi bi-upc-scan"></i>
+        </button>
+
+        <button class="active" type="button" aria-current="page">
+            <i class="bi bi-piggy-bank-fill"></i>
+            <span>Savings</span>
+        </button>
+
+        <button id="navProfile" type="button">
+            <i class="bi bi-person"></i>
+            <span>Profile</span>
+        </button>
+    </nav>
+</main>
+
+<div id="sheetBackdrop" class="savings-sheet-backdrop" hidden></div>
+
+<section id="allocationSheet" class="savings-bottom-sheet" hidden aria-modal="true" aria-labelledby="allocationSheetTitle">
+    <div class="sheet-handle"></div>
+
+    <div class="sheet-heading">
+        <div>
+            <span id="allocationSheetEyebrow">New allocation</span>
+            <h2 id="allocationSheetTitle">Assign a budget</h2>
+        </div>
+        <button id="closeAllocationSheet" class="sheet-close" type="button" aria-label="Close allocation form">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <form id="allocationForm" class="allocation-form">
+        <input id="allocationId" type="hidden">
+
+        <label class="form-field">
+            <span>Family member</span>
+            <select id="allocationMember" required></select>
+        </label>
+
+        <label class="form-field">
+            <span>Purpose</span>
+            <select id="allocationPurpose" required>
+                <option value="Allowance">Allowance</option>
+                <option value="Education">Education</option>
+                <option value="Transportation">Transportation</option>
+                <option value="Medicine">Medicine</option>
+                <option value="Household Needs">Household Needs</option>
+                <option value="Personal Needs">Personal Needs</option>
+                <option value="Savings">Savings</option>
+                <option value="Other">Other</option>
+            </select>
+        </label>
+
+        <label class="form-field">
+            <span>Allocation amount</span>
+            <div class="peso-input">
+                <b>₱</b>
+                <input id="allocationAmount" type="number" min="1" step="1" inputmode="decimal" placeholder="0" required>
+            </div>
+            <small id="allocationAvailableHint">₱0 remains available</small>
+        </label>
+
+        <label class="form-field">
+            <span>Note <em>Optional</em></span>
+            <input id="allocationNote" type="text" maxlength="70" placeholder="e.g., Weekly school allowance">
+        </label>
+
+        <button class="save-allocation-button" type="submit">
+            <i class="bi bi-check-lg"></i>
+            <span id="saveAllocationLabel">Save allocation</span>
+        </button>
+    </form>
+</section>
+
+<section id="budgetSheet" class="savings-bottom-sheet compact" hidden aria-modal="true" aria-labelledby="budgetSheetTitle">
+    <div class="sheet-handle"></div>
+
+    <div class="sheet-heading">
+        <div>
+            <span>Monthly plan</span>
+            <h2 id="budgetSheetTitle">Edit household budget</h2>
+        </div>
+        <button id="closeBudgetSheet" class="sheet-close" type="button" aria-label="Close budget form">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <form id="budgetForm" class="allocation-form">
+        <label class="form-field">
+            <span>Total monthly budget</span>
+            <div class="peso-input">
+                <b>₱</b>
+                <input id="budgetInput" type="number" min="1" step="1" inputmode="decimal" required>
+            </div>
+            <small id="budgetMinimumHint">Must cover all current allocations.</small>
+        </label>
+
+        <button class="save-allocation-button" type="submit">
+            <i class="bi bi-check-lg"></i>
+            Save monthly budget
+        </button>
+    </form>
+</section>
+
+
+
+<section id="thirteenthMonthPanel" class="savings-full-panel" hidden aria-labelledby="thirteenthPanelTitle">
+    <header class="savings-panel-header">
+        <button id="closeThirteenthPanel" type="button" aria-label="Back to Savings">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+        <h2 id="thirteenthPanelTitle">13th Month Pay</h2>
+        <button id="thirteenthInfoButton" type="button" aria-label="About 13th month pay planning">
+            <i class="bi bi-info-circle"></i>
+        </button>
+    </header>
+
+    <div class="thirteenth-panel-scroll">
+        <section id="thirteenthStatusCard" class="thirteenth-status-card">
+            <div class="thirteenth-status-copy">
+                <span>13th Month Pay</span>
+                <h3 id="thirteenthStatusTitle">Not yet received</h3>
+                <p id="thirteenthStatusDescription">Once you receive your 13th month pay, mark it as received so the plan can track your remaining money.</p>
+                <strong id="thirteenthExpectedAmount">Expected: ₱50,000</strong>
+
+                <button id="markThirteenthReceived" class="thirteenth-received-button" type="button">
+                    <i class="bi bi-gift"></i>
+                    <span>Mark as Received</span>
+                </button>
+            </div>
+
+            <div class="thirteenth-money-art" aria-hidden="true">
+                <span class="money-note note-one">₱</span>
+                <span class="money-note note-two">₱</span>
+                <span class="money-note note-three">₱</span>
+                <span class="money-envelope"><i class="bi bi-envelope-heart-fill"></i></span>
+                <i class="bi bi-stars money-sparkle sparkle-one"></i>
+                <i class="bi bi-stars money-sparkle sparkle-two"></i>
+            </div>
+        </section>
+
+        <section class="thirteenth-summary-cards" aria-label="13th month pay summary">
+            <article>
+                <span class="thirteenth-summary-icon peach"><i class="bi bi-cart-check"></i></span>
+                <small>Spent</small>
+                <strong id="thirteenthSpentAmount">₱0</strong>
+                <em id="thirteenthSpentPercent">0%</em>
+            </article>
+
+            <article>
+                <span class="thirteenth-summary-icon green"><i class="bi bi-clock-history"></i></span>
+                <small>Remaining</small>
+                <strong id="thirteenthRemainingAmount">₱50,000</strong>
+                <em id="thirteenthRemainingPercent">100%</em>
+            </article>
+
+            <article>
+                <span class="thirteenth-summary-icon lavender"><i class="bi bi-pie-chart"></i></span>
+                <small>Utilization</small>
+                <strong id="thirteenthUtilization">0%</strong>
+                <span class="thirteenth-mini-track"><i id="thirteenthUtilizationFill"></i></span>
+            </article>
+        </section>
+
+        <section class="thirteenth-allocation-section">
+            <div class="thirteenth-allocation-heading">
+                <div>
+                    <h3>Allocation Plan</h3>
+                    <p>How your 13th month pay is distributed</p>
+                </div>
+                <button id="resetThirteenthPlan" type="button">Reset</button>
+            </div>
+
+            <div id="thirteenthDistributionBar" class="thirteenth-distribution-bar" aria-label="Allocation distribution"></div>
+            <p id="thirteenthPlanSummary" class="thirteenth-plan-summary">₱50,000 planned out of ₱50,000</p>
+
+            <div id="thirteenthAllocationList" class="thirteenth-allocation-list"></div>
+        </section>
+
+        <section class="thirteenth-tip-card">
+            <span><i class="bi bi-lightbulb"></i></span>
+            <div>
+                <strong>Plan before spending</strong>
+                <p>Allocate your 13th month pay first so savings, bills, and essential household needs are prioritized.</p>
+            </div>
+            <i class="bi bi-piggy-bank-fill thirteenth-tip-pig"></i>
+        </section>
+    </div>
+</section>
+
+<section id="thirteenthReceiveSheet" class="savings-bottom-sheet compact" hidden aria-modal="true" aria-labelledby="thirteenthReceiveTitle">
+    <div class="sheet-handle"></div>
+    <div class="sheet-heading">
+        <div>
+            <span>13th Month Pay</span>
+            <h2 id="thirteenthReceiveTitle">Mark as received</h2>
+        </div>
+        <button id="closeThirteenthReceiveSheet" class="sheet-close" type="button" aria-label="Close received form">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <form id="thirteenthReceiveForm" class="allocation-form">
+        <label class="form-field">
+            <span>Amount received</span>
+            <div class="peso-input">
+                <b>₱</b>
+                <input id="thirteenthReceivedInput" type="number" min="1" step="1" inputmode="decimal" required>
+            </div>
+            <small>The allocation plan cannot exceed this amount.</small>
+        </label>
+
+        <label class="form-field">
+            <span>Date received</span>
+            <input id="thirteenthReceivedDateInput" type="date" required>
+        </label>
+
+        <button class="save-allocation-button" type="submit">
+            <i class="bi bi-check-lg"></i>
+            <span id="saveThirteenthReceivedLabel">Save received pay</span>
+        </button>
+    </form>
+</section>
+
+<section id="thirteenthAllocationSheet" class="savings-bottom-sheet" hidden aria-modal="true" aria-labelledby="thirteenthAllocationSheetTitle">
+    <div class="sheet-handle"></div>
+    <div class="sheet-heading">
+        <div>
+            <span>Edit allocation</span>
+            <h2 id="thirteenthAllocationSheetTitle">Allocation details</h2>
+        </div>
+        <button id="closeThirteenthAllocationSheet" class="sheet-close" type="button" aria-label="Close allocation details">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <form id="thirteenthAllocationForm" class="allocation-form">
+        <input id="thirteenthAllocationId" type="hidden">
+
+        <label class="form-field">
+            <span>Allocation</span>
+            <input id="thirteenthAllocationName" type="text" readonly>
+        </label>
+
+        <label class="form-field">
+            <span>Planned amount</span>
+            <div class="peso-input">
+                <b>₱</b>
+                <input id="thirteenthAllocatedInput" type="number" min="0" step="1" inputmode="decimal" required>
+            </div>
+            <small id="thirteenthAllocationAvailableHint">₱0 remains unallocated.</small>
+        </label>
+
+        <label class="form-field">
+            <span>Amount spent</span>
+            <div class="peso-input">
+                <b>₱</b>
+                <input id="thirteenthSpentInput" type="number" min="0" step="1" inputmode="decimal" required>
+            </div>
+            <small>Spent cannot be greater than the planned amount.</small>
+        </label>
+
+        <button class="save-allocation-button" type="submit">
+            <i class="bi bi-check-lg"></i>
+            Save allocation
+        </button>
+    </form>
+</section>
+
+
+<div id="savingsToast" class="savings-toast" role="status" aria-live="polite"></div>
+
+<script src="savings.js"></script>
+</body>
+</html>
