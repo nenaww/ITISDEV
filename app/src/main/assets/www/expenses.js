@@ -169,6 +169,48 @@ function initializeExpensesPage() {
     document.getElementById('newExpenseDate').value = new Date().toISOString().slice(0, 10);
     bindEvents();
     renderAll();
+    handleExpensesDeepLink();
+}
+
+
+function handleExpensesDeepLink() {
+    const params = new URLSearchParams(window.location.search);
+    const requestedView = params.get('view');
+    const requestedFilter = String(params.get('filter') || '').toLowerCase();
+    const requestedSection = params.get('section') || window.location.hash.replace(/^#/, '');
+
+    window.requestAnimationFrame(() => {
+        if (requestedView === 'add-expense') {
+            openPanel('addExpensePanel');
+            return;
+        }
+
+        if (requestedView === 'category-breakdown') {
+            state.selectedBreakdownCategory = requestedFilter === 'all'
+                ? 'All'
+                : state.selectedBreakdownCategory;
+
+            renderBreakdownPanel();
+            openPanel('categoryBreakdownPanel');
+            return;
+        }
+
+        if (!requestedSection) {
+            return;
+        }
+
+        const target = document.getElementById(requestedSection);
+        const scrollArea = document.querySelector('.expenses-scroll-area');
+
+        if (!target || !scrollArea) {
+            return;
+        }
+
+        scrollArea.scrollTo({
+            top: Math.max(target.offsetTop - 18, 0),
+            behavior: 'auto'
+        });
+    });
 }
 
 function bindEvents() {
@@ -200,6 +242,21 @@ function bindEvents() {
     document.getElementById('navScan').addEventListener('click', () => {
         window.location.href = 'scanner.html';
     });
+
+    const savingsButton = document.getElementById('navSavings');
+    if (savingsButton) {
+        savingsButton.addEventListener('click', () => {
+            const target = document.getElementById('budget-overview');
+            const scrollArea = document.querySelector('.expenses-scroll-area');
+
+            if (target && scrollArea) {
+                scrollArea.scrollTo({
+                    top: Math.max(target.offsetTop - 18, 0),
+                    behavior: 'smooth'
+                });
+            }
+        });
+    }
 
     document.querySelectorAll('[data-close-panel]').forEach(button => {
         button.addEventListener('click', () => {
@@ -377,7 +434,15 @@ function openMemberDetails(member) {
             <div class="member-category-list">${categoryRows || '<p class="empty-state">No category spending yet.</p>'}</div>
         </section>
         <div class="panel-subheading"><h3>Recent Transactions</h3><span>${totalTransactions} total</span></div>
-        <div class="expense-list">${member.expenses.length ? member.expenses.sort((a,b) => new Date(b.date)-new Date(a.date)).slice(0,5).map(transactionCard).join('') : '<p class="empty-state">No transactions yet.</p>'}</div>
+        <div class="dated-history-list member-history-list">
+            ${member.expenses.length
+                ? renderGroupedTransactionHistory(
+                    [...member.expenses]
+                        .sort((first, second) => new Date(second.date) - new Date(first.date))
+                        .slice(0, 5)
+                )
+                : '<p class="empty-state">No transactions yet.</p>'}
+        </div>
     `;
     openPanel('memberDetailsPanel');
 }
@@ -411,7 +476,6 @@ function renderAllExpensesPanel() {
 
 function renderBreakdownPanel() {
     const totalSpent = getTotalSpent();
-    const totals = getCategoryTotals();
 
     setText('categoryPanelTotal', peso(totalSpent));
 
@@ -429,31 +493,23 @@ function renderBreakdownPanel() {
         });
     });
 
-    const categoriesToShow = state.selectedBreakdownCategory === 'All'
-        ? Object.keys(EXPENSE_CATEGORIES)
-        : [state.selectedBreakdownCategory];
+    const filteredExpenses = getVisibleExpenses()
+        .filter(expense => {
+            return state.selectedBreakdownCategory === 'All'
+                || expense.category === state.selectedBreakdownCategory;
+        })
+        .sort((first, second) => new Date(second.date) - new Date(first.date));
 
-    const cardsContainer = document.getElementById('categoryListCards');
-    cardsContainer.innerHTML = categoriesToShow.map(categoryName => {
-        const meta = EXPENSE_CATEGORIES[categoryName];
-        const amount = totals[categoryName] || 0;
-        return `
-            <button class="category-list-card" type="button" data-open-category="${escapeHtml(categoryName)}" style="--category-soft:${escapeHtml(meta.soft)}; --category-accent:${escapeHtml(meta.color)}">
-                <div class="category-list-icon" style="background:${escapeHtml(meta.soft)}"><i class="bi ${escapeHtml(meta.icon)}"></i></div>
-                <div class="category-list-main">
-                    <h4>${escapeHtml(categoryName)}</h4>
-                    <p>${expenseCountText(categoryName)}</p>
-                </div>
-                <div class="category-list-value">
-                    <strong>${peso(amount)}</strong>
-                </div>
-            </button>
-        `;
-    }).join('');
+    const historyContainer = document.getElementById('categoryListCards');
+    historyContainer.className = 'dated-history-list category-history-list';
+    historyContainer.innerHTML = renderGroupedTransactionHistory(filteredExpenses);
 
-    cardsContainer.querySelectorAll('[data-open-category]').forEach(button => {
-        button.addEventListener('click', () => openCategoryDetails(button.dataset.openCategory));
-    });
+    setText(
+        'categoryHistoryFilterLabel',
+        state.selectedBreakdownCategory === 'All'
+            ? 'All categories'
+            : state.selectedBreakdownCategory
+    );
 }
 
 function renderDonutAndLegend({ donutId, legendId, filteredCategory, centerLabelType, onRowClick }) {
@@ -549,8 +605,8 @@ function renderCategoryDetails(categoryName) {
                     <strong>${peso(previousAmount)}</strong>
                 </div>
                 <div>
-                    <span>Change</span>
-                    <strong>${change >= 0 ? '+' : '-'}${peso(Math.abs(change))} (${changePercent}%)</strong>
+                    <span>Transactions</span>
+                    <strong>${categoryExpenses.length}</strong>
                 </div>
             </div>
         </section>
@@ -559,8 +615,12 @@ function renderCategoryDetails(categoryName) {
             <h3>Recent ${escapeHtml(categoryName)} Transactions</h3>
         </div>
 
-        <div class="expense-list">
-            ${categoryExpenses.length ? categoryExpenses.map(transactionCard).join('') : '<p class="empty-state">No transactions in this category yet.</p>'}
+        <div class="dated-history-list category-detail-history-list">
+            ${categoryExpenses.length
+                ? renderGroupedTransactionHistory(
+                    [...categoryExpenses].sort((first, second) => new Date(second.date) - new Date(first.date))
+                )
+                : '<p class="empty-state">No transactions in this category yet.</p>'}
         </div>
 
         <div class="insight-card">
@@ -727,7 +787,7 @@ function renderSeasonalPanel() {
         .slice(0, 5);
 
     recent.innerHTML = recentExpenses.length
-        ? recentExpenses.map(seasonalExpenseCard).join('')
+        ? renderGroupedTransactionHistory(recentExpenses)
         : '<p class="empty-state">No seasonal expenses yet.</p>';
 
     if (plans.length) {
@@ -829,9 +889,13 @@ function renderSeasonalPlanDetails() {
             <h3>Recent Transactions</h3>
         </div>
 
-        <div class="expense-list seasonal-detail-transactions">
+        <div class="seasonal-detail-transactions dated-history-list">
             ${plan.expenses.length
-                ? plan.expenses.slice(0, 5).map(seasonalExpenseCard).join('')
+                ? renderGroupedTransactionHistory(
+                    [...plan.expenses]
+                        .sort((first, second) => new Date(second.date) - new Date(first.date))
+                        .slice(0, 5)
+                )
                 : '<p class="empty-state">No seasonal transactions yet.</p>'}
         </div>
     `;
@@ -1001,6 +1065,108 @@ function bindThirteenthActions() {
     });
 }
 
+function renderGroupedTransactionHistory(expenses) {
+    const sortedExpenses = [...expenses]
+        .sort((first, second) => new Date(second.date) - new Date(first.date));
+
+    if (!sortedExpenses.length) {
+        return '<p class="empty-state">No transactions yet.</p>';
+    }
+
+    const grouped = new Map();
+
+    sortedExpenses.forEach(expense => {
+        const groupKey = expense.date || 'unknown-date';
+
+        if (!grouped.has(groupKey)) {
+            grouped.set(groupKey, []);
+        }
+
+        grouped.get(groupKey).push(expense);
+    });
+
+    return [...grouped.entries()].map(([date, entries]) => `
+        <section class="dated-history-group">
+            <div class="dated-history-date">${escapeHtml(formatSeasonalTransactionDate(date))}</div>
+            <div class="dated-history-rows">
+                ${entries.map(datedTransactionRow).join('')}
+            </div>
+        </section>
+    `).join('');
+}
+
+function datedTransactionRow(expense) {
+    const meta = EXPENSE_CATEGORIES[expense.category] || EXPENSE_CATEGORIES.Other;
+
+    return `
+        <article class="dated-history-row">
+            <span class="dated-history-icon" style="background:${escapeHtml(meta.soft)}">
+                <i class="bi ${escapeHtml(meta.icon || expense.icon || 'bi-stars')}"></i>
+            </span>
+
+            <div class="dated-history-copy">
+                <h4>${escapeHtml(expense.title)}</h4>
+                <p>${escapeHtml(expense.category)} <b>|</b> ${escapeHtml(expense.member || 'Member')}</p>
+            </div>
+
+            <strong class="dated-history-amount">-${peso(expense.amount)}</strong>
+        </article>
+    `;
+}
+
+
+function seasonalDetailExpenseCard(expense) {
+    const meta = EXPENSE_CATEGORIES[expense.category] || EXPENSE_CATEGORIES.Other;
+
+    return `
+        <div class="seasonal-ledger-entry">
+            <div class="seasonal-ledger-date">${escapeHtml(formatSeasonalTransactionDate(expense.date))}</div>
+
+            <article class="seasonal-ledger-row">
+                <span class="seasonal-ledger-icon" style="background:${escapeHtml(meta.soft)}">
+                    <i class="bi ${escapeHtml(meta.icon || expense.icon || 'bi-stars')}"></i>
+                </span>
+
+                <div class="seasonal-ledger-copy">
+                    <h4>${escapeHtml(expense.title)}</h4>
+                    <p>${escapeHtml(expense.category)} <b>|</b> ${escapeHtml(expense.member || 'Member')}</p>
+                </div>
+
+                <strong class="seasonal-ledger-amount">-${peso(expense.amount)}</strong>
+            </article>
+        </div>
+    `;
+}
+
+function formatSeasonalTransactionDate(value) {
+    const transactionDate = value ? new Date(`${value}T00:00:00`) : null;
+
+    if (!transactionDate || Number.isNaN(transactionDate.getTime())) {
+        return 'Date unavailable';
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    if (transactionDate.getTime() === today.getTime()) {
+        return 'Today';
+    }
+
+    if (transactionDate.getTime() === yesterday.getTime()) {
+        return 'Yesterday';
+    }
+
+    return transactionDate.toLocaleDateString('en-PH', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
+    });
+}
+
+
 function seasonalExpenseCard(expense) {
     const meta = EXPENSE_CATEGORIES[expense.category] || EXPENSE_CATEGORIES.Other;
 
@@ -1017,7 +1183,7 @@ function seasonalExpenseCard(expense) {
 
             <div class="transaction-info">
                 <h3>${escapeHtml(expense.title)}</h3>
-                <p>${escapeHtml(expense.category)} <b>|</b> ${escapeHtml(expense.member)}</p>
+                <p>${escapeHtml(expense.category)} <b>|</b> ${escapeHtml(expense.member || 'Member')}</p>
             </div>
 
             <div class="transaction-amount">-${peso(expense.amount)}</div>
