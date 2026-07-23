@@ -1260,3 +1260,94 @@ body[data-page="debt-details"] {
         right: 18px !important;
     }
 }
+
+
+/* =========================================================
+   v5 — exact Expenses bottom-navigation parity
+   ========================================================= */
+
+.debt-details-bottom-nav {
+    position: fixed !important;
+    left: 24px !important;
+    right: 24px !important;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 16px) !important;
+    height: 74px !important;
+    background: rgba(255, 255, 255, 0.94) !important;
+    border: 1px solid rgba(92, 83, 78, 0.08) !important;
+    border-radius: 30px !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 72px 1fr 1fr !important;
+    align-items: center !important;
+    box-shadow: 0 18px 40px rgba(92, 83, 78, 0.14) !important;
+    z-index: 30 !important;
+    backdrop-filter: blur(12px) !important;
+}
+
+.debt-details-bottom-nav button {
+    width: auto !important;
+    height: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    color: #ADA19A !important;
+    display: grid !important;
+    place-items: center !important;
+    gap: 2px !important;
+    font-size: 20px !important;
+    line-height: normal !important;
+    font-weight: 800 !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+.debt-details-bottom-nav button i {
+    display: block !important;
+    margin: 0 !important;
+    font-size: 20px !important;
+    line-height: 1 !important;
+}
+
+.debt-details-bottom-nav button span {
+    display: block !important;
+    margin: 0 !important;
+    font-size: 10px !important;
+    line-height: normal !important;
+    font-weight: 800 !important;
+}
+
+.debt-details-bottom-nav button.active {
+    color: #D86E49 !important;
+}
+
+.debt-details-bottom-nav #detailsNavSavings i {
+    font-size: 23px !important;
+    line-height: 1 !important;
+}
+
+.debt-details-bottom-nav .debt-details-nav-scan {
+    width: 62px !important;
+    height: 62px !important;
+    min-width: 62px !important;
+    min-height: 62px !important;
+    margin: 0 auto !important;
+    border-radius: 50% !important;
+    background: #E98B5F !important;
+    color: #FFFFFF !important;
+    font-size: 28px !important;
+    transform: translateY(-16px) !important;
+    box-shadow: 0 16px 30px rgba(233, 139, 95, 0.30) !important;
+}
+
+.debt-details-bottom-nav .debt-details-nav-scan i {
+    font-size: 28px !important;
+}
+
+@media (max-width: 380px) {
+    .debt-details-bottom-nav {
+        left: 18px !important;
+        right: 18px !important;
+    }
+}
