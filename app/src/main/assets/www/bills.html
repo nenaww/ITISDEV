@@ -408,6 +408,19 @@
         </form>
     </div>
 </section>
+
+<div id="billDebtSuccessOverlay" class="bill-debt-success-overlay" hidden>
+    <div class="bill-debt-success-card">
+        <div class="bill-debt-success-check" aria-hidden="true">
+            <svg viewBox="0 0 52 52">
+                <circle class="success-circle" cx="26" cy="26" r="24"></circle>
+                <path class="success-check" d="M14 27 L22 35 L38 18"></path>
+            </svg>
+        </div>
+        <strong id="billDebtSuccessTitle">Bill Recorded</strong>
+        <p id="billDebtSuccessMessage">Your bill has been saved successfully.</p>
+    </div>
+</div>
 <div aria-live="polite" class="bill-toast" id="billToast" role="status"></div>
 <script src="bills.js"></script>
 </body>

@@ -170,7 +170,8 @@
                     <div class="mini-receipt-teeth"></div>
 
                     <div class="mini-receipt-logo">
-                        <span>KB</span>
+                        <img id="kabalikatScanningLogo" src="" alt="KABALIKAT logo">
+                        <span id="kabalikatScanningLogoFallback">KB</span>
                     </div>
 
                     <div class="mini-receipt-scribbles">
@@ -224,6 +225,36 @@
             <button id="closeInvalidReceiptBtn" type="button">
                 Try Again
             </button>
+        </div>
+    </section>
+
+
+
+    <section id="duplicateReceiptModal" class="invalid-receipt-modal hidden">
+        <div class="invalid-receipt-card">
+            <div class="invalid-receipt-icon">
+                <i class="bi bi-files"></i>
+            </div>
+
+            <h2>Duplicate receipt</h2>
+            <p>This receipt has already been saved, so it was not added again.</p>
+
+            <button id="closeDuplicateReceiptBtn" type="button">
+                Back to Review
+            </button>
+        </div>
+    </section>
+
+    <section id="scannerSaveSuccessOverlay" class="scanner-save-success-overlay hidden" aria-live="polite">
+        <div class="scanner-save-success-card">
+            <div class="scanner-save-success-check" aria-hidden="true">
+                <svg viewBox="0 0 52 52">
+                    <circle class="success-circle" cx="26" cy="26" r="24"></circle>
+                    <path class="success-check" d="M14 27 L22 35 L38 18"></path>
+                </svg>
+            </div>
+            <strong>Expenses Recorded</strong>
+            <p>Your scanned receipt was added to Expenses.</p>
         </div>
     </section>
 

@@ -113,6 +113,16 @@
             </div>
         </section>
 
+
+        <section id="recent-expenses" class="expense-section recent-expenses-section">
+            <div class="section-heading">
+                <h2>Recent Expenses</h2>
+                <button id="viewAllExpenses" type="button">View All</button>
+            </div>
+
+            <div id="recentTransactions" class="expense-list"></div>
+        </section>
+
         <section id="household-spending" class="expense-section household-section">
             <div class="section-heading">
                 <h2>Household Spending</h2>
@@ -387,6 +397,25 @@
         <p>Your expense has been saved successfully.</p>
     </div>
 </div>
+
+
+<section id="expenseReceiptModal" class="expense-receipt-modal" hidden aria-modal="true" role="dialog" aria-labelledby="expenseReceiptModalTitle">
+    <button id="expenseReceiptBackdrop" class="expense-receipt-backdrop" type="button" aria-label="Close receipt image"></button>
+    <div class="expense-receipt-modal-card">
+        <header>
+            <div>
+                <span>Attached receipt</span>
+                <h2 id="expenseReceiptModalTitle">Receipt Image</h2>
+            </div>
+            <button id="closeExpenseReceiptModal" type="button" aria-label="Close receipt image">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </header>
+        <div class="expense-receipt-image-wrap">
+            <img id="expenseReceiptModalImage" src="" alt="Scanned receipt">
+        </div>
+    </div>
+</section>
 
 <div id="expenseToast" class="expense-toast"></div>
 

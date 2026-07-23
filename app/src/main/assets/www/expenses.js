@@ -165,7 +165,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeExpensesPage();
 });
 
-function initializeExpensesPage() {
+async function initializeExpensesPage() {
+    await loadScannedExpensesIntoState();
     document.getElementById('newExpenseDate').value = new Date().toISOString().slice(0, 10);
     bindEvents();
     renderAll();
@@ -173,13 +174,351 @@ function initializeExpensesPage() {
 }
 
 
+
+async function loadScannedExpensesIntoState() {
+    let receiptRecords = [];
+
+    try {
+        receiptRecords =
+            await getSavedScannedReceiptRecords();
+    } catch (error) {
+        console.warn(
+            "Could not load receipt records from IndexedDB:",
+            error
+        );
+    }
+
+    if (!receiptRecords.length) {
+        receiptRecords =
+            getScannedReceiptMetadataFallback();
+    }
+
+    const existingIds =
+        new Set(
+            state.expenses.map(
+                expense =>
+                    String(expense.id)
+            )
+        );
+
+    const imported = [];
+
+    receiptRecords.forEach(receipt => {
+        const member =
+            HOUSEHOLD_MEMBERS[
+                receipt.member
+            ]
+                ? receipt.member
+                : HOUSEHOLD_MEMBERS[
+                    receipt.addedBy
+                ]
+                    ? receipt.addedBy
+                    : "Elena";
+
+        const receiptImage =
+            String(
+                receipt.image ||
+                ""
+            );
+
+        const items =
+            Array.isArray(receipt.items)
+                ? receipt.items
+                : [];
+
+        items.forEach((item, itemIndex) => {
+            const itemId =
+                `${receipt.id}:` +
+                `${item.id || itemIndex}`;
+
+            if (
+                existingIds.has(
+                    String(itemId)
+                )
+            ) {
+                return;
+            }
+
+            existingIds.add(
+                String(itemId)
+            );
+
+            imported.push({
+                id: itemId,
+
+                category:
+                    normalizeScannedExpenseCategory(
+                        item.category
+                    ),
+
+                title:
+                    item.title ||
+                    item.rawTitle ||
+                    "Scanned expense",
+
+                amount:
+                    Number(
+                        item.amount ||
+                        0
+                    ),
+
+                member,
+
+                date:
+                    normalizeImportedExpenseDate(
+                        receipt.date ||
+                        receipt.createdAt
+                    ),
+
+                seasonalPlanId: "",
+
+                source:
+                    receipt.source ||
+                    "OCR Receipt Scanner",
+
+                receiptId:
+                    receipt.id ||
+                    "",
+
+                receiptStore:
+                    receipt.storeName ||
+                    "Receipt",
+
+                receiptNumber:
+                    receipt.receiptNumber ||
+                    "",
+
+                receiptImage
+            });
+        });
+    });
+
+    if (imported.length) {
+        state.expenses = [
+            ...imported,
+            ...state.expenses
+        ];
+    }
+}
+
+function openScannedReceiptDatabaseForExpenses() {
+    return new Promise(
+        (resolve, reject) => {
+            const request =
+                indexedDB.open(
+                    "kabalikat_scanned_expenses_db",
+                    1
+                );
+
+            request.onupgradeneeded =
+                event => {
+                    const database =
+                        event.target.result;
+
+                    if (
+                        !database
+                            .objectStoreNames
+                            .contains(
+                                "receipts"
+                            )
+                    ) {
+                        database
+                            .createObjectStore(
+                                "receipts",
+                                {
+                                    keyPath: "id"
+                                }
+                            );
+                    }
+                };
+
+            request.onsuccess =
+                event => {
+                    resolve(
+                        event.target.result
+                    );
+                };
+
+            request.onerror = () => {
+                reject(
+                    request.error ||
+                    new Error(
+                        "Receipt storage is unavailable."
+                    )
+                );
+            };
+        }
+    );
+}
+
+async function getSavedScannedReceiptRecords() {
+    const database =
+        await openScannedReceiptDatabaseForExpenses();
+
+    return new Promise(
+        (resolve, reject) => {
+            const transaction =
+                database.transaction(
+                    "receipts",
+                    "readonly"
+                );
+
+            const request =
+                transaction
+                    .objectStore(
+                        "receipts"
+                    )
+                    .getAll();
+
+            request.onsuccess = () => {
+                const records =
+                    Array.isArray(
+                        request.result
+                    )
+                        ? request.result
+                        : [];
+
+                resolve(
+                    records.sort(
+                        (first, second) =>
+                            new Date(
+                                second.createdAt ||
+                                0
+                            ) -
+                            new Date(
+                                first.createdAt ||
+                                0
+                            )
+                    )
+                );
+            };
+
+            request.onerror = () => {
+                reject(
+                    request.error ||
+                    new Error(
+                        "Saved receipts could not be read."
+                    )
+                );
+            };
+
+            transaction.oncomplete = () => {
+                database.close();
+            };
+        }
+    );
+}
+
+function getScannedReceiptMetadataFallback() {
+    try {
+        const stored =
+            JSON.parse(
+                localStorage.getItem(
+                    "kabalikat_scanned_expense_metadata"
+                ) ||
+                "[]"
+            );
+
+        return Array.isArray(stored)
+            ? stored
+            : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function normalizeScannedExpenseCategory(category) {
+    const value =
+        String(category || "")
+            .trim()
+            .toLowerCase();
+
+    const categoryMap = {
+        food: "Food",
+        grocery: "Food",
+        groceries: "Food",
+        utilities: "Utilities",
+        utility: "Utilities",
+        transportation: "Transportation",
+        transport: "Transportation",
+        medicine: "Health",
+        medical: "Health",
+        health: "Health",
+        school: "Education",
+        education: "Education",
+        rent: "Rent",
+        housing: "Rent",
+        debt: "Debt",
+        "debt / utang": "Debt",
+        loan: "Debt",
+        emergency: "Other",
+        shopping: "Other",
+        other: "Other",
+        others: "Other"
+    };
+
+    return (
+        categoryMap[value] ||
+        "Other"
+    );
+}
+
+function normalizeImportedExpenseDate(value) {
+    const text =
+        String(value || "")
+            .trim();
+
+    if (
+        /^\d{4}-\d{2}-\d{2}$/.test(
+            text
+        )
+    ) {
+        return text;
+    }
+
+    const parsed =
+        new Date(text);
+
+    if (
+        !Number.isNaN(
+            parsed.getTime()
+        )
+    ) {
+        return (
+            `${parsed.getFullYear()}-` +
+            `${String(
+                parsed.getMonth() + 1
+            ).padStart(2, "0")}-` +
+            `${String(
+                parsed.getDate()
+            ).padStart(2, "0")}`
+        );
+    }
+
+    return new Date()
+        .toISOString()
+        .slice(0, 10);
+}
+
 function handleExpensesDeepLink() {
     const params = new URLSearchParams(window.location.search);
     const requestedView = params.get('view');
     const requestedFilter = String(params.get('filter') || '').toLowerCase();
     const requestedSection = params.get('section') || window.location.hash.replace(/^#/, '');
+    const requestedSource = params.get('source');
 
     window.requestAnimationFrame(() => {
+        if (requestedSource === 'scanner') {
+            const recentTarget = document.getElementById('recent-expenses');
+            const recentScrollArea = document.querySelector('.expenses-scroll-area');
+
+            if (recentTarget && recentScrollArea) {
+                recentScrollArea.scrollTo({
+                    top: Math.max(recentTarget.offsetTop - 18, 0),
+                    behavior: 'auto'
+                });
+            }
+        }
         if (requestedView === 'add-expense') {
             openPanel('addExpensePanel');
             return;
@@ -280,6 +619,22 @@ function bindEvents() {
     document.getElementById("navBills")?.addEventListener("click", () => {
         window.location.href = "bills.html";
     });
+
+    document.addEventListener("click", handleReceiptPreviewClick);
+
+    document
+        .getElementById("closeExpenseReceiptModal")
+        ?.addEventListener(
+            "click",
+            closeExpenseReceiptModal
+        );
+
+    document
+        .getElementById("expenseReceiptBackdrop")
+        ?.addEventListener(
+            "click",
+            closeExpenseReceiptModal
+        );
 }
 
 function renderAll() {
@@ -288,6 +643,7 @@ function renderAll() {
     renderSeasonalOverview();
     renderThirteenthMonthPanel();
     renderHomeCategoryBreakdown();
+    renderRecentTransactions();
     renderHouseholdSpending();
     renderAllExpensesPanel();
     renderAddExpenseCategories();
@@ -345,7 +701,47 @@ function renderHomeCategoryBreakdown() {
     });
 }
 
-function renderRecentTransactions() {}
+function renderRecentTransactions() {
+    const container =
+        document.getElementById(
+            "recentTransactions"
+        );
+
+    if (!container) {
+        return;
+    }
+
+    const recentExpenses =
+        getVisibleExpenses()
+            .slice()
+            .sort(
+                (first, second) =>
+                    new Date(
+                        `${second.date}T00:00:00`
+                    ) -
+                    new Date(
+                        `${first.date}T00:00:00`
+                    )
+            )
+            .slice(0, 5);
+
+    if (!recentExpenses.length) {
+        container.innerHTML = `
+            <p class="empty-state">
+                No expenses recorded for this month.
+            </p>
+        `;
+
+        return;
+    }
+
+    container.innerHTML =
+        recentExpenses
+            .map(
+                transactionCard
+            )
+            .join("");
+}
 
 
 function renderHouseholdSpending() {
@@ -1253,7 +1649,7 @@ function seasonalExpenseCard(expense) {
                 <p>${escapeHtml(expense.category)} <b>|</b> ${escapeHtml(expense.member || 'Member')}</p>
             </div>
 
-            <div class="transaction-amount">-${peso(expense.amount)}</div>
+            <div class="transaction-amount">${Number(expense.amount || 0) < 0 ? '+' : '-'}${peso(Math.abs(Number(expense.amount || 0)))}</div>
         </article>
     `;
 }
@@ -1393,26 +1789,178 @@ function saveExpense(event) {
 }
 
 function transactionCard(expense) {
-    const meta = EXPENSE_CATEGORIES[expense.category] || EXPENSE_CATEGORIES.Other;
+    const meta =
+        EXPENSE_CATEGORIES[
+            expense.category
+        ] ||
+        EXPENSE_CATEGORIES.Other;
+
+    const hasReceiptImage =
+        Boolean(
+            expense.receiptImage
+        );
+
+    const visual = hasReceiptImage
+        ? `
+            <button
+                class="transaction-receipt-preview"
+                type="button"
+                data-receipt-preview-id="${escapeHtml(
+                    String(expense.id)
+                )}"
+                aria-label="View attached receipt for ${escapeHtml(
+                    expense.title
+                )}">
+                <img
+                    src="${escapeHtml(
+                        expense.receiptImage
+                    )}"
+                    alt="Receipt thumbnail">
+                <span>
+                    <i class="bi bi-receipt"></i>
+                </span>
+            </button>
+        `
+        : `
+            <div
+                class="transaction-icon"
+                style="background:${escapeHtml(
+                    meta.soft
+                )}">
+                <i class="bi ${escapeHtml(
+                    meta.icon
+                )}"></i>
+            </div>
+        `;
+
+    const amount =
+        Number(
+            expense.amount ||
+            0
+        );
+
     return `
-        <article class="transaction-card">
+        <article class="transaction-card ${
+            hasReceiptImage
+                ? "has-receipt-image"
+                : ""
+        }">
             <span class="scan-corner top-left"></span>
             <span class="scan-corner top-right"></span>
             <span class="scan-corner bottom-left"></span>
             <span class="scan-corner bottom-right"></span>
 
-            <div class="transaction-icon" style="background:${escapeHtml(meta.soft)}">
-                <i class="bi ${escapeHtml(meta.icon)}"></i>
-            </div>
+            ${visual}
 
             <div class="transaction-info">
                 <h3>${escapeHtml(expense.category)}</h3>
-                <p>${escapeHtml(expense.title)} • ${escapeHtml(expense.member)}</p>
+                <p>
+                    ${escapeHtml(expense.title)}
+                    •
+                    ${escapeHtml(expense.member)}
+                </p>
+                ${
+                    hasReceiptImage
+                        ? `<small class="transaction-receipt-label"><i class="bi bi-image"></i> Receipt attached</small>`
+                        : ""
+                }
             </div>
 
-            <div class="transaction-amount">-${peso(expense.amount)}</div>
+            <div class="transaction-amount">
+                ${amount < 0 ? "+" : "-"}${peso(
+                    Math.abs(amount)
+                )}
+            </div>
         </article>
     `;
+}
+
+function handleReceiptPreviewClick(event) {
+    const button =
+        event.target.closest(
+            "[data-receipt-preview-id]"
+        );
+
+    if (!button) {
+        return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const expense =
+        state.expenses.find(
+            item =>
+                String(item.id) ===
+                String(
+                    button.dataset
+                        .receiptPreviewId
+                )
+        );
+
+    if (
+        !expense ||
+        !expense.receiptImage
+    ) {
+        showToast(
+            "Receipt image is unavailable."
+        );
+
+        return;
+    }
+
+    const modal =
+        document.getElementById(
+            "expenseReceiptModal"
+        );
+
+    const image =
+        document.getElementById(
+            "expenseReceiptModalImage"
+        );
+
+    const title =
+        document.getElementById(
+            "expenseReceiptModalTitle"
+        );
+
+    if (image) {
+        image.src =
+            expense.receiptImage;
+
+        image.alt =
+            `Receipt for ${expense.title}`;
+    }
+
+    if (title) {
+        title.textContent =
+            expense.receiptStore ||
+            "Receipt Image";
+    }
+
+    if (modal) {
+        modal.hidden = false;
+    }
+}
+
+function closeExpenseReceiptModal() {
+    const modal =
+        document.getElementById(
+            "expenseReceiptModal"
+        );
+
+    const image =
+        document.getElementById(
+            "expenseReceiptModalImage"
+        );
+
+    if (modal) {
+        modal.hidden = true;
+    }
+
+    if (image) {
+        image.removeAttribute("src");
+    }
 }
 
 function openPanel(id) {
