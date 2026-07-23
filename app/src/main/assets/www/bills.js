@@ -256,6 +256,17 @@ function bindEvents() {
         );
 
     document
+        .getElementById("saveEntryTop")
+        ?.addEventListener(
+            "click",
+            () => {
+                document
+                    .getElementById("billDebtForm")
+                    ?.requestSubmit();
+            }
+        );
+
+    document
         .getElementById("cancelAddEntry")
         ?.addEventListener(
             "click",
@@ -2965,10 +2976,19 @@ async function saveEntry(event) {
             "saveEntryButton"
         );
 
+    const topSaveButton =
+        document.getElementById(
+            "saveEntryTop"
+        );
+
     if (saveButton) {
         saveButton.disabled = true;
         saveButton.textContent =
             "Saving...";
+    }
+
+    if (topSaveButton) {
+        topSaveButton.disabled = true;
     }
 
     const entry = {
@@ -3091,6 +3111,10 @@ async function saveEntry(event) {
                 "debt"
                     ? "Save Debt"
                     : "Save Bill";
+        }
+
+        if (topSaveButton) {
+            topSaveButton.disabled = false;
         }
     }
 }
