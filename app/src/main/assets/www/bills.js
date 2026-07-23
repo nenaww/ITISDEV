@@ -461,12 +461,10 @@ function bindEvents() {
         );
 
     document
-        .getElementById("navProfile")
+        .getElementById("navSavings")
         ?.addEventListener(
             "click",
-            () => showToast(
-                "Profile will be added next."
-            )
+            () => navigateTo("expenses.html#budget-overview")
         );
 
     document
@@ -488,10 +486,8 @@ function bindEvents() {
                     navigateTo("scanner.html");
                 }
 
-                if (destination === "profile") {
-                    showToast(
-                        "Profile will be added next."
-                    );
+                if (destination === "savings") {
+                    navigateTo("expenses.html#budget-overview");
                 }
             });
         });

@@ -5831,3 +5831,54 @@ button {
         background: color-mix(in srgb, var(--plan-soft) 2%, #FFFFFF 98%) !important;
     }
 }
+
+
+/* =========================================================
+   v12: distinct very-light colors for seasonal detail stats
+   ========================================================= */
+
+#seasonalPlanDetailsPanel .seasonal-stat-budget {
+    background: #F5FAFD !important;
+    border-color: rgba(90, 141, 168, 0.10) !important;
+}
+
+#seasonalPlanDetailsPanel .seasonal-stat-spent {
+    background: #FFF7F3 !important;
+    border-color: rgba(233, 139, 95, 0.10) !important;
+}
+
+#seasonalPlanDetailsPanel .seasonal-stat-remaining {
+    background: #F4FAF6 !important;
+    border-color: rgba(108, 146, 120, 0.10) !important;
+}
+
+#seasonalPlanDetailsPanel .seasonal-stat-budget,
+#seasonalPlanDetailsPanel .seasonal-stat-spent,
+#seasonalPlanDetailsPanel .seasonal-stat-remaining {
+    box-shadow: none !important;
+}
+
+
+/* =========================================================
+   v13: same very-light panel color across all three stat cards
+   ========================================================= */
+
+#seasonalPlanDetailsPanel .seasonal-stat-budget,
+#seasonalPlanDetailsPanel .seasonal-stat-spent,
+#seasonalPlanDetailsPanel .seasonal-stat-remaining {
+    background: color-mix(in srgb, var(--plan-soft) 6%, #FFFFFF 94%) !important;
+    border-color: color-mix(in srgb, var(--plan-accent) 5%, rgba(92, 83, 78, 0.05) 95%) !important;
+    box-shadow: none !important;
+}
+
+
+/* =========================================================
+   Bills/Debt parity update: Budget Overview matches
+   Category Breakdown heading size.
+   ========================================================= */
+
+.budget-overview-title {
+    font-size: 17px !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.4px !important;
+}
