@@ -4339,3 +4339,765 @@ body[data-page="bills"] {
 #addBillDebtPanel .notes-field-wrap {
     all: unset;
 }
+
+/* =========================================================
+   Final approved Bills flow
+   ========================================================= */
+
+.summary-history-button {
+    position: relative !important;
+    min-width: 0 !important;
+    margin: -7px -5px -5px -7px !important;
+    padding: 7px 28px 5px 7px !important;
+    border: 0 !important;
+    border-radius: 14px !important;
+    background: transparent !important;
+    color: inherit !important;
+    text-align: left !important;
+    box-shadow: none !important;
+}
+
+.summary-history-button > i {
+    position: absolute !important;
+    top: 50% !important;
+    right: 7px !important;
+    color: #4F916B !important;
+    font-size: 11px !important;
+    transform: translateY(-50%) !important;
+}
+
+.summary-history-button:active {
+    background: rgba(238, 246, 240, 0.78) !important;
+}
+
+.upcoming-overdue-notice {
+    min-height: 44px !important;
+    margin-bottom: 10px !important;
+    border: 1px solid rgba(190, 54, 54, 0.20) !important;
+    border-radius: 16px !important;
+    background: #F9DEDE !important;
+    color: #A93232 !important;
+    padding: 0 13px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 9px !important;
+    box-shadow: 0 9px 20px rgba(169, 50, 50, 0.08) !important;
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+    font-weight: 800 !important;
+}
+
+.upcoming-overdue-notice i {
+    flex: 0 0 auto !important;
+    font-size: 15px !important;
+}
+
+.payment-row.overdue {
+    position: relative !important;
+    background:
+        linear-gradient(
+            90deg,
+            #FCE5E5 0%,
+            #FFF8F7 72%,
+            #FFFFFF 100%
+        ) !important;
+    box-shadow: inset 5px 0 0 #C33F3F !important;
+}
+
+.payment-row.overdue .payment-main h3,
+.payment-row.overdue .payment-value strong,
+.payment-row.overdue .payment-due-date,
+.payment-row.overdue .payment-chevron {
+    color: #A93232 !important;
+}
+
+.payment-row.overdue .payment-icon {
+    outline: 2px solid rgba(195, 63, 63, 0.16) !important;
+}
+
+.payment-overdue-label {
+    width: max-content !important;
+    min-height: 23px !important;
+    margin-top: 6px !important;
+    border-radius: 999px !important;
+    background: #C33F3F !important;
+    color: #FFFFFF !important;
+    padding: 0 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    font-size: 8px !important;
+    line-height: 1 !important;
+    font-weight: 800 !important;
+}
+
+.payment-type-chip.overdue {
+    background: #C33F3F !important;
+    color: #FFFFFF !important;
+}
+
+.bills-overview-card {
+    border-radius: 24px !important;
+    padding: 16px !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 12px 28px rgba(92, 83, 78, 0.07) !important;
+}
+
+.bills-overview-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+}
+
+.bills-overview-item {
+    min-width: 0 !important;
+    border-radius: 18px !important;
+    padding: 14px !important;
+}
+
+.bills-overview-active {
+    background: linear-gradient(135deg, #FFF1EC, #FFF8F5) !important;
+}
+
+.bills-overview-paid {
+    background: linear-gradient(135deg, #EEF6F0, #F7FBF8) !important;
+}
+
+.bills-overview-label {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    color: #5C534E !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+}
+
+.bills-overview-icon {
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 10px !important;
+    background: #FFFFFF !important;
+    display: grid !important;
+    place-items: center !important;
+    font-size: 13px !important;
+}
+
+.bills-overview-active .bills-overview-icon,
+.bills-overview-active > strong {
+    color: #C96E4B !important;
+}
+
+.bills-overview-paid .bills-overview-icon,
+.bills-overview-paid > strong {
+    color: #4F916B !important;
+}
+
+.bills-overview-item > strong {
+    display: block !important;
+    margin-top: 12px !important;
+    font-size: 20px !important;
+    line-height: 1 !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.45px !important;
+    white-space: nowrap !important;
+}
+
+.bills-overview-item > small {
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 4px !important;
+    margin-top: 8px !important;
+    color: #5C534E !important;
+    font-size: 9px !important;
+    font-weight: 600 !important;
+}
+
+.bills-overview-item > small b {
+    color: #251F1D !important;
+    font-weight: 800 !important;
+}
+
+.bills-overdue-notice {
+    min-height: 42px !important;
+    margin-top: 11px !important;
+    border: 1px solid rgba(190, 54, 54, 0.18) !important;
+    border-radius: 15px !important;
+    background: #F9DEDE !important;
+    color: #A93232 !important;
+    padding: 0 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+}
+
+.bills-overview-card > button {
+    width: 100% !important;
+    min-height: 42px !important;
+    margin-top: 12px !important;
+    border: 1.5px solid rgba(92, 83, 78, 0.14) !important;
+    border-radius: 999px !important;
+    background: #FFFFFF !important;
+    color: #251F1D !important;
+    padding: 0 15px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+}
+
+.bills-overview-card > button i {
+    color: #C96E4B !important;
+}
+
+@media (max-width: 360px) {
+    .bills-overview-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* =========================================================
+   In-page Completed Payments panel
+   ========================================================= */
+
+.completed-payments-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 105;
+    overflow: hidden;
+    background:
+        radial-gradient(
+            circle at 20% 8%,
+            rgba(194, 219, 235, 0.18),
+            transparent 27%
+        ),
+        radial-gradient(
+            circle at 84% 23%,
+            rgba(255, 221, 197, 0.25),
+            transparent 28%
+        ),
+        #FFF9F5;
+}
+
+.completed-payments-scroll {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding:
+        calc(env(safe-area-inset-top, 0px) + 26px)
+        22px
+        calc(env(safe-area-inset-bottom, 0px) + 34px);
+}
+
+.completed-payments-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.completed-payments-header {
+    display: grid;
+    grid-template-columns:
+        42px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+}
+
+.completed-payments-header > button {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    background: transparent;
+    color: #C96E4B;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    font-size: 19px;
+}
+
+.completed-payments-header h2 {
+    margin: 0;
+    color: #251F1D;
+    font-size: 21px;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.6px;
+}
+
+.completed-payments-header p {
+    margin: 5px 0 0;
+    color: #5C534E;
+    font-size: 9px;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+.completed-period-button {
+    width: 100%;
+    min-height: 58px;
+    margin-top: 20px;
+    border:
+        1px solid
+        rgba(92, 83, 78, 0.06);
+    border-radius: 22px;
+    background: #FFFFFF;
+    color: #5C534E;
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow:
+        0 10px 24px
+        rgba(92, 83, 78, 0.07);
+}
+
+.completed-summary-card {
+    margin-top: 20px;
+    border-radius: 24px;
+    background: #FFFFFF;
+    padding: 18px;
+    box-shadow:
+        0 14px 32px
+        rgba(92, 83, 78, 0.09);
+}
+
+.completed-summary-card > span {
+    display: block;
+    color: #8A817C;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.completed-summary-card > strong {
+    display: block;
+    margin-top: 7px;
+    color: #4F916B;
+    font-size: 30px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.completed-summary-card > small {
+    display: block;
+    margin-top: 10px;
+    color: #5C534E;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.completed-type-filter {
+    min-height: 48px;
+    margin-top: 15px;
+    border-radius: 999px;
+    background: #FFFFFF;
+    padding: 4px;
+    display: grid;
+    grid-template-columns:
+        repeat(3, 1fr);
+    box-shadow:
+        0 10px 24px
+        rgba(92, 83, 78, 0.07);
+}
+
+.completed-type-filter button {
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: #251F1D;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.completed-type-filter button.active {
+    background: #F7C8B4;
+}
+
+.completed-records-section {
+    margin-top: 25px;
+}
+
+.completed-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.completed-section-heading h3 {
+    margin: 0;
+    color: #251F1D;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+}
+
+.completed-section-heading > span {
+    min-height: 34px;
+    border-radius: 999px;
+    background: #FFFFFF;
+    color: #251F1D;
+    padding: 0 13px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 9px;
+    font-weight: 800;
+    box-shadow:
+        0 8px 20px
+        rgba(92, 83, 78, 0.06);
+}
+
+.completed-payments-list {
+    margin-top: 12px;
+    border-radius: 24px;
+    background: #FFFFFF;
+    overflow: hidden;
+    box-shadow:
+        0 14px 32px
+        rgba(92, 83, 78, 0.09);
+}
+
+.completed-payment-row {
+    min-height: 82px;
+    padding: 12px 14px;
+    border-bottom:
+        1px solid
+        rgba(92, 83, 78, 0.08);
+    display: grid;
+    grid-template-columns:
+        42px
+        minmax(0, 1fr)
+        auto;
+    align-items: center;
+    gap: 10px;
+}
+
+.completed-payment-row:last-child {
+    border-bottom: 0;
+}
+
+.completed-payment-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: var(--payment-soft);
+    color: var(--payment-accent);
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+}
+
+.completed-payment-main {
+    min-width: 0;
+}
+
+.completed-payment-main strong,
+.completed-payment-main span,
+.completed-payment-main small {
+    display: block;
+}
+
+.completed-payment-main strong {
+    color: #251F1D;
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.completed-payment-main span {
+    margin-top: 3px;
+    color: #5C534E;
+    font-size: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.completed-payment-main small {
+    margin-top: 5px;
+    color: #4F916B;
+    font-size: 7.5px;
+    line-height: 1.35;
+    font-weight: 800;
+}
+
+.completed-payment-value {
+    text-align: right;
+}
+
+.completed-payment-value strong {
+    display: block;
+    color: #4F916B;
+    font-size: 13px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.completed-payment-value span {
+    min-height: 22px;
+    margin-top: 5px;
+    border-radius: 999px;
+    background: #EEF6F0;
+    color: #4F916B;
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 7px;
+    font-weight: 800;
+}
+
+.completed-empty-state {
+    min-height: 160px;
+    padding: 24px;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    color: #8A817C;
+    text-align: center;
+}
+
+.completed-empty-state i {
+    color: #4F916B;
+    font-size: 30px;
+}
+
+.completed-empty-state strong {
+    display: block;
+    margin-top: 9px;
+    color: #251F1D;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.completed-empty-state span {
+    display: block;
+    margin-top: 5px;
+    max-width: 250px;
+    font-size: 9px;
+    line-height: 1.45;
+}
+
+@media (max-width: 380px) {
+    .completed-payments-scroll {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+}
+
+/* =========================================================
+   Softer overdue treatment
+   ========================================================= */
+
+/* The separate Upcoming Payments warning banner was removed.
+   Overdue status remains visible through the individual row. */
+.upcoming-overdue-notice,
+.payment-overdue-label {
+    display: none !important;
+}
+
+.payment-row.overdue {
+    position: relative !important;
+    background:
+        linear-gradient(
+            90deg,
+            #FFF2EC 0%,
+            #FFF9F6 72%,
+            #FFFFFF 100%
+        ) !important;
+    box-shadow:
+        inset 4px 0 0 #E9A07B,
+        0 9px 20px
+        rgba(92, 83, 78, 0.045) !important;
+}
+
+.payment-row.overdue .payment-main h3 {
+    color: #342C29 !important;
+}
+
+.payment-row.overdue .payment-main > span {
+    color: #6F625C !important;
+}
+
+.payment-row.overdue .payment-value strong {
+    color: #C96E4B !important;
+}
+
+.payment-row.overdue .payment-due-date {
+    color: #A9684E !important;
+}
+
+.payment-row.overdue .payment-chevron {
+    color: #C98A6C !important;
+}
+
+.payment-row.overdue .payment-icon {
+    outline:
+        1.5px solid
+        rgba(233, 160, 123, 0.28) !important;
+}
+
+.payment-type-chip.overdue {
+    background: #F7D8C8 !important;
+    color: #84513E !important;
+    box-shadow: none !important;
+}
+
+/* =========================================================
+   Bills Overview typography parity with Debt Overview
+   ========================================================= */
+
+.bills-overview-item {
+    border-radius: 20px !important;
+    padding: 14px !important;
+}
+
+.bills-overview-label {
+    font-size: 12px !important;
+}
+
+.bills-overview-icon {
+    width: 27px !important;
+    height: 27px !important;
+    font-size: 13px !important;
+}
+
+.bills-overview-item > strong {
+    margin-top: 12px !important;
+    font-size: 18px !important;
+    letter-spacing: -0.45px !important;
+}
+
+.bills-overview-item > small {
+    margin-top: 9px !important;
+    font-size: 12px !important;
+}
+
+.bills-overview-card > button {
+    font-size: 12px !important;
+}
+
+/* =========================================================
+   Bill type and dependent provider dropdowns
+   ========================================================= */
+
+#addBillDebtPanel .bill-select-control {
+    position: relative !important;
+    width: 100% !important;
+}
+
+#addBillDebtPanel
+.bill-select-control > select {
+    width: 100% !important;
+    min-height: 50px !important;
+    height: 50px !important;
+    padding:
+        0 44px 0 14px !important;
+    border:
+        1px solid
+        rgba(92, 83, 78, 0.08) !important;
+    border-radius: 16px !important;
+    background: #FFFFFF !important;
+    color: #251F1D !important;
+    outline: 0 !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    font-family:
+        "Plus Jakarta Sans",
+        sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+}
+
+#addBillDebtPanel
+.bill-select-control > select:disabled {
+    background: #FAF7F5 !important;
+    color: #A39DA1 !important;
+    cursor: not-allowed !important;
+}
+
+#addBillDebtPanel
+.bill-select-control > i {
+    position: absolute !important;
+    top: 50% !important;
+    right: 16px !important;
+    z-index: 2 !important;
+    color: #8A817C !important;
+    font-size: 13px !important;
+    line-height: 1 !important;
+    pointer-events: none !important;
+    transform:
+        translateY(-50%) !important;
+}
+
+/* Disable the old fieldset-level arrow positioning. */
+#addBillDebtPanel
+.select-fieldset > i {
+    display: none !important;
+}
+
+#addBillDebtPanel
+.bill-select-control > select:invalid {
+    color: #9B928D !important;
+}
+
+#addBillDebtPanel
+.bill-select-control > select option {
+    color: #251F1D !important;
+}
+
+#addBillDebtPanel
+#customBillNameField,
+#addBillDebtPanel
+#customBillProviderField {
+    animation:
+        dependent-field-reveal
+        0.18s ease;
+}
+
+@keyframes dependent-field-reveal {
+    from {
+        opacity: 0;
+        transform:
+            translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            translateY(0);
+    }
+}
+
+/* =========================================================
+   Provider mode transitions
+   ========================================================= */
+
+#addBillDebtPanel
+#customBillProviderField:not([hidden]) {
+    animation:
+        dependent-field-reveal
+        0.18s ease;
+}
+
+#addBillDebtPanel
+#billProviderField[hidden],
+#addBillDebtPanel
+#customBillProviderField[hidden],
+#addBillDebtPanel
+#billNameField[hidden],
+#addBillDebtPanel
+#debtNameField[hidden],
+#addBillDebtPanel
+#debtProviderField[hidden] {
+    display: none !important;
+}

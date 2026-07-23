@@ -19,7 +19,9 @@
             </button>
             <div>
                 <h1>Debt Details</h1>
-                <p>Track payable and receivable debt.</p>
+                <p>
+                    Review what you need to pay and what others need to return.
+                </p>
             </div>
         </header>
         <section aria-label="Overall debt summary" class="debt-details-summary">
@@ -64,16 +66,7 @@
                     Owed to You
                 </button>
             </div>
-            <label class="debt-status-filter">
-                <span class="sr-only">Filter debts by status</span>
-                <select id="debtStatusFilter">
-                    <option value="all">All statuses</option>
-                    <option value="active">Active only</option>
-                    <option value="overdue">Overdue only</option>
-                    <option value="completed">Completed only</option>
-                </select>
-                <i aria-hidden="true" class="bi bi-chevron-down"></i>
-            </label>
+
         </section>
         <section class="debt-records-section">
             <div class="debt-records-heading">
@@ -84,7 +77,7 @@
                 <span class="debt-record-count" id="debtRecordCount">
                     0 records
                 </span>
-            </div>
+            </div><div aria-label="Filter debts by status" class="debt-status-button-filter" role="group"><button class="active" data-debt-status-filter="all" type="button">All</button><button data-debt-status-filter="active" type="button">Active</button><button data-debt-status-filter="overdue" type="button">Overdue</button><button data-debt-status-filter="completed" type="button">Completed</button></div>
             <div class="debt-records-list" id="debtRecordsList"></div>
         </section>
     </div>
@@ -104,9 +97,9 @@
             <i class="bi bi-calendar-check-fill"></i>
             <span>Bills</span>
         </button>
-        <button id="detailsNavSavings" type="button">
-            <i class="bi bi-piggy-bank"></i>
-            <span>Savings</span>
+        <button id="detailsNavProfile" type="button">
+            <i class="bi bi-person"></i>
+            <span>Profile</span>
         </button>
     </nav>
 </main>

@@ -31,7 +31,7 @@
             </label>
             <select aria-hidden="true" hidden="" id="periodValueSelect" tabindex="-1"></select>
         </div>
-    </div></section><h2 class="bills-overview-title">Bills Overview</h2>
+    </div></section><h2 class="bills-overview-title">Monthly Overview</h2>
         <section aria-label="Monthly bills summary" class="bills-summary-card">
             <div class="summary-top-row">
                 <div class="summary-amount-block">
@@ -39,10 +39,10 @@
                     <strong id="totalDueAmount">₱0</strong>
                 </div>
                 <div class="summary-paid-block">
-                    <div class="summary-paid-copy">
+                    <button aria-label="Open completed payments for the selected month" class="summary-paid-copy summary-history-button" id="openCompletedPayments" type="button">
                         <span>Paid</span>
                         <strong id="paidCountText">0 of 0</strong>
-                    </div>
+                        <i aria-hidden="true" class="bi bi-chevron-right"></i></button>
                     <button aria-label="Open bills and debt calendar" class="summary-calendar-icon" id="openBillsCalendar" type="button">
                         <i aria-hidden="true" class="bi bi-calendar3"></i>
                     </button>
@@ -74,50 +74,50 @@
             </div>
             <div class="payments-list" id="paymentsList"></div>
         </section>
-        <section class="bills-section debt-overview-section">
-            <div class="bills-section-heading simple-heading">
-                <h2>Debt Overview</h2>
-            </div>
-            <article aria-label="Summary of money you owe and money owed to you" class="debt-overview-card">
-                <div class="debt-overview-grid">
-                    <div class="debt-overview-item debt-you-owe">
-                        <div class="debt-overview-label">
+        <section class="bills-section bills-overview-section"><div class="bills-section-heading simple-heading"><h2>Bills Overview</h2></div><article aria-label="Bills overview for the selected month" class="bills-overview-card"><div class="bills-overview-grid"><div class="bills-overview-item bills-overview-active"><div class="bills-overview-label"><span aria-hidden="true" class="bills-overview-icon"><i class="bi bi-hourglass-split"></i></span><span>Remaining Bills</span></div><strong id="remainingBillsAmount">₱0</strong><small><b id="remainingBillsCount">0</b><span id="remainingBillsCountLabel">bills</span></small></div><div class="bills-overview-item bills-overview-paid"><div class="bills-overview-label"><span aria-hidden="true" class="bills-overview-icon"><i class="bi bi-check2-circle"></i></span><span>Paid Bills</span></div><strong id="paidBillsAmount">₱0</strong><small><b id="paidBillsCount">0</b><span id="paidBillsCountLabel">bills</span></small></div></div><div class="bills-overdue-notice" hidden="" id="billsOverdueNotice"><i aria-hidden="true" class="bi bi-exclamation-triangle-fill"></i><span id="billsOverdueText">0 overdue bills</span></div><button aria-label="Open complete bills details" id="viewBillsDetails" type="button"><span>View Bills</span><i aria-hidden="true" class="bi bi-chevron-right"></i></button></article></section><section class="bills-section debt-overview-section">
+        <div class="bills-section-heading simple-heading">
+            <h2>Debt Overview</h2>
+        </div>
+        <article aria-label="Summary of money you owe and money owed to you" class="debt-overview-card">
+            <div class="debt-overview-grid">
+                <div class="debt-overview-item debt-you-owe">
+                    <div class="debt-overview-label">
 <span aria-hidden="true" class="debt-overview-icon">
 <i class="bi bi-arrow-up-right"></i>
 </span>
-                            <span>You Owe</span>
-                        </div>
-                        <strong id="youOweAmount">₱0</strong>
-                        <small>
-                            <b id="youOweCount">0</b>
-                            <span id="youOweCountLabel">active debts</span>
-                        </small>
+                        <span>You Owe</span>
                     </div>
-                    <div aria-hidden="true" class="debt-overview-divider"></div>
-                    <div class="debt-overview-item debt-owed-to-you">
-                        <div class="debt-overview-label">
+                    <strong id="youOweAmount">₱0</strong>
+                    <small>
+                        <b id="youOweCount">0</b>
+                        <span id="youOweCountLabel">active debts</span>
+                    </small>
+                </div>
+                <div aria-hidden="true" class="debt-overview-divider"></div>
+                <div class="debt-overview-item debt-owed-to-you">
+                    <div class="debt-overview-label">
 <span aria-hidden="true" class="debt-overview-icon">
 <i class="bi bi-arrow-down-left"></i>
 </span>
-                            <span>Owed to You</span>
-                        </div>
-                        <strong id="owedToYouAmount">₱0</strong>
-                        <small>
-                            <b id="owedToYouCount">0</b>
-                            <span id="owedToYouCountLabel">active debts</span>
-                        </small>
+                        <span>Owed to You</span>
                     </div>
+                    <strong id="owedToYouAmount">₱0</strong>
+                    <small>
+                        <b id="owedToYouCount">0</b>
+                        <span id="owedToYouCountLabel">active debts</span>
+                    </small>
                 </div>
-                <div class="debt-overdue-notice" hidden="" id="debtOverdueNotice">
-                    <i aria-hidden="true" class="bi bi-exclamation-circle-fill"></i>
-                    <span id="debtOverdueText">0 overdue debts</span>
-                </div>
-                <button aria-label="Open complete debt details" id="viewDebtDetails" type="button">
-                    <span>View Details</span>
-                    <i aria-hidden="true" class="bi bi-chevron-right"></i>
-                </button>
-            </article>
-        </section>
+            </div>
+            <div class="debt-overdue-notice" hidden="" id="debtOverdueNotice">
+                <i aria-hidden="true" class="bi bi-exclamation-circle-fill"></i>
+                <span id="debtOverdueText">0 overdue debts</span>
+            </div>
+            <button aria-label="Open complete debt details" id="viewDebtDetails" type="button">
+                <span>View Details</span>
+                <i aria-hidden="true" class="bi bi-chevron-right"></i>
+            </button>
+        </article>
+    </section>
     </div>
     <nav aria-label="Main navigation" class="bills-bottom-nav">
         <button id="navHome" type="button">
@@ -200,7 +200,7 @@
             <div class="calendar-selected-entries" id="calendarSelectedEntries"></div>
         </section>
     </div>
-</section>
+</section><section aria-labelledby="completedPaymentsTitle" class="completed-payments-panel" hidden="" id="completedPaymentsPanel"><div class="completed-payments-scroll"><header class="completed-payments-header"><button aria-label="Back to Bills and Debt" id="closeCompletedPayments" type="button"><i aria-hidden="true" class="bi bi-arrow-left"></i></button><div><h2 id="completedPaymentsTitle">Completed Payments</h2><p>Review paid bills and debts you owed.</p></div></header><button aria-controls="calendarMonthYearPicker" aria-expanded="false" aria-haspopup="dialog" aria-label="Select completed payments month and year" class="completed-period-button" id="openCompletedPeriodPicker" type="button"><span id="completedPeriodLabel">Month Year</span><i aria-hidden="true" class="bi bi-calendar3"></i></button><section aria-label="Completed payments summary" class="completed-summary-card"><span>Total Paid</span><strong id="completedTotalPaid">₱0</strong><small id="completedCountText">0 completed payments</small></section><div aria-label="Filter completed payments" class="completed-type-filter" role="group"><button class="active" data-completed-filter="all" type="button">All</button><button data-completed-filter="bill" type="button">Bills</button><button data-completed-filter="debt" type="button">Debt</button></div><section class="completed-records-section"><div class="completed-section-heading"><h3>Payment Records</h3><span id="completedRecordCount">0 records</span></div><div class="completed-payments-list" id="completedPaymentsList"></div></section></div></section>
 <div class="calendar-month-year-picker" hidden="" id="calendarMonthYearPicker">
     <button aria-label="Close month and year selector" class="calendar-picker-backdrop" id="calendarPickerBackdrop" type="button"></button>
     <section aria-labelledby="calendarPickerTitle" aria-modal="true" class="calendar-picker-sheet" role="dialog">
@@ -303,20 +303,8 @@
                     </button>
                 </div>
             </div>
-            <fieldset class="bill-fieldset">
-                <legend id="entryNameLegend">Bill Name</legend>
-                <label class="sr-only" for="entryName">
-                    Bill or debt name
-                </label>
-                <input id="entryName" name="entryName" placeholder="e.g., Electric Bill" required="" type="text"/>
-            </fieldset>
-            <fieldset class="bill-fieldset">
-                <legend id="providerLegend">Provider / Payee</legend>
-                <label class="sr-only" for="entryProvider">
-                    Provider, lender, or payee
-                </label>
-                <input id="entryProvider" name="entryProvider" placeholder="e.g., Meralco" required="" type="text"/>
-            </fieldset>
+            <fieldset class="bill-fieldset select-fieldset" id="billNameField"><legend>Bill Name</legend><label class="sr-only" for="entryBillName">Choose bill name</label><div class="bill-select-control"><select id="entryBillName" name="entryBillName"><option value="">Select bill type</option></select><i aria-hidden="true" class="bi bi-chevron-down"></i></div></fieldset><fieldset class="bill-fieldset" hidden="" id="customBillNameField"><legend>Custom Bill Name</legend><label class="sr-only" for="customBillName">Enter custom bill name</label><input id="customBillName" name="customBillName" placeholder="e.g., Association Dues" type="text"/></fieldset><fieldset class="bill-fieldset" hidden="" id="debtNameField"><legend id="entryNameLegend">Debt Name</legend><label class="sr-only" for="entryName">Debt name</label><input id="entryName" name="entryName" placeholder="e.g., Loan from Maria" type="text"/></fieldset>
+            <fieldset class="bill-fieldset select-fieldset" id="billProviderField"><legend>Provider / Payee</legend><label class="sr-only" for="entryBillProvider">Choose provider or payee</label><div class="bill-select-control"><select disabled="" id="entryBillProvider" name="entryBillProvider"><option value="">Select bill name first</option></select><i aria-hidden="true" class="bi bi-chevron-down"></i></div></fieldset><fieldset class="bill-fieldset" hidden="" id="customBillProviderField"><legend id="customBillProviderLegend">Provider / Payee</legend><label class="sr-only" for="customBillProvider">Enter provider or payee</label><input id="customBillProvider" name="customBillProvider" placeholder="Enter provider or payee" type="text"/></fieldset><fieldset class="bill-fieldset" hidden="" id="debtProviderField"><legend id="providerLegend">Lender / Payee</legend><label class="sr-only" for="entryProvider">Lender, borrower, payer, or payee</label><input id="entryProvider" name="entryProvider" placeholder="e.g., Maria Santos" type="text"/></fieldset>
             <fieldset class="bill-fieldset">
                 <legend>Amount</legend>
                 <label class="sr-only" for="entryAmount">
@@ -345,20 +333,7 @@
                 <label class="sr-only" for="entryCategory">
                     Payment category
                 </label>
-                <select id="entryCategory" name="entryCategory" required="">
-                    <option value="">Select category</option>
-                    <option value="Utilities">Utilities</option>
-                    <option value="Housing">Housing</option>
-                    <option value="Internet">Internet</option>
-                    <option value="Subscription">Subscription</option>
-                    <option value="Loan">Loan</option>
-                    <option value="Credit Card">Credit Card</option>
-                    <option value="Education">Education</option>
-                    <option value="Health">Health</option>
-                    <option value="Other">Other</option>
-                </select>
-                <i aria-hidden="true" class="bi bi-chevron-down"></i>
-            </fieldset>
+                <div class="bill-select-control"><select id="entryCategory" name="entryCategory" required=""><option value="">Select category</option></select><i aria-hidden="true" class="bi bi-chevron-down"></i></div></fieldset>
             <div class="frequency-field" id="frequencyField">
                 <span>Frequency</span>
                 <div aria-label="Payment frequency" class="frequency-options" role="group">
