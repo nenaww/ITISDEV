@@ -228,6 +228,46 @@
     <div id="categoryDetailsContent" class="panel-content"></div>
 </section>
 
+
+<section id="receiptsPanel" class="full-panel receipts-full-panel" hidden>
+    <header>
+        <button id="closeReceiptsPanel" type="button" aria-label="Back to category breakdown">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+        <h2>Receipts</h2>
+        <button id="receiptsPanelOpenPeriod" type="button" aria-label="Select receipt month">
+            <i class="bi bi-calendar3"></i>
+        </button>
+    </header>
+
+    <div class="panel-content">
+        <section class="receipts-panel-summary">
+            <span id="receiptsPanelPeriod">July 2026</span>
+            <strong id="receiptsPanelCount">0</strong>
+            <p>Saved receipts</p>
+        </section>
+
+        <div class="panel-subheading">
+            <h3>Receipt History</h3>
+            <span id="receiptsPanelItemCount">0 receipts</span>
+        </div>
+
+        <div id="receiptsPanelList" class="receipt-bundle-list"></div>
+    </div>
+</section>
+
+<section id="receiptDetailsPanel" class="full-panel receipt-details-full-panel" hidden>
+    <header>
+        <button id="closeReceiptDetailsPanel" type="button" aria-label="Back to receipts">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+        <h2 id="receiptDetailsTitle">Receipt Details</h2>
+        <span class="receipt-panel-header-spacer" aria-hidden="true"></span>
+    </header>
+
+    <div id="receiptDetailsContent" class="panel-content"></div>
+</section>
+
 <section id="memberDetailsPanel" class="full-panel" hidden>
     <header>
         <button data-close-panel type="button"><i class="bi bi-arrow-left"></i></button>

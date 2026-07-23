@@ -101,39 +101,12 @@ const storeScanThemes = {
     }
 };
 
-document.addEventListener(
-    "DOMContentLoaded",
-    initializeScannerPage
-);
-
-async function initializeScannerPage() {
+document.addEventListener("DOMContentLoaded", () => {
     setPageMode("scan");
     initializeKabalikatScanningLogo();
     bindScannerActions();
-
-    clearReceiptLocalStorageForRun();
-
-    await startCamera();
-}
-
-function clearReceiptLocalStorageForRun() {
-    const receiptStorageKeys = [
-        "kabalikat_scanned_expense_metadata",
-        "kabalikat_scanned_expenses",
-        "kabalikat_last_scanned_receipt"
-    ];
-
-    receiptStorageKeys.forEach(key => {
-        try {
-            localStorage.removeItem(key);
-        } catch (error) {
-            console.warn(
-                `Could not clear ${key}:`,
-                error
-            );
-        }
-    });
-}
+    startCamera();
+});
 
 
 function initializeKabalikatScanningLogo() {
@@ -3029,6 +3002,36 @@ async function saveExpenses() {
             receiptRecord
         );
 
+        try {
+            localStorage.setItem(
+                "kabalikat_last_scanned_receipt",
+                JSON.stringify({
+                    ...receiptRecord,
+                    image: ""
+                })
+            );
+        } catch (storageError) {
+            console.warn(
+                "Last receipt fallback was skipped:",
+                storageError
+            );
+        }
+
+        try {
+            sessionStorage.setItem(
+                "kabalikat_pending_scanned_receipt",
+                JSON.stringify({
+                    ...receiptRecord,
+                    image: ""
+                })
+            );
+        } catch (transferError) {
+            console.warn(
+                "Receipt transfer fallback was skipped:",
+                transferError
+            );
+        }
+
         await showScannerSaveSuccess();
 
         allowDuplicateReceiptSave =
@@ -3045,11 +3048,6 @@ async function saveExpenses() {
 
         expensesUrl.searchParams.set(
             "view",
-            "category-breakdown"
-        );
-
-        expensesUrl.searchParams.set(
-            "filter",
             "receipts"
         );
 
@@ -3424,11 +3422,7 @@ function putScannedReceiptRecord(
                         "The receipt could not be stored."
                     );
 
-                /*
-                    Prevent the browser's default IndexedDB error
-                    event from producing a second unhandled error.
-                */
-                event?.preventDefault?.();
+                event.preventDefault();
             };
 
             transaction.oncomplete = () => {
@@ -3448,7 +3442,9 @@ function putScannedReceiptRecord(
                     duplicateError.name =
                         "DuplicateReceiptError";
 
-                    reject(duplicateError);
+                    reject(
+                        duplicateError
+                    );
                     return;
                 }
 
@@ -3459,13 +3455,6 @@ function putScannedReceiptRecord(
                         "The receipt could not be stored."
                     )
                 );
-            };
-
-            transaction.onerror = () => {
-                /*
-                    onabort provides the final error after the
-                    transaction has stopped.
-                */
             };
         }
     );

@@ -17,45 +17,6 @@ const RECEIPTS_CATEGORY_META = {
     icon: 'bi-receipt-cutoff'
 };
 
-const DEMO_RECEIPT_RECORD = {
-    id: 'demo-receipt-puregold',
-    demoOnly: true,
-    image: '',
-    date: '2026-07-23',
-    member: 'Elena',
-    addedBy: 'Elena',
-    source: 'Sample Receipt',
-    storeName: 'Puregold Sample',
-    receiptNumber: 'PG-DEMO-001',
-    createdAt: '2026-07-23T08:00:00.000Z',
-    items: [
-        {
-            id: 'demo-rice',
-            title: 'Premium Rice 5kg',
-            rawTitle: 'Premium Rice 5kg',
-            quantity: 1,
-            category: 'Food',
-            amount: 320
-        },
-        {
-            id: 'demo-milk',
-            title: 'Fresh Milk 1L',
-            rawTitle: 'Fresh Milk 1L',
-            quantity: 1,
-            category: 'Food',
-            amount: 95
-        },
-        {
-            id: 'demo-vitamins',
-            title: 'Multivitamins',
-            rawTitle: 'Multivitamins',
-            quantity: 1,
-            category: 'Health',
-            amount: 180
-        }
-    ]
-};
-
 const MONTH_OPTIONS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const APP_START_DATE_KEY = 'kabalikat_app_start_date';
 
@@ -191,8 +152,6 @@ const state = {
     selectedAddCategory: 'Food',
     showAllMembers: false,
     selectedSeasonalPlanId: 'nutrition-month',
-    requestedReceiptId: '',
-    receiptRecords: [],
     expenses: [
         { id: 1, category: 'Rent', title: 'Monthly house rent', amount: 1200, member: 'Elena', date: '2026-07-01' },
         { id: 2, category: 'Utilities', title: 'Electric bill', amount: 980, member: 'Elena', date: '2026-07-12' },
@@ -242,21 +201,6 @@ async function loadScannedExpensesIntoState() {
             getScannedReceiptMetadataFallback();
     }
 
-    if (!receiptRecords.length) {
-        receiptRecords = [
-            DEMO_RECEIPT_RECORD
-        ];
-    }
-
-    state.receiptRecords =
-        receiptRecords.map(receipt => ({
-            ...receipt,
-            items:
-                Array.isArray(receipt.items)
-                    ? receipt.items
-                    : []
-        }));
-
     const existingIds =
         new Set(
             state.expenses.map(
@@ -268,10 +212,6 @@ async function loadScannedExpensesIntoState() {
     const imported = [];
 
     receiptRecords.forEach(receipt => {
-        if (receipt.demoOnly) {
-            return;
-        }
-
         const member =
             HOUSEHOLD_MEMBERS[
                 receipt.member
@@ -375,7 +315,7 @@ function openScannedReceiptDatabaseForExpenses() {
             const request =
                 indexedDB.open(
                     "kabalikat_scanned_expenses_db",
-                    2
+                    1
                 );
 
             request.onupgradeneeded =
@@ -583,18 +523,6 @@ function handleExpensesDeepLink() {
             ''
         ).toLowerCase();
 
-    const requestedReceiptId =
-        String(
-            params.get('receiptId') ||
-            ''
-        );
-
-    const requestedReceiptDate =
-        String(
-            params.get('receiptDate') ||
-            ''
-        );
-
     const requestedSection =
         params.get('section') ||
         window.location.hash
@@ -623,13 +551,6 @@ function handleExpensesDeepLink() {
                 state
                     .selectedBreakdownCategory =
                     RECEIPTS_CATEGORY_NAME;
-
-                state.requestedReceiptId =
-                    requestedReceiptId;
-
-                applyReceiptDateToSelectedPeriod(
-                    requestedReceiptDate
-                );
             } else if (
                 requestedFilter ===
                 'all'
@@ -644,19 +565,6 @@ function handleExpensesDeepLink() {
             openPanel(
                 'categoryBreakdownPanel'
             );
-
-            if (
-                requestedReceiptId
-            ) {
-                window.setTimeout(
-                    () => {
-                        focusJustSavedReceipt(
-                            requestedReceiptId
-                        );
-                    },
-                    80
-                );
-            }
 
             return;
         }
@@ -692,97 +600,6 @@ function handleExpensesDeepLink() {
             behavior: 'auto'
         });
     });
-}
-
-
-function applyReceiptDateToSelectedPeriod(
-    receiptDate
-) {
-    if (
-        !/^\d{4}-\d{2}-\d{2}$/.test(
-            receiptDate
-        )
-    ) {
-        return;
-    }
-
-    const date =
-        new Date(
-            `${receiptDate}T00:00:00`
-        );
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-        return;
-    }
-
-    const monthName =
-        MONTH_OPTIONS[
-            date.getMonth()
-        ];
-
-    const year =
-        String(
-            date.getFullYear()
-        );
-
-    state.periods.month =
-        `${monthName} ${year}`;
-
-    state.pendingMonth =
-        monthName;
-
-    state.pendingYear =
-        year;
-
-    renderPeriodHeader();
-}
-
-function focusJustSavedReceipt(receiptId) {
-    const receiptCard =
-        Array.from(
-            document.querySelectorAll(
-                '[data-receipt-bundle-id]'
-            )
-        ).find(card => {
-            return (
-                String(
-                    card.dataset
-                        .receiptBundleId
-                ) ===
-                String(receiptId)
-            );
-        });
-
-    if (!receiptCard) {
-        showToast(
-            "Receipt saved, but it could not be highlighted."
-        );
-
-        return;
-    }
-
-    receiptCard.classList.add(
-        "just-saved-receipt"
-    );
-
-    receiptCard.scrollIntoView({
-        block: "center",
-        behavior: "smooth"
-    });
-
-    showToast(
-        "Your newly saved receipt is highlighted."
-    );
-
-    window.setTimeout(() => {
-        receiptCard.classList.remove(
-            "just-saved-receipt"
-        );
-    }, 3200);
 }
 
 function bindEvents() {
@@ -2260,149 +2077,82 @@ function saveExpense(event) {
 }
 
 function getVisibleReceiptBundles() {
-    const selectedMonth =
-        getSelectedMonthDate();
+    const bundles =
+        new Map();
 
-    const records =
-        Array.isArray(
-            state.receiptRecords
-        )
-            ? state.receiptRecords
-            : [];
-
-    const requestedReceiptId =
-        String(
-            state.requestedReceiptId ||
-            ''
-        );
-
-    const visibleRecords =
-        records.filter(receipt => {
+    getVisibleExpenses()
+        .filter(expense => {
+            return Boolean(
+                expense.receiptId
+            );
+        })
+        .forEach(expense => {
             const receiptId =
                 String(
-                    receipt.id ||
-                    ''
+                    expense.receiptId
                 );
 
             if (
-                requestedReceiptId &&
-                receiptId ===
-                    requestedReceiptId
+                !bundles.has(
+                    receiptId
+                )
             ) {
-                return true;
+                bundles.set(
+                    receiptId,
+                    {
+                        id: receiptId,
+                        store:
+                            expense
+                                .receiptStore ||
+                            'Receipt',
+                        receiptNumber:
+                            expense
+                                .receiptNumber ||
+                            '',
+                        date:
+                            expense.date,
+                        member:
+                            expense.member,
+                        receiptImage:
+                            expense
+                                .receiptImage ||
+                            '',
+                        itemCount: 0,
+                        totalAmount: 0,
+                        items: []
+                    }
+                );
             }
 
-            const dateValue =
-                normalizeImportedExpenseDate(
-                    receipt.date ||
-                    receipt.createdAt
+            const bundle =
+                bundles.get(
+                    receiptId
                 );
 
-            const receiptDate =
-                new Date(
-                    `${dateValue}T00:00:00`
+            bundle.itemCount += 1;
+
+            bundle.totalAmount +=
+                Number(
+                    expense.amount ||
+                    0
                 );
 
-            return (
-                !Number.isNaN(
-                    receiptDate.getTime()
-                ) &&
-                receiptDate.getFullYear() ===
-                    selectedMonth.getFullYear() &&
-                receiptDate.getMonth() ===
-                    selectedMonth.getMonth()
+            bundle.items.push(
+                expense
             );
+
+            if (
+                !bundle.receiptImage &&
+                expense.receiptImage
+            ) {
+                bundle.receiptImage =
+                    expense.receiptImage;
+            }
         });
 
-    /*
-        Keep one display-only record available for checking the
-        Receipts UI. It is added only when the selected month has
-        no actual saved receipt and never affects expense totals.
-    */
-    const recordsToRender =
-        visibleRecords.length
-            ? visibleRecords
-            : [
-                {
-                    ...DEMO_RECEIPT_RECORD,
-
-                    date:
-                        `${selectedMonth.getFullYear()}-` +
-                        `${String(
-                            selectedMonth.getMonth() + 1
-                        ).padStart(2, '0')}-15`,
-
-                    createdAt:
-                        `${selectedMonth.getFullYear()}-` +
-                        `${String(
-                            selectedMonth.getMonth() + 1
-                        ).padStart(2, '0')}-15T08:00:00.000Z`
-                }
-            ];
-
-    return recordsToRender
-        .map(receipt => {
-            const items =
-                Array.isArray(
-                    receipt.items
-                )
-                    ? receipt.items
-                    : [];
-
-            return {
-                id:
-                    String(
-                        receipt.id ||
-                        ''
-                    ),
-
-                store:
-                    receipt.storeName ||
-                    'Receipt',
-
-                receiptNumber:
-                    receipt.receiptNumber ||
-                    '',
-
-                date:
-                    normalizeImportedExpenseDate(
-                        receipt.date ||
-                        receipt.createdAt
-                    ),
-
-                member:
-                    receipt.member ||
-                    receipt.addedBy ||
-                    'Elena',
-
-                receiptImage:
-                    String(
-                        receipt.image ||
-                        ''
-                    ),
-
-                itemCount:
-                    items.length,
-
-                totalAmount:
-                    items.reduce(
-                        (sum, item) =>
-                            sum +
-                            Number(
-                                item.amount ||
-                                0
-                            ),
-                        0
-                    ),
-
-                items,
-
-                demoOnly:
-                    Boolean(
-                        receipt.demoOnly
-                    )
-            };
-        })
+    return Array.from(
+        bundles.values()
+    )
         .sort(
             (first, second) =>
                 new Date(
@@ -2422,18 +2172,16 @@ function receiptBundleCard(receipt) {
         ).trim();
 
     const referenceText =
-        receipt.demoOnly
-            ? 'Sample receipt data'
-            : receiptNumber &&
-                ![
-                    'N/A',
-                    '-'
-                ].includes(
-                    receiptNumber
-                        .toUpperCase()
-                )
-                ? `Receipt #${receiptNumber}`
-                : 'Scanned receipt';
+        receiptNumber &&
+        ![
+            'N/A',
+            '-'
+        ].includes(
+            receiptNumber
+                .toUpperCase()
+        )
+            ? `Receipt #${receiptNumber}`
+            : 'Scanned receipt';
 
     const imageMarkup =
         receipt.receiptImage
@@ -2623,16 +2371,12 @@ function handleReceiptPreviewClick(event) {
                     );
                 });
 
-        if (!receipt) {
-            showToast(
-                'Receipt details are unavailable.'
-            );
-
-            return;
-        }
-
-        openReceiptBreakdown(
-            receipt
+        openReceiptImageModal(
+            receipt?.receiptImage,
+            receipt?.store ||
+                'Receipt Image',
+            receipt?.store ||
+                'Receipt'
         );
 
         return;
@@ -2667,307 +2411,6 @@ function handleReceiptPreviewClick(event) {
         expense?.title ||
             'Receipt'
     );
-}
-
-function ensureReceiptBreakdownPanel() {
-    let panel =
-        document.getElementById(
-            'receiptBreakdownPanel'
-        );
-
-    if (panel) {
-        return panel;
-    }
-
-    panel =
-        document.createElement(
-            'section'
-        );
-
-    panel.id =
-        'receiptBreakdownPanel';
-
-    panel.className =
-        'full-panel receipt-breakdown-panel';
-
-    panel.hidden = true;
-
-    panel.innerHTML = `
-        <header>
-            <button
-                id="closeReceiptBreakdown"
-                type="button"
-                aria-label="Back to receipts">
-                <i class="bi bi-arrow-left"></i>
-            </button>
-
-            <h2 id="receiptBreakdownTitle">
-                Receipt Details
-            </h2>
-
-            <span
-                class="receipt-breakdown-header-spacer"
-                aria-hidden="true">
-            </span>
-        </header>
-
-        <div
-            id="receiptBreakdownContent"
-            class="panel-content">
-        </div>
-    `;
-
-    document.body.appendChild(
-        panel
-    );
-
-    panel
-        .querySelector(
-            '#closeReceiptBreakdown'
-        )
-        ?.addEventListener(
-            'click',
-            () => {
-                panel.hidden = true;
-            }
-        );
-
-    return panel;
-}
-
-function openReceiptBreakdown(receipt) {
-    const panel =
-        ensureReceiptBreakdownPanel();
-
-    const content =
-        panel.querySelector(
-            '#receiptBreakdownContent'
-        );
-
-    const title =
-        panel.querySelector(
-            '#receiptBreakdownTitle'
-        );
-
-    const items =
-        Array.isArray(
-            receipt.items
-        )
-            ? receipt.items
-            : [];
-
-    const total =
-        items.reduce(
-            (sum, item) =>
-                sum +
-                Number(
-                    item.amount ||
-                    0
-                ),
-            0
-        );
-
-    const imageMarkup =
-        receipt.receiptImage
-            ? `
-                <button
-                    class="receipt-breakdown-image-button"
-                    type="button"
-                    data-open-receipt-image>
-                    <img
-                        src="${escapeHtml(
-                            receipt.receiptImage
-                        )}"
-                        alt="${escapeHtml(
-                            receipt.store
-                        )} receipt">
-
-                    <span>
-                        <i class="bi bi-arrows-angle-expand"></i>
-                        View full image
-                    </span>
-                </button>
-            `
-            : `
-                <div class="receipt-breakdown-image-placeholder">
-                    <i class="bi bi-receipt-cutoff"></i>
-                    <span>No receipt image attached</span>
-                </div>
-            `;
-
-    const itemRows =
-        items.length
-            ? items
-                .map((item, index) => {
-                    const category =
-                        normalizeScannedExpenseCategory(
-                            item.category
-                        );
-
-                    const meta =
-                        EXPENSE_CATEGORIES[
-                            category
-                        ] ||
-                        EXPENSE_CATEGORIES.Other;
-
-                    return `
-                        <article class="receipt-breakdown-item">
-                            <span
-                                class="receipt-breakdown-item-icon"
-                                style="
-                                    --item-soft:${escapeHtml(
-                                        meta.soft
-                                    )};
-                                    --item-accent:${escapeHtml(
-                                        meta.color
-                                    )}
-                                ">
-                                <i class="bi ${escapeHtml(
-                                    meta.icon
-                                )}"></i>
-                            </span>
-
-                            <span class="receipt-breakdown-item-copy">
-                                <strong>
-                                    ${escapeHtml(
-                                        item.title ||
-                                        item.rawTitle ||
-                                        `Item ${index + 1}`
-                                    )}
-                                </strong>
-
-                                <small>
-                                    ${escapeHtml(
-                                        category
-                                    )}
-                                    • Qty ${Number(
-                                        item.quantity ||
-                                        1
-                                    )}
-                                </small>
-                            </span>
-
-                            <strong class="receipt-breakdown-item-amount">
-                                ${peso(
-                                    Math.abs(
-                                        Number(
-                                            item.amount ||
-                                            0
-                                        )
-                                    )
-                                )}
-                            </strong>
-                        </article>
-                    `;
-                })
-                .join('')
-            : `
-                <p class="empty-state">
-                    No detected products were saved with this receipt.
-                </p>
-            `;
-
-    if (title) {
-        title.textContent =
-            receipt.store ||
-            'Receipt Details';
-    }
-
-    if (content) {
-        content.innerHTML = `
-            <section class="receipt-breakdown-hero">
-                ${imageMarkup}
-
-                <div class="receipt-breakdown-store">
-                    <span>Saved receipt</span>
-
-                    <h3>
-                        ${escapeHtml(
-                            receipt.store ||
-                            'Receipt'
-                        )}
-                    </h3>
-
-                    <p>
-                        ${escapeHtml(
-                            formatHistoryDate(
-                                receipt.date
-                            )
-                        )}
-                        ${
-                            receipt.receiptNumber
-                                ? ` • #${escapeHtml(
-                                    receipt.receiptNumber
-                                )}`
-                                : ''
-                        }
-                    </p>
-                </div>
-
-                <div class="receipt-breakdown-stats">
-                    <div>
-                        <span>Products</span>
-                        <strong>
-                            ${items.length}
-                        </strong>
-                    </div>
-
-                    <div>
-                        <span>Receipt total</span>
-                        <strong>
-                            ${peso(total)}
-                        </strong>
-                    </div>
-                </div>
-            </section>
-
-            <div class="panel-subheading receipt-breakdown-heading">
-                <h3>Products</h3>
-                <span>
-                    ${items.length}
-                    ${
-                        items.length === 1
-                            ? 'item'
-                            : 'items'
-                    }
-                </span>
-            </div>
-
-            <div class="receipt-breakdown-items">
-                ${itemRows}
-            </div>
-
-            <div class="receipt-breakdown-note">
-                <i class="bi bi-info-circle"></i>
-
-                <span>
-                    These products are already counted under
-                    their assigned expense categories.
-                </span>
-            </div>
-        `;
-
-        content
-            .querySelector(
-                '[data-open-receipt-image]'
-            )
-            ?.addEventListener(
-                'click',
-                () => {
-                    openReceiptImageModal(
-                        receipt.receiptImage,
-                        receipt.store ||
-                            'Receipt Image',
-                        receipt.store ||
-                            'Receipt'
-                    );
-                }
-            );
-    }
-
-    panel.hidden = false;
-
-    panel.scrollTop = 0;
 }
 
 function openReceiptImageModal(
