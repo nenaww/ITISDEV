@@ -1278,3 +1278,155 @@ body[data-page="scanner"] {
         stroke-dashoffset: 0;
     }
 }
+
+
+/* =========================================================
+   v6 — duplicate detection modal before receipt preview
+   ========================================================= */
+
+.duplicate-receipt-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 650;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(255, 249, 245, 0.56);
+    backdrop-filter: blur(14px);
+}
+
+.duplicate-receipt-modal.hidden {
+    display: none !important;
+}
+
+.duplicate-receipt-card {
+    width: 100%;
+    max-width: 304px;
+    border-radius: 30px;
+    background: rgba(255, 249, 245, 0.97);
+    padding: 24px 20px 20px;
+    text-align: center;
+    box-shadow: 0 20px 46px rgba(92, 83, 78, 0.17);
+}
+
+.duplicate-x-animation {
+    width: 78px;
+    height: 78px;
+    margin: 0 auto 14px;
+}
+
+.duplicate-x-animation svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.duplicate-x-circle {
+    fill: none;
+    stroke: #F1B7B7;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 195;
+    stroke-dashoffset: 195;
+}
+
+.duplicate-x-line {
+    fill: none;
+    stroke: #D66B6B;
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-dasharray: 32;
+    stroke-dashoffset: 32;
+}
+
+.duplicate-receipt-modal.animate .duplicate-x-circle {
+    animation: duplicateCircleDraw 0.52s ease forwards;
+}
+
+.duplicate-receipt-modal.animate .duplicate-x-line-one {
+    animation: duplicateLineDraw 0.28s ease 0.38s forwards;
+}
+
+.duplicate-receipt-modal.animate .duplicate-x-line-two {
+    animation: duplicateLineDraw 0.28s ease 0.55s forwards;
+}
+
+.duplicate-receipt-card h2 {
+    margin: 0;
+    color: var(--neutral-dark);
+    font-size: 19px;
+    line-height: 1.2;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+}
+
+.duplicate-receipt-card p {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+    font-weight: 700;
+}
+
+.duplicate-receipt-actions {
+    margin-top: 21px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.duplicate-receipt-actions button {
+    min-height: 48px;
+    border-radius: 16px;
+    padding: 10px;
+    font-size: 11px;
+    line-height: 1.25;
+    font-weight: 800;
+}
+
+.duplicate-secondary-action {
+    border: 1px solid rgba(92, 83, 78, 0.10);
+    background: #FFFFFF;
+    color: var(--neutral);
+}
+
+.duplicate-primary-action {
+    border: 0;
+    background: #F2B7A0;
+    color: #4F352C;
+}
+
+@keyframes duplicateCircleDraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes duplicateLineDraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@media (max-width: 360px) {
+    .duplicate-receipt-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* =========================================================
+   v8 — duplicate receipt action colors
+   ========================================================= */
+
+.duplicate-secondary-action {
+    border: 0 !important;
+    background: #DDECF5 !important;
+    color: #3F718C !important;
+}
+
+.duplicate-primary-action {
+    border: 0 !important;
+    background: #DDEFE3 !important;
+    color: #3F7452 !important;
+}

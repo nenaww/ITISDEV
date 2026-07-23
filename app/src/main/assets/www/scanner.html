@@ -230,18 +230,28 @@
 
 
 
-    <section id="duplicateReceiptModal" class="invalid-receipt-modal hidden">
-        <div class="invalid-receipt-card">
-            <div class="invalid-receipt-icon">
-                <i class="bi bi-files"></i>
+    <section id="duplicateReceiptModal" class="duplicate-receipt-modal hidden" aria-modal="true" role="dialog" aria-labelledby="duplicateReceiptTitle">
+        <div class="duplicate-receipt-card">
+            <div class="duplicate-x-animation" aria-hidden="true">
+                <svg viewBox="0 0 72 72">
+                    <circle class="duplicate-x-circle" cx="36" cy="36" r="31"></circle>
+                    <path class="duplicate-x-line duplicate-x-line-one" d="M25 25 L47 47"></path>
+                    <path class="duplicate-x-line duplicate-x-line-two" d="M47 25 L25 47"></path>
+                </svg>
             </div>
 
-            <h2>Duplicate receipt</h2>
-            <p>This receipt has already been saved, so it was not added again.</p>
+            <h2 id="duplicateReceiptTitle">Possible duplicate</h2>
+            <p>This receipt looks similar to one already saved. You can scan again or continue if the match is incorrect.</p>
 
-            <button id="closeDuplicateReceiptBtn" type="button">
-                Back to Review
-            </button>
+            <div class="duplicate-receipt-actions">
+                <button id="duplicateScanAgainBtn" class="duplicate-secondary-action" type="button">
+                    Scan Again
+                </button>
+
+                <button id="duplicateContinueBtn" class="duplicate-primary-action" type="button">
+                    Continue Anyway
+                </button>
+            </div>
         </div>
     </section>
 
