@@ -83,18 +83,22 @@ function bindDebtDetailsEvents() {
         });
 
     document
-        .getElementById(
-            "debtStatusFilter"
+        .querySelectorAll(
+            "[data-debt-status-filter]"
         )
-        ?.addEventListener(
-            "change",
-            event => {
-                selectedStatusFilter =
-                    event.target.value;
+        .forEach(button => {
+            button.addEventListener(
+                "click",
+                () => {
+                    selectedStatusFilter =
+                        button.dataset
+                            .debtStatusFilter;
 
-                renderDebtRecords();
-            }
-        );
+                    renderDebtStatusFilter();
+                    renderDebtRecords();
+                }
+            );
+        });
 
     document
         .getElementById(
@@ -134,12 +138,12 @@ function bindDebtDetailsEvents() {
 
     document
         .getElementById(
-            "detailsNavSavings"
+            "detailsNavProfile"
         )
         ?.addEventListener(
             "click",
-            () => navigateTo(
-                "expenses.html#budget-overview"
+            () => showDebtToast(
+                "Profile will be added next."
             )
         );
 }
@@ -341,6 +345,7 @@ async function loadDebtEntries() {
 function renderDebtDetailsPage() {
     renderDebtSummary();
     renderDebtFilter();
+    renderDebtStatusFilter();
     renderDebtRecords();
 }
 
@@ -441,6 +446,21 @@ function renderDebtFilter() {
                 "active",
                 button.dataset.debtFilter ===
                     selectedDebtFilter
+            );
+        });
+}
+
+function renderDebtStatusFilter() {
+    document
+        .querySelectorAll(
+            "[data-debt-status-filter]"
+        )
+        .forEach(button => {
+            button.classList.toggle(
+                "active",
+                button.dataset
+                    .debtStatusFilter ===
+                    selectedStatusFilter
             );
         });
 }
@@ -915,21 +935,33 @@ async function toggleDebtStatus(id) {
 }
 
 function getDebtRecordHeading() {
-    if (
-        selectedDebtFilter ===
-        "payable"
-    ) {
-        return "Debts You Owe";
-    }
+    const directionLabel =
+        selectedDebtFilter === "payable"
+            ? "You Owe"
+            : selectedDebtFilter === "receivable"
+                ? "Owed to You"
+                : "All Debts";
 
     if (
-        selectedDebtFilter ===
-        "receivable"
+        selectedStatusFilter === "all"
     ) {
-        return "Debts Owed to You";
+        return directionLabel;
     }
 
-    return "All Debts";
+    const statusLabel =
+        selectedStatusFilter === "active"
+            ? "Active"
+            : selectedStatusFilter === "overdue"
+                ? "Overdue"
+                : "Completed";
+
+    if (
+        selectedDebtFilter === "all"
+    ) {
+        return `${statusLabel} Debts`;
+    }
+
+    return `${statusLabel} · ${directionLabel}`;
 }
 
 function getDebtDirection(entry) {

@@ -22,10 +22,182 @@ let selectedEntryType = "bill";
 let selectedFrequency = "monthly";
 let selectedDebtDirection = "payable";
 let showAllPayments = false;
+let selectedCompletedFilter = "all";
 
 let calendarViewDate = new Date();
 let calendarSelectedDate = toDateInputValue(new Date());
 let calendarPickerContext = "calendar";
+
+const BILL_CATEGORIES = [
+    "Electricity",
+    "Water",
+    "Internet",
+    "Housing",
+    "Subscription",
+    "Credit Card",
+    "Education",
+    "Health",
+    "Utilities",
+    "Other"
+];
+
+const DEBT_CATEGORIES = [
+    "Loan",
+    "Credit Card",
+    "Personal",
+    "Education",
+    "Health",
+    "Housing",
+    "Other"
+];
+
+
+const CUSTOM_BILL_VALUE =
+    "__custom_bill__";
+
+const CUSTOM_PROVIDER_VALUE =
+    "__custom_provider__";
+
+const BILL_PRESETS = {
+    "Electric Bill": {
+        category: "Electricity",
+        providerMode: "select",
+        providers: [
+            "Meralco",
+            "Visayan Electric",
+            "Davao Light",
+            "MORE Power"
+        ],
+        customProviderLabel:
+            "Other Electric Utility / Cooperative",
+        customProviderFieldLabel:
+            "Electric Utility / Cooperative",
+        customProviderPlaceholder:
+            "Enter electric utility or cooperative"
+    },
+
+    "Water Bill": {
+        category: "Water",
+        providerMode: "select",
+        providers: [
+            "Manila Water",
+            "Maynilad Water Services",
+            "PrimeWater"
+        ],
+        customProviderLabel:
+            "Other Water District / Concessionaire",
+        customProviderFieldLabel:
+            "Water District / Concessionaire",
+        customProviderPlaceholder:
+            "Enter water district or concessionaire"
+    },
+
+    "Internet Bill": {
+        category: "Internet",
+        providerMode: "select",
+        providers: [
+            "PLDT Home",
+            "Globe At Home",
+            "Converge ICT",
+            "DITO Home WoWFi"
+        ],
+        customProviderLabel:
+            "Other Internet Provider",
+        customProviderFieldLabel:
+            "Internet Service Provider",
+        customProviderPlaceholder:
+            "Enter internet provider"
+    },
+
+    "Mobile Plan": {
+        category: "Subscription",
+        providerMode: "select",
+        providers: [
+            "Globe Postpaid",
+            "Smart Postpaid",
+            "DITO Postpaid"
+        ],
+        customProviderLabel:
+            "Other Mobile Provider",
+        customProviderFieldLabel:
+            "Mobile Service Provider",
+        customProviderPlaceholder:
+            "Enter mobile provider"
+    },
+
+    "House Rent": {
+        category: "Housing",
+        providerMode: "text",
+        providerLabel:
+            "Landlord / Property Manager",
+        providerPlaceholder:
+            "Enter landlord or property manager"
+    },
+
+    "Subscription": {
+        category: "Subscription",
+        providerMode: "select",
+        providers: [
+            "Netflix",
+            "Spotify",
+            "YouTube Premium",
+            "Disney+"
+        ],
+        customProviderLabel:
+            "Other Subscription Provider",
+        customProviderFieldLabel:
+            "Subscription Provider",
+        customProviderPlaceholder:
+            "Enter subscription provider"
+    },
+
+    "Credit Card Bill": {
+        category: "Credit Card",
+        providerMode: "select",
+        providers: [
+            "BDO",
+            "BPI",
+            "Metrobank",
+            "PNB",
+            "RCBC",
+            "UnionBank",
+            "Security Bank",
+            "EastWest Bank"
+        ],
+        customProviderLabel:
+            "Other Philippine Bank / Card Issuer",
+        customProviderFieldLabel:
+            "Philippine Bank / Card Issuer",
+        customProviderPlaceholder:
+            "Enter Philippine bank or card issuer"
+    },
+
+    "Tuition / School Fees": {
+        category: "Education",
+        providerMode: "text",
+        providerLabel:
+            "School / University",
+        providerPlaceholder:
+            "Enter school or university"
+    },
+
+    "Health / Insurance": {
+        category: "Health",
+        providerMode: "select",
+        providers: [
+            "PhilHealth",
+            "Maxicare",
+            "MediCard",
+            "Intellicare"
+        ],
+        customProviderLabel:
+            "Other HMO / Insurer / Medical Provider",
+        customProviderFieldLabel:
+            "HMO / Insurer / Medical Provider",
+        customProviderPlaceholder:
+            "Enter HMO, insurer, hospital, or clinic"
+    }
+};
 
 const PAYMENT_VISUALS = {
     electric: {
@@ -104,7 +276,7 @@ const DEMO_ENTRIES = [
         provider: "Meralco",
         amount: 1420,
         dueDate: "2026-07-18",
-        category: "Utilities",
+        category: "Electricity",
         frequency: "monthly",
         reminder: true,
         shared: true,
@@ -121,7 +293,7 @@ const DEMO_ENTRIES = [
         provider: "Manila Water",
         amount: 650,
         dueDate: "2026-07-22",
-        category: "Utilities",
+        category: "Water",
         frequency: "monthly",
         reminder: true,
         shared: true,
@@ -167,6 +339,7 @@ const DEMO_ENTRIES = [
     },
     {
         id: "demo-rent",
+        completedAt: "2026-07-05T08:00:00.000Z",
         familyCode: "KABA-4821",
         type: "bill",
         name: "House Rent",
@@ -184,6 +357,7 @@ const DEMO_ENTRIES = [
     },
     {
         id: "demo-phone",
+        completedAt: "2026-07-10T08:00:00.000Z",
         familyCode: "KABA-4821",
         type: "bill",
         name: "Mobile Plan",
@@ -224,6 +398,8 @@ async function initializeBillsPage() {
 
         await loadEntries();
         await seedDemoEntriesIfNeeded();
+        await loadEntries();
+        await normalizeExistingBillCategories();
         await loadEntries();
 
         renderAll();
@@ -277,12 +453,53 @@ function bindEvents() {
         .querySelectorAll("[data-entry-type]")
         .forEach(button => {
             button.addEventListener("click", () => {
-                selectedEntryType =
+                const nextType =
                     button.dataset.entryType;
 
+                if (
+                    nextType ===
+                    selectedEntryType
+                ) {
+                    return;
+                }
+
+                selectedEntryType =
+                    nextType;
+
+                selectedFrequency =
+                    nextType === "debt"
+                        ? "one-time"
+                        : "monthly";
+
+                selectedDebtDirection =
+                    "payable";
+
+                resetForm();
                 updateEntryTypeUI();
             });
         });
+
+    document
+        .getElementById(
+            "entryBillName"
+        )
+        ?.addEventListener(
+            "change",
+            () => {
+                updateBillProviderOptions(
+                    false
+                );
+            }
+        );
+
+    document
+        .getElementById(
+            "entryBillProvider"
+        )
+        ?.addEventListener(
+            "change",
+            updateCustomBillFields
+        );
 
     document
         .querySelectorAll("[data-frequency]")
@@ -356,6 +573,59 @@ function bindEvents() {
                 "debt-details.html"
             )
         );
+
+    document
+        .getElementById("viewBillsDetails")
+        ?.addEventListener(
+            "click",
+            () => navigateTo(
+                `bills-details.html?month=${encodeURIComponent(
+                    getPeriodValue()
+                )}`
+            )
+        );
+
+    document
+        .getElementById("openCompletedPayments")
+        ?.addEventListener(
+            "click",
+            openCompletedPayments
+        );
+
+    document
+        .getElementById("closeCompletedPayments")
+        ?.addEventListener(
+            "click",
+            closeCompletedPayments
+        );
+
+    document
+        .getElementById("openCompletedPeriodPicker")
+        ?.addEventListener(
+            "click",
+            () => {
+                openCalendarMonthYearPicker(
+                    "completed"
+                );
+            }
+        );
+
+    document
+        .querySelectorAll(
+            "[data-completed-filter]"
+        )
+        .forEach(button => {
+            button.addEventListener(
+                "click",
+                () => {
+                    selectedCompletedFilter =
+                        button.dataset
+                            .completedFilter;
+
+                    renderCompletedPayments();
+                }
+            );
+        });
 
     document
         .getElementById("billDebtForm")
@@ -851,6 +1121,71 @@ async function loadEntries() {
         );
 }
 
+async function normalizeExistingBillCategories() {
+    const updates = [];
+
+    entries.forEach(entry => {
+        if (
+            entry.type !== "bill" ||
+            entry.category !== "Utilities"
+        ) {
+            return;
+        }
+
+        const search =
+            `${entry.name || ""} ` +
+            `${entry.provider || ""}`;
+
+        const normalized =
+            search.toLowerCase();
+
+        let nextCategory = null;
+
+        if (
+            normalized.includes(
+                "electric"
+            ) ||
+            normalized.includes(
+                "meralco"
+            )
+        ) {
+            nextCategory =
+                "Electricity";
+        } else if (
+            normalized.includes(
+                "water"
+            ) ||
+            normalized.includes(
+                "maynilad"
+            ) ||
+            normalized.includes(
+                "manila water"
+            )
+        ) {
+            nextCategory =
+                "Water";
+        }
+
+        if (!nextCategory) {
+            return;
+        }
+
+        entry.category =
+            nextCategory;
+
+        entry.updatedAt =
+            new Date().toISOString();
+
+        updates.push(
+            putEntry(entry)
+        );
+    });
+
+    if (updates.length) {
+        await Promise.all(updates);
+    }
+}
+
 async function seedDemoEntriesIfNeeded() {
     if (
         currentFamily.familyCode !==
@@ -886,7 +1221,20 @@ function populatePeriodValueOptions() {
 
     const now = new Date();
 
-    select.innerHTML = "";
+    const requestedValue =
+        new URLSearchParams(
+            window.location.search
+        ).get("month");
+
+    const validRequestedValue =
+        /^\d{4}-\d{2}$/.test(
+            requestedValue || ""
+        )
+            ? requestedValue
+            : null;
+
+    const options = [];
+    const includedValues = new Set();
 
     for (
         let offset = -12;
@@ -905,6 +1253,46 @@ function populatePeriodValueOptions() {
                 date.getMonth() + 1
             ).padStart(2, "0")}`;
 
+        includedValues.add(value);
+        options.push({ value, date });
+    }
+
+    if (
+        validRequestedValue &&
+        !includedValues.has(
+            validRequestedValue
+        )
+    ) {
+        const [year, month] =
+            validRequestedValue
+                .split("-")
+                .map(Number);
+
+        options.push({
+            value: validRequestedValue,
+            date: new Date(
+                year,
+                month - 1,
+                1
+            )
+        });
+    }
+
+    options.sort(
+        (first, second) =>
+            first.date -
+            second.date
+    );
+
+    select.innerHTML = "";
+
+    const currentValue =
+        `${now.getFullYear()}-` +
+        `${String(
+            now.getMonth() + 1
+        ).padStart(2, "0")}`;
+
+    options.forEach(({ value, date }) => {
         const option =
             document.createElement(
                 "option"
@@ -921,12 +1309,15 @@ function populatePeriodValueOptions() {
                 }
             );
 
-        if (offset === 0) {
-            option.selected = true;
-        }
+        option.selected =
+            validRequestedValue
+                ? value ===
+                    validRequestedValue
+                : value ===
+                    currentValue;
 
         select.appendChild(option);
-    }
+    });
 
     updateBillsPeriodPicker();
 }
@@ -1033,23 +1424,50 @@ function getPeriodEntries() {
 }
 
 function getFilteredEntries() {
+    const todayValue =
+        toDateInputValue(
+            new Date()
+        );
+
     return getPeriodEntries()
         .filter(entry => {
-            return (
+            const requiresPayment =
+                !entry.paid &&
+                (
+                    entry.type === "bill" ||
+                    (
+                        entry.type === "debt" &&
+                        getDebtDirection(entry) ===
+                            "payable"
+                    )
+                );
+
+            const matchesType =
                 selectedTypeFilter === "all" ||
                 entry.type ===
-                    selectedTypeFilter
+                    selectedTypeFilter;
+
+            return (
+                requiresPayment &&
+                matchesType
             );
         })
         .sort((first, second) => {
+            const firstOverdue =
+                first.dueDate <
+                todayValue;
+
+            const secondOverdue =
+                second.dueDate <
+                todayValue;
+
             if (
-                Boolean(first.paid) !==
-                Boolean(second.paid)
+                firstOverdue !==
+                secondOverdue
             ) {
-                return (
-                    Number(first.paid) -
-                    Number(second.paid)
-                );
+                return firstOverdue
+                    ? -1
+                    : 1;
             }
 
             return (
@@ -1071,7 +1489,20 @@ function renderAll() {
     renderTypeFilter();
     renderSummary();
     renderPayments();
+    renderBillsOverview();
     renderDebtOverview();
+
+    const completedPanel =
+        document.getElementById(
+            "completedPaymentsPanel"
+        );
+
+    if (
+        completedPanel &&
+        !completedPanel.hidden
+    ) {
+        renderCompletedPayments();
+    }
 
     const calendarPanel =
         document.getElementById(
@@ -1101,11 +1532,20 @@ function renderTypeFilter() {
 }
 
 function renderSummary() {
-    const periodEntries =
-        getPeriodEntries();
+    const outgoingEntries =
+        getPeriodEntries().filter(entry => {
+            return (
+                entry.type === "bill" ||
+                (
+                    entry.type === "debt" &&
+                    getDebtDirection(entry) ===
+                        "payable"
+                )
+            );
+        });
 
     const unpaid =
-        periodEntries.filter(
+        outgoingEntries.filter(
             entry => !entry.paid
         );
 
@@ -1126,13 +1566,10 @@ function renderSummary() {
 
     const debtDue =
         unpaid
-            .filter(entry => {
-                return (
-                    entry.type === "debt" &&
-                    getDebtDirection(entry) ===
-                        "payable"
-                );
-            })
+            .filter(
+                entry =>
+                    entry.type === "debt"
+            )
             .reduce(
                 (sum, entry) =>
                     sum +
@@ -1143,12 +1580,12 @@ function renderSummary() {
             );
 
     const paidCount =
-        periodEntries.filter(
+        outgoingEntries.filter(
             entry => entry.paid
         ).length;
 
     const totalCount =
-        periodEntries.length;
+        outgoingEntries.length;
 
     const paidPercent =
         totalCount > 0
@@ -1209,6 +1646,11 @@ function renderPayments() {
     const filteredEntries =
         getFilteredEntries();
 
+    const todayValue =
+        toDateInputValue(
+            new Date()
+        );
+
     const visible =
         showAllPayments
             ? filteredEntries
@@ -1233,11 +1675,11 @@ function renderPayments() {
                 <i class="bi bi-calendar2-check"></i>
 
                 <strong>
-                    No payments found
+                    No unpaid payments
                 </strong>
 
                 <span>
-                    Add a bill or debt for the selected period.
+                    You have no unpaid bills or payable debts for this period.
                 </span>
             </div>
         `;
@@ -1253,45 +1695,31 @@ function renderPayments() {
                         entry
                     );
 
-                const debtDirection =
-                    getDebtDirection(entry);
+                const isDebt =
+                    entry.type ===
+                    "debt";
+
+                const isOverdue =
+                    entry.dueDate <
+                    todayValue;
 
                 const statusClass =
-                    entry.paid
-                        ? "paid"
-                        : entry.type ===
-                            "debt"
-                            ? debtDirection ===
-                                "receivable"
-                                ? "receivable"
-                                : "debt"
+                    isOverdue
+                        ? "overdue"
+                        : isDebt
+                            ? "debt"
                             : "";
 
                 const statusLabel =
-                    entry.type === "debt"
-                        ? entry.paid
-                            ? debtDirection ===
-                                "receivable"
-                                ? "Collected"
-                                : "Paid"
-                            : debtDirection ===
-                                "receivable"
-                                ? "To Collect"
-                                : "To Pay"
-                        : entry.paid
-                            ? "Paid"
+                    isOverdue
+                        ? "Past Due"
+                        : isDebt
+                            ? "To Pay"
                             : "Bill";
-
-                const dueDatePrefix =
-                    entry.type === "debt" &&
-                    debtDirection ===
-                        "receivable"
-                        ? "Expected"
-                        : "Due";
 
                 return `
                     <button
-                        class="payment-row"
+                        class="payment-row ${isOverdue ? "overdue" : ""}"
                         type="button"
                         data-entry-id="${escapeHtml(entry.id)}"
                     >
@@ -1321,13 +1749,14 @@ function renderPayments() {
                             <small class="payment-due-date">
                                 <i class="bi bi-calendar3"></i>
 
-                                ${escapeHtml(dueDatePrefix)}
+                                Due
                                 ${escapeHtml(
                                     formatDate(
                                         entry.dueDate
                                     )
                                 )}
                             </small>
+
                         </span>
 
                         <span class="payment-value">
@@ -1362,6 +1791,107 @@ function renderPayments() {
                 }
             );
         });
+}
+
+function renderBillsOverview() {
+    const todayValue =
+        toDateInputValue(
+            new Date()
+        );
+
+    const bills =
+        getPeriodEntries().filter(
+            entry =>
+                entry.type === "bill"
+        );
+
+    const remainingBills =
+        bills.filter(
+            entry => !entry.paid
+        );
+
+    const paidBills =
+        bills.filter(
+            entry => entry.paid
+        );
+
+    const remainingAmount =
+        remainingBills.reduce(
+            (sum, entry) =>
+                sum +
+                Number(
+                    entry.amount || 0
+                ),
+            0
+        );
+
+    const paidAmount =
+        paidBills.reduce(
+            (sum, entry) =>
+                sum +
+                Number(
+                    entry.amount || 0
+                ),
+            0
+        );
+
+    const overdueCount =
+        remainingBills.filter(
+            entry =>
+                entry.dueDate <
+                todayValue
+        ).length;
+
+    setText(
+        "remainingBillsAmount",
+        peso(remainingAmount)
+    );
+
+    setText(
+        "paidBillsAmount",
+        peso(paidAmount)
+    );
+
+    setText(
+        "remainingBillsCount",
+        String(remainingBills.length)
+    );
+
+    setText(
+        "paidBillsCount",
+        String(paidBills.length)
+    );
+
+    setText(
+        "remainingBillsCountLabel",
+        remainingBills.length === 1
+            ? "bill remaining"
+            : "bills remaining"
+    );
+
+    setText(
+        "paidBillsCountLabel",
+        paidBills.length === 1
+            ? "bill paid"
+            : "bills paid"
+    );
+
+    const notice =
+        document.getElementById(
+            "billsOverdueNotice"
+        );
+
+    if (notice) {
+        notice.hidden =
+            overdueCount === 0;
+    }
+
+    setText(
+        "billsOverdueText",
+        overdueCount === 1
+            ? "1 overdue bill needs immediate attention"
+            : `${overdueCount} overdue bills need immediate attention`
+    );
 }
 
 function renderDebtOverview() {
@@ -1640,6 +2170,11 @@ async function handleEntryClick(id) {
     entry.paid =
         !entry.paid;
 
+    entry.completedAt =
+        entry.paid
+            ? new Date().toISOString()
+            : null;
+
     entry.updatedAt =
         new Date().toISOString();
 
@@ -1672,6 +2207,342 @@ async function handleEntryClick(id) {
             : isReceivable
                 ? "Debt marked as not collected. Reminders were restored."
                 : "Payment marked as unpaid. Reminders were restored."
+    );
+}
+
+/* =========================================================
+   Completed payments panel
+   ========================================================= */
+
+function openCompletedPayments() {
+    const panel =
+        document.getElementById(
+            "completedPaymentsPanel"
+        );
+
+    if (!panel) {
+        return;
+    }
+
+    selectedCompletedFilter =
+        "all";
+
+    panel.hidden =
+        false;
+
+    panel
+        .querySelector(
+            ".completed-payments-scroll"
+        )
+        ?.scrollTo({
+            top: 0,
+            behavior: "instant"
+        });
+
+    renderCompletedPayments();
+}
+
+function closeCompletedPayments() {
+    closeCalendarMonthYearPicker();
+
+    const panel =
+        document.getElementById(
+            "completedPaymentsPanel"
+        );
+
+    if (panel) {
+        panel.hidden =
+            true;
+    }
+}
+
+function getCompletedPayments() {
+    return getPeriodEntries()
+        .filter(entry => {
+            const isOutgoingPayment =
+                entry.type === "bill" ||
+                (
+                    entry.type === "debt" &&
+                    getDebtDirection(entry) ===
+                        "payable"
+                );
+
+            const matchesFilter =
+                selectedCompletedFilter ===
+                    "all" ||
+                entry.type ===
+                    selectedCompletedFilter;
+
+            return (
+                entry.paid &&
+                isOutgoingPayment &&
+                matchesFilter
+            );
+        })
+        .sort((first, second) => {
+            return (
+                getCompletedPaymentTimestamp(
+                    second
+                ) -
+                getCompletedPaymentTimestamp(
+                    first
+                )
+            );
+        });
+}
+
+function renderCompletedPayments() {
+    document
+        .querySelectorAll(
+            "[data-completed-filter]"
+        )
+        .forEach(button => {
+            button.classList.toggle(
+                "active",
+                button.dataset
+                    .completedFilter ===
+                    selectedCompletedFilter
+            );
+        });
+
+    const periodSelect =
+        document.getElementById(
+            "periodValueSelect"
+        );
+
+    const selectedOption =
+        periodSelect?.options[
+            periodSelect.selectedIndex
+        ];
+
+    setText(
+        "completedPeriodLabel",
+        selectedOption?.textContent ||
+        formatCompletedPeriod(
+            getPeriodValue()
+        )
+    );
+
+    const completedEntries =
+        getCompletedPayments();
+
+    const totalPaid =
+        completedEntries.reduce(
+            (sum, entry) => {
+                return (
+                    sum +
+                    Number(
+                        entry.amount || 0
+                    )
+                );
+            },
+            0
+        );
+
+    setText(
+        "completedTotalPaid",
+        peso(totalPaid)
+    );
+
+    setText(
+        "completedCountText",
+        completedEntries.length === 1
+            ? "1 completed payment"
+            : `${completedEntries.length} completed payments`
+    );
+
+    setText(
+        "completedRecordCount",
+        completedEntries.length === 1
+            ? "1 record"
+            : `${completedEntries.length} records`
+    );
+
+    const container =
+        document.getElementById(
+            "completedPaymentsList"
+        );
+
+    if (!container) {
+        return;
+    }
+
+    if (!completedEntries.length) {
+        container.innerHTML = `
+            <div class="completed-empty-state">
+                <i class="bi bi-check2-circle"></i>
+
+                <strong>
+                    No completed payments
+                </strong>
+
+                <span>
+                    No paid bills or payable debts were found for this month and filter.
+                </span>
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML =
+        completedEntries
+            .map(entry => {
+                const visual =
+                    getPaymentVisual(
+                        entry
+                    );
+
+                const typeLabel =
+                    entry.type === "debt"
+                        ? "Debt"
+                        : "Bill";
+
+                return `
+                    <article class="completed-payment-row">
+                        <span
+                            class="completed-payment-icon"
+                            style="
+                                --payment-soft:${escapeHtml(visual.soft)};
+                                --payment-accent:${escapeHtml(visual.accent)}
+                            "
+                        >
+                            <i class="bi ${escapeHtml(visual.icon)}"></i>
+                        </span>
+
+                        <span class="completed-payment-main">
+                            <strong>
+                                ${escapeHtml(entry.name)}
+                            </strong>
+
+                            <span>
+                                ${escapeHtml(
+                                    entry.provider ||
+                                    entry.category ||
+                                    typeLabel
+                                )}
+                                ·
+                                ${escapeHtml(
+                                    entry.category ||
+                                    typeLabel
+                                )}
+                            </span>
+
+                            <small>
+                                ${escapeHtml(
+                                    formatCompletedPaymentDate(
+                                        entry
+                                    )
+                                )}
+                            </small>
+                        </span>
+
+                        <span class="completed-payment-value">
+                            <strong>
+                                ${peso(entry.amount)}
+                            </strong>
+
+                            <span>
+                                Paid
+                            </span>
+                        </span>
+                    </article>
+                `;
+            })
+            .join("");
+}
+
+function getCompletedPaymentTimestamp(entry) {
+    const value =
+        entry.completedAt ||
+        entry.updatedAt ||
+        entry.dueDate;
+
+    const date =
+        new Date(value);
+
+    return Number.isNaN(
+        date.getTime()
+    )
+        ? 0
+        : date.getTime();
+}
+
+function formatCompletedPaymentDate(entry) {
+    if (entry.completedAt) {
+        const date =
+            new Date(
+                entry.completedAt
+            );
+
+        if (
+            !Number.isNaN(
+                date.getTime()
+            )
+        ) {
+            return (
+                "Paid " +
+                date.toLocaleDateString(
+                    "en-PH",
+                    {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric"
+                    }
+                )
+            );
+        }
+    }
+
+    if (entry.updatedAt) {
+        const date =
+            new Date(
+                entry.updatedAt
+            );
+
+        if (
+            !Number.isNaN(
+                date.getTime()
+            )
+        ) {
+            return (
+                "Paid status updated " +
+                date.toLocaleDateString(
+                    "en-PH",
+                    {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric"
+                    }
+                )
+            );
+        }
+    }
+
+    return (
+        "Completion date unavailable · Due " +
+        formatDate(
+            entry.dueDate
+        )
+    );
+}
+
+function formatCompletedPeriod(value) {
+    const [year, month] =
+        String(value || "")
+            .split("-")
+            .map(Number);
+
+    return new Date(
+        year,
+        month - 1,
+        1
+    ).toLocaleDateString(
+        "en-PH",
+        {
+            month: "long",
+            year: "numeric"
+        }
     );
 }
 
@@ -1832,7 +2703,10 @@ function openCalendarMonthYearPicker(
     let sourceDate =
         calendarViewDate;
 
-    if (context === "main") {
+    if (
+        context === "main" ||
+        context === "completed"
+    ) {
         const value =
             getPeriodValue();
 
@@ -1900,6 +2774,17 @@ function openCalendarMonthYearPicker(
                 : "false"
         );
 
+    document
+        .getElementById(
+            "openCompletedPeriodPicker"
+        )
+        ?.setAttribute(
+            "aria-expanded",
+            context === "completed"
+                ? "true"
+                : "false"
+        );
+
     window.setTimeout(() => {
         monthSelect.focus();
     }, 50);
@@ -1927,6 +2812,15 @@ function closeCalendarMonthYearPicker() {
     document
         .getElementById(
             "openBillsPeriodPicker"
+        )
+        ?.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+    document
+        .getElementById(
+            "openCompletedPeriodPicker"
         )
         ?.setAttribute(
             "aria-expanded",
@@ -2057,7 +2951,10 @@ function applyCalendarMonthYearPicker() {
         return;
     }
 
-    if (calendarPickerContext === "main") {
+    if (
+        calendarPickerContext === "main" ||
+        calendarPickerContext === "completed"
+    ) {
         const periodSelect =
             document.getElementById(
                 "periodValueSelect"
@@ -2749,9 +3646,103 @@ function resetForm() {
             "entryCategory"
         );
 
+    const billNameSelect =
+        document.getElementById(
+            "entryBillName"
+        );
+
+    const billProviderSelect =
+        document.getElementById(
+            "entryBillProvider"
+        );
+
+    const customBillName =
+        document.getElementById(
+            "customBillName"
+        );
+
+    const customBillProvider =
+        document.getElementById(
+            "customBillProvider"
+        );
+
     if (categorySelect) {
-        categorySelect.value = "";
+        categorySelect.value =
+            "";
     }
+
+    if (billNameSelect) {
+        billNameSelect.value =
+            "";
+    }
+
+    if (billProviderSelect) {
+        billProviderSelect.innerHTML = `
+            <option value="">
+                Select bill name first
+            </option>
+        `;
+
+        billProviderSelect.disabled =
+            true;
+    }
+
+    if (customBillName) {
+        customBillName.value =
+            "";
+    }
+
+    if (customBillProvider) {
+        customBillProvider.value =
+            "";
+    }
+
+    const debtName =
+        document.getElementById(
+            "entryName"
+        );
+
+    const debtProvider =
+        document.getElementById(
+            "entryProvider"
+        );
+
+    const amount =
+        document.getElementById(
+            "entryAmount"
+        );
+
+    const dueDate =
+        document.getElementById(
+            "entryDueDate"
+        );
+
+    const notes =
+        document.getElementById(
+            "entryNotes"
+        );
+
+    if (debtName) {
+        debtName.value = "";
+    }
+
+    if (debtProvider) {
+        debtProvider.value = "";
+    }
+
+    if (amount) {
+        amount.value = "";
+    }
+
+    if (dueDate) {
+        dueDate.value = "";
+    }
+
+    if (notes) {
+        notes.value = "";
+    }
+
+    updateCustomBillFields();
 }
 
 function setDefaultFormValues() {
@@ -2850,18 +3841,14 @@ function updateEntryTypeUI() {
 
     setText(
         "entryNameLegend",
-        isDebt
-            ? "Debt Name"
-            : "Bill Name"
+        "Debt Name"
     );
 
     setText(
         "providerLegend",
-        isDebt
-            ? isReceivable
-                ? "Borrower / Payer"
-                : "Lender / Payee"
-            : "Provider / Payee"
+        isReceivable
+            ? "Borrower / Payer"
+            : "Lender / Payee"
     );
 
     setText(
@@ -2900,24 +3887,21 @@ function updateEntryTypeUI() {
 
     if (nameInput) {
         nameInput.placeholder =
-            isDebt
-                ? isReceivable
-                    ? "e.g., Loan to Juan"
-                    : "e.g., Loan from Maria"
-                : "e.g., Electric Bill";
+            isReceivable
+                ? "e.g., Loan to Juan"
+                : "e.g., Loan from Maria";
     }
 
     if (providerInput) {
         providerInput.placeholder =
-            isDebt
-                ? isReceivable
-                    ? "e.g., Juan Dela Cruz"
-                    : "e.g., Maria Santos"
-                : "e.g., Meralco";
+            isReceivable
+                ? "e.g., Juan Dela Cruz"
+                : "e.g., Maria Santos";
     }
 
     if (frequencyField) {
-        frequencyField.hidden = isDebt;
+        frequencyField.hidden =
+            isDebt;
     }
 
     if (debtDirectionField) {
@@ -2926,11 +3910,647 @@ function updateEntryTypeUI() {
     }
 
     if (isDebt) {
-        selectedFrequency = "one-time";
+        selectedFrequency =
+            "one-time";
     }
 
     updateDebtDirectionUI();
     updateFrequencyUI();
+    updateCategoryOptions();
+    updateBillAndDebtFields();
+}
+
+function updateCategoryOptions() {
+    const select =
+        document.getElementById(
+            "entryCategory"
+        );
+
+    if (!select) {
+        return;
+    }
+
+    const previousValue =
+        select.value;
+
+    const categories =
+        selectedEntryType === "debt"
+            ? DEBT_CATEGORIES
+            : BILL_CATEGORIES;
+
+    select.innerHTML = `
+        <option value="">
+            Select category
+        </option>
+    `;
+
+    categories.forEach(category => {
+        const option =
+            document.createElement(
+                "option"
+            );
+
+        option.value =
+            category;
+
+        option.textContent =
+            category;
+
+        select.appendChild(
+            option
+        );
+    });
+
+    if (
+        categories.includes(
+            previousValue
+        )
+    ) {
+        select.value =
+            previousValue;
+    }
+}
+
+function populateBillNameOptions() {
+    const select =
+        document.getElementById(
+            "entryBillName"
+        );
+
+    if (!select) {
+        return;
+    }
+
+    const previousValue =
+        select.value;
+
+    select.innerHTML = `
+        <option value="">
+            Select bill type
+        </option>
+    `;
+
+    Object.keys(
+        BILL_PRESETS
+    ).forEach(name => {
+        const option =
+            document.createElement(
+                "option"
+            );
+
+        option.value =
+            name;
+
+        option.textContent =
+            name;
+
+        select.appendChild(
+            option
+        );
+    });
+
+    const otherOption =
+        document.createElement(
+            "option"
+        );
+
+    otherOption.value =
+        CUSTOM_BILL_VALUE;
+
+    otherOption.textContent =
+        "Other Bill";
+
+    select.appendChild(
+        otherOption
+    );
+
+    if (
+        previousValue &&
+        (
+            BILL_PRESETS[
+                previousValue
+            ] ||
+            previousValue ===
+                CUSTOM_BILL_VALUE
+        )
+    ) {
+        select.value =
+            previousValue;
+    }
+}
+
+function updateBillAndDebtFields() {
+    const isBill =
+        selectedEntryType ===
+        "bill";
+
+    const billNameField =
+        document.getElementById(
+            "billNameField"
+        );
+
+    const debtNameField =
+        document.getElementById(
+            "debtNameField"
+        );
+
+    const billProviderField =
+        document.getElementById(
+            "billProviderField"
+        );
+
+    const debtProviderField =
+        document.getElementById(
+            "debtProviderField"
+        );
+
+    if (billNameField) {
+        billNameField.hidden =
+            !isBill;
+    }
+
+    if (debtNameField) {
+        debtNameField.hidden =
+            isBill;
+    }
+
+    if (billProviderField) {
+        billProviderField.hidden =
+            !isBill;
+    }
+
+    if (debtProviderField) {
+        debtProviderField.hidden =
+            isBill;
+    }
+
+    populateBillNameOptions();
+
+    if (isBill) {
+        updateBillProviderOptions(
+            true
+        );
+    } else {
+        const customBillNameField =
+            document.getElementById(
+                "customBillNameField"
+            );
+
+        const customProviderField =
+            document.getElementById(
+                "customBillProviderField"
+            );
+
+        if (customBillNameField) {
+            customBillNameField.hidden =
+                true;
+        }
+
+        if (customProviderField) {
+            customProviderField.hidden =
+                true;
+        }
+    }
+
+    updateCustomBillFields();
+}
+
+function updateBillProviderOptions(
+    preserveSelection = true
+) {
+    const billSelect =
+        document.getElementById(
+            "entryBillName"
+        );
+
+    const providerSelect =
+        document.getElementById(
+            "entryBillProvider"
+        );
+
+    const categorySelect =
+        document.getElementById(
+            "entryCategory"
+        );
+
+    const billProviderField =
+        document.getElementById(
+            "billProviderField"
+        );
+
+    const textProviderField =
+        document.getElementById(
+            "customBillProviderField"
+        );
+
+    const textProviderLegend =
+        document.getElementById(
+            "customBillProviderLegend"
+        );
+
+    const textProviderInput =
+        document.getElementById(
+            "customBillProvider"
+        );
+
+    if (
+        !billSelect ||
+        !providerSelect
+    ) {
+        return;
+    }
+
+    const previousSelectValue =
+        preserveSelection
+            ? providerSelect.value
+            : "";
+
+    const previousTextValue =
+        preserveSelection
+            ? textProviderInput?.value ||
+                ""
+            : "";
+
+    const billValue =
+        billSelect.value;
+
+    const preset =
+        BILL_PRESETS[
+            billValue
+        ];
+
+    providerSelect.innerHTML =
+        "";
+
+    if (textProviderInput) {
+        textProviderInput.value =
+            previousTextValue;
+    }
+
+    if (!billValue) {
+        const option =
+            document.createElement(
+                "option"
+            );
+
+        option.value =
+            "";
+
+        option.textContent =
+            "Select bill name first";
+
+        providerSelect.appendChild(
+            option
+        );
+
+        providerSelect.disabled =
+            true;
+
+        if (billProviderField) {
+            billProviderField.hidden =
+                false;
+        }
+
+        if (textProviderField) {
+            textProviderField.hidden =
+                true;
+        }
+
+        updateCustomBillFields();
+        return;
+    }
+
+    if (
+        categorySelect
+    ) {
+        categorySelect.value =
+            preset?.category ||
+            "Other";
+    }
+
+    const usesProviderSelect =
+        preset?.providerMode ===
+        "select";
+
+    if (billProviderField) {
+        billProviderField.hidden =
+            !usesProviderSelect;
+    }
+
+    if (textProviderField) {
+        textProviderField.hidden =
+            usesProviderSelect;
+    }
+
+    if (!usesProviderSelect) {
+        providerSelect.disabled =
+            true;
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+        option.value =
+            "";
+
+        option.textContent =
+            "Provider entered below";
+
+        providerSelect.appendChild(
+            option
+        );
+
+        if (textProviderLegend) {
+            textProviderLegend.textContent =
+                preset?.providerLabel ||
+                "Provider / Payee";
+        }
+
+        if (textProviderInput) {
+            textProviderInput.placeholder =
+                preset?.providerPlaceholder ||
+                "Enter provider or payee";
+
+            if (!preserveSelection) {
+                textProviderInput.value =
+                    "";
+            }
+        }
+
+        updateCustomBillFields();
+        return;
+    }
+
+    providerSelect.disabled =
+        false;
+
+    const placeholder =
+        document.createElement(
+            "option"
+        );
+
+    placeholder.value =
+        "";
+
+    placeholder.textContent =
+        "Select provider / payee";
+
+    providerSelect.appendChild(
+        placeholder
+    );
+
+    preset.providers
+        .forEach(provider => {
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                provider;
+
+            option.textContent =
+                provider;
+
+            providerSelect.appendChild(
+                option
+            );
+        });
+
+    const customOption =
+        document.createElement(
+            "option"
+        );
+
+    customOption.value =
+        CUSTOM_PROVIDER_VALUE;
+
+    customOption.textContent =
+        preset.customProviderLabel ||
+        "Other Provider";
+
+    providerSelect.appendChild(
+        customOption
+    );
+
+    const availableValues =
+        Array.from(
+            providerSelect.options
+        ).map(option => {
+            return option.value;
+        });
+
+    if (
+        previousSelectValue &&
+        availableValues.includes(
+            previousSelectValue
+        )
+    ) {
+        providerSelect.value =
+            previousSelectValue;
+    }
+
+    if (textProviderLegend) {
+        textProviderLegend.textContent =
+            preset
+                .customProviderFieldLabel ||
+            "Other Provider / Payee";
+    }
+
+    if (textProviderInput) {
+        textProviderInput.placeholder =
+            preset
+                .customProviderPlaceholder ||
+            "Enter provider name";
+
+        if (!preserveSelection) {
+            textProviderInput.value =
+                "";
+        }
+    }
+
+    updateCustomBillFields();
+}
+
+function updateCustomBillFields() {
+    const isBill =
+        selectedEntryType ===
+        "bill";
+
+    const billNameSelect =
+        document.getElementById(
+            "entryBillName"
+        );
+
+    const providerSelect =
+        document.getElementById(
+            "entryBillProvider"
+        );
+
+    const customNameField =
+        document.getElementById(
+            "customBillNameField"
+        );
+
+    const billProviderField =
+        document.getElementById(
+            "billProviderField"
+        );
+
+    const textProviderField =
+        document.getElementById(
+            "customBillProviderField"
+        );
+
+    const customNameInput =
+        document.getElementById(
+            "customBillName"
+        );
+
+    const textProviderInput =
+        document.getElementById(
+            "customBillProvider"
+        );
+
+    const debtNameInput =
+        document.getElementById(
+            "entryName"
+        );
+
+    const debtProviderInput =
+        document.getElementById(
+            "entryProvider"
+        );
+
+    const selectedBillValue =
+        billNameSelect?.value ||
+        "";
+
+    const preset =
+        BILL_PRESETS[
+            selectedBillValue
+        ];
+
+    const isCustomBill =
+        selectedBillValue ===
+        CUSTOM_BILL_VALUE;
+
+    const usesProviderSelect =
+        preset?.providerMode ===
+        "select";
+
+    const showCustomName =
+        isBill &&
+        isCustomBill;
+
+    const showTextProvider =
+        isBill &&
+        (
+            isCustomBill ||
+            preset?.providerMode ===
+                "text" ||
+            (
+                usesProviderSelect &&
+                providerSelect?.value ===
+                    CUSTOM_PROVIDER_VALUE
+            )
+        );
+
+    const textProviderLegend =
+        document.getElementById(
+            "customBillProviderLegend"
+        );
+
+    if (
+        isCustomBill &&
+        textProviderLegend
+    ) {
+        textProviderLegend.textContent =
+            "Provider / Payee";
+    }
+
+    if (
+        isCustomBill &&
+        textProviderInput
+    ) {
+        textProviderInput.placeholder =
+            "Enter provider or payee";
+    }
+
+    if (
+        isBill &&
+        preset?.providerMode ===
+            "select" &&
+        providerSelect?.value ===
+            CUSTOM_PROVIDER_VALUE
+    ) {
+        if (textProviderLegend) {
+            textProviderLegend.textContent =
+                preset
+                    .customProviderFieldLabel ||
+                "Other Provider / Payee";
+        }
+
+        if (textProviderInput) {
+            textProviderInput.placeholder =
+                preset
+                    .customProviderPlaceholder ||
+                "Enter provider name";
+        }
+    }
+
+    if (customNameField) {
+        customNameField.hidden =
+            !showCustomName;
+    }
+
+    if (billProviderField) {
+        billProviderField.hidden =
+            !isBill ||
+            (
+                Boolean(selectedBillValue) &&
+                !usesProviderSelect &&
+                !isCustomBill
+            ) ||
+            isCustomBill;
+    }
+
+    if (textProviderField) {
+        textProviderField.hidden =
+            !showTextProvider;
+    }
+
+    if (billNameSelect) {
+        billNameSelect.required =
+            isBill;
+    }
+
+    if (providerSelect) {
+        providerSelect.required =
+            isBill &&
+            usesProviderSelect;
+    }
+
+    if (customNameInput) {
+        customNameInput.required =
+            showCustomName;
+    }
+
+    if (textProviderInput) {
+        textProviderInput.required =
+            showTextProvider;
+    }
+
+    if (debtNameInput) {
+        debtNameInput.required =
+            !isBill;
+    }
+
+    if (debtProviderInput) {
+        debtProviderInput.required =
+            !isBill;
+    }
 }
 
 function updateDebtDirectionUI() {
@@ -3197,23 +4817,74 @@ function showBillDebtSaveSuccess(entryType) {
 }
 
 function collectFormData() {
-    const name =
+    const billNameValue =
         document
             .getElementById(
-                "entryName"
+                "entryBillName"
             )
-            ?.value
-            .trim() ||
+            ?.value ||
         "";
 
-    const provider =
+    const billProviderValue =
         document
             .getElementById(
-                "entryProvider"
+                "entryBillProvider"
             )
-            ?.value
-            .trim() ||
+            ?.value ||
         "";
+
+    const name =
+        selectedEntryType ===
+        "bill"
+            ? billNameValue ===
+                CUSTOM_BILL_VALUE
+                ? document
+                    .getElementById(
+                        "customBillName"
+                    )
+                    ?.value
+                    .trim() ||
+                    ""
+                : billNameValue
+            : document
+                .getElementById(
+                    "entryName"
+                )
+                ?.value
+                .trim() ||
+                "";
+
+    const selectedBillPreset =
+        BILL_PRESETS[
+            billNameValue
+        ];
+
+    const usesBillProviderSelect =
+        selectedBillPreset
+            ?.providerMode ===
+            "select";
+
+    const provider =
+        selectedEntryType ===
+        "bill"
+            ? usesBillProviderSelect &&
+                billProviderValue !==
+                    CUSTOM_PROVIDER_VALUE
+                ? billProviderValue
+                : document
+                    .getElementById(
+                        "customBillProvider"
+                    )
+                    ?.value
+                    .trim() ||
+                    ""
+            : document
+                .getElementById(
+                    "entryProvider"
+                )
+                ?.value
+                .trim() ||
+                "";
 
     const amount =
         Number(
