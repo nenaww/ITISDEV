@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>KABALIKAT Bills &amp; Debt</title>
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="style.css" rel="stylesheet"/>
+    <link href="bills.css" rel="stylesheet"/>
+</head>
+<body data-page="bills">
+<main class="bills-page">
+    <div class="bills-scroll-area">
+        <header class="bills-header">
+            <div>
+                <h1>Bills &amp; Debt</h1>
+            </div>
+            <div class="bills-header-actions"><button aria-label="Add a bill or debt" class="bills-primary-action bills-combined-add-action" id="openAddEntry" type="button"><i aria-hidden="true" class="bi bi-plus-lg"></i><span>Add Bills/Debt</span></button></div>
+        </header><section aria-label="Select bills month" class="bills-period-row"><div class="bills-period-filters single-period-filter">
+        <div class="bills-month-filter">
+            <button aria-controls="calendarMonthYearPicker" aria-expanded="false" aria-haspopup="dialog" aria-label="Select month and year" class="bills-month-filter-button" id="openBillsPeriodPicker" type="button">
+<span id="billsPeriodPickerLabel">
+                            Month Year
+                        </span>
+                <i aria-hidden="true" class="bi bi-calendar3"></i>
+            </button>
+            <label class="sr-only" for="periodValueSelect">
+                Selected month and year
+            </label>
+            <select aria-hidden="true" hidden="" id="periodValueSelect" tabindex="-1"></select>
+        </div>
+    </div></section><h2 class="bills-overview-title">Bills Overview</h2>
+        <section aria-label="Monthly bills summary" class="bills-summary-card">
+            <div class="summary-top-row">
+                <div class="summary-amount-block">
+                    <span>Total Due This Month</span>
+                    <strong id="totalDueAmount">₱0</strong>
+                </div>
+                <div class="summary-paid-block">
+                    <div class="summary-paid-copy">
+                        <span>Paid</span>
+                        <strong id="paidCountText">0 of 0</strong>
+                    </div>
+                    <button aria-label="Open bills and debt calendar" class="summary-calendar-icon" id="openBillsCalendar" type="button">
+                        <i aria-hidden="true" class="bi bi-calendar3"></i>
+                    </button>
+                    <div class="summary-progress-track">
+                        <div class="summary-progress-fill" id="paidProgressFill"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="summary-type-grid">
+                <div>
+                    <span>Bills Due</span>
+                    <strong id="billsDueAmount">₱0</strong>
+                </div>
+                <div>
+                    <span>Debt Due</span>
+                    <strong id="debtDueAmount">₱0</strong>
+                </div>
+            </div>
+        </section>
+        <section aria-label="Filter bills and debt" class="bills-type-filter-row"><div aria-label="Filter by type" class="bills-type-filter" role="group">
+            <button class="active" data-type-filter="all" type="button">All</button>
+            <button data-type-filter="bill" type="button">Bills</button>
+            <button data-type-filter="debt" type="button">Debt</button>
+        </div></section>
+        <section class="bills-section">
+            <div class="bills-section-heading">
+                <h2>Upcoming Payments</h2>
+                <button id="viewAllPayments" type="button">View All</button>
+            </div>
+            <div class="payments-list" id="paymentsList"></div>
+        </section>
+        <section class="bills-section debt-overview-section">
+            <div class="bills-section-heading simple-heading">
+                <h2>Debt Overview</h2>
+            </div>
+            <article aria-label="Summary of money you owe and money owed to you" class="debt-overview-card">
+                <div class="debt-overview-grid">
+                    <div class="debt-overview-item debt-you-owe">
+                        <div class="debt-overview-label">
+<span aria-hidden="true" class="debt-overview-icon">
+<i class="bi bi-arrow-up-right"></i>
+</span>
+                            <span>You Owe</span>
+                        </div>
+                        <strong id="youOweAmount">₱0</strong>
+                        <small>
+                            <b id="youOweCount">0</b>
+                            <span id="youOweCountLabel">active debts</span>
+                        </small>
+                    </div>
+                    <div aria-hidden="true" class="debt-overview-divider"></div>
+                    <div class="debt-overview-item debt-owed-to-you">
+                        <div class="debt-overview-label">
+<span aria-hidden="true" class="debt-overview-icon">
+<i class="bi bi-arrow-down-left"></i>
+</span>
+                            <span>Owed to You</span>
+                        </div>
+                        <strong id="owedToYouAmount">₱0</strong>
+                        <small>
+                            <b id="owedToYouCount">0</b>
+                            <span id="owedToYouCountLabel">active debts</span>
+                        </small>
+                    </div>
+                </div>
+                <div class="debt-overdue-notice" hidden="" id="debtOverdueNotice">
+                    <i aria-hidden="true" class="bi bi-exclamation-circle-fill"></i>
+                    <span id="debtOverdueText">0 overdue debts</span>
+                </div>
+                <button aria-label="Open complete debt details" id="viewDebtDetails" type="button">
+                    <span>View Details</span>
+                    <i aria-hidden="true" class="bi bi-chevron-right"></i>
+                </button>
+            </article>
+        </section>
+    </div>
+    <nav aria-label="Main navigation" class="bills-bottom-nav">
+        <button id="navHome" type="button">
+            <i class="bi bi-house"></i>
+            <span>Home</span>
+        </button>
+        <button id="navExpenses" type="button">
+            <i class="bi bi-receipt"></i>
+            <span>Expenses</span>
+        </button>
+        <button aria-label="Scan receipt" class="bills-nav-scan" id="navScan" type="button">
+            <i class="bi bi-upc-scan"></i>
+        </button>
+        <button class="active" type="button">
+            <i class="bi bi-calendar-check-fill"></i>
+            <span>Bills</span>
+        </button>
+        <button id="navProfile" type="button">
+            <i class="bi bi-person"></i>
+            <span>Profile</span>
+        </button>
+    </nav>
+</main>
+<section class="bills-calendar-panel" hidden="" id="billsCalendarPanel">
+    <div class="bills-calendar-scroll">
+        <header class="calendar-page-header">
+            <button aria-label="Back to Bills and Debt" class="calendar-back-button" id="closeBillsCalendar" type="button">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <div>
+                <h2>Payment Calendar</h2>
+                <p>View paid, unpaid, overdue, current, and future due dates.</p>
+            </div>
+        </header>
+        <section aria-label="Bills and debt calendar" class="calendar-card">
+            <div class="calendar-toolbar">
+                <button aria-label="Previous month" class="calendar-month-button" id="calendarPreviousMonth" type="button">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                <div class="calendar-month-copy">
+                    <button aria-controls="calendarMonthYearPicker" aria-expanded="false" aria-haspopup="dialog" aria-label="Select calendar month and year" class="calendar-current-period-button" id="openCalendarMonthYearPicker" type="button">
+                        <strong id="calendarMonthLabel">Month Year</strong>
+                        <i aria-hidden="true" class="bi bi-chevron-down"></i>
+                    </button>
+                </div>
+                <button aria-label="Next month" class="calendar-month-button" id="calendarNextMonth" type="button">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+            </div>
+            <div class="calendar-toolbar-actions">
+                <button class="calendar-today-button" id="calendarTodayButton" type="button">
+                    <i aria-hidden="true" class="bi bi-calendar-event"></i>
+                    <span>Today</span>
+                </button>
+            </div>
+            <div aria-label="Calendar status legend" class="calendar-status-legend">
+                <span><i class="calendar-legend-dot paid"></i>Paid</span>
+                <span><i class="calendar-legend-dot unpaid"></i>Unpaid</span>
+                <span><i class="calendar-legend-dot overdue"></i>Overdue</span>
+            </div>
+            <div aria-hidden="true" class="calendar-weekdays">
+                <span>Sun</span>
+                <span>Mon</span>
+                <span>Tue</span>
+                <span>Wed</span>
+                <span>Thu</span>
+                <span>Fri</span>
+                <span>Sat</span>
+            </div>
+            <div class="bills-calendar-grid" id="billsCalendarGrid"></div>
+        </section>
+        <section class="calendar-date-details">
+            <div class="calendar-date-heading">
+                <div>
+                    <span>Selected date</span>
+                    <h3 id="calendarSelectedDateLabel">Date</h3>
+                </div>
+                <span class="calendar-selected-count" id="calendarSelectedCount">0 items</span>
+            </div>
+            <div class="calendar-selected-entries" id="calendarSelectedEntries"></div>
+        </section>
+    </div>
+</section>
+<div class="calendar-month-year-picker" hidden="" id="calendarMonthYearPicker">
+    <button aria-label="Close month and year selector" class="calendar-picker-backdrop" id="calendarPickerBackdrop" type="button"></button>
+    <section aria-labelledby="calendarPickerTitle" aria-modal="true" class="calendar-picker-sheet" role="dialog">
+        <header class="calendar-picker-header">
+            <div>
+                <span>Jump to date</span>
+                <h3 id="calendarPickerTitle">
+                    Select month and year
+                </h3>
+            </div>
+            <button aria-label="Close month and year selector" id="closeCalendarMonthYearPicker" type="button">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </header>
+        <div class="calendar-picker-fields">
+            <label class="calendar-picker-field" for="calendarMonthSelect" id="calendarMonthPickerField">
+<span class="calendar-picker-field-label">
+                        Month
+                    </span>
+                <span class="calendar-picker-select-wrap">
+<select id="calendarMonthSelect">
+<option value="0">January</option>
+<option value="1">February</option>
+<option value="2">March</option>
+<option value="3">April</option>
+<option value="4">May</option>
+<option value="5">June</option>
+<option value="6">July</option>
+<option value="7">August</option>
+<option value="8">September</option>
+<option value="9">October</option>
+<option value="10">November</option>
+<option value="11">December</option>
+</select>
+<i aria-hidden="true" class="bi bi-chevron-down"></i>
+</span>
+            </label>
+            <label class="calendar-picker-field" for="calendarYearSelect">
+<span class="calendar-picker-field-label">
+                        Year
+                    </span>
+                <span class="calendar-picker-select-wrap">
+<select id="calendarYearSelect"></select>
+<i aria-hidden="true" class="bi bi-chevron-down"></i>
+</span>
+            </label>
+        </div>
+        <div class="calendar-picker-actions">
+            <button class="calendar-picker-cancel" id="cancelCalendarMonthYearPicker" type="button">
+                Cancel
+            </button>
+            <button class="calendar-picker-apply" id="applyCalendarMonthYearPicker" type="button">
+                View Month
+            </button>
+        </div>
+    </section>
+</div>
+<section class="bill-full-panel" hidden="" id="addBillDebtPanel">
+    <div class="bill-panel-scroll">
+        <header class="add-panel-header"><button aria-label="Close Add Bill or Debt" id="closeAddPanelTop" type="button"><i aria-hidden="true" class="bi bi-x-lg"></i></button><div><h2>Add Bill / Debt</h2></div><span aria-hidden="true" class="add-panel-header-check"><i class="bi bi-check-lg"></i></span></header>
+        <div aria-label="Entry type" class="entry-type-selector" role="group">
+            <button class="active" data-entry-type="bill" type="button">
+                <i class="bi bi-receipt"></i>
+                <span>Bill</span>
+            </button>
+            <button data-entry-type="debt" type="button">
+                <i class="bi bi-person"></i>
+                <span>Debt</span>
+            </button>
+        </div>
+        <form class="bill-debt-form" id="billDebtForm">
+            <div class="debt-direction-field" hidden="" id="debtDirectionField">
+                <span class="debt-direction-title">Debt Direction</span>
+                <div aria-label="Choose whether you owe money or money is owed to you" class="debt-direction-options" role="group">
+                    <button class="active" data-debt-direction="payable" type="button">
+<span aria-hidden="true" class="debt-direction-option-icon">
+<i class="bi bi-arrow-up-right"></i>
+</span>
+                        <span class="debt-direction-option-copy">
+<strong>I Owe</strong>
+<small>Money I need to pay</small>
+</span>
+                    </button>
+                    <button data-debt-direction="receivable" type="button">
+<span aria-hidden="true" class="debt-direction-option-icon">
+<i class="bi bi-arrow-down-left"></i>
+</span>
+                        <span class="debt-direction-option-copy">
+<strong>Owed to Me</strong>
+<small>Money I need to collect</small>
+</span>
+                    </button>
+                </div>
+            </div>
+            <fieldset class="bill-fieldset">
+                <legend id="entryNameLegend">Bill Name</legend>
+                <label class="sr-only" for="entryName">
+                    Bill or debt name
+                </label>
+                <input id="entryName" name="entryName" placeholder="e.g., Electric Bill" required="" type="text"/>
+            </fieldset>
+            <fieldset class="bill-fieldset">
+                <legend id="providerLegend">Provider / Payee</legend>
+                <label class="sr-only" for="entryProvider">
+                    Provider, lender, or payee
+                </label>
+                <input id="entryProvider" name="entryProvider" placeholder="e.g., Meralco" required="" type="text"/>
+            </fieldset>
+            <fieldset class="bill-fieldset">
+                <legend>Amount</legend>
+                <label class="sr-only" for="entryAmount">
+                    Payment amount
+                </label>
+                <div class="currency-input">
+                    <span aria-hidden="true">₱</span>
+                    <input id="entryAmount" min="0.01" name="entryAmount" placeholder="0.00" required="" step="0.01" type="number"/>
+                </div>
+            </fieldset>
+            <fieldset class="bill-fieldset date-fieldset">
+                <legend id="dueDateLegend">Due Date</legend>
+                <label class="sr-only" for="entryDueDate">
+                    Payment due date
+                </label>
+                <div class="date-input-control">
+<span aria-hidden="true" class="date-input-display placeholder" id="entryDueDateDisplay">
+                        mm/dd/yyyy
+                    </span>
+                    <i aria-hidden="true" class="bi bi-calendar3 date-input-icon"></i>
+                    <input id="entryDueDate" name="entryDueDate" required="" type="date"/>
+                </div>
+            </fieldset>
+            <fieldset class="bill-fieldset select-fieldset">
+                <legend>Category</legend>
+                <label class="sr-only" for="entryCategory">
+                    Payment category
+                </label>
+                <select id="entryCategory" name="entryCategory" required="">
+                    <option value="">Select category</option>
+                    <option value="Utilities">Utilities</option>
+                    <option value="Housing">Housing</option>
+                    <option value="Internet">Internet</option>
+                    <option value="Subscription">Subscription</option>
+                    <option value="Loan">Loan</option>
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="Education">Education</option>
+                    <option value="Health">Health</option>
+                    <option value="Other">Other</option>
+                </select>
+                <i aria-hidden="true" class="bi bi-chevron-down"></i>
+            </fieldset>
+            <div class="frequency-field" id="frequencyField">
+                <span>Frequency</span>
+                <div aria-label="Payment frequency" class="frequency-options" role="group">
+                    <button data-frequency="one-time" type="button">One-time</button>
+                    <button class="active" data-frequency="monthly" type="button">Monthly</button>
+                    <button data-frequency="weekly" type="button">Weekly</button>
+                </div>
+            </div>
+            <div class="settings-list">
+                <label class="setting-row">
+                    <span class="setting-icon reminder-icon"><i class="bi bi-bell"></i></span>
+                    <span class="setting-copy">
+<strong>Reminder</strong>
+<small>Notify me before the due date</small>
+</span>
+                    <input checked="" class="switch-input" id="reminderToggle" type="checkbox"/>
+                    <span aria-hidden="true" class="switch-control"></span>
+                </label>
+                <label class="setting-row">
+                    <span class="setting-icon family-icon"><i class="bi bi-people"></i></span>
+                    <span class="setting-copy">
+<strong>Shared with Family <em>(optional)</em></strong>
+<small>Allow family members to view this item</small>
+</span>
+                    <input class="switch-input" id="sharedToggle" type="checkbox"/>
+                    <span aria-hidden="true" class="switch-control"></span>
+                </label>
+                <label class="notes-row">
+                    <span class="setting-icon notes-icon"><i class="bi bi-journal-text"></i></span>
+                    <span class="notes-field-wrap">
+<span>Notes <em>(optional)</em></span>
+<textarea id="entryNotes" placeholder="Add notes"></textarea>
+</span>
+                </label>
+            </div>
+            <div class="calendar-connection-note" id="calendarConnectionNote">
+                <i class="bi bi-calendar-check"></i>
+                <span>Saving opens your Calendar app and schedules Android reminders.</span>
+            </div>
+            <div class="add-panel-actions">
+                <button class="cancel-entry-button" id="cancelAddEntry" type="button">Cancel</button>
+                <button class="save-entry-button" id="saveEntryButton" type="submit">Save Bill</button>
+            </div>
+        </form>
+    </div>
+</section>
+<div aria-live="polite" class="bill-toast" id="billToast" role="status"></div>
+<script src="bills.js"></script>
+</body>
+</html>

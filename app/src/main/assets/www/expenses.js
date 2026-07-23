@@ -276,6 +276,10 @@ function bindEvents() {
     document.getElementById('saveExpenseTop').addEventListener('click', () => {
         document.getElementById('addExpenseForm').requestSubmit();
     });
+
+    document.getElementById("navBills")?.addEventListener("click", () => {
+        window.location.href = "bills.html";
+    });
 }
 
 function renderAll() {
