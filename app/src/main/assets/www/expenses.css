@@ -5831,3 +5831,106 @@ button {
         background: color-mix(in srgb, var(--plan-soft) 2%, #FFFFFF 98%) !important;
     }
 }
+
+
+/* =========================================================
+   v12: distinct very-light colors for seasonal detail stats
+   ========================================================= */
+
+#seasonalPlanDetailsPanel .seasonal-stat-budget {
+    background: #F5FAFD !important;
+    border-color: rgba(90, 141, 168, 0.10) !important;
+}
+
+#seasonalPlanDetailsPanel .seasonal-stat-spent {
+    background: #FFF7F3 !important;
+    border-color: rgba(233, 139, 95, 0.10) !important;
+}
+
+#seasonalPlanDetailsPanel .seasonal-stat-remaining {
+    background: #F4FAF6 !important;
+    border-color: rgba(108, 146, 120, 0.10) !important;
+}
+
+#seasonalPlanDetailsPanel .seasonal-stat-budget,
+#seasonalPlanDetailsPanel .seasonal-stat-spent,
+#seasonalPlanDetailsPanel .seasonal-stat-remaining {
+    box-shadow: none !important;
+}
+
+
+/* =========================================================
+   v13: same very-light panel color across all three stat cards
+   ========================================================= */
+
+#seasonalPlanDetailsPanel .seasonal-stat-budget,
+#seasonalPlanDetailsPanel .seasonal-stat-spent,
+#seasonalPlanDetailsPanel .seasonal-stat-remaining {
+    background: color-mix(in srgb, var(--plan-soft) 6%, #FFFFFF 94%) !important;
+    border-color: color-mix(in srgb, var(--plan-accent) 5%, rgba(92, 83, 78, 0.05) 95%) !important;
+    box-shadow: none !important;
+}
+
+
+/* =========================================================
+   Bills/Debt parity update: Budget Overview matches
+   Category Breakdown heading size.
+   ========================================================= */
+
+.budget-overview-title {
+    font-size: 17px !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.4px !important;
+}
+
+
+/* =========================================================
+   Member Details: transaction category filters
+   ========================================================= */
+
+.member-recent-heading {
+    margin-bottom: 10px;
+}
+
+.member-transaction-filters {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    margin: 0 0 16px;
+    padding: 2px 1px 5px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.member-transaction-filters::-webkit-scrollbar {
+    display: none;
+}
+
+.member-transaction-filters button {
+    flex: 0 0 auto;
+    min-height: 36px;
+    border: 1px solid rgba(92, 83, 78, 0.07);
+    border-radius: 999px;
+    background: var(--filter-soft, #FFFFFF);
+    color: var(--neutral);
+    padding: 0 14px;
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+    box-shadow: 0 7px 16px rgba(92, 83, 78, 0.045);
+}
+
+.member-transaction-filters button.active {
+    border-color: transparent;
+    background: var(--filter-accent, var(--primary-soft));
+    color: #251F1D;
+    box-shadow: 0 9px 18px rgba(92, 83, 78, 0.08);
+}
+
+@media (max-width: 380px) {
+    .member-transaction-filters button {
+        min-height: 34px;
+        padding: 0 12px;
+        font-size: 9px;
+    }
+}

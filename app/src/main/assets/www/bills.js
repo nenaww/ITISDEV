@@ -256,6 +256,17 @@ function bindEvents() {
         );
 
     document
+        .getElementById("saveEntryTop")
+        ?.addEventListener(
+            "click",
+            () => {
+                document
+                    .getElementById("billDebtForm")
+                    ?.requestSubmit();
+            }
+        );
+
+    document
         .getElementById("cancelAddEntry")
         ?.addEventListener(
             "click",
@@ -461,12 +472,10 @@ function bindEvents() {
         );
 
     document
-        .getElementById("navProfile")
+        .getElementById("navSavings")
         ?.addEventListener(
             "click",
-            () => showToast(
-                "Profile will be added next."
-            )
+            () => navigateTo("expenses.html#budget-overview")
         );
 
     document
@@ -488,10 +497,8 @@ function bindEvents() {
                     navigateTo("scanner.html");
                 }
 
-                if (destination === "profile") {
-                    showToast(
-                        "Profile will be added next."
-                    );
+                if (destination === "savings") {
+                    navigateTo("expenses.html#budget-overview");
                 }
             });
         });
@@ -2969,10 +2976,19 @@ async function saveEntry(event) {
             "saveEntryButton"
         );
 
+    const topSaveButton =
+        document.getElementById(
+            "saveEntryTop"
+        );
+
     if (saveButton) {
         saveButton.disabled = true;
         saveButton.textContent =
             "Saving...";
+    }
+
+    if (topSaveButton) {
+        topSaveButton.disabled = true;
     }
 
     const entry = {
@@ -3095,6 +3111,10 @@ async function saveEntry(event) {
                 "debt"
                     ? "Save Debt"
                     : "Save Bill";
+        }
+
+        if (topSaveButton) {
+            topSaveButton.disabled = false;
         }
     }
 }
