@@ -9,6 +9,14 @@ const EXPENSE_CATEGORIES = {
     Other: { color: '#D5CDE8', soft: '#EBE6F5', icon: 'bi-three-dots' }
 };
 
+const RECEIPTS_CATEGORY_NAME = 'Receipts';
+
+const RECEIPTS_CATEGORY_META = {
+    color: '#7F7874',
+    soft: '#ECEAE8',
+    icon: 'bi-receipt-cutoff'
+};
+
 const MONTH_OPTIONS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const APP_START_DATE_KEY = 'kabalikat_app_start_date';
 
@@ -165,7 +173,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeExpensesPage();
 });
 
-function initializeExpensesPage() {
+async function initializeExpensesPage() {
+    await loadScannedExpensesIntoState();
     document.getElementById('newExpenseDate').value = new Date().toISOString().slice(0, 10);
     bindEvents();
     renderAll();
@@ -173,25 +182,390 @@ function initializeExpensesPage() {
 }
 
 
+
+async function loadScannedExpensesIntoState() {
+    let receiptRecords = [];
+
+    try {
+        receiptRecords =
+            await getSavedScannedReceiptRecords();
+    } catch (error) {
+        console.warn(
+            "Could not load receipt records from IndexedDB:",
+            error
+        );
+    }
+
+    if (!receiptRecords.length) {
+        receiptRecords =
+            getScannedReceiptMetadataFallback();
+    }
+
+    const existingIds =
+        new Set(
+            state.expenses.map(
+                expense =>
+                    String(expense.id)
+            )
+        );
+
+    const imported = [];
+
+    receiptRecords.forEach(receipt => {
+        const member =
+            HOUSEHOLD_MEMBERS[
+                receipt.member
+            ]
+                ? receipt.member
+                : HOUSEHOLD_MEMBERS[
+                    receipt.addedBy
+                ]
+                    ? receipt.addedBy
+                    : "Elena";
+
+        const receiptImage =
+            String(
+                receipt.image ||
+                ""
+            );
+
+        const items =
+            Array.isArray(receipt.items)
+                ? receipt.items
+                : [];
+
+        items.forEach((item, itemIndex) => {
+            const itemId =
+                `${receipt.id}:` +
+                `${item.id || itemIndex}`;
+
+            if (
+                existingIds.has(
+                    String(itemId)
+                )
+            ) {
+                return;
+            }
+
+            existingIds.add(
+                String(itemId)
+            );
+
+            imported.push({
+                id: itemId,
+
+                category:
+                    normalizeScannedExpenseCategory(
+                        item.category
+                    ),
+
+                title:
+                    item.title ||
+                    item.rawTitle ||
+                    "Scanned expense",
+
+                amount:
+                    Number(
+                        item.amount ||
+                        0
+                    ),
+
+                member,
+
+                date:
+                    normalizeImportedExpenseDate(
+                        receipt.date ||
+                        receipt.createdAt
+                    ),
+
+                seasonalPlanId: "",
+
+                source:
+                    receipt.source ||
+                    "OCR Receipt Scanner",
+
+                receiptId:
+                    receipt.id ||
+                    "",
+
+                receiptStore:
+                    receipt.storeName ||
+                    "Receipt",
+
+                receiptNumber:
+                    receipt.receiptNumber ||
+                    "",
+
+                receiptImage
+            });
+        });
+    });
+
+    if (imported.length) {
+        state.expenses = [
+            ...imported,
+            ...state.expenses
+        ];
+    }
+}
+
+function openScannedReceiptDatabaseForExpenses() {
+    return new Promise(
+        (resolve, reject) => {
+            const request =
+                indexedDB.open(
+                    "kabalikat_scanned_expenses_db",
+                    1
+                );
+
+            request.onupgradeneeded =
+                event => {
+                    const database =
+                        event.target.result;
+
+                    if (
+                        !database
+                            .objectStoreNames
+                            .contains(
+                                "receipts"
+                            )
+                    ) {
+                        database
+                            .createObjectStore(
+                                "receipts",
+                                {
+                                    keyPath: "id"
+                                }
+                            );
+                    }
+                };
+
+            request.onsuccess =
+                event => {
+                    resolve(
+                        event.target.result
+                    );
+                };
+
+            request.onerror = () => {
+                reject(
+                    request.error ||
+                    new Error(
+                        "Receipt storage is unavailable."
+                    )
+                );
+            };
+        }
+    );
+}
+
+async function getSavedScannedReceiptRecords() {
+    const database =
+        await openScannedReceiptDatabaseForExpenses();
+
+    return new Promise(
+        (resolve, reject) => {
+            const transaction =
+                database.transaction(
+                    "receipts",
+                    "readonly"
+                );
+
+            const request =
+                transaction
+                    .objectStore(
+                        "receipts"
+                    )
+                    .getAll();
+
+            request.onsuccess = () => {
+                const records =
+                    Array.isArray(
+                        request.result
+                    )
+                        ? request.result
+                        : [];
+
+                resolve(
+                    records.sort(
+                        (first, second) =>
+                            new Date(
+                                second.createdAt ||
+                                0
+                            ) -
+                            new Date(
+                                first.createdAt ||
+                                0
+                            )
+                    )
+                );
+            };
+
+            request.onerror = () => {
+                reject(
+                    request.error ||
+                    new Error(
+                        "Saved receipts could not be read."
+                    )
+                );
+            };
+
+            transaction.oncomplete = () => {
+                database.close();
+            };
+        }
+    );
+}
+
+function getScannedReceiptMetadataFallback() {
+    try {
+        const stored =
+            JSON.parse(
+                localStorage.getItem(
+                    "kabalikat_scanned_expense_metadata"
+                ) ||
+                "[]"
+            );
+
+        return Array.isArray(stored)
+            ? stored
+            : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function normalizeScannedExpenseCategory(category) {
+    const value =
+        String(category || "")
+            .trim()
+            .toLowerCase();
+
+    const categoryMap = {
+        food: "Food",
+        grocery: "Food",
+        groceries: "Food",
+        utilities: "Utilities",
+        utility: "Utilities",
+        transportation: "Transportation",
+        transport: "Transportation",
+        medicine: "Health",
+        medical: "Health",
+        health: "Health",
+        school: "Education",
+        education: "Education",
+        rent: "Rent",
+        housing: "Rent",
+        debt: "Debt",
+        "debt / utang": "Debt",
+        loan: "Debt",
+        emergency: "Other",
+        shopping: "Other",
+        other: "Other",
+        others: "Other"
+    };
+
+    return (
+        categoryMap[value] ||
+        "Other"
+    );
+}
+
+function normalizeImportedExpenseDate(value) {
+    const text =
+        String(value || "")
+            .trim();
+
+    if (
+        /^\d{4}-\d{2}-\d{2}$/.test(
+            text
+        )
+    ) {
+        return text;
+    }
+
+    const parsed =
+        new Date(text);
+
+    if (
+        !Number.isNaN(
+            parsed.getTime()
+        )
+    ) {
+        return (
+            `${parsed.getFullYear()}-` +
+            `${String(
+                parsed.getMonth() + 1
+            ).padStart(2, "0")}-` +
+            `${String(
+                parsed.getDate()
+            ).padStart(2, "0")}`
+        );
+    }
+
+    return new Date()
+        .toISOString()
+        .slice(0, 10);
+}
+
 function handleExpensesDeepLink() {
-    const params = new URLSearchParams(window.location.search);
-    const requestedView = params.get('view');
-    const requestedFilter = String(params.get('filter') || '').toLowerCase();
-    const requestedSection = params.get('section') || window.location.hash.replace(/^#/, '');
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const requestedView =
+        params.get('view');
+
+    const requestedFilter =
+        String(
+            params.get('filter') ||
+            ''
+        ).toLowerCase();
+
+    const requestedSection =
+        params.get('section') ||
+        window.location.hash
+            .replace(/^#/, '');
 
     window.requestAnimationFrame(() => {
-        if (requestedView === 'add-expense') {
-            openPanel('addExpensePanel');
+        if (
+            requestedView ===
+            'add-expense'
+        ) {
+            openPanel(
+                'addExpensePanel'
+            );
+
             return;
         }
 
-        if (requestedView === 'category-breakdown') {
-            state.selectedBreakdownCategory = requestedFilter === 'all'
-                ? 'All'
-                : state.selectedBreakdownCategory;
+        if (
+            requestedView ===
+            'category-breakdown'
+        ) {
+            if (
+                requestedFilter ===
+                'receipts'
+            ) {
+                state
+                    .selectedBreakdownCategory =
+                    RECEIPTS_CATEGORY_NAME;
+            } else if (
+                requestedFilter ===
+                'all'
+            ) {
+                state
+                    .selectedBreakdownCategory =
+                    'All';
+            }
 
             renderBreakdownPanel();
-            openPanel('categoryBreakdownPanel');
+
+            openPanel(
+                'categoryBreakdownPanel'
+            );
+
             return;
         }
 
@@ -199,15 +573,30 @@ function handleExpensesDeepLink() {
             return;
         }
 
-        const target = document.getElementById(requestedSection);
-        const scrollArea = document.querySelector('.expenses-scroll-area');
+        const target =
+            document.getElementById(
+                requestedSection
+            );
 
-        if (!target || !scrollArea) {
+        const scrollArea =
+            document.querySelector(
+                '.expenses-scroll-area'
+            );
+
+        if (
+            !target ||
+            !scrollArea
+        ) {
             return;
         }
 
         scrollArea.scrollTo({
-            top: Math.max(target.offsetTop - 18, 0),
+            top:
+                Math.max(
+                    target.offsetTop -
+                    18,
+                    0
+                ),
             behavior: 'auto'
         });
     });
@@ -280,6 +669,22 @@ function bindEvents() {
     document.getElementById("navBills")?.addEventListener("click", () => {
         window.location.href = "bills.html";
     });
+
+    document.addEventListener("click", handleReceiptPreviewClick);
+
+    document
+        .getElementById("closeExpenseReceiptModal")
+        ?.addEventListener(
+            "click",
+            closeExpenseReceiptModal
+        );
+
+    document
+        .getElementById("expenseReceiptBackdrop")
+        ?.addEventListener(
+            "click",
+            closeExpenseReceiptModal
+        );
 }
 
 function renderAll() {
@@ -323,30 +728,109 @@ function renderPiggyBank() {
 
 
 function renderHomeCategoryBreakdown() {
-    const totals = getCategoryTotals();
-    const container = document.getElementById('categoryLegend');
+    const totals =
+        getCategoryTotals();
 
-    container.innerHTML = Object.entries(EXPENSE_CATEGORIES).map(([categoryName, meta]) => `
-        <button
-            class="category-grid-item"
-            type="button"
-            data-category-row="${escapeHtml(categoryName)}"
-            style="--category-soft:${escapeHtml(meta.soft)}; --category-accent:${escapeHtml(meta.color)}">
-            <span class="category-grid-icon"><i class="bi ${escapeHtml(meta.icon)}"></i></span>
-            <span class="category-grid-copy">
-                <strong>${escapeHtml(categoryName)}</strong>
-                <small>${peso(totals[categoryName] || 0)}</small>
-            </span>
-        </button>
-    `).join('');
+    const receiptBundles =
+        getVisibleReceiptBundles();
 
-    container.querySelectorAll('[data-category-row]').forEach(button => {
-        button.addEventListener('click', () => openCategoryDetails(button.dataset.categoryRow));
-    });
+    const container =
+        document.getElementById(
+            'categoryLegend'
+        );
+
+    const categoryEntries = [
+        ...Object.entries(
+            EXPENSE_CATEGORIES
+        ),
+        [
+            RECEIPTS_CATEGORY_NAME,
+            RECEIPTS_CATEGORY_META
+        ]
+    ];
+
+    container.innerHTML =
+        categoryEntries
+            .map(
+                ([categoryName, meta]) => {
+                    const isReceipts =
+                        categoryName ===
+                        RECEIPTS_CATEGORY_NAME;
+
+                    const secondaryText =
+                        isReceipts
+                            ? `${receiptBundles.length} ${
+                                receiptBundles.length === 1
+                                    ? 'receipt'
+                                    : 'receipts'
+                            }`
+                            : peso(
+                                totals[
+                                    categoryName
+                                ] ||
+                                0
+                            );
+
+                    return `
+                        <button
+                            class="category-grid-item ${
+                                isReceipts
+                                    ? 'receipts-category-item'
+                                    : ''
+                            }"
+                            type="button"
+                            data-category-row="${escapeHtml(
+                                categoryName
+                            )}"
+                            style="
+                                --category-soft:${escapeHtml(
+                                    meta.soft
+                                )};
+                                --category-accent:${escapeHtml(
+                                    meta.color
+                                )}
+                            ">
+                            <span class="category-grid-icon">
+                                <i class="bi ${escapeHtml(
+                                    meta.icon
+                                )}"></i>
+                            </span>
+
+                            <span class="category-grid-copy">
+                                <strong>
+                                    ${escapeHtml(
+                                        categoryName
+                                    )}
+                                </strong>
+
+                                <small>
+                                    ${escapeHtml(
+                                        secondaryText
+                                    )}
+                                </small>
+                            </span>
+                        </button>
+                    `;
+                }
+            )
+            .join('');
+
+    container
+        .querySelectorAll(
+            '[data-category-row]'
+        )
+        .forEach(button => {
+            button.addEventListener(
+                'click',
+                () => {
+                    openCategoryDetails(
+                        button.dataset
+                            .categoryRow
+                    );
+                }
+            );
+        });
 }
-
-function renderRecentTransactions() {}
-
 
 function renderHouseholdSpending() {
     const container = document.getElementById('householdSpendingList');
@@ -542,40 +1026,140 @@ function renderAllExpensesPanel() {
 }
 
 function renderBreakdownPanel() {
-    const totalSpent = getTotalSpent();
+    const totalSpent =
+        getTotalSpent();
 
-    setText('categoryPanelTotal', peso(totalSpent));
+    setText(
+        'categoryPanelTotal',
+        peso(totalSpent)
+    );
 
-    const chipContainer = document.getElementById('breakdownFilterChips');
-    const chips = ['All', ...Object.keys(EXPENSE_CATEGORIES)];
+    const chipContainer =
+        document.getElementById(
+            'breakdownFilterChips'
+        );
 
-    chipContainer.innerHTML = chips.map(category => `
-        <button class="${state.selectedBreakdownCategory === category ? 'active' : ''}" type="button" data-breakdown-category="${escapeHtml(category)}">${escapeHtml(shortLabel(category))}</button>
-    `).join('');
+    const chips = [
+        'All',
+        ...Object.keys(
+            EXPENSE_CATEGORIES
+        ),
+        RECEIPTS_CATEGORY_NAME
+    ];
 
-    chipContainer.querySelectorAll('[data-breakdown-category]').forEach(button => {
-        button.addEventListener('click', () => {
-            state.selectedBreakdownCategory = button.dataset.breakdownCategory;
-            renderBreakdownPanel();
+    chipContainer.innerHTML =
+        chips.map(category => `
+            <button
+                class="${
+                    state
+                        .selectedBreakdownCategory ===
+                    category
+                        ? 'active'
+                        : ''
+                }"
+                type="button"
+                data-breakdown-category="${escapeHtml(
+                    category
+                )}">
+                ${escapeHtml(
+                    shortLabel(category)
+                )}
+            </button>
+        `).join('');
+
+    chipContainer
+        .querySelectorAll(
+            '[data-breakdown-category]'
+        )
+        .forEach(button => {
+            button.addEventListener(
+                'click',
+                () => {
+                    state
+                        .selectedBreakdownCategory =
+                        button.dataset
+                            .breakdownCategory;
+
+                    renderBreakdownPanel();
+                }
+            );
         });
-    });
 
-    const filteredExpenses = getVisibleExpenses()
-        .filter(expense => {
-            return state.selectedBreakdownCategory === 'All'
-                || expense.category === state.selectedBreakdownCategory;
-        })
-        .sort((first, second) => new Date(second.date) - new Date(first.date));
+    const historyContainer =
+        document.getElementById(
+            'categoryListCards'
+        );
 
-    const historyContainer = document.getElementById('categoryListCards');
-    historyContainer.className = 'dated-history-list category-history-list';
-    historyContainer.innerHTML = renderGroupedTransactionHistory(filteredExpenses);
+    if (
+        state.selectedBreakdownCategory ===
+        RECEIPTS_CATEGORY_NAME
+    ) {
+        const receiptBundles =
+            getVisibleReceiptBundles();
+
+        historyContainer.className =
+            'receipt-bundle-list';
+
+        historyContainer.innerHTML =
+            receiptBundles.length
+                ? receiptBundles
+                    .map(
+                        receiptBundleCard
+                    )
+                    .join('')
+                : `
+                    <p class="empty-state">
+                        No scanned receipts for this month.
+                    </p>
+                `;
+
+        setText(
+            'categoryHistoryFilterLabel',
+            receiptBundles.length === 1
+                ? '1 saved receipt'
+                : `${receiptBundles.length} saved receipts`
+        );
+
+        return;
+    }
+
+    const filteredExpenses =
+        getVisibleExpenses()
+            .filter(expense => {
+                return (
+                    state
+                        .selectedBreakdownCategory ===
+                        'All' ||
+                    expense.category ===
+                        state
+                            .selectedBreakdownCategory
+                );
+            })
+            .sort(
+                (first, second) =>
+                    new Date(
+                        second.date
+                    ) -
+                    new Date(
+                        first.date
+                    )
+            );
+
+    historyContainer.className =
+        'dated-history-list category-history-list';
+
+    historyContainer.innerHTML =
+        renderGroupedTransactionHistory(
+            filteredExpenses
+        );
 
     setText(
         'categoryHistoryFilterLabel',
-        state.selectedBreakdownCategory === 'All'
+        state.selectedBreakdownCategory ===
+            'All'
             ? 'All categories'
-            : state.selectedBreakdownCategory
+            : state
+                .selectedBreakdownCategory
     );
 }
 
@@ -639,6 +1223,20 @@ function openCategoryDetails(categoryName) {
 }
 
 function renderCategoryDetails(categoryName) {
+    if (
+        categoryName ===
+        RECEIPTS_CATEGORY_NAME
+    ) {
+        renderReceiptCategoryDetails();
+        return;
+    }
+
+    renderRegularCategoryDetails(
+        categoryName
+    );
+}
+
+function renderRegularCategoryDetails(categoryName) {
     const meta = EXPENSE_CATEGORIES[categoryName];
     const categoryExpenses = getVisibleExpenses()
         .filter(expense => expense.category === categoryName)
@@ -659,7 +1257,7 @@ function renderCategoryDetails(categoryName) {
                 <div class="category-summary-icon"><i class="bi ${escapeHtml(meta.icon)}"></i></div>
                 <div>
                     <h3>${escapeHtml(categoryName)}</h3>
-                    <p>${escapeHtml(periodModeLabel())} • ${escapeHtml(getSelectedPeriodLabel())}</p>
+                    <p>${escapeHtml(getSelectedPeriodLabel())}</p>
                 </div>
             </div>
 
@@ -695,6 +1293,92 @@ function renderCategoryDetails(categoryName) {
             <span>${change > 0 ? `${categoryName} spending increased compared with the previous period.` : `You spent less on ${categoryName} compared with the previous period.`}</span>
         </div>
     `;
+}
+
+
+function renderReceiptCategoryDetails() {
+    const receiptBundles =
+        getVisibleReceiptBundles();
+
+    setText(
+        'categoryDetailsTitle',
+        'Receipts'
+    );
+
+    document
+        .getElementById(
+            'categoryDetailsContent'
+        )
+        .innerHTML = `
+            <section
+                class="category-summary receipts-category-summary"
+                style="
+                    --category-soft:${escapeHtml(
+                        RECEIPTS_CATEGORY_META.soft
+                    )};
+                    --category-accent:${escapeHtml(
+                        RECEIPTS_CATEGORY_META.color
+                    )}
+                ">
+                <div class="category-summary-top">
+                    <div class="category-summary-icon">
+                        <i class="bi ${escapeHtml(
+                            RECEIPTS_CATEGORY_META.icon
+                        )}"></i>
+                    </div>
+
+                    <div>
+                        <h3>Saved Receipts</h3>
+                        <p>
+                            ${escapeHtml(
+                                getSelectedPeriodLabel()
+                            )}
+                        </p>
+                    </div>
+                </div>
+
+                <strong>
+                    ${receiptBundles.length}
+                </strong>
+
+                <p>
+                    ${
+                        receiptBundles.length === 1
+                            ? 'receipt saved'
+                            : 'receipts saved'
+                    }
+                </p>
+
+                <div class="receipt-reference-note">
+                    <i class="bi bi-info-circle"></i>
+
+                    <span>
+                        Receipts are grouped here. Items remain
+                        counted in their own categories.
+                    </span>
+                </div>
+            </section>
+
+            <div class="category-expenses-title">
+                <h3>Scanned Receipts</h3>
+            </div>
+
+            <div class="receipt-bundle-list">
+                ${
+                    receiptBundles.length
+                        ? receiptBundles
+                            .map(
+                                receiptBundleCard
+                            )
+                            .join('')
+                        : `
+                            <p class="empty-state">
+                                No scanned receipts for this month.
+                            </p>
+                        `
+                }
+            </div>
+        `;
 }
 
 function getSelectedMonthNumber() {
@@ -1253,7 +1937,7 @@ function seasonalExpenseCard(expense) {
                 <p>${escapeHtml(expense.category)} <b>|</b> ${escapeHtml(expense.member || 'Member')}</p>
             </div>
 
-            <div class="transaction-amount">-${peso(expense.amount)}</div>
+            <div class="transaction-amount">${Number(expense.amount || 0) < 0 ? '+' : '-'}${peso(Math.abs(Number(expense.amount || 0)))}</div>
         </article>
     `;
 }
@@ -1392,27 +2076,407 @@ function saveExpense(event) {
     showSaveSuccess();
 }
 
-function transactionCard(expense) {
-    const meta = EXPENSE_CATEGORIES[expense.category] || EXPENSE_CATEGORIES.Other;
+function getVisibleReceiptBundles() {
+    const bundles =
+        new Map();
+
+    getVisibleExpenses()
+        .filter(expense => {
+            return Boolean(
+                expense.receiptId
+            );
+        })
+        .forEach(expense => {
+            const receiptId =
+                String(
+                    expense.receiptId
+                );
+
+            if (
+                !bundles.has(
+                    receiptId
+                )
+            ) {
+                bundles.set(
+                    receiptId,
+                    {
+                        id: receiptId,
+                        store:
+                            expense
+                                .receiptStore ||
+                            'Receipt',
+                        receiptNumber:
+                            expense
+                                .receiptNumber ||
+                            '',
+                        date:
+                            expense.date,
+                        member:
+                            expense.member,
+                        receiptImage:
+                            expense
+                                .receiptImage ||
+                            '',
+                        itemCount: 0,
+                        totalAmount: 0,
+                        items: []
+                    }
+                );
+            }
+
+            const bundle =
+                bundles.get(
+                    receiptId
+                );
+
+            bundle.itemCount += 1;
+
+            bundle.totalAmount +=
+                Number(
+                    expense.amount ||
+                    0
+                );
+
+            bundle.items.push(
+                expense
+            );
+
+            if (
+                !bundle.receiptImage &&
+                expense.receiptImage
+            ) {
+                bundle.receiptImage =
+                    expense.receiptImage;
+            }
+        });
+
+    return Array.from(
+        bundles.values()
+    )
+        .sort(
+            (first, second) =>
+                new Date(
+                    `${second.date}T00:00:00`
+                ) -
+                new Date(
+                    `${first.date}T00:00:00`
+                )
+        );
+}
+
+function receiptBundleCard(receipt) {
+    const receiptNumber =
+        String(
+            receipt.receiptNumber ||
+            ''
+        ).trim();
+
+    const referenceText =
+        receiptNumber &&
+        ![
+            'N/A',
+            '-'
+        ].includes(
+            receiptNumber
+                .toUpperCase()
+        )
+            ? `Receipt #${receiptNumber}`
+            : 'Scanned receipt';
+
+    const imageMarkup =
+        receipt.receiptImage
+            ? `
+                <img
+                    src="${escapeHtml(
+                        receipt.receiptImage
+                    )}"
+                    alt="${escapeHtml(
+                        receipt.store
+                    )} receipt">
+            `
+            : `
+                <i class="bi bi-receipt-cutoff"></i>
+            `;
+
     return `
-        <article class="transaction-card">
+        <button
+            class="receipt-bundle-card"
+            type="button"
+            data-receipt-bundle-id="${escapeHtml(
+                receipt.id
+            )}"
+            aria-label="Open ${escapeHtml(
+                receipt.store
+            )} receipt">
+            <span class="receipt-bundle-thumbnail">
+                ${imageMarkup}
+            </span>
+
+            <span class="receipt-bundle-main">
+                <strong>
+                    ${escapeHtml(
+                        receipt.store
+                    )}
+                </strong>
+
+                <small>
+                    ${escapeHtml(
+                        referenceText
+                    )}
+                </small>
+
+                <span>
+                    <i class="bi bi-calendar3"></i>
+
+                    ${escapeHtml(
+                        formatHistoryDate(
+                            receipt.date
+                        )
+                    )}
+
+                    •
+                    ${receipt.itemCount}
+                    ${
+                        receipt.itemCount === 1
+                            ? 'item'
+                            : 'items'
+                    }
+                </span>
+            </span>
+
+            <span class="receipt-bundle-value">
+                <strong>
+                    ${peso(
+                        receipt.totalAmount
+                    )}
+                </strong>
+
+                <small>
+                    View receipt
+                </small>
+            </span>
+
+            <i class="bi bi-chevron-right receipt-bundle-chevron"></i>
+        </button>
+    `;
+}
+
+function transactionCard(expense) {
+    const meta =
+        EXPENSE_CATEGORIES[
+            expense.category
+        ] ||
+        EXPENSE_CATEGORIES.Other;
+
+    const hasReceiptImage =
+        Boolean(
+            expense.receiptImage
+        );
+
+    const visual = hasReceiptImage
+        ? `
+            <button
+                class="transaction-receipt-preview"
+                type="button"
+                data-receipt-preview-id="${escapeHtml(
+                    String(expense.id)
+                )}"
+                aria-label="View attached receipt for ${escapeHtml(
+                    expense.title
+                )}">
+                <img
+                    src="${escapeHtml(
+                        expense.receiptImage
+                    )}"
+                    alt="Receipt thumbnail">
+                <span>
+                    <i class="bi bi-receipt"></i>
+                </span>
+            </button>
+        `
+        : `
+            <div
+                class="transaction-icon"
+                style="background:${escapeHtml(
+                    meta.soft
+                )}">
+                <i class="bi ${escapeHtml(
+                    meta.icon
+                )}"></i>
+            </div>
+        `;
+
+    const amount =
+        Number(
+            expense.amount ||
+            0
+        );
+
+    return `
+        <article class="transaction-card ${
+            hasReceiptImage
+                ? "has-receipt-image"
+                : ""
+        }">
             <span class="scan-corner top-left"></span>
             <span class="scan-corner top-right"></span>
             <span class="scan-corner bottom-left"></span>
             <span class="scan-corner bottom-right"></span>
 
-            <div class="transaction-icon" style="background:${escapeHtml(meta.soft)}">
-                <i class="bi ${escapeHtml(meta.icon)}"></i>
-            </div>
+            ${visual}
 
             <div class="transaction-info">
                 <h3>${escapeHtml(expense.category)}</h3>
-                <p>${escapeHtml(expense.title)} • ${escapeHtml(expense.member)}</p>
+                <p>
+                    ${escapeHtml(expense.title)}
+                    •
+                    ${escapeHtml(expense.member)}
+                </p>
+                ${
+                    hasReceiptImage
+                        ? `<small class="transaction-receipt-label"><i class="bi bi-image"></i> Receipt attached</small>`
+                        : ""
+                }
             </div>
 
-            <div class="transaction-amount">-${peso(expense.amount)}</div>
+            <div class="transaction-amount">
+                ${amount < 0 ? "+" : "-"}${peso(
+                    Math.abs(amount)
+                )}
+            </div>
         </article>
     `;
+}
+
+function handleReceiptPreviewClick(event) {
+    const bundleButton =
+        event.target.closest(
+            '[data-receipt-bundle-id]'
+        );
+
+    if (bundleButton) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const receipt =
+            getVisibleReceiptBundles()
+                .find(bundle => {
+                    return (
+                        String(bundle.id) ===
+                        String(
+                            bundleButton
+                                .dataset
+                                .receiptBundleId
+                        )
+                    );
+                });
+
+        openReceiptImageModal(
+            receipt?.receiptImage,
+            receipt?.store ||
+                'Receipt Image',
+            receipt?.store ||
+                'Receipt'
+        );
+
+        return;
+    }
+
+    const button =
+        event.target.closest(
+            '[data-receipt-preview-id]'
+        );
+
+    if (!button) {
+        return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const expense =
+        state.expenses.find(
+            item =>
+                String(item.id) ===
+                String(
+                    button.dataset
+                        .receiptPreviewId
+                )
+        );
+
+    openReceiptImageModal(
+        expense?.receiptImage,
+        expense?.receiptStore ||
+            'Receipt Image',
+        expense?.title ||
+            'Receipt'
+    );
+}
+
+function openReceiptImageModal(
+    imageSource,
+    titleText,
+    altText
+) {
+    if (!imageSource) {
+        showToast(
+            'Receipt image is unavailable.'
+        );
+
+        return;
+    }
+
+    const modal =
+        document.getElementById(
+            'expenseReceiptModal'
+        );
+
+    const image =
+        document.getElementById(
+            'expenseReceiptModalImage'
+        );
+
+    const title =
+        document.getElementById(
+            'expenseReceiptModalTitle'
+        );
+
+    if (image) {
+        image.src =
+            imageSource;
+
+        image.alt =
+            `Receipt for ${altText}`;
+    }
+
+    if (title) {
+        title.textContent =
+            titleText;
+    }
+
+    if (modal) {
+        modal.hidden = false;
+    }
+}
+
+function closeExpenseReceiptModal() {
+    const modal =
+        document.getElementById(
+            "expenseReceiptModal"
+        );
+
+    const image =
+        document.getElementById(
+            "expenseReceiptModalImage"
+        );
+
+    if (modal) {
+        modal.hidden = true;
+    }
+
+    if (image) {
+        image.removeAttribute("src");
+    }
 }
 
 function openPanel(id) {

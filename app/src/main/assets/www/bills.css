@@ -4340,6 +4340,141 @@ body[data-page="bills"] {
     all: unset;
 }
 
+
+/* =========================================================
+   Add Bill / Debt save success animation
+   Matches the Add Expense animated check.
+   ========================================================= */
+
+.bill-debt-success-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 220;
+    background: rgba(37, 31, 29, 0.18);
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.bill-debt-success-overlay[hidden] {
+    display: none !important;
+}
+
+.bill-debt-success-overlay.show {
+    opacity: 1;
+}
+
+.bill-debt-success-card {
+    width: min(290px, calc(100vw - 48px));
+    border-radius: 28px;
+    background: #FFFFFF;
+    box-shadow: 0 18px 42px rgba(92, 83, 78, 0.18);
+    padding: 24px 22px 22px;
+    text-align: center;
+    transform: translateY(8px) scale(0.96);
+    transition: transform 0.28s ease;
+}
+
+.bill-debt-success-overlay.show
+.bill-debt-success-card {
+    transform: translateY(0) scale(1);
+}
+
+.bill-debt-success-check {
+    width: 74px;
+    height: 74px;
+    margin: 0 auto 14px;
+}
+
+.bill-debt-success-check svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.bill-debt-success-overlay .success-circle {
+    fill: none;
+    stroke: #F3CBAF;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 151;
+    stroke-dashoffset: 151;
+}
+
+.bill-debt-success-overlay .success-check {
+    fill: none;
+    stroke: #E98B5F;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 36;
+    stroke-dashoffset: 36;
+}
+
+.bill-debt-success-overlay.show .success-circle {
+    animation:
+        billSuccessCircleDraw
+        0.55s
+        ease
+        forwards;
+}
+
+.bill-debt-success-overlay.show .success-check {
+    animation:
+        billSuccessCheckDraw
+        0.35s
+        ease
+        0.35s
+        forwards;
+}
+
+.bill-debt-success-card strong {
+    display: block;
+    color: #251F1D;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.bill-debt-success-card p {
+    margin: 7px 0 0;
+    color: #5C534E;
+    font-size: 13px;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+@keyframes billSuccessCircleDraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes billSuccessCheckDraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+
+/* =========================================================
+   v4 — guaranteed visible Bill / Debt success animation
+   ========================================================= */
+
+.bill-debt-success-overlay {
+    z-index: 1000 !important;
+}
+
+.bill-debt-success-overlay:not([hidden]) {
+    display: grid !important;
+}
+
+.bill-debt-success-overlay.show .success-circle {
+    animation: billSuccessCircleDraw 0.55s ease forwards !important;
+}
+
+.bill-debt-success-overlay.show .success-check {
+    animation: billSuccessCheckDraw 0.35s ease 0.35s forwards !important;
 /* =========================================================
    Final approved Bills flow
    ========================================================= */
