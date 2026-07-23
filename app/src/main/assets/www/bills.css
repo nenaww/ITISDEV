@@ -4279,3 +4279,63 @@ body[data-page="bills"] {
         padding: 12px !important;
     }
 }
+
+
+/* =========================================================
+   v3 — Notes now matches the normal Add Expense layout
+   ========================================================= */
+
+#addBillDebtPanel .bill-normal-notes-field {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+}
+
+#addBillDebtPanel .bill-normal-notes-field > span {
+    display: block !important;
+    margin: 0 0 8px !important;
+    color: #251F1D !important;
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    font-weight: 800 !important;
+}
+
+#addBillDebtPanel .bill-normal-notes-field > span em {
+    color: #8A817C !important;
+    font-style: normal !important;
+    font-weight: 600 !important;
+}
+
+#addBillDebtPanel .bill-normal-notes-field textarea {
+    width: 100% !important;
+    min-height: 90px !important;
+    margin: 0 !important;
+    padding: 14px !important;
+    border: 1px solid rgba(92, 83, 78, 0.08) !important;
+    border-radius: 16px !important;
+    background: #FFFFFF !important;
+    color: #251F1D !important;
+    outline: 0 !important;
+    resize: vertical !important;
+    box-shadow: none !important;
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    font-size: 12px !important;
+    line-height: 1.45 !important;
+    font-weight: 600 !important;
+}
+
+#addBillDebtPanel .bill-normal-notes-field textarea::placeholder {
+    color: #9B928D !important;
+}
+
+/* Disable the previous decorative Notes card rules. */
+#addBillDebtPanel .notes-row,
+#addBillDebtPanel .notes-heading,
+#addBillDebtPanel .notes-heading-copy,
+#addBillDebtPanel .notes-field-wrap {
+    all: unset;
+}
