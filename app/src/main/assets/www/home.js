@@ -380,7 +380,15 @@ function bindHomeActions() {
         }
     });
 
-    ["quickMembers", "navBills", "debtViewAll", "eventsViewAll"].forEach(id => {
+    const billsNavigationButton = document.getElementById("navBills");
+
+    if (billsNavigationButton) {
+        billsNavigationButton.addEventListener("click", () => {
+            window.location.href = "bills.html";
+        });
+    }
+
+    ["quickMembers", "debtViewAll", "eventsViewAll"].forEach(id => {
         const button = document.getElementById(id);
 
         if (button) {

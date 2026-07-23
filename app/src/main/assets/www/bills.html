@@ -135,9 +135,9 @@
             <i class="bi bi-calendar-check-fill"></i>
             <span>Bills</span>
         </button>
-        <button id="navProfile" type="button">
-            <i class="bi bi-person"></i>
-            <span>Profile</span>
+        <button id="navSavings" type="button">
+            <i class="bi bi-piggy-bank"></i>
+            <span>Savings</span>
         </button>
     </nav>
 </main>
@@ -260,7 +260,15 @@
 </div>
 <section class="bill-full-panel" hidden="" id="addBillDebtPanel">
     <div class="bill-panel-scroll">
-        <header class="add-panel-header"><button aria-label="Close Add Bill or Debt" id="closeAddPanelTop" type="button"><i aria-hidden="true" class="bi bi-x-lg"></i></button><div><h2>Add Bill / Debt</h2></div><span aria-hidden="true" class="add-panel-header-check"><i class="bi bi-check-lg"></i></span></header>
+        <header class="add-panel-header">
+            <button aria-label="Close Add Bill or Debt" id="closeAddPanelTop" type="button">
+                <i aria-hidden="true" class="bi bi-x-lg"></i>
+            </button>
+            <h2>Add Bill / Debt</h2>
+            <button aria-label="Save Bill or Debt" class="add-panel-header-check" id="saveEntryTop" type="button">
+                <i aria-hidden="true" class="bi bi-check-lg"></i>
+            </button>
+        </header>
         <div aria-label="Entry type" class="entry-type-selector" role="group">
             <button class="active" data-entry-type="bill" type="button">
                 <i class="bi bi-receipt"></i>
@@ -360,7 +368,13 @@
                 </div>
             </div>
             <div class="settings-list">
-                <label class="setting-row">
+                <div class="settings-section-title">
+                    <div>
+                        <strong>Payment Options</strong>
+                        <small>Set reminders and family visibility</small>
+                    </div>
+                </div>
+                <label class="setting-row reminder-setting-row">
                     <span class="setting-icon reminder-icon"><i class="bi bi-bell"></i></span>
                     <span class="setting-copy">
 <strong>Reminder</strong>
@@ -369,7 +383,7 @@
                     <input checked="" class="switch-input" id="reminderToggle" type="checkbox"/>
                     <span aria-hidden="true" class="switch-control"></span>
                 </label>
-                <label class="setting-row">
+                <label class="setting-row family-setting-row">
                     <span class="setting-icon family-icon"><i class="bi bi-people"></i></span>
                     <span class="setting-copy">
 <strong>Shared with Family <em>(optional)</em></strong>
@@ -378,12 +392,9 @@
                     <input class="switch-input" id="sharedToggle" type="checkbox"/>
                     <span aria-hidden="true" class="switch-control"></span>
                 </label>
-                <label class="notes-row">
-                    <span class="setting-icon notes-icon"><i class="bi bi-journal-text"></i></span>
-                    <span class="notes-field-wrap">
-<span>Notes <em>(optional)</em></span>
-<textarea id="entryNotes" placeholder="Add notes"></textarea>
-</span>
+                <label class="bill-normal-notes-field">
+                    <span>Notes <em>(optional)</em></span>
+                    <textarea id="entryNotes" placeholder="Add any notes..."></textarea>
                 </label>
             </div>
             <div class="calendar-connection-note" id="calendarConnectionNote">

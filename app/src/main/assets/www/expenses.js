@@ -399,6 +399,12 @@ function openMemberDetails(member) {
     const totalTransactions = member.expenses.length;
     const average = totalTransactions > 0 ? Math.round(member.amount / totalTransactions) : 0;
     const topCategory = member.categoryTotals[0] || { category: 'No spending', amount: 0 };
+    const availableCategories = [...new Set(
+        member.expenses
+            .map(expense => expense.category)
+            .filter(category => EXPENSE_CATEGORIES[category])
+    )];
+
     let angle = 0;
     const gradientParts = member.categoryTotals.filter(item => item.amount > 0).map(item => {
         const meta = EXPENSE_CATEGORIES[item.category];
@@ -427,27 +433,84 @@ function openMemberDetails(member) {
             <strong>${peso(member.amount)}</strong>
             <span>${member.share}% of household spending</span>
         </section>
+
         <div class="member-stat-grid">
             <article><span>Transactions</span><strong>${totalTransactions}</strong><small>${getSelectedPeriodLabel()}</small></article>
             <article><span>Top Category</span><strong>${escapeHtml(topCategory.category)}</strong><small>${peso(topCategory.amount)}</small></article>
             <article><span>Average Spend</span><strong>${peso(average)}</strong><small>per transaction</small></article>
         </div>
-        <div class="panel-subheading"><h3>Spending by Category</h3><span>${peso(member.amount)} total</span></div>
+
+        <div class="panel-subheading">
+            <h3>Spending by Category</h3>
+            <span>${peso(member.amount)} total</span>
+        </div>
+
         <section class="member-category-card">
-            <div class="member-category-donut" style="background:${gradientParts.length ? `conic-gradient(${gradientParts.join(',')})` : '#F4EFEC'}"><div><strong>${peso(member.amount)}</strong><span>Total</span></div></div>
+            <div class="member-category-donut" style="background:${gradientParts.length ? `conic-gradient(${gradientParts.join(',')})` : '#F4EFEC'}">
+                <div><strong>${peso(member.amount)}</strong><span>Total</span></div>
+            </div>
             <div class="member-category-list">${categoryRows || '<p class="empty-state">No category spending yet.</p>'}</div>
         </section>
-        <div class="panel-subheading"><h3>Recent Transactions</h3><span>${totalTransactions} total</span></div>
-        <div class="dated-history-list member-history-list">
-            ${member.expenses.length
-                ? renderGroupedTransactionHistory(
-                    [...member.expenses]
-                        .sort((first, second) => new Date(second.date) - new Date(first.date))
-                        .slice(0, 5)
-                )
-                : '<p class="empty-state">No transactions yet.</p>'}
+
+        <div class="panel-subheading member-recent-heading">
+            <h3>Recent Transactions</h3>
+            <span id="memberTransactionCount">${totalTransactions} total</span>
         </div>
+
+        <div id="memberTransactionFilters" class="member-transaction-filters" aria-label="Filter member transactions">
+            <button class="active" type="button" data-member-category-filter="All">All</button>
+            ${availableCategories.map(category => {
+                const meta = EXPENSE_CATEGORIES[category];
+                return `
+                    <button
+                        type="button"
+                        data-member-category-filter="${escapeHtml(category)}"
+                        style="--filter-soft:${escapeHtml(meta.soft)}; --filter-accent:${escapeHtml(meta.color)}">
+                        ${escapeHtml(category)}
+                    </button>
+                `;
+            }).join('')}
+        </div>
+
+        <div id="memberTransactionHistory" class="dated-history-list member-history-list"></div>
     `;
+
+    const filterContainer = document.getElementById('memberTransactionFilters');
+    const historyContainer = document.getElementById('memberTransactionHistory');
+    const countLabel = document.getElementById('memberTransactionCount');
+
+    const renderMemberTransactionHistory = (selectedCategory = 'All') => {
+        const filteredExpenses = member.expenses
+            .filter(expense => selectedCategory === 'All' || expense.category === selectedCategory)
+            .sort((first, second) => new Date(second.date) - new Date(first.date));
+
+        if (historyContainer) {
+            historyContainer.innerHTML = filteredExpenses.length
+                ? renderGroupedTransactionHistory(filteredExpenses.slice(0, 5))
+                : '<p class="empty-state">No transactions in this category yet.</p>';
+        }
+
+        if (countLabel) {
+            countLabel.textContent = selectedCategory === 'All'
+                ? `${totalTransactions} total`
+                : `${filteredExpenses.length} ${filteredExpenses.length === 1 ? 'transaction' : 'transactions'}`;
+        }
+
+        filterContainer?.querySelectorAll('[data-member-category-filter]').forEach(button => {
+            button.classList.toggle(
+                'active',
+                button.dataset.memberCategoryFilter === selectedCategory
+            );
+        });
+    };
+
+    filterContainer?.querySelectorAll('[data-member-category-filter]').forEach(button => {
+        button.addEventListener('click', () => {
+            renderMemberTransactionHistory(button.dataset.memberCategoryFilter || 'All');
+        });
+    });
+
+    renderMemberTransactionHistory('All');
     openPanel('memberDetailsPanel');
 }
 
