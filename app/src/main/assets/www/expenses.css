@@ -6293,3 +6293,18 @@ button {
 .receipts-category-summary .receipt-reference-note i {
     color: #7F7874 !important;
 }
+
+
+/* =========================================================
+   v24 — equal Category Breakdown overview card heights
+   ========================================================= */
+
+/*
+    The Receipts card is 78px high. Apply that same exact height
+    to Food, Utilities, Transportation, Health, Education,
+    Rent, Debt, Other, and Receipts.
+*/
+#categoryLegend .category-grid-item {
+    min-height: 78px !important;
+    height: 78px !important;
+}

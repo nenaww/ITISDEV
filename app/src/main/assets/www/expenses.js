@@ -17,6 +17,306 @@ const RECEIPTS_CATEGORY_META = {
     icon: 'bi-receipt-cutoff'
 };
 
+/* Prototype-only receipt records. No browser storage is required. */
+const PROTOTYPE_RECEIPTS = [
+    {
+        id: 'savemore1',
+        store: 'Savemore',
+        logoFile: 'images/savemore.png',
+        receiptNumber: '01-00009997',
+        date: '2026-07-23',
+        member: 'Elena',
+
+        /*
+            Cool blue-gray tones reference the uploaded Savemore
+            receipt image and its dark printed logo.
+        */
+        panelColor: '#FFF5D8',
+        paperColor: '#FFF5D8',
+        accentColor: '#B48A28',
+        imageBaseName: 'savemore1',
+
+        adjustments: [
+            {
+                label: 'SC/PWD Discount',
+                amount: -3.66
+            }
+        ],
+
+        items: [
+            {
+                id: 'savemore-whole-wheat',
+                title: 'Whole Wheat Bread 600g',
+                category: 'Food',
+                quantity: 1,
+                amount: 82,
+                countedAmount: 78.34
+            }
+        ]
+    },
+    {
+        id: '7111',
+        store: '7-Eleven',
+        logoFile: 'images/711.png',
+        receiptNumber: '100057512',
+        date: '2026-07-21',
+        member: 'Marco',
+
+        /*
+            Warm paper tones reference the uploaded 7-Eleven
+            receipt while the accent follows its brand identity.
+        */
+        panelColor: '#FFF1E8',
+        paperColor: '#FFF1E8',
+        accentColor: '#E98B5F',
+        imageBaseName: '7111',
+        adjustments: [],
+
+        items: [
+            {
+                id: '711-coke-zero',
+                title: 'Coca-Cola No Sugar 250mL',
+                category: 'Food',
+                quantity: 1,
+                amount: 28,
+                countedAmount: 28
+            }
+        ]
+    },
+    {
+        id: 'mercury1',
+        store: 'Mercury Drug',
+        logoFile: 'images/mercury.png',
+        receiptNumber: '00304',
+        date: '2026-07-20',
+        member: 'Elena',
+
+        /*
+            Soft cool gray-blue tones reference the uploaded
+            Mercury receipt and its pharmacy presentation.
+        */
+        panelColor: '#FFE8EE',
+        paperColor: '#FFE8EE',
+        accentColor: '#C85F72',
+        imageBaseName: 'mercury1',
+        adjustments: [],
+
+        items: [
+            {
+                id: 'mercury-lexapro',
+                title: 'Lexapro FCT 10mg',
+                category: 'Health',
+                quantity: 30,
+                amount: 3855,
+                countedAmount: 3855
+            }
+        ]
+    },
+    {
+        id: 'alphamart1',
+        store: 'Alphamart',
+        logoFile: 'images/alphamart.png',
+        receiptNumber: 'AM-071926-032',
+        date: '2026-07-19',
+        member: 'Ana',
+        panelColor: '#FFE6E6',
+        paperColor: '#FFE6E6',
+        accentColor: '#D66B6B',
+        imageBaseName: 'alphamart1',
+        adjustments: [],
+
+        items: [
+            {
+                id: 'alphamart-eggs',
+                title: 'Eggs 12pcs',
+                category: 'Food',
+                quantity: 1,
+                amount: 110,
+                countedAmount: 110
+            },
+            {
+                id: 'alphamart-soap',
+                title: 'Laundry Soap',
+                category: 'Other',
+                quantity: 1,
+                amount: 78,
+                countedAmount: 78
+            },
+            {
+                id: 'alphamart-bread',
+                title: 'Loaf Bread',
+                category: 'Food',
+                quantity: 1,
+                amount: 55,
+                countedAmount: 55
+            }
+        ]
+    },
+    {
+        id: 'puregold1',
+        store: 'Puregold',
+        logoFile: 'images/puregold.png',
+        receiptNumber: 'PG-071826-105',
+        date: '2026-07-18',
+        member: 'Elena',
+        panelColor: '#EEF6F0',
+        paperColor: '#EEF6F0',
+        accentColor: '#6C9278',
+        imageBaseName: 'puregold1',
+        adjustments: [],
+
+        items: [
+            {
+                id: 'puregold-chicken',
+                title: 'Whole Chicken',
+                category: 'Food',
+                quantity: 1,
+                amount: 220,
+                countedAmount: 220
+            },
+            {
+                id: 'puregold-oil',
+                title: 'Cooking Oil 1L',
+                category: 'Food',
+                quantity: 1,
+                amount: 150,
+                countedAmount: 150
+            },
+            {
+                id: 'puregold-notebook',
+                title: 'Notebook',
+                category: 'Education',
+                quantity: 1,
+                amount: 60,
+                countedAmount: 60
+            }
+        ]
+    }
+];
+function getPrototypeReceiptSubtotal(receipt) {
+    return (receipt?.items || []).reduce((sum,item)=>sum+Number(item.amount||0),0);
+}
+function getPrototypeReceiptTotal(receipt) {
+    const subtotal =
+        getPrototypeReceiptSubtotal(
+            receipt
+        );
+
+    const adjustmentTotal =
+        (
+            Array.isArray(
+                receipt?.adjustments
+            )
+                ? receipt.adjustments
+                : []
+        )
+            .reduce(
+                (sum, adjustment) =>
+                    sum +
+                    Number(
+                        adjustment.amount ||
+                        0
+                    ),
+                0
+            );
+
+    return Math.max(
+        Number(
+            (
+                subtotal +
+                adjustmentTotal
+            ).toFixed(2)
+        ),
+        0
+    );
+}
+
+function getLighterReceiptColor(
+    hexColor,
+    strength = 0.22
+) {
+    const normalized =
+        String(
+            hexColor ||
+            ''
+        )
+            .replace(
+                '#',
+                ''
+            )
+            .trim();
+
+    if (
+        !/^[0-9a-f]{6}$/i.test(
+            normalized
+        )
+    ) {
+        return hexColor;
+    }
+
+    const amount =
+        Math.min(
+            Math.max(
+                Number(
+                    strength
+                ) ||
+                0,
+                0
+            ),
+            1
+        );
+
+    const channels = [
+        parseInt(
+            normalized.slice(
+                0,
+                2
+            ),
+            16
+        ),
+        parseInt(
+            normalized.slice(
+                2,
+                4
+            ),
+            16
+        ),
+        parseInt(
+            normalized.slice(
+                4,
+                6
+            ),
+            16
+        )
+    ];
+
+    return (
+        '#' +
+        channels
+            .map(channel => {
+                return Math.round(
+                    channel +
+                    (
+                        255 -
+                        channel
+                    ) *
+                    amount
+                )
+                    .toString(16)
+                    .padStart(
+                        2,
+                        '0'
+                    );
+            })
+            .join('')
+    );
+}
+
+function findPrototypeReceipt(receiptId) {
+    return PROTOTYPE_RECEIPTS.find(receipt=>String(receipt.id)===String(receiptId||'')) || null;
+}
+
+
 const MONTH_OPTIONS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const APP_START_DATE_KEY = 'kabalikat_app_start_date';
 
@@ -126,20 +426,7 @@ const SEASONAL_PLANS = [
     }
 ];
 
-const THIRTEENTH_MONTH_PAY = {
-    received: false,
-    expectedAmount: 50000,
-    amount: 0,
-    receivedDate: '',
-    allocations: [
-        { name: 'Christmas & Noche Buena', allocated: 15000, spent: 0, remaining: 15000, icon: 'bi-gift', soft: '#F0E0F2' },
-        { name: 'Savings', allocated: 15000, spent: 0, remaining: 15000, icon: 'bi-wallet2', soft: '#FBE5D8' },
-        { name: 'Bills & Debt', allocated: 10000, spent: 0, remaining: 10000, icon: 'bi-receipt', soft: '#E5F1E8' },
-        { name: 'School Needs', allocated: 5000, spent: 0, remaining: 5000, icon: 'bi-book', soft: '#E0EEF4' },
-        { name: 'Emergency Fund', allocated: 3000, spent: 0, remaining: 3000, icon: 'bi-shield-check', soft: '#FAF0C6' },
-        { name: 'Other', allocated: 2000, spent: 0, remaining: 2000, icon: 'bi-three-dots', soft: '#F4EFEC' }
-    ]
-};
+
 
 const state = {
     budget: 25000,
@@ -168,6 +455,7 @@ const state = {
 };
 
 let currentCategoryDetail = 'Food';
+let activePrototypeReceiptId = '';
 
 document.addEventListener('DOMContentLoaded', () => {
     initializeExpensesPage();
@@ -184,128 +472,33 @@ async function initializeExpensesPage() {
 
 
 async function loadScannedExpensesIntoState() {
-    let receiptRecords = [];
+    const existingIds = new Set(state.expenses.map(expense => String(expense.id)));
+    const prototypeExpenses = [];
 
-    try {
-        receiptRecords =
-            await getSavedScannedReceiptRecords();
-    } catch (error) {
-        console.warn(
-            "Could not load receipt records from IndexedDB:",
-            error
-        );
-    }
-
-    if (!receiptRecords.length) {
-        receiptRecords =
-            getScannedReceiptMetadataFallback();
-    }
-
-    const existingIds =
-        new Set(
-            state.expenses.map(
-                expense =>
-                    String(expense.id)
-            )
-        );
-
-    const imported = [];
-
-    receiptRecords.forEach(receipt => {
-        const member =
-            HOUSEHOLD_MEMBERS[
-                receipt.member
-            ]
-                ? receipt.member
-                : HOUSEHOLD_MEMBERS[
-                    receipt.addedBy
-                ]
-                    ? receipt.addedBy
-                    : "Elena";
-
-        const receiptImage =
-            String(
-                receipt.image ||
-                ""
-            );
-
-        const items =
-            Array.isArray(receipt.items)
-                ? receipt.items
-                : [];
-
-        items.forEach((item, itemIndex) => {
-            const itemId =
-                `${receipt.id}:` +
-                `${item.id || itemIndex}`;
-
-            if (
-                existingIds.has(
-                    String(itemId)
-                )
-            ) {
-                return;
-            }
-
-            existingIds.add(
-                String(itemId)
-            );
-
-            imported.push({
+    PROTOTYPE_RECEIPTS.forEach(receipt => {
+        receipt.items.forEach(item => {
+            const itemId = `prototype:${receipt.id}:${item.id}`;
+            if (existingIds.has(itemId)) return;
+            existingIds.add(itemId);
+            prototypeExpenses.push({
                 id: itemId,
-
-                category:
-                    normalizeScannedExpenseCategory(
-                        item.category
-                    ),
-
-                title:
-                    item.title ||
-                    item.rawTitle ||
-                    "Scanned expense",
-
-                amount:
-                    Number(
-                        item.amount ||
-                        0
-                    ),
-
-                member,
-
-                date:
-                    normalizeImportedExpenseDate(
-                        receipt.date ||
-                        receipt.createdAt
-                    ),
-
-                seasonalPlanId: "",
-
-                source:
-                    receipt.source ||
-                    "OCR Receipt Scanner",
-
-                receiptId:
-                    receipt.id ||
-                    "",
-
-                receiptStore:
-                    receipt.storeName ||
-                    "Receipt",
-
-                receiptNumber:
-                    receipt.receiptNumber ||
-                    "",
-
-                receiptImage
+                category: normalizeScannedExpenseCategory(item.category),
+                title: item.title,
+                amount: Number(item.countedAmount ?? item.amount ?? 0),
+                quantity: Number(item.quantity || 1),
+                member: receipt.member,
+                date: receipt.date,
+                seasonalPlanId: '',
+                source: 'Prototype Receipt',
+                receiptId: receipt.id,
+                receiptStore: receipt.store,
+                receiptNumber: receipt.receiptNumber
             });
         });
     });
 
-    if (imported.length) {
-        state.expenses = [
-            ...imported,
-            ...state.expenses
-        ];
+    if (prototypeExpenses.length) {
+        state.expenses = [...prototypeExpenses, ...state.expenses];
     }
 }
 
@@ -509,96 +702,29 @@ function normalizeImportedExpenseDate(value) {
 }
 
 function handleExpensesDeepLink() {
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
-
-    const requestedView =
-        params.get('view');
-
-    const requestedFilter =
-        String(
-            params.get('filter') ||
-            ''
-        ).toLowerCase();
-
-    const requestedSection =
-        params.get('section') ||
-        window.location.hash
-            .replace(/^#/, '');
+    const params = new URLSearchParams(window.location.search);
+    const requestedView = String(params.get('view') || '').toLowerCase();
+    const requestedReceiptId = String(params.get('receiptId') || '');
+    const requestedSection = params.get('section') || window.location.hash.replace(/^#/, '');
 
     window.requestAnimationFrame(() => {
-        if (
-            requestedView ===
-            'add-expense'
-        ) {
-            openPanel(
-                'addExpensePanel'
-            );
-
+        if (requestedView === 'add-expense') {
+            openPanel('addExpensePanel');
             return;
         }
-
-        if (
-            requestedView ===
-            'category-breakdown'
-        ) {
-            if (
-                requestedFilter ===
-                'receipts'
-            ) {
-                state
-                    .selectedBreakdownCategory =
-                    RECEIPTS_CATEGORY_NAME;
-            } else if (
-                requestedFilter ===
-                'all'
-            ) {
-                state
-                    .selectedBreakdownCategory =
-                    'All';
-            }
-
-            renderBreakdownPanel();
-
-            openPanel(
-                'categoryBreakdownPanel'
-            );
-
+        if (requestedView === 'receipt-details') {
+            renderPrototypeReceiptDetails(findPrototypeReceipt(requestedReceiptId) || PROTOTYPE_RECEIPTS[0]);
             return;
         }
-
-        if (!requestedSection) {
+        if (requestedView === 'category-breakdown') {
+            openPanel('categoryBreakdownPanel');
             return;
         }
-
-        const target =
-            document.getElementById(
-                requestedSection
-            );
-
-        const scrollArea =
-            document.querySelector(
-                '.expenses-scroll-area'
-            );
-
-        if (
-            !target ||
-            !scrollArea
-        ) {
-            return;
-        }
-
-        scrollArea.scrollTo({
-            top:
-                Math.max(
-                    target.offsetTop -
-                    18,
-                    0
-                ),
-            behavior: 'auto'
-        });
+        if (!requestedSection) return;
+        const target = document.getElementById(requestedSection);
+        const scrollArea = document.querySelector('.expenses-scroll-area');
+        if (!target || !scrollArea) return;
+        scrollArea.scrollTo({top:Math.max(target.offsetTop-18,0),behavior:'auto'});
     });
 }
 
@@ -615,10 +741,6 @@ function bindEvents() {
     document.getElementById('openSeasonalPanel').addEventListener('click', () => {
         renderSeasonalPanel();
         openPanel('seasonalSpendingPanel');
-    });
-    document.getElementById('openThirteenthPanel').addEventListener('click', () => {
-        renderThirteenthMonthPanel();
-        openPanel('thirteenthMonthPanel');
     });
     document.getElementById('addCustomSeasonalPlan').addEventListener('click', createCustomSeasonalPlan);
     document.getElementById('memberDetailsCalendar').addEventListener('click', openPeriodSheet);
@@ -670,6 +792,17 @@ function bindEvents() {
         window.location.href = "bills.html";
     });
 
+    /*
+        A receipt detail uses the existing Category Details panel.
+        Its back button must return to the Receipts view instead
+        of closing directly to the Expenses home screen.
+    */
+    document.addEventListener(
+        'click',
+        handlePrototypeReceiptBack,
+        true
+    );
+
     document.addEventListener("click", handleReceiptPreviewClick);
 
     document
@@ -691,7 +824,6 @@ function renderAll() {
     renderPeriodHeader();
     renderPiggyBank();
     renderSeasonalOverview();
-    renderThirteenthMonthPanel();
     renderHomeCategoryBreakdown();
     renderHouseholdSpending();
     renderAllExpensesPanel();
@@ -1075,10 +1207,24 @@ function renderBreakdownPanel() {
             button.addEventListener(
                 'click',
                 () => {
-                    state
-                        .selectedBreakdownCategory =
+                    const category =
                         button.dataset
                             .breakdownCategory;
+
+                    if (
+                        category ===
+                        RECEIPTS_CATEGORY_NAME
+                    ) {
+                        openCategoryDetails(
+                            RECEIPTS_CATEGORY_NAME
+                        );
+
+                        return;
+                    }
+
+                    state
+                        .selectedBreakdownCategory =
+                        category;
 
                     renderBreakdownPanel();
                 }
@@ -1707,114 +1853,7 @@ function createCustomSeasonalPlan() {
     showToast('Custom seasonal plan added.');
 }
 
-function renderThirteenthMonthPanel() {
-    const allocated = THIRTEENTH_MONTH_PAY.allocations.reduce(
-        (sum, item) => sum + Number(item.allocated || 0),
-        0
-    );
-    const spent = THIRTEENTH_MONTH_PAY.allocations.reduce(
-        (sum, item) => sum + Number(item.spent || 0),
-        0
-    );
-    const baseAmount = THIRTEENTH_MONTH_PAY.received
-        ? Number(THIRTEENTH_MONTH_PAY.amount || 0)
-        : Number(THIRTEENTH_MONTH_PAY.expectedAmount || 0);
-    const remaining = THIRTEENTH_MONTH_PAY.received
-        ? Math.max(baseAmount - spent, 0)
-        : Math.max(baseAmount - allocated, 0);
 
-    setText(
-        'thirteenthStatusText',
-        THIRTEENTH_MONTH_PAY.received
-            ? `Received on ${THIRTEENTH_MONTH_PAY.receivedDate}`
-            : 'Status'
-    );
-
-    setText(
-        'thirteenthReceivedMain',
-        THIRTEENTH_MONTH_PAY.received ? peso(baseAmount) : 'Not yet received'
-    );
-
-    setText(
-        'thirteenthRemainingSummary',
-        THIRTEENTH_MONTH_PAY.received
-            ? `${peso(remaining)} remaining`
-            : 'Create an allocation plan after receiving'
-    );
-
-    const actions = document.getElementById('thirteenthActions');
-    if (actions) {
-        actions.innerHTML = '';
-        actions.hidden = true;
-    }
-
-    // Full 13th Month Pay details panel remains functional.
-    setText(
-        'thirteenthHeroAmount',
-        THIRTEENTH_MONTH_PAY.received ? peso(baseAmount) : 'Not yet received'
-    );
-    setText(
-        'thirteenthHeroDate',
-        THIRTEENTH_MONTH_PAY.received
-            ? `Received on ${THIRTEENTH_MONTH_PAY.receivedDate}`
-            : ''
-    );
-    setText('thirteenthGridAllocated', peso(allocated));
-    setText('thirteenthGridSpent', peso(spent));
-    setText('thirteenthGridRemaining', peso(remaining));
-    setText(
-        'thirteenthGridAllocatedPct',
-        baseAmount > 0 ? `${Math.round((allocated / baseAmount) * 100)}%` : '0%'
-    );
-    setText(
-        'thirteenthGridSpentPct',
-        baseAmount > 0 ? `${Math.round((spent / baseAmount) * 100)}%` : '0%'
-    );
-    setText(
-        'thirteenthGridRemainingPct',
-        baseAmount > 0 ? `${Math.round((remaining / baseAmount) * 100)}%` : '0%'
-    );
-
-    const list = document.getElementById('thirteenthAllocationList');
-    if (list) {
-        list.innerHTML = THIRTEENTH_MONTH_PAY.allocations.map(item => `
-            <article class="allocation-card">
-                <div class="allocation-icon" style="background:${escapeHtml(item.soft)}"><i class="bi ${escapeHtml(item.icon)}"></i></div>
-                <div class="allocation-main">
-                    <h4>${escapeHtml(item.name)}</h4>
-                    <p>Allocated ${peso(item.allocated)} • Spent ${peso(item.spent)}</p>
-                </div>
-                <div class="allocation-values">
-                    <strong>${peso(item.remaining)}</strong>
-                    <span>${item.allocated > 0 ? Math.round((item.remaining / item.allocated) * 100) : 0}%</span>
-                </div>
-            </article>
-        `).join('');
-    }
-}
-
-
-function bindThirteenthActions() {
-    document.querySelectorAll('[data-thirteenth-action]').forEach(button => {
-        button.addEventListener('click', () => {
-            const action = button.dataset.thirteenthAction;
-            if (action === 'set-expected') {
-                const value = Number(prompt('Enter expected 13th month pay amount:', THIRTEENTH_MONTH_PAY.expectedAmount));
-                if (value > 0) THIRTEENTH_MONTH_PAY.expectedAmount = value;
-            } else if (action === 'create-plan' || action === 'edit-plan' || action === 'view-plan') {
-                openPanel('thirteenthMonthPanel');
-            } else if (action === 'mark-received') {
-                const value = Number(prompt('Enter received 13th month pay amount:', THIRTEENTH_MONTH_PAY.expectedAmount));
-                if (value > 0) {
-                    THIRTEENTH_MONTH_PAY.amount = value;
-                    THIRTEENTH_MONTH_PAY.received = true;
-                    THIRTEENTH_MONTH_PAY.receivedDate = new Date().toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
-                }
-            }
-            renderThirteenthMonthPanel();
-        });
-    });
-}
 
 function renderGroupedTransactionHistory(expenses) {
     const sortedExpenses = [...expenses]
@@ -1887,6 +1926,37 @@ function seasonalDetailExpenseCard(expense) {
             </article>
         </div>
     `;
+}
+
+function formatHistoryDate(value) {
+    return formatSeasonalTransactionDate(value);
+}
+
+function formatReceiptDate(value) {
+    const receiptDate =
+        value
+            ? new Date(
+                `${value}T00:00:00`
+            )
+            : null;
+
+    if (
+        !receiptDate ||
+        Number.isNaN(
+            receiptDate.getTime()
+        )
+    ) {
+        return 'Date unavailable';
+    }
+
+    return receiptDate.toLocaleDateString(
+        'en-PH',
+        {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric'
+        }
+    );
 }
 
 function formatSeasonalTransactionDate(value) {
@@ -2077,126 +2147,27 @@ function saveExpense(event) {
 }
 
 function getVisibleReceiptBundles() {
-    const bundles =
-        new Map();
-
-    getVisibleExpenses()
-        .filter(expense => {
-            return Boolean(
-                expense.receiptId
-            );
+    const selectedMonth = getSelectedMonthDate();
+    return PROTOTYPE_RECEIPTS
+        .filter(receipt => {
+            const date = new Date(`${receipt.date}T00:00:00`);
+            return !Number.isNaN(date.getTime()) &&
+                date.getFullYear() === selectedMonth.getFullYear() &&
+                date.getMonth() === selectedMonth.getMonth();
         })
-        .forEach(expense => {
-            const receiptId =
-                String(
-                    expense.receiptId
-                );
-
-            if (
-                !bundles.has(
-                    receiptId
-                )
-            ) {
-                bundles.set(
-                    receiptId,
-                    {
-                        id: receiptId,
-                        store:
-                            expense
-                                .receiptStore ||
-                            'Receipt',
-                        receiptNumber:
-                            expense
-                                .receiptNumber ||
-                            '',
-                        date:
-                            expense.date,
-                        member:
-                            expense.member,
-                        receiptImage:
-                            expense
-                                .receiptImage ||
-                            '',
-                        itemCount: 0,
-                        totalAmount: 0,
-                        items: []
-                    }
-                );
-            }
-
-            const bundle =
-                bundles.get(
-                    receiptId
-                );
-
-            bundle.itemCount += 1;
-
-            bundle.totalAmount +=
-                Number(
-                    expense.amount ||
-                    0
-                );
-
-            bundle.items.push(
-                expense
-            );
-
-            if (
-                !bundle.receiptImage &&
-                expense.receiptImage
-            ) {
-                bundle.receiptImage =
-                    expense.receiptImage;
-            }
-        });
-
-    return Array.from(
-        bundles.values()
-    )
-        .sort(
-            (first, second) =>
-                new Date(
-                    `${second.date}T00:00:00`
-                ) -
-                new Date(
-                    `${first.date}T00:00:00`
-                )
-        );
+        .map(receipt => ({
+            ...receipt,
+            itemCount: receipt.items.length,
+            totalAmount: getPrototypeReceiptTotal(receipt)
+        }))
+        .sort((a,b)=>new Date(`${b.date}T00:00:00`)-new Date(`${a.date}T00:00:00`));
 }
 
 function receiptBundleCard(receipt) {
-    const receiptNumber =
-        String(
-            receipt.receiptNumber ||
-            ''
-        ).trim();
-
     const referenceText =
-        receiptNumber &&
-        ![
-            'N/A',
-            '-'
-        ].includes(
-            receiptNumber
-                .toUpperCase()
-        )
-            ? `Receipt #${receiptNumber}`
-            : 'Scanned receipt';
-
-    const imageMarkup =
-        receipt.receiptImage
-            ? `
-                <img
-                    src="${escapeHtml(
-                        receipt.receiptImage
-                    )}"
-                    alt="${escapeHtml(
-                        receipt.store
-                    )} receipt">
-            `
-            : `
-                <i class="bi bi-receipt-cutoff"></i>
-            `;
+        receipt.receiptNumber
+            ? `Receipt #${receipt.receiptNumber}`
+            : 'Prototype receipt';
 
     return `
         <button
@@ -2207,9 +2178,70 @@ function receiptBundleCard(receipt) {
             )}"
             aria-label="Open ${escapeHtml(
                 receipt.store
-            )} receipt">
-            <span class="receipt-bundle-thumbnail">
-                ${imageMarkup}
+            )} receipt details"
+            style="
+                background:${escapeHtml(
+                    receipt.panelColor
+                )};
+                border:
+                    1px solid
+                    ${escapeHtml(
+                        receipt.accentColor
+                    )}22;
+                box-shadow:
+                    0 12px 28px
+                    ${escapeHtml(
+                        receipt.accentColor
+                    )}18;
+            ">
+
+            <span
+                class="receipt-bundle-thumbnail"
+                style="
+                    background:
+                        rgba(
+                            255,
+                            255,
+                            255,
+                            .72
+                        );
+                    color:${escapeHtml(
+                        receipt.accentColor
+                    )};
+                    overflow:hidden;
+                ">
+
+                <img
+                    src="${escapeHtml(
+                        receipt.logoFile
+                    )}"
+                    alt="${escapeHtml(
+                        receipt.store
+                    )} logo"
+                    style="
+                        display:block;
+                        width:82%;
+                        height:82%;
+                        object-fit:contain;
+                    "
+                    onerror="
+                        this.style.display='none';
+                        this.nextElementSibling.style.display='grid';
+                    ">
+
+                <i
+                    class="bi bi-shop"
+                    style="
+                        display:none;
+                        width:100%;
+                        height:100%;
+                        place-items:center;
+                        color:${escapeHtml(
+                            receipt.accentColor
+                        )};
+                        font-size:20px;
+                    ">
+                </i>
             </span>
 
             <span class="receipt-bundle-main">
@@ -2229,7 +2261,7 @@ function receiptBundleCard(receipt) {
                     <i class="bi bi-calendar3"></i>
 
                     ${escapeHtml(
-                        formatHistoryDate(
+                        formatReceiptDate(
                             receipt.date
                         )
                     )}
@@ -2245,18 +2277,32 @@ function receiptBundleCard(receipt) {
             </span>
 
             <span class="receipt-bundle-value">
-                <strong>
+                <strong
+                    style="
+                        color:var(--neutral-dark);
+                    ">
                     ${peso(
                         receipt.totalAmount
                     )}
                 </strong>
 
                 <small>
-                    View receipt
+                    View details
                 </small>
             </span>
 
-            <i class="bi bi-chevron-right receipt-bundle-chevron"></i>
+            <i
+                class="
+                    bi
+                    bi-chevron-right
+                    receipt-bundle-chevron
+                "
+                style="
+                    color:${escapeHtml(
+                        receipt.accentColor
+                    )};
+                ">
+            </i>
         </button>
     `;
 }
@@ -2348,68 +2394,1035 @@ function transactionCard(expense) {
     `;
 }
 
-function handleReceiptPreviewClick(event) {
-    const bundleButton =
-        event.target.closest(
-            '[data-receipt-bundle-id]'
+function getPrototypeReceiptImageCandidates(
+    receipt
+) {
+    const baseName =
+        String(
+            receipt?.imageBaseName ||
+            receipt?.id ||
+            ''
         );
 
-    if (bundleButton) {
-        event.preventDefault();
-        event.stopPropagation();
+    if (!baseName) {
+        return [];
+    }
 
-        const receipt =
-            getVisibleReceiptBundles()
-                .find(bundle => {
-                    return (
-                        String(bundle.id) ===
-                        String(
-                            bundleButton
-                                .dataset
-                                .receiptBundleId
-                        )
-                    );
-                });
+    return [
+        `images/receipts/${baseName}.jpg`,
+        `images/receipts/${baseName}.jpeg`,
+        `images/receipts/${baseName}.png`,
+        `images/receipts/${baseName}.webp`,
+        `images/receipts/${baseName}`
+    ];
+}
 
-        openReceiptImageModal(
-            receipt?.receiptImage,
-            receipt?.store ||
-                'Receipt Image',
-            receipt?.store ||
-                'Receipt'
+function openPrototypeReceiptImage(receipt) {
+    const candidates = getPrototypeReceiptImageCandidates(receipt);
+    let index = 0;
+    const tryNext = () => {
+        if (index >= candidates.length) {
+            showToast(`Add ${receipt.imageBaseName}.jpg to the images folder.`);
+            return;
+        }
+        const source = candidates[index++];
+        const tester = new Image();
+        tester.onload = () => openReceiptImageModal(source, `${receipt.store} Receipt`, receipt.store);
+        tester.onerror = tryNext;
+        tester.src = source;
+    };
+    tryNext();
+}
+
+function renderPrototypeReceiptDetails(
+    receipt
+) {
+    if (!receipt) {
+        showToast(
+            'Receipt details are unavailable.'
         );
 
         return;
     }
 
-    const button =
-        event.target.closest(
-            '[data-receipt-preview-id]'
+    activePrototypeReceiptId =
+        receipt.id;
+
+    const subtotal =
+        getPrototypeReceiptSubtotal(
+            receipt
         );
 
-    if (!button) {
+    const total =
+        getPrototypeReceiptTotal(
+            receipt
+        );
+
+    const adjustments =
+        Array.isArray(
+            receipt.adjustments
+        )
+            ? receipt.adjustments
+            : [];
+
+    setText(
+        'categoryDetailsTitle',
+        `${receipt.store} Receipt`
+    );
+
+    const itemsMarkup =
+        receipt.items
+            .map(
+                (
+                    item,
+                    itemIndex,
+                    allItems
+                ) => {
+                    const category =
+                        normalizeScannedExpenseCategory(
+                            item.category
+                        );
+
+                    const meta =
+                        EXPENSE_CATEGORIES[
+                            category
+                        ] ||
+                        EXPENSE_CATEGORIES.Other;
+
+                    return `
+                        <div
+                            style="
+                                padding:14px 0;
+                                border-bottom:
+                                    ${
+                                        itemIndex <
+                                        allItems.length - 1
+                                            ? '1px dashed rgba(92,83,78,.20)'
+                                            : '0'
+                                    };
+                            ">
+                            <div
+                                style="
+                                    display:grid;
+                                    grid-template-columns:
+                                        38px minmax(0,1fr) auto;
+                                    align-items:start;
+                                    gap:10px;
+                                ">
+                                <strong
+                                    style="
+                                        color:var(--neutral);
+                                        font-size:12px;
+                                        font-weight:800;
+                                    ">
+                                    ${Number(
+                                        item.quantity ||
+                                        1
+                                    )}x
+                                </strong>
+
+                                <div
+                                    style="
+                                        min-width:0;
+                                    ">
+                                    <strong
+                                        style="
+                                            display:block;
+                                            color:var(--neutral-dark);
+                                            font-size:13px;
+                                            line-height:1.35;
+                                            font-weight:800;
+                                        ">
+                                        ${escapeHtml(
+                                            item.title
+                                        )}
+                                    </strong>
+
+                                    <span
+                                        style="
+                                            display:inline-flex;
+                                            align-items:center;
+                                            gap:6px;
+                                            margin-top:7px;
+                                            padding:5px 9px;
+                                            border-radius:999px;
+                                            background:${escapeHtml(
+                                                meta.soft
+                                            )};
+                                            color:#251F1D;
+                                            font-size:9px;
+                                            line-height:1;
+                                            font-weight:800;
+                                        ">
+                                        <i class="bi ${escapeHtml(
+                                            meta.icon
+                                        )}"></i>
+
+                                        ${escapeHtml(
+                                            category
+                                        )}
+                                    </span>
+                                </div>
+
+                                <strong
+                                    style="
+                                        color:var(--neutral-dark);
+                                        font-size:13px;
+                                        font-weight:800;
+                                        white-space:nowrap;
+                                    ">
+                                    ${peso(
+                                        item.amount
+                                    )}
+                                </strong>
+                            </div>
+                        </div>
+                    `;
+                }
+            )
+            .join('');
+
+    const adjustmentsMarkup =
+        adjustments
+            .map(
+                adjustment => {
+                    const amount =
+                        Number(
+                            adjustment.amount ||
+                            0
+                        );
+
+                    const displayAmount =
+                        amount < 0
+                            ? `-${peso(
+                                Math.abs(
+                                    amount
+                                )
+                            )}`
+                            : peso(
+                                amount
+                            );
+
+                    return `
+                        <div
+                            style="
+                                display:flex;
+                                justify-content:space-between;
+                                align-items:center;
+                                gap:16px;
+                                padding:7px 0;
+                                color:${
+                                    amount < 0
+                                        ? '#C96C4B'
+                                        : 'var(--neutral)'
+                                };
+                                font-size:12px;
+                                font-weight:800;
+                            ">
+                            <span>
+                                ${escapeHtml(
+                                    adjustment.label
+                                )}
+                            </span>
+
+                            <strong>
+                                ${displayAmount}
+                            </strong>
+                        </div>
+                    `;
+                }
+            )
+            .join('');
+
+    const content =
+        document.getElementById(
+            'categoryDetailsContent'
+        );
+
+    if (!content) {
+        return;
+    }
+
+    content.innerHTML = `
+        <section
+            style="
+                padding:18px;
+                border-radius:28px;
+                background:${escapeHtml(
+                    receipt.panelColor
+                )};
+                box-shadow:
+                    0 14px 34px
+                    ${escapeHtml(
+                        receipt.accentColor
+                    )}1F;
+            ">
+            <article
+                style="
+                    position:relative;
+                    overflow:hidden;
+                    padding:26px 20px 24px;
+                    border-radius:22px;
+                    background:
+                        linear-gradient(
+                            rgba(
+                                255,
+                                255,
+                                255,
+                                .30
+                            ),
+                            rgba(
+                                255,
+                                255,
+                                255,
+                                .30
+                            )
+                        ),
+                        ${escapeHtml(
+                            receipt.paperColor
+                        )};
+                    border:
+                        1px solid
+                        rgba(
+                            255,
+                            255,
+                            255,
+                            .74
+                        );
+                    box-shadow:
+                        0 12px 28px
+                        ${escapeHtml(
+                            receipt.accentColor
+                        )}18;
+                ">
+                <header
+                    style="
+                        text-align:center;
+                    ">
+                    <div
+                        style="
+                            min-height:64px;
+                            display:grid;
+                            place-items:center;
+                        ">
+                        <img
+                            src="${escapeHtml(
+                                receipt.logoFile
+                            )}"
+                            alt="${escapeHtml(
+                                receipt.store
+                            )} logo"
+                            style="
+                                display:block;
+                                max-width:150px;
+                                max-height:64px;
+                                width:auto;
+                                height:auto;
+                                object-fit:contain;
+                            "
+                            onerror="
+                                this.style.display='none';
+                                this.nextElementSibling.style.display='grid';
+                            ">
+
+                        <span
+                            style="
+                                display:none;
+                                width:58px;
+                                height:58px;
+                                margin:0 auto;
+                                place-items:center;
+                                border-radius:18px;
+                                background:rgba(255,255,255,.78);
+                                color:${escapeHtml(
+                                    receipt.accentColor
+                                )};
+                                font-size:24px;
+                            ">
+                            <i class="bi bi-shop"></i>
+                        </span>
+                    </div>
+
+                    <h3
+                        style="
+                            margin:12px 0 0;
+                            color:var(--neutral-dark);
+                            font-size:18px;
+                            font-weight:800;
+                        ">
+                        ${escapeHtml(
+                            receipt.store
+                        )}
+                    </h3>
+
+                    <p
+                        style="
+                            margin:6px 0 0;
+                            color:var(--muted);
+                            font-size:10px;
+                            font-weight:700;
+                        ">
+                        RECEIPT DETAILS
+                    </p>
+                </header>
+
+                <div
+                    style="
+                        margin-top:18px;
+                        padding:13px 0;
+                        border-top:
+                            1px dashed
+                            rgba(92,83,78,.22);
+                        border-bottom:
+                            1px dashed
+                            rgba(92,83,78,.22);
+                        display:grid;
+                        gap:8px;
+                    ">
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:space-between;
+                            gap:14px;
+                            color:var(--neutral);
+                            font-size:11px;
+                            font-weight:700;
+                        ">
+                        <span>Receipt No.</span>
+                        <strong
+                            style="
+                                color:var(--neutral-dark);
+                            ">
+                            ${escapeHtml(
+                                receipt.receiptNumber
+                            )}
+                        </strong>
+                    </div>
+
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:space-between;
+                            gap:14px;
+                            color:var(--neutral);
+                            font-size:11px;
+                            font-weight:700;
+                        ">
+                        <span>Date</span>
+                        <strong
+                            style="
+                                color:var(--neutral-dark);
+                            ">
+                            ${escapeHtml(
+                                formatReceiptDate(
+                                    receipt.date
+                                )
+                            )}
+                        </strong>
+                    </div>
+
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:space-between;
+                            gap:14px;
+                            color:var(--neutral);
+                            font-size:11px;
+                            font-weight:700;
+                        ">
+                        <span>Paid by</span>
+                        <strong
+                            style="
+                                color:var(--neutral-dark);
+                            ">
+                            ${escapeHtml(
+                                receipt.member
+                            )}
+                        </strong>
+                    </div>
+                </div>
+
+                <div
+                    style="
+                        margin-top:18px;
+                        display:grid;
+                        grid-template-columns:
+                            38px minmax(0,1fr) auto;
+                        gap:10px;
+                        color:var(--muted);
+                        font-size:9px;
+                        font-weight:800;
+                        letter-spacing:.5px;
+                    ">
+                    <span>QTY</span>
+                    <span>ITEM / CATEGORY</span>
+                    <span>PRICE</span>
+                </div>
+
+                <div>
+                    ${itemsMarkup}
+                </div>
+
+                <div
+                    style="
+                        margin-top:15px;
+                        padding-top:14px;
+                        border-top:
+                            1px dashed
+                            rgba(92,83,78,.22);
+                    ">
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:space-between;
+                            align-items:center;
+                            gap:16px;
+                            padding:7px 0;
+                            color:var(--neutral);
+                            font-size:12px;
+                            font-weight:800;
+                        ">
+                        <span>SUBTOTAL</span>
+                        <strong>
+                            ${peso(
+                                subtotal
+                            )}
+                        </strong>
+                    </div>
+
+                    ${adjustmentsMarkup}
+
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:space-between;
+                            align-items:center;
+                            gap:16px;
+                            margin-top:8px;
+                            padding-top:14px;
+                            border-top:
+                                1px dashed
+                                rgba(92,83,78,.22);
+                            color:var(--neutral-dark);
+                            font-size:17px;
+                            font-weight:900;
+                        ">
+                        <span>TOTAL</span>
+
+                        <strong
+                            style="
+                                color:var(--neutral-dark);
+                                font-size:22px;
+                            ">
+                            ${peso(
+                                total
+                            )}
+                        </strong>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <button
+            id="openPrototypeReceiptImage"
+            type="button"
+            style="
+                width:100%;
+                min-height:54px;
+                margin-top:16px;
+                border:0;
+                border-radius:999px;
+                background:${escapeHtml(
+                    getLighterReceiptColor(
+                        receipt.accentColor,
+                        0.20
+                    )
+                )};
+                color:#FFFFFF;
+                font-family:inherit;
+                font-size:13px;
+                font-weight:800;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                gap:9px;
+            ">
+            <i class="bi bi-image"></i>
+            View Receipt Image
+        </button>
+
+        <div
+            class="receipt-reference-note"
+            style="
+                margin-top:14px;
+            ">
+            <i class="bi bi-info-circle"></i>
+
+            <span>
+                This receipt is shown as one grouped record.
+                Its products are counted individually under
+                their official expense categories.
+            </span>
+        </div>
+    `;
+
+    document
+        .getElementById(
+            'openPrototypeReceiptImage'
+        )
+        ?.addEventListener(
+            'click',
+            () => {
+                openPrototypeReceiptImage(
+                    receipt
+                );
+            }
+        );
+
+    openPanel(
+        'categoryDetailsPanel'
+    );
+}
+
+function openPrototypeReceiptDetails(receiptId) {
+    renderPrototypeReceiptDetails(findPrototypeReceipt(receiptId));
+}
+
+function handlePrototypeReceiptBack(
+    event
+) {
+    if (!activePrototypeReceiptId) {
+        return;
+    }
+
+    const backButton =
+        event.target.closest(
+            '#categoryDetailsPanel [data-close-panel]'
+        );
+
+    if (!backButton) {
         return;
     }
 
     event.preventDefault();
     event.stopPropagation();
 
-    const expense =
-        state.expenses.find(
-            item =>
-                String(item.id) ===
-                String(
-                    button.dataset
-                        .receiptPreviewId
-                )
+    activePrototypeReceiptId =
+        '';
+
+    /*
+        Reuse the same panel and return directly to the
+        Saved Receipts view.
+    */
+    renderReceiptCategoryDetails();
+
+    const panel =
+        document.getElementById(
+            'categoryDetailsPanel'
         );
 
-    openReceiptImageModal(
-        expense?.receiptImage,
-        expense?.receiptStore ||
-            'Receipt Image',
-        expense?.title ||
-            'Receipt'
+    if (panel) {
+        panel.hidden =
+            false;
+
+        panel.scrollTop =
+            0;
+    }
+}
+
+function handleReceiptPreviewClick(event) {
+    const bundleButton = event.target.closest('[data-receipt-bundle-id]');
+    if (bundleButton) {
+        event.preventDefault();
+        event.stopPropagation();
+        openPrototypeReceiptDetails(bundleButton.dataset.receiptBundleId);
+        return;
+    }
+
+    const button = event.target.closest('[data-receipt-preview-id]');
+    if (!button) return;
+    event.preventDefault();
+    event.stopPropagation();
+
+    const expense = state.expenses.find(item => String(item.id) === String(button.dataset.receiptPreviewId));
+    if (expense?.receiptId) {
+        openPrototypeReceiptDetails(expense.receiptId);
+        return;
+    }
+    openReceiptImageModal(expense?.receiptImage, expense?.receiptStore || 'Receipt Image', expense?.title || 'Receipt');
+}
+
+const receiptImageZoomState = {
+    scale: 1,
+    translateX: 0,
+    translateY: 0,
+    pointers: new Map(),
+    startDistance: 0,
+    startScale: 1,
+    dragStartX: 0,
+    dragStartY: 0,
+    startTranslateX: 0,
+    startTranslateY: 0
+};
+
+function applyReceiptImageZoom(
+    image
+) {
+    if (!image) {
+        return;
+    }
+
+    image.style.transform =
+        `translate(` +
+        `${receiptImageZoomState.translateX}px, ` +
+        `${receiptImageZoomState.translateY}px` +
+        `) scale(${receiptImageZoomState.scale})`;
+
+    image.style.cursor =
+        receiptImageZoomState.scale > 1
+            ? 'grab'
+            : 'zoom-in';
+}
+
+function resetReceiptImageZoom() {
+    receiptImageZoomState.scale =
+        1;
+
+    receiptImageZoomState.translateX =
+        0;
+
+    receiptImageZoomState.translateY =
+        0;
+
+    receiptImageZoomState.pointers
+        .clear();
+
+    const image =
+        document.getElementById(
+            'expenseReceiptModalImage'
+        );
+
+    applyReceiptImageZoom(
+        image
+    );
+}
+
+function bindReceiptImageZoom() {
+    const image =
+        document.getElementById(
+            'expenseReceiptModalImage'
+        );
+
+    const wrap =
+        image?.closest(
+            '.expense-receipt-image-wrap'
+        );
+
+    if (
+        !image ||
+        !wrap
+    ) {
+        return;
+    }
+
+    wrap.style.overflow =
+        'hidden';
+
+    wrap.style.touchAction =
+        'none';
+
+    image.style.transformOrigin =
+        'center center';
+
+    image.style.transition =
+        'transform 0.16s ease';
+
+    image.style.userSelect =
+        'none';
+
+    image.style.webkitUserDrag =
+        'none';
+
+    if (
+        wrap.dataset
+            .receiptZoomBound ===
+        'true'
+    ) {
+        resetReceiptImageZoom();
+
+        return;
+    }
+
+    wrap.dataset
+        .receiptZoomBound =
+        'true';
+
+    const distanceBetweenPointers =
+        () => {
+            const points = [
+                ...receiptImageZoomState
+                    .pointers
+                    .values()
+            ];
+
+            if (
+                points.length < 2
+            ) {
+                return 0;
+            }
+
+            return Math.hypot(
+                points[1].x -
+                    points[0].x,
+                points[1].y -
+                    points[0].y
+            );
+        };
+
+    wrap.addEventListener(
+        'dblclick',
+        event => {
+            event.preventDefault();
+
+            if (
+                receiptImageZoomState.scale >
+                1
+            ) {
+                resetReceiptImageZoom();
+            } else {
+                receiptImageZoomState.scale =
+                    2.4;
+
+                applyReceiptImageZoom(
+                    image
+                );
+            }
+        }
+    );
+
+    wrap.addEventListener(
+        'wheel',
+        event => {
+            event.preventDefault();
+
+            const nextScale =
+                receiptImageZoomState.scale +
+                (
+                    event.deltaY < 0
+                        ? 0.20
+                        : -0.20
+                );
+
+            receiptImageZoomState.scale =
+                Math.min(
+                    Math.max(
+                        nextScale,
+                        1
+                    ),
+                    4
+                );
+
+            if (
+                receiptImageZoomState.scale ===
+                1
+            ) {
+                receiptImageZoomState.translateX =
+                    0;
+
+                receiptImageZoomState.translateY =
+                    0;
+            }
+
+            applyReceiptImageZoom(
+                image
+            );
+        },
+        {
+            passive: false
+        }
+    );
+
+    wrap.addEventListener(
+        'pointerdown',
+        event => {
+            wrap.setPointerCapture?.(
+                event.pointerId
+            );
+
+            receiptImageZoomState
+                .pointers
+                .set(
+                    event.pointerId,
+                    {
+                        x: event.clientX,
+                        y: event.clientY
+                    }
+                );
+
+            image.style.transition =
+                'none';
+
+            if (
+                receiptImageZoomState
+                    .pointers
+                    .size ===
+                2
+            ) {
+                receiptImageZoomState
+                    .startDistance =
+                    distanceBetweenPointers();
+
+                receiptImageZoomState
+                    .startScale =
+                    receiptImageZoomState
+                        .scale;
+            } else {
+                receiptImageZoomState
+                    .dragStartX =
+                    event.clientX;
+
+                receiptImageZoomState
+                    .dragStartY =
+                    event.clientY;
+
+                receiptImageZoomState
+                    .startTranslateX =
+                    receiptImageZoomState
+                        .translateX;
+
+                receiptImageZoomState
+                    .startTranslateY =
+                    receiptImageZoomState
+                        .translateY;
+            }
+        }
+    );
+
+    wrap.addEventListener(
+        'pointermove',
+        event => {
+            if (
+                !receiptImageZoomState
+                    .pointers
+                    .has(
+                        event.pointerId
+                    )
+            ) {
+                return;
+            }
+
+            receiptImageZoomState
+                .pointers
+                .set(
+                    event.pointerId,
+                    {
+                        x: event.clientX,
+                        y: event.clientY
+                    }
+                );
+
+            if (
+                receiptImageZoomState
+                    .pointers
+                    .size >=
+                2
+            ) {
+                const currentDistance =
+                    distanceBetweenPointers();
+
+                if (
+                    receiptImageZoomState
+                        .startDistance >
+                    0
+                ) {
+                    receiptImageZoomState
+                        .scale =
+                        Math.min(
+                            Math.max(
+                                receiptImageZoomState
+                                    .startScale *
+                                (
+                                    currentDistance /
+                                    receiptImageZoomState
+                                        .startDistance
+                                ),
+                                1
+                            ),
+                            4
+                        );
+                }
+            } else if (
+                receiptImageZoomState.scale >
+                1
+            ) {
+                receiptImageZoomState
+                    .translateX =
+                    receiptImageZoomState
+                        .startTranslateX +
+                    (
+                        event.clientX -
+                        receiptImageZoomState
+                            .dragStartX
+                    );
+
+                receiptImageZoomState
+                    .translateY =
+                    receiptImageZoomState
+                        .startTranslateY +
+                    (
+                        event.clientY -
+                        receiptImageZoomState
+                            .dragStartY
+                    );
+            }
+
+            applyReceiptImageZoom(
+                image
+            );
+        }
+    );
+
+    const releasePointer =
+        event => {
+            receiptImageZoomState
+                .pointers
+                .delete(
+                    event.pointerId
+                );
+
+            image.style.transition =
+                'transform 0.16s ease';
+
+            if (
+                receiptImageZoomState.scale <=
+                1
+            ) {
+                resetReceiptImageZoom();
+            }
+        };
+
+    wrap.addEventListener(
+        'pointerup',
+        releasePointer
+    );
+
+    wrap.addEventListener(
+        'pointercancel',
+        releasePointer
+    );
+
+    wrap.addEventListener(
+        'pointerleave',
+        event => {
+            if (
+                event.pointerType ===
+                'mouse'
+            ) {
+                releasePointer(
+                    event
+                );
+            }
+        }
     );
 }
 
@@ -2455,8 +3468,12 @@ function openReceiptImageModal(
     }
 
     if (modal) {
-        modal.hidden = false;
+        modal.hidden =
+            false;
     }
+
+    resetReceiptImageZoom();
+    bindReceiptImageZoom();
 }
 
 function closeExpenseReceiptModal() {
@@ -2477,6 +3494,8 @@ function closeExpenseReceiptModal() {
     if (image) {
         image.removeAttribute("src");
     }
+
+    resetReceiptImageZoom();
 }
 
 function openPanel(id) {
