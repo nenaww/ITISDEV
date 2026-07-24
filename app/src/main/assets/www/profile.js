@@ -1,999 +1,573 @@
-const KABALIKAT_PROFILE_KEY = "kabalikat_profile_v1";
+const PROFILE_KEY = "kabalikat_profile_v1";
+const VAULT_TICKET_KEY = "kabalikat_vault_unlock_ticket_v3";
+const VAULT_TICKET_DURATION = 2 * 60 * 1000;
 
-const defaultProfile = {
-    name: "Elena Dela Cruz",
-    email: "elena@email.com",
-    phone: "0917 123 4567",
-    role: "Head",
-    familyCode: "KABA-4821",
-    profileImage: ""
-};
-
-const profileRoutes = {
+const routes = {
     home: "home.html",
     expenses: "expenses.html",
     scanner: "scanner.html",
     bills: "bills.html",
-    secureVault: "secure-vault.html",
+    vault: "secure-vault.html",
     login: "login.html"
 };
 
-let currentProfile = {
-    ...defaultProfile
-};
+let profile = null;
+let editing = false;
+let toastTimer = null;
 
-let profileToastTimer = null;
-let isProfileEditing = false;
+const el = {};
 
-const profileElements = {};
+window.addEventListener("DOMContentLoaded", async () => {
+    collectElements();
 
-document.addEventListener("DOMContentLoaded", () => {
-    collectProfileElements();
+    try {
+        profile = await KabalikatAuth.syncCurrentProfile();
 
-    currentProfile = getSavedProfile();
+        if (!profile) {
+            window.location.replace(routes.login);
+            return;
+        }
+    } catch (error) {
+        console.error(error);
+        window.location.replace(routes.login);
+        return;
+    }
 
     renderProfile();
-    bindProfileActions();
-    resetPasswordSheet();
+    bindEvents();
+    resetPasswordForm();
+    resetVaultUnlock();
 });
 
-/* =========================================================
-   ELEMENTS
-   ========================================================= */
+function collectElements() {
+    [
+        "profileBackButton",
+        "profilePictureButton",
+        "profilePictureInput",
+        "profileImage",
+        "profileInitials",
+        "profileDisplayName",
+        "profileRoleChip",
+        "accountDetailsButton",
+        "secureVaultButton",
+        "changePasswordButton",
+        "profileLogoutRowButton",
+        "deleteAccountButton",
+        "profileSheetBackdrop",
+        "profileAccountSheet",
+        "closeAccountSheet",
+        "profileNameInput",
+        "profileEmailInput",
+        "profilePhoneInput",
+        "profileEditSaveButton",
+        "profileEditSaveIcon",
+        "profileEditSaveText",
+        "vaultUnlockBackdrop",
+        "vaultUnlockSheet",
+        "closeVaultUnlockSheet",
+        "vaultPasswordInput",
+        "vaultPasswordInputBox",
+        "vaultPasswordError",
+        "unlockVaultButton",
+        "changePasswordBackdrop",
+        "changePasswordSheet",
+        "closeChangePasswordSheet",
+        "changePasswordFormState",
+        "changePasswordSuccessState",
+        "closePasswordSuccess",
+        "passwordSuccessDoneButton",
+        "currentPasswordInput",
+        "newPasswordInput",
+        "confirmPasswordInput",
+        "passwordStrengthBars",
+        "passwordStrengthText",
+        "passwordMatchMessage",
+        "passwordRequirementLength",
+        "passwordRequirementUppercase",
+        "passwordRequirementNumber",
+        "passwordRequirementSpecial",
+        "updatePasswordButton",
+        "profileLogoutBackdrop",
+        "profileLogoutDialog",
+        "cancelLogoutButton",
+        "confirmLogoutButton",
+        "profileDeleteBackdrop",
+        "profileDeleteDialog",
+        "cancelDeleteButton",
+        "confirmDeleteButton",
+        "profileNavHome",
+        "profileNavExpenses",
+        "profileNavScan",
+        "profileNavBills",
+        "profileNavSavings",
+        "profileToast"
+    ].forEach(id => {
+        el[id] = document.getElementById(id);
+    });
 
-function collectProfileElements() {
-    profileElements.backButton =
-        document.getElementById("profileBackButton");
-
-    profileElements.pictureButton =
-        document.getElementById("profilePictureButton");
-
-    profileElements.pictureInput =
-        document.getElementById("profilePictureInput");
-
-    profileElements.profileImage =
-        document.getElementById("profileImage");
-
-    profileElements.profileInitials =
-        document.getElementById("profileInitials");
-
-    profileElements.displayName =
-        document.getElementById("profileDisplayName");
-
-    profileElements.roleChip =
-        document.getElementById("profileRoleChip");
-
-    profileElements.accountDetailsButton =
-        document.getElementById("accountDetailsButton");
-
-    profileElements.secureVaultButton =
-        document.getElementById("secureVaultButton");
-
-    profileElements.changePasswordButton =
-        document.getElementById("changePasswordButton");
-
-    profileElements.logoutRowButton =
-        document.getElementById("profileLogoutRowButton");
-
-    profileElements.deleteAccountButton =
-        document.getElementById("deleteAccountButton");
-
-    /* Account Details */
-
-    profileElements.sheetBackdrop =
-        document.getElementById("profileSheetBackdrop");
-
-    profileElements.accountSheet =
-        document.getElementById("profileAccountSheet");
-
-    profileElements.closeAccountSheet =
-        document.getElementById("closeAccountSheet");
-
-    profileElements.nameInput =
-        document.getElementById("profileNameInput");
-
-    profileElements.emailInput =
-        document.getElementById("profileEmailInput");
-
-    profileElements.phoneInput =
-        document.getElementById("profilePhoneInput");
-
-    profileElements.editSaveButton =
-        document.getElementById("profileEditSaveButton");
-
-    profileElements.editSaveIcon =
-        document.getElementById("profileEditSaveIcon");
-
-    profileElements.editSaveText =
-        document.getElementById("profileEditSaveText");
-
-    /* Change Password */
-
-    profileElements.changePasswordBackdrop =
-        document.getElementById("changePasswordBackdrop");
-
-    profileElements.changePasswordSheet =
-        document.getElementById("changePasswordSheet");
-
-    profileElements.closeChangePasswordSheet =
-        document.getElementById("closeChangePasswordSheet");
-
-    profileElements.changePasswordFormState =
-        document.getElementById("changePasswordFormState");
-
-    profileElements.changePasswordSuccessState =
-        document.getElementById("changePasswordSuccessState");
-
-    profileElements.closePasswordSuccess =
-        document.getElementById("closePasswordSuccess");
-
-    profileElements.passwordSuccessDoneButton =
-        document.getElementById("passwordSuccessDoneButton");
-
-    profileElements.currentPasswordInput =
-        document.getElementById("currentPasswordInput");
-
-    profileElements.newPasswordInput =
-        document.getElementById("newPasswordInput");
-
-    profileElements.confirmPasswordInput =
-        document.getElementById("confirmPasswordInput");
-
-    profileElements.passwordStrengthBars =
-        document.getElementById("passwordStrengthBars");
-
-    profileElements.passwordStrengthText =
-        document.getElementById("passwordStrengthText");
-
-    profileElements.passwordMatchMessage =
-        document.getElementById("passwordMatchMessage");
-
-    profileElements.passwordRequirementLength =
-        document.getElementById("passwordRequirementLength");
-
-    profileElements.passwordRequirementUppercase =
-        document.getElementById("passwordRequirementUppercase");
-
-    profileElements.passwordRequirementNumber =
-        document.getElementById("passwordRequirementNumber");
-
-    profileElements.passwordRequirementSpecial =
-        document.getElementById("passwordRequirementSpecial");
-
-    profileElements.updatePasswordButton =
-        document.getElementById("updatePasswordButton");
-
-    profileElements.passwordToggleButtons =
-        document.querySelectorAll(".profile-password-toggle");
-
-    /* Logout */
-
-    profileElements.logoutBackdrop =
-        document.getElementById("profileLogoutBackdrop");
-
-    profileElements.logoutDialog =
-        document.getElementById("profileLogoutDialog");
-
-    profileElements.cancelLogoutButton =
-        document.getElementById("cancelLogoutButton");
-
-    profileElements.confirmLogoutButton =
-        document.getElementById("confirmLogoutButton");
-
-    /* Delete */
-
-    profileElements.deleteBackdrop =
-        document.getElementById("profileDeleteBackdrop");
-
-    profileElements.deleteDialog =
-        document.getElementById("profileDeleteDialog");
-
-    profileElements.cancelDeleteButton =
-        document.getElementById("cancelDeleteButton");
-
-    profileElements.confirmDeleteButton =
-        document.getElementById("confirmDeleteButton");
-
-    /* Navigation */
-
-    profileElements.navHome =
-        document.getElementById("profileNavHome");
-
-    profileElements.navExpenses =
-        document.getElementById("profileNavExpenses");
-
-    profileElements.navScan =
-        document.getElementById("profileNavScan");
-
-    profileElements.navBills =
-        document.getElementById("profileNavBills");
-
-    profileElements.navSavings =
-        document.getElementById("profileNavSavings");
-
-    profileElements.toast =
-        document.getElementById("profileToast");
+    el.passwordToggleButtons = document.querySelectorAll(
+        ".profile-password-toggle"
+    );
 }
 
-/* =========================================================
-   STORAGE
-   ========================================================= */
-
-function getSavedProfile() {
-    try {
-        const savedProfile =
-            localStorage.getItem(KABALIKAT_PROFILE_KEY);
-
-        if (!savedProfile) {
-            localStorage.setItem(
-                KABALIKAT_PROFILE_KEY,
-                JSON.stringify(defaultProfile)
-            );
-
-            return {
-                ...defaultProfile
-            };
+function bindEvents() {
+    el.profileBackButton.addEventListener("click", () => {
+        if (history.length > 1) {
+            history.back();
+            return;
         }
 
-        return {
-            ...defaultProfile,
-            ...JSON.parse(savedProfile)
-        };
-    } catch (error) {
-        console.error("Unable to load profile:", error);
+        go(routes.home);
+    });
 
-        return {
-            ...defaultProfile
-        };
-    }
-}
+    el.profilePictureButton.addEventListener("click", () => {
+        el.profilePictureInput.click();
+    });
 
-function saveCurrentProfile() {
-    try {
-        localStorage.setItem(
-            KABALIKAT_PROFILE_KEY,
-            JSON.stringify(currentProfile)
+    el.profilePictureInput.addEventListener("change", () => {
+        updatePicture(el.profilePictureInput.files?.[0]);
+    });
+
+    el.accountDetailsButton.addEventListener("click", openAccountSheet);
+    el.secureVaultButton.addEventListener("click", openVaultUnlock);
+    el.changePasswordButton.addEventListener("click", openPasswordSheet);
+
+    el.profileLogoutRowButton.addEventListener("click", () => {
+        openDialog(
+            el.profileLogoutBackdrop,
+            el.profileLogoutDialog
         );
+    });
 
-        return true;
-    } catch (error) {
-        console.error("Unable to save profile:", error);
-
-        showProfileToast(
-            "The profile could not be saved on this device."
+    el.deleteAccountButton.addEventListener("click", () => {
+        openDialog(
+            el.profileDeleteBackdrop,
+            el.profileDeleteDialog
         );
+    });
 
-        return false;
-    }
+    el.closeAccountSheet.addEventListener("click", closeAccountSheet);
+    el.profileSheetBackdrop.addEventListener("click", closeAccountSheet);
+
+    el.profileEditSaveButton.addEventListener("click", () => {
+        if (editing) {
+            saveAccountDetails();
+            return;
+        }
+
+        setEditMode(true);
+    });
+
+    el.closeVaultUnlockSheet.addEventListener("click", closeVaultUnlock);
+    el.vaultUnlockBackdrop.addEventListener("click", closeVaultUnlock);
+    el.unlockVaultButton.addEventListener("click", verifyVaultAccess);
+    el.vaultPasswordInput.addEventListener("input", clearVaultError);
+
+    el.vaultPasswordInput.addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+            verifyVaultAccess();
+        }
+    });
+
+    el.closeChangePasswordSheet.addEventListener(
+        "click",
+        closePasswordSheet
+    );
+
+    el.closePasswordSuccess.addEventListener(
+        "click",
+        closePasswordSheet
+    );
+
+    el.passwordSuccessDoneButton.addEventListener(
+        "click",
+        closePasswordSheet
+    );
+
+    el.changePasswordBackdrop.addEventListener(
+        "click",
+        closePasswordSheet
+    );
+
+    [
+        el.currentPasswordInput,
+        el.newPasswordInput,
+        el.confirmPasswordInput
+    ].forEach(input => {
+        input.addEventListener("input", validatePasswordForm);
+    });
+
+    el.updatePasswordButton.addEventListener("click", updatePassword);
+
+    el.passwordToggleButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            togglePassword(button);
+        });
+    });
+
+    el.cancelLogoutButton.addEventListener("click", () => {
+        closeDialog(
+            el.profileLogoutBackdrop,
+            el.profileLogoutDialog
+        );
+    });
+
+    el.profileLogoutBackdrop.addEventListener("click", () => {
+        closeDialog(
+            el.profileLogoutBackdrop,
+            el.profileLogoutDialog
+        );
+    });
+
+    el.confirmLogoutButton.addEventListener("click", logout);
+
+    el.cancelDeleteButton.addEventListener("click", () => {
+        closeDialog(
+            el.profileDeleteBackdrop,
+            el.profileDeleteDialog
+        );
+    });
+
+    el.profileDeleteBackdrop.addEventListener("click", () => {
+        closeDialog(
+            el.profileDeleteBackdrop,
+            el.profileDeleteDialog
+        );
+    });
+
+    el.confirmDeleteButton.addEventListener("click", deleteAccount);
+
+    el.profileNavHome.addEventListener("click", () => {
+        go(routes.home);
+    });
+
+    el.profileNavExpenses.addEventListener("click", () => {
+        go(routes.expenses);
+    });
+
+    el.profileNavScan.addEventListener("click", () => {
+        go(routes.scanner);
+    });
+
+    el.profileNavBills.addEventListener("click", () => {
+        go(routes.bills);
+    });
+
+    el.profileNavSavings.addEventListener("click", goSavings);
 }
-
-/* =========================================================
-   PROFILE RENDERING
-   ========================================================= */
 
 function renderProfile() {
-    const name = String(
-        currentProfile.name || defaultProfile.name
-    ).trim();
+    const mirror = JSON.parse(
+        localStorage.getItem(PROFILE_KEY) || "{}"
+    );
 
-    profileElements.displayName.textContent = name;
+    const name = profile.name || "Family Member";
+    const image = mirror.profileImage || "";
 
-    profileElements.roleChip.textContent =
-        currentProfile.role || "Member";
+    el.profileDisplayName.textContent = name;
+    el.profileRoleChip.textContent = profile.role || "Family Member";
+    el.profileInitials.textContent = initials(name);
+    el.profileNameInput.value = name;
+    el.profileEmailInput.value = profile.email || "";
+    el.profilePhoneInput.value = profile.phone || "";
 
-    profileElements.profileInitials.textContent =
-        getInitials(name);
-
-    profileElements.nameInput.value = name;
-
-    profileElements.emailInput.value =
-        currentProfile.email || "";
-
-    profileElements.phoneInput.value =
-        currentProfile.phone || "";
-
-    if (currentProfile.profileImage) {
-        profileElements.profileImage.src =
-            currentProfile.profileImage;
-
-        profileElements.profileImage.hidden = false;
-        profileElements.profileInitials.hidden = true;
-    } else {
-        profileElements.profileImage.removeAttribute("src");
-        profileElements.profileImage.hidden = true;
-        profileElements.profileInitials.hidden = false;
+    if (image) {
+        el.profileImage.src = image;
+        el.profileImage.hidden = false;
+        el.profileInitials.hidden = true;
+        return;
     }
+
+    el.profileImage.hidden = true;
+    el.profileInitials.hidden = false;
 }
-
-/* =========================================================
-   EVENT LISTENERS
-   ========================================================= */
-
-function bindProfileActions() {
-    profileElements.backButton.addEventListener("click", () => {
-        if (window.history.length > 1) {
-            window.history.back();
-            return;
-        }
-
-        navigateTo(profileRoutes.home);
-    });
-
-    profileElements.pictureButton.addEventListener(
-        "click",
-        () => {
-            profileElements.pictureInput.click();
-        }
-    );
-
-    profileElements.pictureInput.addEventListener(
-        "change",
-        () => {
-            const selectedFile =
-                profileElements.pictureInput.files?.[0];
-
-            updateProfilePicture(selectedFile);
-
-            profileElements.pictureInput.value = "";
-        }
-    );
-
-    profileElements.accountDetailsButton.addEventListener(
-        "click",
-        openAccountSheet
-    );
-
-    profileElements.secureVaultButton.addEventListener(
-        "click",
-        () => navigateTo(profileRoutes.secureVault)
-    );
-
-    profileElements.changePasswordButton.addEventListener(
-        "click",
-        openChangePasswordSheet
-    );
-
-    profileElements.logoutRowButton.addEventListener(
-        "click",
-        () => {
-            openDialog(
-                profileElements.logoutBackdrop,
-                profileElements.logoutDialog
-            );
-        }
-    );
-
-    profileElements.deleteAccountButton.addEventListener(
-        "click",
-        () => {
-            openDialog(
-                profileElements.deleteBackdrop,
-                profileElements.deleteDialog
-            );
-        }
-    );
-
-    /* Account Details */
-
-    profileElements.closeAccountSheet.addEventListener(
-        "click",
-        closeAccountSheet
-    );
-
-    profileElements.sheetBackdrop.addEventListener(
-        "click",
-        closeAccountSheet
-    );
-
-    profileElements.editSaveButton.addEventListener(
-        "click",
-        handleProfileEditSave
-    );
-
-    [
-        profileElements.nameInput,
-        profileElements.emailInput,
-        profileElements.phoneInput
-    ].forEach(input => {
-        input.addEventListener("keydown", event => {
-            if (
-                event.key === "Enter" &&
-                isProfileEditing
-            ) {
-                event.preventDefault();
-                updateAccountDetails();
-            }
-        });
-    });
-
-    /* Change Password */
-
-    profileElements.closeChangePasswordSheet.addEventListener(
-        "click",
-        closeChangePasswordSheet
-    );
-
-    profileElements.closePasswordSuccess.addEventListener(
-        "click",
-        closeChangePasswordSheet
-    );
-
-    profileElements.passwordSuccessDoneButton.addEventListener(
-        "click",
-        closeChangePasswordSheet
-    );
-
-    profileElements.changePasswordBackdrop.addEventListener(
-        "click",
-        closeChangePasswordSheet
-    );
-
-    [
-        profileElements.currentPasswordInput,
-        profileElements.newPasswordInput,
-        profileElements.confirmPasswordInput
-    ].forEach(input => {
-        input.addEventListener(
-            "input",
-            updatePasswordValidation
-        );
-
-        input.addEventListener("keydown", event => {
-            if (
-                event.key === "Enter" &&
-                !profileElements.updatePasswordButton.disabled
-            ) {
-                event.preventDefault();
-                submitPasswordChange();
-            }
-        });
-    });
-
-    profileElements.passwordToggleButtons.forEach(button => {
-        button.addEventListener("click", () => {
-            togglePasswordVisibility(button);
-        });
-    });
-
-    profileElements.updatePasswordButton.addEventListener(
-        "click",
-        submitPasswordChange
-    );
-
-    /* Logout */
-
-    profileElements.cancelLogoutButton.addEventListener(
-        "click",
-        () => {
-            closeDialog(
-                profileElements.logoutBackdrop,
-                profileElements.logoutDialog
-            );
-        }
-    );
-
-    profileElements.logoutBackdrop.addEventListener(
-        "click",
-        () => {
-            closeDialog(
-                profileElements.logoutBackdrop,
-                profileElements.logoutDialog
-            );
-        }
-    );
-
-    profileElements.confirmLogoutButton.addEventListener(
-        "click",
-        performLogout
-    );
-
-    /* Delete */
-
-    profileElements.cancelDeleteButton.addEventListener(
-        "click",
-        () => {
-            closeDialog(
-                profileElements.deleteBackdrop,
-                profileElements.deleteDialog
-            );
-        }
-    );
-
-    profileElements.deleteBackdrop.addEventListener(
-        "click",
-        () => {
-            closeDialog(
-                profileElements.deleteBackdrop,
-                profileElements.deleteDialog
-            );
-        }
-    );
-
-    profileElements.confirmDeleteButton.addEventListener(
-        "click",
-        performDeleteAccount
-    );
-
-    /* Navigation */
-
-    profileElements.navHome.addEventListener(
-        "click",
-        () => navigateTo(profileRoutes.home)
-    );
-
-    profileElements.navExpenses.addEventListener(
-        "click",
-        () => navigateTo(profileRoutes.expenses)
-    );
-
-    profileElements.navScan.addEventListener(
-        "click",
-        () => navigateTo(profileRoutes.scanner)
-    );
-
-    profileElements.navBills.addEventListener(
-        "click",
-        () => navigateTo(profileRoutes.bills)
-    );
-
-    profileElements.navSavings.addEventListener(
-        "click",
-        goToSavings
-    );
-
-    document.addEventListener("keydown", event => {
-        if (event.key !== "Escape") {
-            return;
-        }
-
-        if (!profileElements.accountSheet.hidden) {
-            closeAccountSheet();
-        }
-
-        if (!profileElements.changePasswordSheet.hidden) {
-            closeChangePasswordSheet();
-        }
-
-        if (!profileElements.logoutDialog.hidden) {
-            closeDialog(
-                profileElements.logoutBackdrop,
-                profileElements.logoutDialog
-            );
-        }
-
-        if (!profileElements.deleteDialog.hidden) {
-            closeDialog(
-                profileElements.deleteBackdrop,
-                profileElements.deleteDialog
-            );
-        }
-    });
-}
-
-/* =========================================================
-   ACCOUNT DETAILS
-   ========================================================= */
 
 function openAccountSheet() {
-    resetProfileForm();
-    setProfileEditMode(false);
-
-    profileElements.sheetBackdrop.hidden = false;
-    profileElements.accountSheet.hidden = false;
-
-    requestAnimationFrame(() => {
-        profileElements.sheetBackdrop.classList.add("show");
-        profileElements.accountSheet.classList.add("show");
-    });
+    setEditMode(false);
+    renderProfile();
+    openSheet(
+        el.profileSheetBackdrop,
+        el.profileAccountSheet
+    );
 }
 
 function closeAccountSheet() {
-    resetProfileForm();
-    setProfileEditMode(false);
-
-    profileElements.sheetBackdrop.classList.remove("show");
-    profileElements.accountSheet.classList.remove("show");
-
-    window.setTimeout(() => {
-        profileElements.sheetBackdrop.hidden = true;
-        profileElements.accountSheet.hidden = true;
-    }, 240);
-}
-
-function resetProfileForm() {
-    profileElements.nameInput.value =
-        currentProfile.name || "";
-
-    profileElements.emailInput.value =
-        currentProfile.email || "";
-
-    profileElements.phoneInput.value =
-        currentProfile.phone || "";
-}
-
-function setProfileEditMode(editing) {
-    isProfileEditing = editing;
-
-    profileElements.accountSheet.classList.toggle(
-        "is-editing",
-        editing
-    );
-
-    const inputs = [
-        profileElements.nameInput,
-        profileElements.emailInput,
-        profileElements.phoneInput
-    ];
-
-    inputs.forEach(input => {
-        input.readOnly = !editing;
-
-        input.setAttribute(
-            "aria-readonly",
-            String(!editing)
-        );
-    });
-
-    if (editing) {
-        profileElements.editSaveText.textContent =
-            "Save Changes";
-
-        profileElements.editSaveIcon.className =
-            "bi bi-check2-circle";
-
-        window.setTimeout(() => {
-            profileElements.nameInput.focus();
-
-            const endPosition =
-                profileElements.nameInput.value.length;
-
-            profileElements.nameInput.setSelectionRange(
-                endPosition,
-                endPosition
-            );
-        }, 50);
-
-        return;
-    }
-
-    profileElements.editSaveText.textContent =
-        "Edit Profile";
-
-    profileElements.editSaveIcon.className =
-        "bi bi-pencil";
-}
-
-function handleProfileEditSave() {
-    if (!isProfileEditing) {
-        setProfileEditMode(true);
-        return;
-    }
-
-    updateAccountDetails();
-}
-
-function updateAccountDetails() {
-    const name =
-        profileElements.nameInput.value.trim();
-
-    const email =
-        profileElements.emailInput.value.trim();
-
-    const phone =
-        profileElements.phoneInput.value.trim();
-
-    if (!name) {
-        showProfileToast(
-            "Please enter your full name."
-        );
-
-        profileElements.nameInput.focus();
-        return;
-    }
-
-    if (!isValidEmail(email)) {
-        showProfileToast(
-            "Please enter a valid email address."
-        );
-
-        profileElements.emailInput.focus();
-        return;
-    }
-
-    if (!phone) {
-        showProfileToast(
-            "Please enter your mobile number."
-        );
-
-        profileElements.phoneInput.focus();
-        return;
-    }
-
-    const previousProfile = {
-        ...currentProfile
-    };
-
-    currentProfile = {
-        ...currentProfile,
-        name,
-        email,
-        phone
-    };
-
-    const saved = saveCurrentProfile();
-
-    if (!saved) {
-        currentProfile = previousProfile;
-        return;
-    }
-
-    renderProfile();
-    setProfileEditMode(false);
-
-    showProfileToast(
-        "Profile updated successfully."
+    setEditMode(false);
+    closeSheet(
+        el.profileSheetBackdrop,
+        el.profileAccountSheet
     );
 }
 
-/* =========================================================
-   CHANGE PASSWORD
-   ========================================================= */
-
-function openChangePasswordSheet() {
-    resetPasswordSheet();
-
-    profileElements.changePasswordBackdrop.hidden = false;
-    profileElements.changePasswordSheet.hidden = false;
-
-    requestAnimationFrame(() => {
-        profileElements.changePasswordBackdrop.classList.add("show");
-        profileElements.changePasswordSheet.classList.add("show");
-    });
-}
-
-function closeChangePasswordSheet() {
-    profileElements.changePasswordBackdrop.classList.remove("show");
-    profileElements.changePasswordSheet.classList.remove("show");
-
-    window.setTimeout(() => {
-        profileElements.changePasswordBackdrop.hidden = true;
-        profileElements.changePasswordSheet.hidden = true;
-
-        resetPasswordSheet();
-    }, 240);
-}
-
-function resetPasswordSheet() {
-    profileElements.currentPasswordInput.value = "";
-    profileElements.newPasswordInput.value = "";
-    profileElements.confirmPasswordInput.value = "";
-
-    profileElements.changePasswordFormState.hidden = false;
-    profileElements.changePasswordSuccessState.hidden = true;
+function setEditMode(value) {
+    editing = value;
 
     [
-        profileElements.currentPasswordInput,
-        profileElements.newPasswordInput,
-        profileElements.confirmPasswordInput
+        el.profileNameInput,
+        el.profileEmailInput,
+        el.profilePhoneInput
     ].forEach(input => {
+        input.readOnly = !value;
+    });
+
+    el.profileEditSaveText.textContent = value
+        ? "Save Changes"
+        : "Edit Profile";
+
+    el.profileEditSaveIcon.className = value
+        ? "bi bi-check2-circle"
+        : "bi bi-pencil";
+
+    if (value) {
+        setTimeout(() => {
+            el.profileNameInput.focus();
+        }, 80);
+    }
+}
+
+async function saveAccountDetails() {
+    const name = el.profileNameInput.value.trim();
+    const email = el.profileEmailInput.value.trim().toLowerCase();
+    const phone = el.profilePhoneInput.value.trim();
+
+    if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        toast("Enter a valid name and email.");
+        return;
+    }
+
+    try {
+        profile = await KabalikatAuth.updateCurrentUser({
+            name,
+            email,
+            phone
+        });
+
+        renderProfile();
+        setEditMode(false);
+        toast("Profile updated.");
+    } catch (error) {
+        toast(error.message || "Profile could not be updated.");
+    }
+}
+
+function openVaultUnlock() {
+    resetVaultUnlock();
+    openSheet(
+        el.vaultUnlockBackdrop,
+        el.vaultUnlockSheet
+    );
+
+    setTimeout(() => {
+        el.vaultPasswordInput.focus();
+    }, 250);
+}
+
+function closeVaultUnlock() {
+    closeSheet(
+        el.vaultUnlockBackdrop,
+        el.vaultUnlockSheet
+    );
+}
+
+function resetVaultUnlock() {
+    el.vaultPasswordInput.value = "";
+    el.vaultPasswordInput.type = "password";
+    clearVaultError();
+}
+
+function clearVaultError() {
+    el.vaultPasswordError.textContent = "";
+    el.vaultPasswordInputBox.style.borderColor = "";
+}
+
+async function verifyVaultAccess() {
+    const password = el.vaultPasswordInput.value;
+
+    if (!password) {
+        el.vaultPasswordError.textContent =
+            "Enter your account password.";
+        return;
+    }
+
+    el.unlockVaultButton.disabled = true;
+    el.unlockVaultButton.innerHTML =
+        '<i class="bi bi-arrow-repeat"></i> Verifying...';
+
+    try {
+        const valid = await KabalikatAuth.verifyCurrentPassword(
+            password
+        );
+
+        if (!valid) {
+            el.vaultPasswordError.textContent =
+                "Incorrect account password.";
+            return;
+        }
+
+        const now = Date.now();
+
+        sessionStorage.setItem(
+            VAULT_TICKET_KEY,
+            JSON.stringify({
+                userId: profile.id,
+                familyCode: profile.familyCode,
+                issuedAt: now,
+                expiresAt: now + VAULT_TICKET_DURATION
+            })
+        );
+
+        go(routes.vault);
+    } catch (error) {
+        el.vaultPasswordError.textContent =
+            "Password could not be verified.";
+    } finally {
+        el.unlockVaultButton.disabled = false;
+        el.unlockVaultButton.innerHTML =
+            '<i class="bi bi-unlock"></i> Unlock Vault';
+    }
+}
+
+function openPasswordSheet() {
+    resetPasswordForm();
+    openSheet(
+        el.changePasswordBackdrop,
+        el.changePasswordSheet
+    );
+}
+
+function closePasswordSheet() {
+    closeSheet(
+        el.changePasswordBackdrop,
+        el.changePasswordSheet
+    );
+}
+
+function resetPasswordForm() {
+    [
+        el.currentPasswordInput,
+        el.newPasswordInput,
+        el.confirmPasswordInput
+    ].forEach(input => {
+        input.value = "";
         input.type = "password";
     });
 
-    profileElements.passwordToggleButtons.forEach(button => {
-        const icon = button.querySelector("i");
+    el.changePasswordFormState.hidden = false;
+    el.changePasswordSuccessState.hidden = true;
 
-        if (icon) {
-            icon.className = "bi bi-eye-slash";
-        }
-
-        button.setAttribute(
-            "aria-label",
-            "Show password"
-        );
-    });
-
-    updatePasswordValidation();
+    validatePasswordForm();
 }
 
-function togglePasswordVisibility(button) {
-    const targetId =
-        button.dataset.passwordTarget;
-
-    const input =
-        document.getElementById(targetId);
-
-    const icon =
-        button.querySelector("i");
-
-    if (!input || !icon) {
-        return;
-    }
-
-    const willShow =
-        input.type === "password";
-
-    input.type =
-        willShow ? "text" : "password";
-
-    icon.className =
-        willShow
-            ? "bi bi-eye"
-            : "bi bi-eye-slash";
-
-    button.setAttribute(
-        "aria-label",
-        willShow
-            ? "Hide password"
-            : "Show password"
+function togglePassword(button) {
+    const input = document.getElementById(
+        button.dataset.passwordTarget
     );
+
+    const show = input.type === "password";
+
+    input.type = show ? "text" : "password";
+    button.innerHTML = `
+        <i class="bi bi-eye${show ? "" : "-slash"}"></i>
+    `;
 }
 
-function getPasswordRules(password) {
+function passwordRules(password) {
     return {
         length: password.length >= 8,
         uppercase: /[A-Z]/.test(password),
-        number: /[0-9]/.test(password),
+        number: /\d/.test(password),
         special: /[^A-Za-z0-9]/.test(password)
     };
 }
 
-function updatePasswordValidation() {
-    const currentPassword =
-        profileElements.currentPasswordInput.value;
+function validatePasswordForm() {
+    const currentPassword = el.currentPasswordInput.value;
+    const newPassword = el.newPasswordInput.value;
+    const confirmedPassword = el.confirmPasswordInput.value;
 
-    const newPassword =
-        profileElements.newPasswordInput.value;
+    const rules = passwordRules(newPassword);
+    const score = Object.values(rules).filter(Boolean).length;
 
-    const confirmedPassword =
-        profileElements.confirmPasswordInput.value;
+    [
+        [el.passwordRequirementLength, rules.length],
+        [el.passwordRequirementUppercase, rules.uppercase],
+        [el.passwordRequirementNumber, rules.number],
+        [el.passwordRequirementSpecial, rules.special]
+    ].forEach(([requirement, isValid]) => {
+        requirement.classList.toggle("is-valid", isValid);
 
-    const rules =
-        getPasswordRules(newPassword);
+        const icon = requirement.querySelector("i");
 
-    const score =
-        Object.values(rules).filter(Boolean).length;
-
-    renderPasswordRequirement(
-        profileElements.passwordRequirementLength,
-        rules.length
-    );
-
-    renderPasswordRequirement(
-        profileElements.passwordRequirementUppercase,
-        rules.uppercase
-    );
-
-    renderPasswordRequirement(
-        profileElements.passwordRequirementNumber,
-        rules.number
-    );
-
-    renderPasswordRequirement(
-        profileElements.passwordRequirementSpecial,
-        rules.special
-    );
-
-    renderPasswordStrength(
-        score,
-        newPassword.length
-    );
-
-    const passwordsMatch =
-        newPassword.length > 0 &&
-        confirmedPassword === newPassword;
-
-    if (!confirmedPassword) {
-        profileElements.passwordMatchMessage.textContent = "";
-
-        profileElements.passwordMatchMessage.classList.remove(
-            "is-matching"
-        );
-    } else if (passwordsMatch) {
-        profileElements.passwordMatchMessage.textContent =
-            "Passwords match.";
-
-        profileElements.passwordMatchMessage.classList.add(
-            "is-matching"
-        );
-    } else {
-        profileElements.passwordMatchMessage.textContent =
-            "Passwords do not match.";
-
-        profileElements.passwordMatchMessage.classList.remove(
-            "is-matching"
-        );
-    }
-
-    profileElements.updatePasswordButton.disabled =
-        !currentPassword ||
-        score < 4 ||
-        !passwordsMatch;
-}
-
-function renderPasswordRequirement(element, valid) {
-    if (!element) {
-        return;
-    }
-
-    element.classList.toggle(
-        "is-valid",
-        valid
-    );
-
-    const icon =
-        element.querySelector("i");
-
-    if (icon) {
-        icon.className =
-            valid
+        if (icon) {
+            icon.className = isValid
                 ? "bi bi-check-circle-fill"
                 : "bi bi-circle";
+        }
+    });
+
+    el.passwordStrengthBars.className = "profile-strength-bars";
+    el.passwordStrengthText.className = "";
+
+    if (newPassword) {
+        const strengthLevel = Math.max(1, Math.min(score, 4));
+
+        el.passwordStrengthBars.classList.add(
+            `strength-${strengthLevel}`
+        );
+
+        el.passwordStrengthText.classList.add(
+            `strength-${strengthLevel}`
+        );
     }
-}
 
-function renderPasswordStrength(score, hasPassword) {
-    profileElements.passwordStrengthBars.className =
-        "profile-strength-bars";
-
-    profileElements.passwordStrengthText.className = "";
-
-    if (!hasPassword) {
-        profileElements.passwordStrengthText.textContent =
-            "Too weak";
-
-        return;
-    }
-
-    const strengthLevel =
-        Math.max(1, Math.min(score, 4));
-
-    profileElements.passwordStrengthBars.classList.add(
-        `strength-${strengthLevel}`
-    );
-
-    profileElements.passwordStrengthText.classList.add(
-        `strength-${strengthLevel}`
-    );
-
-    const labels = {
+    const strengthLabels = {
+        0: "Too weak",
         1: "Too weak",
         2: "Weak",
         3: "Medium",
         4: "Strong"
     };
 
-    profileElements.passwordStrengthText.textContent =
-        labels[strengthLevel];
-}
+    el.passwordStrengthText.textContent =
+        strengthLabels[score] || "Too weak";
 
-function submitPasswordChange() {
-    if (profileElements.updatePasswordButton.disabled) {
-        return;
+    const passwordsMatch =
+        Boolean(newPassword) &&
+        confirmedPassword === newPassword;
+
+    if (!confirmedPassword) {
+        el.passwordMatchMessage.textContent = "";
+        el.passwordMatchMessage.style.color = "";
+    } else if (passwordsMatch) {
+        el.passwordMatchMessage.textContent = "Passwords match.";
+        el.passwordMatchMessage.style.color = "#5F8D6A";
+    } else {
+        el.passwordMatchMessage.textContent =
+            "Passwords do not match.";
+        el.passwordMatchMessage.style.color = "#D84D4D";
     }
 
-    /*
-     * Connect this to the authentication backend later.
-     * Do not store passwords in localStorage.
-     */
-
-    showPasswordSuccess();
+    el.updatePasswordButton.disabled =
+        !currentPassword ||
+        score < 4 ||
+        !passwordsMatch;
 }
 
-function showPasswordSuccess() {
-    profileElements.changePasswordFormState.hidden = true;
-    profileElements.changePasswordSuccessState.hidden = false;
+async function updatePassword() {
+    try {
+        await KabalikatAuth.updateCurrentPassword(
+            el.currentPasswordInput.value,
+            el.newPasswordInput.value
+        );
 
-    profileElements.changePasswordSheet.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
+        el.changePasswordFormState.hidden = true;
+        el.changePasswordSuccessState.hidden = false;
+    } catch (error) {
+        toast(error.message || "Password could not be updated.");
+    }
 }
 
-/* =========================================================
-   PROFILE PICTURE
-   ========================================================= */
-
-function updateProfilePicture(file) {
+async function updatePicture(file) {
     if (!file) {
         return;
     }
@@ -1004,62 +578,66 @@ function updateProfilePicture(file) {
         "image/webp"
     ];
 
-    if (!acceptedTypes.includes(file.type)) {
-        showProfileToast(
-            "Choose a JPG, PNG or WebP image."
-        );
+    const maximumSize = 2 * 1024 * 1024;
 
-        return;
-    }
-
-    const maximumSize =
-        2 * 1024 * 1024;
-
-    if (file.size > maximumSize) {
-        showProfileToast(
-            "Profile picture must be below 2 MB."
-        );
-
+    if (
+        !acceptedTypes.includes(file.type) ||
+        file.size > maximumSize
+    ) {
+        toast("Choose a JPG, PNG, or WebP below 2 MB.");
         return;
     }
 
     const reader = new FileReader();
 
-    reader.addEventListener("load", () => {
-        const previousImage =
-            currentProfile.profileImage;
+    reader.onload = () => {
+        const mirror = JSON.parse(
+            localStorage.getItem(PROFILE_KEY) || "{}"
+        );
 
-        currentProfile.profileImage =
-            String(reader.result || "");
+        mirror.profileImage = String(reader.result || "");
 
-        const saved = saveCurrentProfile();
-
-        if (!saved) {
-            currentProfile.profileImage =
-                previousImage;
-
-            return;
-        }
+        localStorage.setItem(
+            PROFILE_KEY,
+            JSON.stringify(mirror)
+        );
 
         renderProfile();
-
-        showProfileToast(
-            "Profile picture updated."
-        );
-    });
-
-    reader.addEventListener("error", () => {
-        showProfileToast(
-            "The selected image could not be opened."
-        );
-    });
+        toast("Profile picture updated.");
+    };
 
     reader.readAsDataURL(file);
 }
 
-/* =========================================================
-   DIALOGS
-   ========================================================= */
+async function logout() {
+    await KabalikatAuth.logout();
+    go(routes.login);
+}
+
+async function deleteAccount() {
+    await KabalikatAuth.deleteCurrentAccount();
+    go(routes.login);
+}
+
+function openSheet(backdrop, sheet) {
+    backdrop.hidden = false;
+    sheet.hidden = false;
+
+    requestAnimationFrame(() => {
+        backdrop.classList.add("show");
+        sheet.classList.add("show");
+    });
+}
+
+function closeSheet(backdrop, sheet) {
+    backdrop.classList.remove("show");
+    sheet.classList.remove("show");
+
+    setTimeout(() => {
+        backdrop.hidden = true;
+        sheet.hidden = true;
+    }, 240);
+}
 
 function openDialog(backdrop, dialog) {
     backdrop.hidden = false;
@@ -1075,60 +653,37 @@ function closeDialog(backdrop, dialog) {
     backdrop.classList.remove("show");
     dialog.classList.remove("show");
 
-    window.setTimeout(() => {
+    setTimeout(() => {
         backdrop.hidden = true;
         dialog.hidden = true;
     }, 220);
 }
 
-/* =========================================================
-   LOGOUT
-   ========================================================= */
+function initials(name) {
+    const parts = String(name)
+        .trim()
+        .split(/\s+/);
 
-function performLogout() {
-    closeDialog(
-        profileElements.logoutBackdrop,
-        profileElements.logoutDialog
-    );
+    if (parts.length > 1) {
+        return (
+            parts[0][0] +
+            parts.at(-1)[0]
+        ).toUpperCase();
+    }
 
-    /*
-     * Replace this redirect with the logout method from your
-     * authentication service once authentication is connected.
-     */
-
-    navigateTo(profileRoutes.login);
+    return parts[0]
+        .slice(0, 2)
+        .toUpperCase();
 }
 
-/* =========================================================
-   DELETE ACCOUNT
-   ========================================================= */
-
-function performDeleteAccount() {
-    /*
-     * Prototype behavior only.
-     * Connect this to the authentication and database backend.
-     */
-
-    localStorage.removeItem(
-        KABALIKAT_PROFILE_KEY
-    );
-
-    closeDialog(
-        profileElements.deleteBackdrop,
-        profileElements.deleteDialog
-    );
-
-    navigateTo(profileRoutes.login);
+function go(route) {
+    window.location.href = route;
 }
 
-/* =========================================================
-   NAVIGATION
-   ========================================================= */
-
-function goToSavings() {
+function goSavings() {
     const url = new URL(
-        profileRoutes.expenses,
-        window.location.href
+        routes.expenses,
+        location.href
     );
 
     url.searchParams.set(
@@ -1137,68 +692,16 @@ function goToSavings() {
     );
 
     url.hash = "budget-overview";
-
-    window.location.href = url.href;
+    location.href = url.href;
 }
 
-function navigateTo(route) {
-    if (!route) {
-        return;
-    }
+function toast(message) {
+    clearTimeout(toastTimer);
 
-    window.location.href = route;
-}
+    el.profileToast.textContent = message;
+    el.profileToast.classList.add("show");
 
-/* =========================================================
-   HELPERS
-   ========================================================= */
-
-function getInitials(name) {
-    const words = String(name || "")
-        .trim()
-        .split(/\s+/)
-        .filter(Boolean);
-
-    if (words.length === 0) {
-        return "KB";
-    }
-
-    if (words.length === 1) {
-        return words[0]
-            .slice(0, 2)
-            .toUpperCase();
-    }
-
-    return (
-        words[0][0] +
-        words[words.length - 1][0]
-    ).toUpperCase();
-}
-
-function isValidEmail(value) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-        value
-    );
-}
-
-function showProfileToast(message) {
-    window.clearTimeout(
-        profileToastTimer
-    );
-
-    profileElements.toast.textContent =
-        message;
-
-    profileElements.toast.classList.add(
-        "show"
-    );
-
-    profileToastTimer = window.setTimeout(
-        () => {
-            profileElements.toast.classList.remove(
-                "show"
-            );
-        },
-        2400
-    );
+    toastTimer = setTimeout(() => {
+        el.profileToast.classList.remove("show");
+    }, 2400);
 }
