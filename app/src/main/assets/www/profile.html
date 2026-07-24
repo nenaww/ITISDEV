@@ -2,37 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
     <title>KABALIKAT Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-    <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    >
-
-    <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-            rel="stylesheet"
-    >
-
-    <link
-            href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-            rel="stylesheet"
-    >
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="profile.css">
 </head>
-
 <body data-page="profile">
 
 <main class="profile-page">
-
     <div class="profile-scroll-area">
-
-        <!-- Header -->
         <header class="profile-header">
-
             <button
                     id="profileBackButton"
                     class="profile-header-button"
@@ -44,28 +27,14 @@
 
             <h1>Profile</h1>
 
-            <!-- Keeps the title centered -->
-            <div class="profile-header-spacer" aria-hidden="true"></div>
-
+            <span class="profile-header-spacer" aria-hidden="true"></span>
         </header>
 
-        <!-- Profile hero -->
         <section class="profile-hero-card">
-
             <div class="profile-avatar-wrap">
-
-                <div
-                        id="profileAvatar"
-                        class="profile-avatar"
-                >
+                <div id="profileAvatar" class="profile-avatar">
                     <span id="profileInitials">ED</span>
-
-                    <img
-                            id="profileImage"
-                            src=""
-                            alt="Profile picture"
-                            hidden
-                    >
+                    <img id="profileImage" src="" alt="Profile picture" hidden>
                 </div>
 
                 <button
@@ -83,34 +52,14 @@
                         accept="image/png,image/jpeg,image/webp"
                         hidden
                 >
-
             </div>
 
-            <h2 id="profileDisplayName">
-                Elena Dela Cruz
-            </h2>
-
-            <span
-                    id="profileRoleChip"
-                    class="profile-role-chip"
-            >
-                Head
-            </span>
-
+            <h2 id="profileDisplayName">Elena Dela Cruz</h2>
+            <span id="profileRoleChip" class="profile-role-chip">Household Head</span>
         </section>
 
-        <!-- Profile options -->
-        <section
-                class="profile-options-card"
-                aria-label="Profile options"
-        >
-
-            <!-- Account Details -->
-            <button
-                    id="accountDetailsButton"
-                    class="profile-option-row"
-                    type="button"
-            >
+        <section class="profile-options-card" aria-label="Profile options">
+            <button id="accountDetailsButton" class="profile-option-row" type="button">
                 <span class="profile-option-icon profile-icon-purple">
                     <i class="bi bi-person"></i>
                 </span>
@@ -120,18 +69,10 @@
                     <small>Name, email and phone number</small>
                 </span>
 
-                <i
-                        class="bi bi-chevron-right profile-option-arrow"
-                        aria-hidden="true"
-                ></i>
+                <i class="bi bi-chevron-right profile-option-arrow" aria-hidden="true"></i>
             </button>
 
-            <!-- Secure Vault -->
-            <button
-                    id="secureVaultButton"
-                    class="profile-option-row"
-                    type="button"
-            >
+            <button id="secureVaultButton" class="profile-option-row" type="button">
                 <span class="profile-option-icon profile-icon-yellow">
                     <i class="bi bi-safe"></i>
                 </span>
@@ -141,18 +82,10 @@
                     <small>Protected files and receipts</small>
                 </span>
 
-                <i
-                        class="bi bi-chevron-right profile-option-arrow"
-                        aria-hidden="true"
-                ></i>
+                <i class="bi bi-chevron-right profile-option-arrow" aria-hidden="true"></i>
             </button>
 
-            <!-- Change Password -->
-            <button
-                    id="changePasswordButton"
-                    class="profile-option-row"
-                    type="button"
-            >
+            <button id="changePasswordButton" class="profile-option-row" type="button">
                 <span class="profile-option-icon profile-icon-blue">
                     <i class="bi bi-key"></i>
                 </span>
@@ -162,19 +95,15 @@
                     <small>Manage your password</small>
                 </span>
 
-                <i
-                        class="bi bi-chevron-right profile-option-arrow"
-                        aria-hidden="true"
-                ></i>
+                <i class="bi bi-chevron-right profile-option-arrow" aria-hidden="true"></i>
             </button>
 
-            <!-- Log Out -->
             <button
                     id="profileLogoutRowButton"
-                    class="profile-option-row profile-action-row"
+                    class="profile-option-row profile-logout-row"
                     type="button"
             >
-                <span class="profile-option-icon profile-icon-logout">
+                <span class="profile-option-icon profile-icon-gray">
                     <i class="bi bi-box-arrow-right"></i>
                 </span>
 
@@ -182,9 +111,10 @@
                     <strong>Log Out</strong>
                     <small>Sign out of your account</small>
                 </span>
+
+                <i class="bi bi-chevron-right profile-option-arrow" aria-hidden="true"></i>
             </button>
 
-            <!-- Delete Account -->
             <button
                     id="deleteAccountButton"
                     class="profile-option-row profile-delete-row"
@@ -199,29 +129,16 @@
                     <small>Permanently remove your account</small>
                 </span>
             </button>
-
         </section>
-
     </div>
 
-    <!-- Bottom navigation -->
-    <nav
-            class="profile-bottom-nav"
-            aria-label="Main navigation"
-    >
-
-        <button
-                id="profileNavHome"
-                type="button"
-        >
+    <nav class="profile-bottom-nav" aria-label="Main navigation">
+        <button id="profileNavHome" type="button">
             <i class="bi bi-house"></i>
             <span>Home</span>
         </button>
 
-        <button
-                id="profileNavExpenses"
-                type="button"
-        >
+        <button id="profileNavExpenses" type="button">
             <i class="bi bi-receipt"></i>
             <span>Expenses</span>
         </button>
@@ -235,35 +152,20 @@
             <i class="bi bi-upc-scan"></i>
         </button>
 
-        <button
-                id="profileNavBills"
-                type="button"
-        >
+        <button id="profileNavBills" type="button">
             <i class="bi bi-calendar-check"></i>
             <span>Bills</span>
         </button>
 
-        <button
-                id="profileNavSavings"
-                type="button"
-        >
+        <button id="profileNavSavings" type="button">
             <i class="bi bi-piggy-bank"></i>
             <span>Savings</span>
         </button>
-
     </nav>
-
 </main>
 
-<!-- =====================================================
-     ACCOUNT DETAILS
-     ===================================================== -->
-
-<div
-        id="profileSheetBackdrop"
-        class="profile-overlay"
-        hidden
-></div>
+<!-- Account Details -->
+<div id="profileSheetBackdrop" class="profile-overlay" hidden></div>
 
 <section
         id="profileAccountSheet"
@@ -276,13 +178,9 @@
     <div class="profile-sheet-handle"></div>
 
     <div class="profile-sheet-header">
-
         <div>
             <span>PROFILE</span>
-
-            <h2 id="profileAccountTitle">
-                Account Details
-            </h2>
+            <h2 id="profileAccountTitle">Account Details</h2>
         </div>
 
         <button
@@ -293,100 +191,47 @@
         >
             <i class="bi bi-x-lg"></i>
         </button>
-
     </div>
 
     <div class="profile-form-field">
-
-        <label for="profileNameInput">
-            Full Name
-        </label>
+        <label for="profileNameInput">Full Name</label>
 
         <div class="profile-input-box">
             <i class="bi bi-person"></i>
-
-            <input
-                    id="profileNameInput"
-                    type="text"
-                    autocomplete="name"
-                    readonly
-                    aria-readonly="true"
-            >
+            <input id="profileNameInput" type="text" autocomplete="name" readonly>
         </div>
-
     </div>
 
     <div class="profile-form-field">
-
-        <label for="profileEmailInput">
-            Email Address
-        </label>
+        <label for="profileEmailInput">Email Address</label>
 
         <div class="profile-input-box">
             <i class="bi bi-envelope"></i>
-
-            <input
-                    id="profileEmailInput"
-                    type="email"
-                    autocomplete="email"
-                    readonly
-                    aria-readonly="true"
-            >
+            <input id="profileEmailInput" type="email" autocomplete="email" readonly>
         </div>
-
     </div>
 
     <div class="profile-form-field">
-
-        <label for="profilePhoneInput">
-            Mobile Number
-        </label>
+        <label for="profilePhoneInput">Mobile Number</label>
 
         <div class="profile-input-box">
             <i class="bi bi-telephone"></i>
-
-            <input
-                    id="profilePhoneInput"
-                    type="tel"
-                    autocomplete="tel"
-                    readonly
-                    aria-readonly="true"
-            >
+            <input id="profilePhoneInput" type="tel" autocomplete="tel" readonly>
         </div>
-
     </div>
 
-    <button
-            id="profileEditSaveButton"
-            class="profile-main-button profile-edit-save-button"
-            type="button"
-    >
-        <i
-                id="profileEditSaveIcon"
-                class="bi bi-pencil"
-                aria-hidden="true"
-        ></i>
-
-        <span id="profileEditSaveText">
-            Edit Profile
-        </span>
+    <button id="profileEditSaveButton" class="profile-main-button" type="button">
+        <i id="profileEditSaveIcon" class="bi bi-pencil"></i>
+        <span id="profileEditSaveText">Edit Profile</span>
     </button>
-
 </section>
 
-<!-- =====================================================
-     SECURE VAULT UNLOCK
-     ===================================================== -->
-
-<div
-        id="vaultUnlockBackdrop"
-        class="profile-overlay"
-        hidden
-></div>
+<!-- Secure Vault verification -->
+<div id="vaultUnlockBackdrop" class="profile-overlay" hidden></div>
 
 <section
         id="vaultUnlockSheet"
-        class="profile-bottom-sheet profile-vault-unlock-sheet"
+        class="profile-bottom-sheet"
         role="dialog"
         aria-modal="true"
         aria-labelledby="vaultUnlockTitle"
@@ -397,10 +242,7 @@
     <div class="profile-sheet-header">
         <div>
             <span>SECURITY</span>
-
-            <h2 id="vaultUnlockTitle">
-                Unlock Secure Vault
-            </h2>
+            <h2 id="vaultUnlockTitle">Unlock Secure Vault</h2>
         </div>
 
         <button
@@ -421,26 +263,20 @@
         <h3>Protected Family Storage</h3>
 
         <p>
-            Enter your account password to access your family's shared
-            receipts and documents.
+            Enter your KABALIKAT account password to access your family’s shared vault.
         </p>
     </div>
 
     <div class="profile-form-field">
-        <label for="vaultPasswordInput">
-            Current Password
-        </label>
+        <label for="vaultPasswordInput">Account Password</label>
 
-        <div
-                id="vaultPasswordInputBox"
-                class="profile-input-box profile-password-input-box"
-        >
+        <div id="vaultPasswordInputBox" class="profile-input-box profile-password-input-box">
             <i class="bi bi-lock"></i>
 
             <input
                     id="vaultPasswordInput"
                     type="password"
-                    placeholder="Enter your password"
+                    placeholder="Enter your account password"
                     autocomplete="current-password"
             >
 
@@ -454,11 +290,7 @@
             </button>
         </div>
 
-        <p
-                id="vaultPasswordError"
-                class="profile-vault-password-error"
-                aria-live="polite"
-        ></p>
+        <p id="vaultPasswordError" class="profile-error-text" aria-live="polite"></p>
     </div>
 
     <div class="profile-family-vault-note">
@@ -466,34 +298,22 @@
 
         <p>
             <strong>One family, one vault.</strong>
-            Files stored here are shared with authorized members of your
-            household.
+            Authorized members use their own account passwords to access the same household storage.
         </p>
     </div>
 
-    <button
-            id="unlockVaultButton"
-            class="profile-main-button"
-            type="button"
-    >
+    <button id="unlockVaultButton" class="profile-main-button" type="button">
         <i class="bi bi-unlock"></i>
         Unlock Vault
     </button>
 </section>
 
-<!-- =====================================================
-     CHANGE PASSWORD
-     ===================================================== -->
-
-<div
-        id="changePasswordBackdrop"
-        class="profile-overlay"
-        hidden
-></div>
+<!-- Change Password -->
+<div id="changePasswordBackdrop" class="profile-overlay" hidden></div>
 
 <section
         id="changePasswordSheet"
-        class="profile-bottom-sheet profile-password-sheet"
+        class="profile-bottom-sheet profile-change-password-sheet"
         role="dialog"
         aria-modal="true"
         aria-labelledby="changePasswordTitle"
@@ -501,39 +321,27 @@
 >
     <div class="profile-sheet-handle"></div>
 
-    <!-- Form state -->
     <div id="changePasswordFormState">
-
         <div class="profile-sheet-header">
-
             <div>
                 <span>SECURITY</span>
-
-                <h2 id="changePasswordTitle">
-                    Change Password
-                </h2>
+                <h2 id="changePasswordTitle">Change Password</h2>
             </div>
 
             <button
                     id="closeChangePasswordSheet"
                     class="profile-sheet-close"
                     type="button"
-                    aria-label="Close change password"
+                    aria-label="Close Change Password"
             >
                 <i class="bi bi-x-lg"></i>
             </button>
-
         </div>
 
-        <!-- Current password -->
         <div class="profile-form-field">
+            <label for="currentPasswordInput">Current Password</label>
 
-            <label for="currentPasswordInput">
-                Current Password
-            </label>
-
-            <div class="profile-input-box profile-password-input-box">
-
+            <div class="profile-input-box">
                 <i class="bi bi-lock"></i>
 
                 <input
@@ -547,24 +355,17 @@
                         class="profile-password-toggle"
                         type="button"
                         data-password-target="currentPasswordInput"
-                        aria-label="Show current password"
+                        aria-label="Show password"
                 >
                     <i class="bi bi-eye-slash"></i>
                 </button>
-
             </div>
-
         </div>
 
-        <!-- New password -->
         <div class="profile-form-field">
+            <label for="newPasswordInput">New Password</label>
 
-            <label for="newPasswordInput">
-                New Password
-            </label>
-
-            <div class="profile-input-box profile-password-input-box">
-
+            <div class="profile-input-box">
                 <i class="bi bi-key"></i>
 
                 <input
@@ -578,51 +379,31 @@
                         class="profile-password-toggle"
                         type="button"
                         data-password-target="newPasswordInput"
-                        aria-label="Show new password"
+                        aria-label="Show password"
                 >
                     <i class="bi bi-eye-slash"></i>
                 </button>
-
             </div>
-
         </div>
 
-        <!-- Strength -->
         <div class="profile-password-strength">
-
-            <div class="profile-strength-header">
+            <div class="profile-password-strength-header">
                 <span>Password strength</span>
-
-                <strong
-                        id="passwordStrengthText"
-                        aria-live="polite"
-                >
-                    Too weak
-                </strong>
+                <small id="passwordStrengthText">Too weak</small>
             </div>
 
-            <div
-                    id="passwordStrengthBars"
-                    class="profile-strength-bars"
-                    aria-hidden="true"
-            >
+            <div id="passwordStrengthBars" class="profile-strength-bars">
                 <span></span>
                 <span></span>
                 <span></span>
                 <span></span>
             </div>
-
         </div>
 
-        <!-- Confirm password -->
         <div class="profile-form-field">
+            <label for="confirmPasswordInput">Confirm New Password</label>
 
-            <label for="confirmPasswordInput">
-                Confirm New Password
-            </label>
-
-            <div class="profile-input-box profile-password-input-box">
-
+            <div class="profile-input-box">
                 <i class="bi bi-key-fill"></i>
 
                 <input
@@ -636,27 +417,23 @@
                         class="profile-password-toggle"
                         type="button"
                         data-password-target="confirmPasswordInput"
-                        aria-label="Show confirmed password"
+                        aria-label="Show password"
                 >
                     <i class="bi bi-eye-slash"></i>
                 </button>
-
             </div>
 
             <p
                     id="passwordMatchMessage"
-                    class="profile-password-message"
+                    class="profile-error-text"
                     aria-live="polite"
             ></p>
-
         </div>
 
-        <!-- Requirements -->
-        <section class="profile-password-requirements">
+        <div class="profile-password-rules-panel">
+            <strong>Password must contain:</strong>
 
-            <h3>Password must contain:</h3>
-
-            <ul>
+            <ul class="profile-password-rules">
                 <li id="passwordRequirementLength">
                     <i class="bi bi-circle"></i>
                     <span>At least 8 characters</span>
@@ -677,8 +454,7 @@
                     <span>One special character</span>
                 </li>
             </ul>
-
-        </section>
+        </div>
 
         <button
                 id="updatePasswordButton"
@@ -688,46 +464,28 @@
         >
             Update Password
         </button>
-
     </div>
 
-    <!-- Success state -->
     <div
             id="changePasswordSuccessState"
-            class="profile-password-success"
+            class="profile-success-state"
             hidden
     >
-        <div class="profile-sheet-header">
+        <button
+                id="closePasswordSuccess"
+                class="profile-sheet-close profile-success-close"
+                type="button"
+                aria-label="Close success message"
+        >
+            <i class="bi bi-x-lg"></i>
+        </button>
 
-            <div>
-                <span>SECURITY</span>
-                <h2>Password Updated</h2>
-            </div>
+        <span>
+            <i class="bi bi-check-circle-fill"></i>
+        </span>
 
-            <button
-                    id="closePasswordSuccess"
-                    class="profile-sheet-close"
-                    type="button"
-                    aria-label="Close password confirmation"
-            >
-                <i class="bi bi-x-lg"></i>
-            </button>
-
-        </div>
-
-        <div class="profile-password-success-content">
-
-            <span class="profile-password-success-icon">
-                <i class="bi bi-shield-check"></i>
-            </span>
-
-            <h3>Password updated!</h3>
-
-            <p>
-                Your password has been changed successfully.
-            </p>
-
-        </div>
+        <h2>Password Updated</h2>
+        <p>Your KABALIKAT account password has been changed.</p>
 
         <button
                 id="passwordSuccessDoneButton"
@@ -736,20 +494,11 @@
         >
             Done
         </button>
-
     </div>
-
 </section>
 
-<!-- =====================================================
-     LOGOUT CONFIRMATION
-     ===================================================== -->
-
-<div
-        id="profileLogoutBackdrop"
-        class="profile-overlay"
-        hidden
-></div>
+<!-- Logout confirmation -->
+<div id="profileLogoutBackdrop" class="profile-overlay" hidden></div>
 
 <section
         id="profileLogoutDialog"
@@ -763,45 +512,22 @@
         <i class="bi bi-box-arrow-right"></i>
     </span>
 
-    <h2 id="profileLogoutTitle">
-        Log out?
-    </h2>
-
-    <p>
-        You will need to sign in again to access your household account.
-    </p>
+    <h2 id="profileLogoutTitle">Log out?</h2>
+    <p>You will need to sign in again to continue.</p>
 
     <div class="profile-dialog-actions">
-
-        <button
-                id="cancelLogoutButton"
-                class="profile-cancel-button"
-                type="button"
-        >
+        <button id="cancelLogoutButton" class="profile-cancel-button" type="button">
             Cancel
         </button>
 
-        <button
-                id="confirmLogoutButton"
-                class="profile-main-button"
-                type="button"
-        >
+        <button id="confirmLogoutButton" class="profile-main-button" type="button">
             Log Out
         </button>
-
     </div>
-
 </section>
 
-<!-- =====================================================
-     DELETE ACCOUNT CONFIRMATION
-     ===================================================== -->
-
-<div
-        id="profileDeleteBackdrop"
-        class="profile-overlay"
-        hidden
-></div>
+<!-- Delete confirmation -->
+<div id="profileDeleteBackdrop" class="profile-overlay" hidden></div>
 
 <section
         id="profileDeleteDialog"
@@ -815,44 +541,26 @@
         <i class="bi bi-trash3"></i>
     </span>
 
-    <h2 id="profileDeleteTitle">
-        Delete account?
-    </h2>
+    <h2 id="profileDeleteTitle">Delete account?</h2>
 
     <p>
-        Your account will be permanently removed. This action cannot be
-        undone.
+        This removes only your account. The shared family vault will remain available to other members.
     </p>
 
     <div class="profile-dialog-actions">
-
-        <button
-                id="cancelDeleteButton"
-                class="profile-cancel-button"
-                type="button"
-        >
+        <button id="cancelDeleteButton" class="profile-cancel-button" type="button">
             Cancel
         </button>
 
-        <button
-                id="confirmDeleteButton"
-                class="profile-delete-button"
-                type="button"
-        >
+        <button id="confirmDeleteButton" class="profile-delete-button" type="button">
             Delete
         </button>
-
     </div>
-
 </section>
 
-<div
-        id="profileToast"
-        class="profile-toast"
-        role="status"
-        aria-live="polite"
-></div>
+<div id="profileToast" class="profile-toast" role="status" aria-live="polite"></div>
 
+<script src="auth-service.js"></script>
 <script src="profile.js"></script>
 
 </body>

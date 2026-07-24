@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>
+        KABALIKAT Secure Vault
+    </title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="secure-vault.css">
+</head>
+<body data-page="secure-vault">
+<main class="vault-page">
+    <div class="vault-scroll-area">
+        <header class="vault-header">
+            <button id="vaultBackButton" class="vault-header-button" type="button">
+                <i class="bi bi-arrow-left">
+                </i>
+            </button>
+            <div>
+                <h1>
+                    Secure Vault
+                </h1>
+                <p>
+                    Protected household files
+                </p>
+            </div>
+            <button id="vaultAddButton" class="vault-header-button primary" type="button">
+                <i class="bi bi-plus-lg">
+                </i>
+            </button>
+        </header>
+        <section class="vault-family-banner">
+                    <span>
+                        <i class="bi bi-house-lock">
+                        </i>
+                    </span>
+            <div>
+                <h2 id="vaultFamilyTitle">
+                    Family Vault
+                </h2>
+                <p>
+                    One shared vault for all authorized household members.
+                </p>
+            </div>
+        </section>
+        <div class="vault-search">
+            <i class="bi bi-search" aria-hidden="true"></i>
+
+            <label class="vault-visually-hidden" for="vaultSearchInput">
+                Search receipts and documents
+            </label>
+
+            <input id="vaultSearchInput" type="search" placeholder="Search receipts and documents" autocomplete="off">
+
+            <button id="clearVaultSearch" type="button" aria-label="Clear search" hidden>
+                <i class="bi bi-x-circle-fill" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div id="vaultTypeFilters" class="vault-pills">
+            <button class="active" data-vault-type="all" type="button">
+                All
+            </button>
+            <button data-vault-type="receipt" type="button">
+                Receipts
+            </button>
+            <button data-vault-type="warranty" type="button">
+                Warranties
+            </button>
+            <button data-vault-type="document" type="button">
+                Documents
+            </button>
+        </div>
+        <section class="vault-card">
+            <div class="vault-section-head">
+                <div>
+                            <span>
+                                FILTER BY DATE
+                            </span>
+                    <h2>
+                        Month and Year
+                    </h2>
+                </div>
+                <button id="clearVaultDateFilter" type="button">
+                    Clear
+                </button>
+            </div>
+            <div class="vault-date-grid">
+                <label>
+                    Month
+                    <select id="vaultMonthFilter">
+                        <option value="">
+                            All months
+                        </option>
+                        <option value="01">
+                            January
+                        </option>
+                        <option value="02">
+                            February
+                        </option>
+                        <option value="03">
+                            March
+                        </option>
+                        <option value="04">
+                            April
+                        </option>
+                        <option value="05">
+                            May
+                        </option>
+                        <option value="06">
+                            June
+                        </option>
+                        <option value="07">
+                            July
+                        </option>
+                        <option value="08">
+                            August
+                        </option>
+                        <option value="09">
+                            September
+                        </option>
+                        <option value="10">
+                            October
+                        </option>
+                        <option value="11">
+                            November
+                        </option>
+                        <option value="12">
+                            December
+                        </option>
+                    </select>
+                </label>
+                <label>
+                    Year
+                    <select id="vaultYearFilter">
+                        <option value="">
+                            All years
+                        </option>
+                    </select>
+                </label>
+            </div>
+        </section>
+        <section class="vault-card">
+            <div class="vault-section-head">
+                <div>
+                            <span>
+                                FAMILY STORAGE
+                            </span>
+                    <h2>
+                        Vault Overview
+                    </h2>
+                </div>
+                <button id="openVaultTrashButton" type="button">
+                    <i class="bi bi-trash3">
+                    </i>
+                    Trash
+                </button>
+            </div>
+            <div class="vault-summary">
+                <div>
+                    <strong id="vaultTotalCount">
+                        0
+                    </strong>
+                    <span>
+                                Files
+                            </span>
+                </div>
+                <div>
+                    <strong id="vaultReceiptCount">
+                        0
+                    </strong>
+                    <span>
+                                Receipts
+                            </span>
+                </div>
+                <div>
+                    <strong id="vaultWarrantyCount">
+                        0
+                    </strong>
+                    <span>
+                                Warranties
+                            </span>
+                </div>
+                <div>
+                    <strong id="vaultDocumentCount">
+                        0
+                    </strong>
+                    <span>
+                                Documents
+                            </span>
+                </div>
+            </div>
+        </section>
+        <section class="vault-section">
+            <div class="vault-section-head">
+                <div>
+                            <span>
+                                ORGANIZE
+                            </span>
+                    <h2>
+                        Folders
+                    </h2>
+                </div>
+                <button id="vaultCreateFolderButton" type="button">
+                    <i class="bi bi-folder-plus">
+                    </i>
+                    New Folder
+                </button>
+            </div>
+            <div id="vaultFolderGrid" class="vault-folder-grid">
+            </div>
+        </section>
+        <section class="vault-section">
+            <div class="vault-section-head">
+                <div>
+                            <span id="vaultFilesLabel">
+                                FILES
+                            </span>
+                    <h2 id="vaultFilesHeading">
+                        Recent Files
+                    </h2>
+                </div>
+                <strong id="vaultVisibleCount">
+                    0 items
+                </strong>
+            </div>
+            <div id="vaultFileList" class="vault-file-list">
+            </div>
+        </section>
+    </div>
+    <nav class="vault-bottom-nav">
+        <button id="vaultNavHome">
+            <i class="bi bi-house">
+            </i>
+            <span>
+                        Home
+                    </span>
+        </button>
+        <button id="vaultNavExpenses">
+            <i class="bi bi-receipt">
+            </i>
+            <span>
+                        Expenses
+                    </span>
+        </button>
+        <button id="vaultNavScan" class="scan">
+            <i class="bi bi-upc-scan">
+            </i>
+        </button>
+        <button id="vaultNavBills">
+            <i class="bi bi-calendar-check">
+            </i>
+            <span>
+                        Bills
+                    </span>
+        </button>
+        <button id="vaultNavSavings">
+            <i class="bi bi-piggy-bank">
+            </i>
+            <span>
+                        Savings
+                    </span>
+        </button>
+    </nav>
+</main>
+<div id="vaultAddBackdrop" class="vault-overlay" hidden>
+</div>
+<section id="vaultAddSheet" class="vault-sheet" hidden>
+    <div class="vault-handle">
+    </div>
+    <header>
+        <div>
+                    <span>
+                        FAMILY VAULT
+                    </span>
+            <h2>
+                Add to Vault
+            </h2>
+        </div>
+        <button id="closeVaultAddSheet">
+            <i class="bi bi-x-lg">
+            </i>
+        </button>
+    </header>
+    <div class="vault-actions">
+        <button id="vaultScanReceiptOption">
+            <i class="bi bi-upc-scan">
+            </i>
+            <span>
+                        <strong>
+                            Scan Receipt
+                        </strong>
+                        <small>
+                            Scan and save automatically
+                        </small>
+                    </span>
+        </button>
+        <button id="vaultUploadReceiptOption">
+            <i class="bi bi-image">
+            </i>
+            <span>
+                        <strong>
+                            Upload Receipt
+                        </strong>
+                        <small>
+                            Select an image
+                        </small>
+                    </span>
+        </button>
+        <button id="vaultUploadDocumentOption">
+            <i class="bi bi-file-earmark-arrow-up">
+            </i>
+            <span>
+                        <strong>
+                            Upload Document
+                        </strong>
+                        <small>
+                            Add an image or PDF
+                        </small>
+                    </span>
+        </button>
+        <button id="vaultNewFolderOption">
+            <i class="bi bi-folder-plus">
+            </i>
+            <span>
+                        <strong>
+                            New Folder
+                        </strong>
+                        <small>
+                            Organize family files
+                        </small>
+                    </span>
+        </button>
+    </div>
+    <input id="vaultReceiptUploadInput" type="file" accept="image/*" hidden>
+    <input id="vaultDocumentUploadInput" type="file" accept="image/*,application/pdf" hidden>
+</section>
+<div id="vaultFolderBackdrop" class="vault-overlay" hidden>
+</div>
+<section id="vaultFolderSheet" class="vault-sheet" hidden>
+    <div class="vault-handle">
+    </div>
+    <header>
+        <div>
+                    <span>
+                        ORGANIZE
+                    </span>
+            <h2>
+                Create Folder
+            </h2>
+        </div>
+        <button id="closeVaultFolderSheet">
+            <i class="bi bi-x-lg">
+            </i>
+        </button>
+    </header>
+    <label class="vault-field">
+        Folder Name
+        <input id="vaultFolderNameInput" type="text" maxlength="40" placeholder="Example: School Receipts">
+    </label>
+    <button id="saveVaultFolderButton" class="vault-primary-button">
+        Create Folder
+    </button>
+</section>
+<div id="vaultFileOptionsBackdrop" class="vault-overlay" hidden>
+</div>
+<section id="vaultFileOptionsSheet" class="vault-sheet" hidden>
+    <div class="vault-handle">
+    </div>
+    <h3 id="vaultOptionsFileName">
+        File
+    </h3>
+    <p id="vaultOptionsFileMeta">
+    </p>
+    <div class="vault-actions">
+        <button id="vaultPreviewOption">
+            <i class="bi bi-info-circle">
+            </i>
+            <span>
+                        <strong>
+                            View Details
+                        </strong>
+                    </span>
+        </button>
+        <button id="vaultRenameOption">
+            <i class="bi bi-pencil">
+            </i>
+            <span>
+                        <strong>
+                            Rename
+                        </strong>
+                    </span>
+        </button>
+        <button id="vaultMoveOption">
+            <i class="bi bi-folder2-open">
+            </i>
+            <span>
+                        <strong>
+                            Move to Folder
+                        </strong>
+                    </span>
+        </button>
+        <button id="vaultDownloadOption">
+            <i class="bi bi-download">
+            </i>
+            <span>
+                        <strong>
+                            Download
+                        </strong>
+                    </span>
+        </button>
+        <button id="vaultTrashOption" class="danger">
+            <i class="bi bi-trash3">
+            </i>
+            <span>
+                        <strong>
+                            Move to Trash
+                        </strong>
+                    </span>
+        </button>
+    </div>
+</section>
+<div id="vaultRenameBackdrop" class="vault-overlay" hidden>
+</div>
+<section id="vaultRenameSheet" class="vault-sheet" hidden>
+    <div class="vault-handle">
+    </div>
+    <header>
+        <div>
+                    <span>
+                        FILE
+                    </span>
+            <h2>
+                Rename File
+            </h2>
+        </div>
+        <button id="closeVaultRenameSheet">
+            <i class="bi bi-x-lg">
+            </i>
+        </button>
+    </header>
+    <label class="vault-field">
+        File Name
+        <input id="vaultRenameInput" type="text">
+    </label>
+    <button id="saveVaultRenameButton" class="vault-primary-button">
+        Save Name
+    </button>
+</section>
+<div id="vaultMoveBackdrop" class="vault-overlay" hidden>
+</div>
+<section id="vaultMoveSheet" class="vault-sheet" hidden>
+    <div class="vault-handle">
+    </div>
+    <header>
+        <div>
+                    <span>
+                        ORGANIZE
+                    </span>
+            <h2>
+                Move to Folder
+            </h2>
+        </div>
+        <button id="closeVaultMoveSheet">
+            <i class="bi bi-x-lg">
+            </i>
+        </button>
+    </header>
+    <div id="vaultMoveFolderList" class="vault-actions">
+    </div>
+</section>
+<div id="vaultPreviewBackdrop" class="vault-overlay" hidden>
+</div>
+<section id="vaultPreviewSheet" class="vault-sheet" hidden>
+    <div class="vault-handle">
+    </div>
+    <header>
+        <div>
+                    <span>
+                        FILE DETAILS
+                    </span>
+            <h2 id="vaultPreviewTitle">
+                File
+            </h2>
+        </div>
+        <button id="closeVaultPreviewSheet">
+            <i class="bi bi-x-lg">
+            </i>
+        </button>
+    </header>
+    <div id="vaultPreviewContent">
+    </div>
+</section>
+<div id="vaultTrashBackdrop" class="vault-overlay" hidden>
+</div>
+<section id="vaultTrashSheet" class="vault-sheet" hidden>
+    <div class="vault-handle">
+    </div>
+    <header>
+        <div>
+                    <span>
+                        RECOVERY
+                    </span>
+            <h2>
+                Trash
+            </h2>
+        </div>
+        <button id="closeVaultTrashSheet">
+            <i class="bi bi-x-lg">
+            </i>
+        </button>
+    </header>
+    <div id="vaultTrashList" class="vault-file-list">
+    </div>
+    <button id="emptyVaultTrashButton" class="vault-danger-button">
+        Empty Trash
+    </button>
+</section>
+<div id="vaultToast" class="vault-toast">
+</div>
+<script src="auth-service.js">
+</script>
+<script src="vault-service.js">
+</script>
+<script src="secure-vault.js">
+</script>
+</body>
+</html>
