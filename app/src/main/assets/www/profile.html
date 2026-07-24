@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>KABALIKAT Profile</title>
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+            rel="stylesheet"
+    >
+
+    <link
+            href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="profile.css">
+</head>
+
+<body data-page="profile">
+
+<main class="profile-page">
+
+    <div class="profile-scroll-area">
+
+        <!-- Header -->
+        <header class="profile-header">
+
+            <button
+                    id="profileBackButton"
+                    class="profile-header-button"
+                    type="button"
+                    aria-label="Go back"
+            >
+                <i class="bi bi-arrow-left"></i>
+            </button>
+
+            <h1>Profile</h1>
+
+            <!-- Keeps the title centered -->
+            <div class="profile-header-spacer" aria-hidden="true"></div>
+
+        </header>
+
+        <!-- Profile hero -->
+        <section class="profile-hero-card">
+
+            <div class="profile-avatar-wrap">
+
+                <div
+                        id="profileAvatar"
+                        class="profile-avatar"
+                >
+                    <span id="profileInitials">ED</span>
+
+                    <img
+                            id="profileImage"
+                            src=""
+                            alt="Profile picture"
+                            hidden
+                    >
+                </div>
+
+                <button
+                        id="profilePictureButton"
+                        class="profile-avatar-edit"
+                        type="button"
+                        aria-label="Change profile picture"
+                >
+                    <i class="bi bi-pencil-fill"></i>
+                </button>
+
+                <input
+                        id="profilePictureInput"
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        hidden
+                >
+
+            </div>
+
+            <h2 id="profileDisplayName">
+                Elena Dela Cruz
+            </h2>
+
+            <span
+                    id="profileRoleChip"
+                    class="profile-role-chip"
+            >
+                Head
+            </span>
+
+        </section>
+
+        <!-- Profile options -->
+        <section
+                class="profile-options-card"
+                aria-label="Profile options"
+        >
+
+            <!-- Account Details -->
+            <button
+                    id="accountDetailsButton"
+                    class="profile-option-row"
+                    type="button"
+            >
+                <span class="profile-option-icon profile-icon-purple">
+                    <i class="bi bi-person"></i>
+                </span>
+
+                <span class="profile-option-copy">
+                    <strong>Account Details</strong>
+                    <small>Name, email and phone number</small>
+                </span>
+
+                <i
+                        class="bi bi-chevron-right profile-option-arrow"
+                        aria-hidden="true"
+                ></i>
+            </button>
+
+            <!-- Secure Vault -->
+            <button
+                    id="secureVaultButton"
+                    class="profile-option-row"
+                    type="button"
+            >
+                <span class="profile-option-icon profile-icon-yellow">
+                    <i class="bi bi-safe"></i>
+                </span>
+
+                <span class="profile-option-copy">
+                    <strong>Secure Vault</strong>
+                    <small>Protected files and receipts</small>
+                </span>
+
+                <i
+                        class="bi bi-chevron-right profile-option-arrow"
+                        aria-hidden="true"
+                ></i>
+            </button>
+
+            <!-- Change Password -->
+            <button
+                    id="changePasswordButton"
+                    class="profile-option-row"
+                    type="button"
+            >
+                <span class="profile-option-icon profile-icon-blue">
+                    <i class="bi bi-key"></i>
+                </span>
+
+                <span class="profile-option-copy">
+                    <strong>Change Password</strong>
+                    <small>Manage your password</small>
+                </span>
+
+                <i
+                        class="bi bi-chevron-right profile-option-arrow"
+                        aria-hidden="true"
+                ></i>
+            </button>
+
+            <!-- Log Out -->
+            <button
+                    id="profileLogoutRowButton"
+                    class="profile-option-row profile-action-row"
+                    type="button"
+            >
+                <span class="profile-option-icon profile-icon-logout">
+                    <i class="bi bi-box-arrow-right"></i>
+                </span>
+
+                <span class="profile-option-copy">
+                    <strong>Log Out</strong>
+                    <small>Sign out of your account</small>
+                </span>
+            </button>
+
+            <!-- Delete Account -->
+            <button
+                    id="deleteAccountButton"
+                    class="profile-option-row profile-delete-row"
+                    type="button"
+            >
+                <span class="profile-option-icon profile-icon-red">
+                    <i class="bi bi-trash3"></i>
+                </span>
+
+                <span class="profile-option-copy">
+                    <strong>Delete Account</strong>
+                    <small>Permanently remove your account</small>
+                </span>
+            </button>
+
+        </section>
+
+    </div>
+
+    <!-- Bottom navigation -->
+    <nav
+            class="profile-bottom-nav"
+            aria-label="Main navigation"
+    >
+
+        <button
+                id="profileNavHome"
+                type="button"
+        >
+            <i class="bi bi-house"></i>
+            <span>Home</span>
+        </button>
+
+        <button
+                id="profileNavExpenses"
+                type="button"
+        >
+            <i class="bi bi-receipt"></i>
+            <span>Expenses</span>
+        </button>
+
+        <button
+                id="profileNavScan"
+                class="profile-nav-scan"
+                type="button"
+                aria-label="Scan receipt"
+        >
+            <i class="bi bi-upc-scan"></i>
+        </button>
+
+        <button
+                id="profileNavBills"
+                type="button"
+        >
+            <i class="bi bi-calendar-check"></i>
+            <span>Bills</span>
+        </button>
+
+        <button
+                id="profileNavSavings"
+                type="button"
+        >
+            <i class="bi bi-piggy-bank"></i>
+            <span>Savings</span>
+        </button>
+
+    </nav>
+
+</main>
+
+<!-- =====================================================
+     ACCOUNT DETAILS
+     ===================================================== -->
+
+<div
+        id="profileSheetBackdrop"
+        class="profile-overlay"
+        hidden
+></div>
+
+<section
+        id="profileAccountSheet"
+        class="profile-bottom-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="profileAccountTitle"
+        hidden
+>
+    <div class="profile-sheet-handle"></div>
+
+    <div class="profile-sheet-header">
+
+        <div>
+            <span>PROFILE</span>
+
+            <h2 id="profileAccountTitle">
+                Account Details
+            </h2>
+        </div>
+
+        <button
+                id="closeAccountSheet"
+                class="profile-sheet-close"
+                type="button"
+                aria-label="Close account details"
+        >
+            <i class="bi bi-x-lg"></i>
+        </button>
+
+    </div>
+
+    <div class="profile-form-field">
+
+        <label for="profileNameInput">
+            Full Name
+        </label>
+
+        <div class="profile-input-box">
+            <i class="bi bi-person"></i>
+
+            <input
+                    id="profileNameInput"
+                    type="text"
+                    autocomplete="name"
+                    readonly
+                    aria-readonly="true"
+            >
+        </div>
+
+    </div>
+
+    <div class="profile-form-field">
+
+        <label for="profileEmailInput">
+            Email Address
+        </label>
+
+        <div class="profile-input-box">
+            <i class="bi bi-envelope"></i>
+
+            <input
+                    id="profileEmailInput"
+                    type="email"
+                    autocomplete="email"
+                    readonly
+                    aria-readonly="true"
+            >
+        </div>
+
+    </div>
+
+    <div class="profile-form-field">
+
+        <label for="profilePhoneInput">
+            Mobile Number
+        </label>
+
+        <div class="profile-input-box">
+            <i class="bi bi-telephone"></i>
+
+            <input
+                    id="profilePhoneInput"
+                    type="tel"
+                    autocomplete="tel"
+                    readonly
+                    aria-readonly="true"
+            >
+        </div>
+
+    </div>
+
+    <button
+            id="profileEditSaveButton"
+            class="profile-main-button profile-edit-save-button"
+            type="button"
+    >
+        <i
+                id="profileEditSaveIcon"
+                class="bi bi-pencil"
+                aria-hidden="true"
+        ></i>
+
+        <span id="profileEditSaveText">
+            Edit Profile
+        </span>
+    </button>
+
+</section>
+
+<!-- =====================================================
+     SECURE VAULT UNLOCK
+     ===================================================== -->
+
+<div
+        id="vaultUnlockBackdrop"
+        class="profile-overlay"
+        hidden
+></div>
+
+<section
+        id="vaultUnlockSheet"
+        class="profile-bottom-sheet profile-vault-unlock-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="vaultUnlockTitle"
+        hidden
+>
+    <div class="profile-sheet-handle"></div>
+
+    <div class="profile-sheet-header">
+        <div>
+            <span>SECURITY</span>
+
+            <h2 id="vaultUnlockTitle">
+                Unlock Secure Vault
+            </h2>
+        </div>
+
+        <button
+                id="closeVaultUnlockSheet"
+                class="profile-sheet-close"
+                type="button"
+                aria-label="Close Secure Vault verification"
+        >
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <div class="profile-vault-unlock-intro">
+        <span class="profile-vault-unlock-icon">
+            <i class="bi bi-shield-lock"></i>
+        </span>
+
+        <h3>Protected Family Storage</h3>
+
+        <p>
+            Enter your account password to access your family's shared
+            receipts and documents.
+        </p>
+    </div>
+
+    <div class="profile-form-field">
+        <label for="vaultPasswordInput">
+            Current Password
+        </label>
+
+        <div
+                id="vaultPasswordInputBox"
+                class="profile-input-box profile-password-input-box"
+        >
+            <i class="bi bi-lock"></i>
+
+            <input
+                    id="vaultPasswordInput"
+                    type="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+            >
+
+            <button
+                    class="profile-password-toggle"
+                    type="button"
+                    data-password-target="vaultPasswordInput"
+                    aria-label="Show password"
+            >
+                <i class="bi bi-eye-slash"></i>
+            </button>
+        </div>
+
+        <p
+                id="vaultPasswordError"
+                class="profile-vault-password-error"
+                aria-live="polite"
+        ></p>
+    </div>
+
+    <div class="profile-family-vault-note">
+        <i class="bi bi-people"></i>
+
+        <p>
+            <strong>One family, one vault.</strong>
+            Files stored here are shared with authorized members of your
+            household.
+        </p>
+    </div>
+
+    <button
+            id="unlockVaultButton"
+            class="profile-main-button"
+            type="button"
+    >
+        <i class="bi bi-unlock"></i>
+        Unlock Vault
+    </button>
+</section>
+
+<!-- =====================================================
+     CHANGE PASSWORD
+     ===================================================== -->
+
+<div
+        id="changePasswordBackdrop"
+        class="profile-overlay"
+        hidden
+></div>
+
+<section
+        id="changePasswordSheet"
+        class="profile-bottom-sheet profile-password-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="changePasswordTitle"
+        hidden
+>
+    <div class="profile-sheet-handle"></div>
+
+    <!-- Form state -->
+    <div id="changePasswordFormState">
+
+        <div class="profile-sheet-header">
+
+            <div>
+                <span>SECURITY</span>
+
+                <h2 id="changePasswordTitle">
+                    Change Password
+                </h2>
+            </div>
+
+            <button
+                    id="closeChangePasswordSheet"
+                    class="profile-sheet-close"
+                    type="button"
+                    aria-label="Close change password"
+            >
+                <i class="bi bi-x-lg"></i>
+            </button>
+
+        </div>
+
+        <!-- Current password -->
+        <div class="profile-form-field">
+
+            <label for="currentPasswordInput">
+                Current Password
+            </label>
+
+            <div class="profile-input-box profile-password-input-box">
+
+                <i class="bi bi-lock"></i>
+
+                <input
+                        id="currentPasswordInput"
+                        type="password"
+                        placeholder="Enter current password"
+                        autocomplete="current-password"
+                >
+
+                <button
+                        class="profile-password-toggle"
+                        type="button"
+                        data-password-target="currentPasswordInput"
+                        aria-label="Show current password"
+                >
+                    <i class="bi bi-eye-slash"></i>
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- New password -->
+        <div class="profile-form-field">
+
+            <label for="newPasswordInput">
+                New Password
+            </label>
+
+            <div class="profile-input-box profile-password-input-box">
+
+                <i class="bi bi-key"></i>
+
+                <input
+                        id="newPasswordInput"
+                        type="password"
+                        placeholder="Enter new password"
+                        autocomplete="new-password"
+                >
+
+                <button
+                        class="profile-password-toggle"
+                        type="button"
+                        data-password-target="newPasswordInput"
+                        aria-label="Show new password"
+                >
+                    <i class="bi bi-eye-slash"></i>
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- Strength -->
+        <div class="profile-password-strength">
+
+            <div class="profile-strength-header">
+                <span>Password strength</span>
+
+                <strong
+                        id="passwordStrengthText"
+                        aria-live="polite"
+                >
+                    Too weak
+                </strong>
+            </div>
+
+            <div
+                    id="passwordStrengthBars"
+                    class="profile-strength-bars"
+                    aria-hidden="true"
+            >
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+        </div>
+
+        <!-- Confirm password -->
+        <div class="profile-form-field">
+
+            <label for="confirmPasswordInput">
+                Confirm New Password
+            </label>
+
+            <div class="profile-input-box profile-password-input-box">
+
+                <i class="bi bi-key-fill"></i>
+
+                <input
+                        id="confirmPasswordInput"
+                        type="password"
+                        placeholder="Re-enter new password"
+                        autocomplete="new-password"
+                >
+
+                <button
+                        class="profile-password-toggle"
+                        type="button"
+                        data-password-target="confirmPasswordInput"
+                        aria-label="Show confirmed password"
+                >
+                    <i class="bi bi-eye-slash"></i>
+                </button>
+
+            </div>
+
+            <p
+                    id="passwordMatchMessage"
+                    class="profile-password-message"
+                    aria-live="polite"
+            ></p>
+
+        </div>
+
+        <!-- Requirements -->
+        <section class="profile-password-requirements">
+
+            <h3>Password must contain:</h3>
+
+            <ul>
+                <li id="passwordRequirementLength">
+                    <i class="bi bi-circle"></i>
+                    <span>At least 8 characters</span>
+                </li>
+
+                <li id="passwordRequirementUppercase">
+                    <i class="bi bi-circle"></i>
+                    <span>One uppercase letter</span>
+                </li>
+
+                <li id="passwordRequirementNumber">
+                    <i class="bi bi-circle"></i>
+                    <span>One number</span>
+                </li>
+
+                <li id="passwordRequirementSpecial">
+                    <i class="bi bi-circle"></i>
+                    <span>One special character</span>
+                </li>
+            </ul>
+
+        </section>
+
+        <button
+                id="updatePasswordButton"
+                class="profile-main-button"
+                type="button"
+                disabled
+        >
+            Update Password
+        </button>
+
+    </div>
+
+    <!-- Success state -->
+    <div
+            id="changePasswordSuccessState"
+            class="profile-password-success"
+            hidden
+    >
+        <div class="profile-sheet-header">
+
+            <div>
+                <span>SECURITY</span>
+                <h2>Password Updated</h2>
+            </div>
+
+            <button
+                    id="closePasswordSuccess"
+                    class="profile-sheet-close"
+                    type="button"
+                    aria-label="Close password confirmation"
+            >
+                <i class="bi bi-x-lg"></i>
+            </button>
+
+        </div>
+
+        <div class="profile-password-success-content">
+
+            <span class="profile-password-success-icon">
+                <i class="bi bi-shield-check"></i>
+            </span>
+
+            <h3>Password updated!</h3>
+
+            <p>
+                Your password has been changed successfully.
+            </p>
+
+        </div>
+
+        <button
+                id="passwordSuccessDoneButton"
+                class="profile-main-button"
+                type="button"
+        >
+            Done
+        </button>
+
+    </div>
+
+</section>
+
+<!-- =====================================================
+     LOGOUT CONFIRMATION
+     ===================================================== -->
+
+<div
+        id="profileLogoutBackdrop"
+        class="profile-overlay"
+        hidden
+></div>
+
+<section
+        id="profileLogoutDialog"
+        class="profile-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="profileLogoutTitle"
+        hidden
+>
+    <span class="profile-dialog-icon profile-dialog-icon-purple">
+        <i class="bi bi-box-arrow-right"></i>
+    </span>
+
+    <h2 id="profileLogoutTitle">
+        Log out?
+    </h2>
+
+    <p>
+        You will need to sign in again to access your household account.
+    </p>
+
+    <div class="profile-dialog-actions">
+
+        <button
+                id="cancelLogoutButton"
+                class="profile-cancel-button"
+                type="button"
+        >
+            Cancel
+        </button>
+
+        <button
+                id="confirmLogoutButton"
+                class="profile-main-button"
+                type="button"
+        >
+            Log Out
+        </button>
+
+    </div>
+
+</section>
+
+<!-- =====================================================
+     DELETE ACCOUNT CONFIRMATION
+     ===================================================== -->
+
+<div
+        id="profileDeleteBackdrop"
+        class="profile-overlay"
+        hidden
+></div>
+
+<section
+        id="profileDeleteDialog"
+        class="profile-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="profileDeleteTitle"
+        hidden
+>
+    <span class="profile-dialog-icon profile-dialog-icon-red">
+        <i class="bi bi-trash3"></i>
+    </span>
+
+    <h2 id="profileDeleteTitle">
+        Delete account?
+    </h2>
+
+    <p>
+        Your account will be permanently removed. This action cannot be
+        undone.
+    </p>
+
+    <div class="profile-dialog-actions">
+
+        <button
+                id="cancelDeleteButton"
+                class="profile-cancel-button"
+                type="button"
+        >
+            Cancel
+        </button>
+
+        <button
+                id="confirmDeleteButton"
+                class="profile-delete-button"
+                type="button"
+        >
+            Delete
+        </button>
+
+    </div>
+
+</section>
+
+<div
+        id="profileToast"
+        class="profile-toast"
+        role="status"
+        aria-live="polite"
+></div>
+
+<script src="profile.js"></script>
+
+</body>
+</html>

@@ -50,9 +50,17 @@ body[data-page="home"] {
 .home-profile-picture {
     width: 56px;
     height: 56px;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
     border-radius: 20px;
     background:
-        linear-gradient(135deg, rgba(241, 237, 255, 0.95), rgba(234, 243, 248, 0.95));
+        linear-gradient(
+            135deg,
+            rgba(241, 237, 255, 0.95),
+            rgba(234, 243, 248, 0.95)
+        );
     color: #6B5CA5;
     display: grid;
     place-items: center;
@@ -60,6 +68,11 @@ body[data-page="home"] {
     font-weight: 800;
     box-shadow: var(--soft-shadow);
     overflow: hidden;
+    transition: transform 0.18s ease;
+}
+
+.home-profile-picture:active {
+    transform: scale(0.94);
 }
 
 .home-greeting {

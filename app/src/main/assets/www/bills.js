@@ -538,6 +538,7 @@ function bindEvents() {
 
                 renderTypeFilter();
                 renderPayments();
+                renderOverviewVisibility();
             });
         });
 
@@ -1491,6 +1492,7 @@ function renderAll() {
     renderPayments();
     renderBillsOverview();
     renderDebtOverview();
+    renderOverviewVisibility();
 
     const completedPanel =
         document.getElementById(
@@ -1529,6 +1531,30 @@ function renderTypeFilter() {
                     selectedTypeFilter
             );
         });
+}
+
+function renderOverviewVisibility() {
+    const billsOverview =
+        document.querySelector(
+            ".bills-overview-section"
+        );
+
+    const debtOverview =
+        document.querySelector(
+            ".debt-overview-section"
+        );
+
+    if (billsOverview) {
+        billsOverview.hidden =
+            selectedTypeFilter ===
+            "debt";
+    }
+
+    if (debtOverview) {
+        debtOverview.hidden =
+            selectedTypeFilter ===
+            "bill";
+    }
 }
 
 function renderSummary() {
@@ -4667,16 +4693,6 @@ async function saveEntry(event) {
 
     try {
         await putEntry(entry);
-        await loadEntries();
-
-        renderAll();
-
-        await showBillDebtSaveSuccess(
-            entry.type
-        );
-
-        closeAddPanel();
-        resetForm();
 
         const nativeResult =
             sendEntryToAndroid(
@@ -4698,8 +4714,8 @@ async function saveEntry(event) {
 
             showToast(
                 entry.reminder
-                    ? "Review the Calendar event and allow notifications."
-                    : "Review the Calendar event and tap Save."
+                    ? "Saved. Review the Calendar event and allow notifications."
+                    : "Saved. Review the Calendar event and tap Save."
             );
         } else {
             entry.calendarStatus =
@@ -4718,7 +4734,10 @@ async function saveEntry(event) {
 
         await putEntry(entry);
         await loadEntries();
+
         renderAll();
+        closeAddPanel();
+        resetForm();
     } catch (error) {
         console.error(
             "Saving payment failed:",
@@ -4726,9 +4745,7 @@ async function saveEntry(event) {
         );
 
         showToast(
-            error?.message
-                ? `Could not save: ${error.message}`
-                : "The bill or debt could not be saved."
+            "The bill or debt could not be saved."
         );
     } finally {
         if (saveButton) {
@@ -4746,74 +4763,6 @@ async function saveEntry(event) {
             topSaveButton.disabled = false;
         }
     }
-}
-
-
-function showBillDebtSaveSuccess(entryType) {
-    return new Promise(resolve => {
-        const overlay =
-            document.getElementById(
-                "billDebtSuccessOverlay"
-            );
-
-        const title =
-            document.getElementById(
-                "billDebtSuccessTitle"
-            );
-
-        const message =
-            document.getElementById(
-                "billDebtSuccessMessage"
-            );
-
-        const isDebt =
-            entryType === "debt";
-
-        if (title) {
-            title.textContent =
-                isDebt
-                    ? "Debt Recorded"
-                    : "Bill Recorded";
-        }
-
-        if (message) {
-            message.textContent =
-                isDebt
-                    ? "Your debt has been saved successfully."
-                    : "Your bill has been saved successfully.";
-        }
-
-        if (!overlay) {
-            showToast(
-                isDebt
-                    ? "Debt saved."
-                    : "Bill saved."
-            );
-
-            resolve();
-            return;
-        }
-
-        overlay.hidden = false;
-        overlay.classList.remove("show");
-
-        /*
-            Force a repaint so the SVG stroke animation restarts
-            every time another bill or debt is saved.
-        */
-        void overlay.offsetWidth;
-
-        overlay.classList.add("show");
-
-        window.setTimeout(() => {
-            overlay.classList.remove("show");
-
-            window.setTimeout(() => {
-                overlay.hidden = true;
-                resolve();
-            }, 260);
-        }, 1700);
-    });
 }
 
 function collectFormData() {
