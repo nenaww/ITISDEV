@@ -2889,202 +2889,42 @@ function showScanView() {
     }
 }
 
+function getPrototypeReceiptIdForStore(storeName) {
+    const normalized = String(storeName || '').toLowerCase().replace(/[^a-z0-9]+/g,'');
+    if (normalized.includes('savemore')) return 'savemore1';
+    if (normalized.includes('puregold')) return 'puregold1';
+    if (normalized.includes('mercury')) return 'mercury1';
+    if (normalized.includes('alfamart') || normalized.includes('alphamart')) return 'alphamart1';
+    if (normalized.includes('7eleven') || normalized.includes('seveneleven') || normalized.includes('711')) return '7111';
+    return 'savemore1';
+}
+
 async function saveExpenses() {
-    if (isSavingScannedExpenses) {
-        return;
-    }
-
-    if (
-        !currentDetectedItems ||
-        currentDetectedItems.length === 0
-    ) {
-        showToast(
-            "No detected items to save."
-        );
-
+    if (isSavingScannedExpenses) return;
+    if (!currentDetectedItems || currentDetectedItems.length === 0) {
+        showToast('No detected items to save.');
         return;
     }
 
     isSavingScannedExpenses = true;
-
     if (saveExpensesBtn) {
         saveExpensesBtn.disabled = true;
-
-        const label =
-            saveExpensesBtn.querySelector(
-                "span"
-            );
-
-        if (label) {
-            label.textContent =
-                "Saving...";
-        }
-    }
-
-    const savedAt =
-        new Date().toISOString();
-
-    const expenseDate =
-        getScannedExpenseDate();
-
-    const receiptId =
-        `receipt-${Date.now()}-` +
-        `${Math.random()
-            .toString(16)
-            .slice(2)}`;
-
-    const items =
-        buildCurrentReceiptItemsForStorage();
-
-    const receiptRecord = {
-        id: receiptId,
-        image: currentReceiptImage,
-        date: expenseDate,
-        member: "Elena",
-        addedBy: "Elena",
-        source: "OCR Receipt Scanner",
-        storeName:
-            document
-                .getElementById(
-                    "storeNameText"
-                )
-                ?.textContent
-                ?.trim() ||
-            "Receipt",
-        receiptNumber:
-            document
-                .getElementById(
-                    "receiptNumberText"
-                )
-                ?.textContent
-                ?.trim() ||
-            "",
-        createdAt: savedAt,
-        items
-    };
-
-    const detectedFingerprint =
-        createReceiptFingerprint(
-            receiptRecord
-        );
-
-    if (allowDuplicateReceiptSave) {
-        receiptRecord
-            .duplicateOfFingerprint =
-            detectedFingerprint;
-
-        receiptRecord
-            .duplicateOverride =
-            true;
-
-        receiptRecord.fingerprint =
-            `${detectedFingerprint}-override-` +
-            `${Date.now()}-` +
-            `${Math.random()
-                .toString(16)
-                .slice(2)}`;
-    } else {
-        receiptRecord.fingerprint =
-            detectedFingerprint;
+        const label = saveExpensesBtn.querySelector('span');
+        if (label) label.textContent = 'Saving...';
     }
 
     try {
-        await saveScannedReceiptRecord(
-            receiptRecord
-        );
-
-        /*
-            Keep only lightweight metadata in localStorage for
-            compatibility. The large receipt photo is stored once
-            in IndexedDB instead of being repeated for every item.
-        */
-        saveScannedReceiptMetadataFallback(
-            receiptRecord
-        );
-
-        try {
-            localStorage.setItem(
-                "kabalikat_last_scanned_receipt",
-                JSON.stringify({
-                    ...receiptRecord,
-                    image: ""
-                })
-            );
-        } catch (storageError) {
-            console.warn(
-                "Last receipt fallback was skipped:",
-                storageError
-            );
-        }
-
-        try {
-            sessionStorage.setItem(
-                "kabalikat_pending_scanned_receipt",
-                JSON.stringify({
-                    ...receiptRecord,
-                    image: ""
-                })
-            );
-        } catch (transferError) {
-            console.warn(
-                "Receipt transfer fallback was skipped:",
-                transferError
-            );
-        }
-
         await showScannerSaveSuccess();
-
-        allowDuplicateReceiptSave =
-            false;
-
-        duplicateModalMode =
-            "";
-
-        const expensesUrl =
-            new URL(
-                "expenses.html",
-                window.location.href
-            );
-
-        expensesUrl.searchParams.set(
-            "view",
-            "receipts"
-        );
-
-        expensesUrl.searchParams.set(
-            "receiptId",
-            receiptRecord.id
-        );
-
-        expensesUrl.searchParams.set(
-            "receiptDate",
-            receiptRecord.date
-        );
-
-        window.location.href =
-            expensesUrl.href;
+        const storeName = document.getElementById('storeNameText')?.textContent?.trim() || 'Savemore';
+        const receiptId = getPrototypeReceiptIdForStore(storeName);
+        const url = new URL('expenses.html', window.location.href);
+        url.searchParams.set('view','receipt-details');
+        url.searchParams.set('receiptId',receiptId);
+        window.location.href = url.href;
     } catch (error) {
-        console.error(
-            "Saving scanned receipt failed:",
-            error
-        );
-
-        if (
-            error?.name ===
-            "DuplicateReceiptError"
-        ) {
-            duplicateModalMode =
-                "save";
-
-            showDuplicateReceiptModal();
-        } else {
-            showToast(
-                error?.message
-                    ? `Could not save: ${error.message}`
-                    : "The scanned receipt could not be saved."
-            );
-        }
-
+        console.error('Prototype receipt redirect failed:', error);
+        showToast('Could not open the prototype receipt details.');
+        isSavingScannedExpenses = false;
         resetScannerSaveButton();
     }
 }
