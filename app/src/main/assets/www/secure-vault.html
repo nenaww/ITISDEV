@@ -32,20 +32,6 @@
                 </i>
             </button>
         </header>
-        <section class="vault-family-banner">
-                    <span>
-                        <i class="bi bi-house-lock">
-                        </i>
-                    </span>
-            <div>
-                <h2 id="vaultFamilyTitle">
-                    Family Vault
-                </h2>
-                <p>
-                    One shared vault for all authorized household members.
-                </p>
-            </div>
-        </section>
         <div class="vault-search">
             <i class="bi bi-search" aria-hidden="true"></i>
 
@@ -72,127 +58,70 @@
             <button data-vault-type="document" type="button">
                 Documents
             </button>
+            <button data-vault-type="favorite" type="button">
+                <i class="bi bi-heart"></i>
+                Favorites
+            </button>
         </div>
-        <section class="vault-card">
+        <button id="openVaultDateFilter" class="vault-date-filter" type="button">
+            <span class="vault-date-filter-icon">
+                <i class="bi bi-calendar3"></i>
+            </span>
+
+            <span class="vault-date-filter-copy">
+                <small>Jump to date</small>
+                <strong id="vaultDateFilterTitle">All dates</strong>
+                <em id="vaultDateFilterSubtitle">No date filter applied</em>
+            </span>
+
+            <i class="bi bi-chevron-down vault-date-filter-chevron"></i>
+        </button>
+
+        <section class="vault-card vault-overview-card">
             <div class="vault-section-head">
                 <div>
-                            <span>
-                                FILTER BY DATE
-                            </span>
-                    <h2>
-                        Month and Year
-                    </h2>
+                    <span>FAMILY STORAGE</span>
+                    <h2>Vault Overview</h2>
                 </div>
-                <button id="clearVaultDateFilter" type="button">
-                    Clear
-                </button>
             </div>
-            <div class="vault-date-grid">
-                <label>
-                    Month
-                    <select id="vaultMonthFilter">
-                        <option value="">
-                            All months
-                        </option>
-                        <option value="01">
-                            January
-                        </option>
-                        <option value="02">
-                            February
-                        </option>
-                        <option value="03">
-                            March
-                        </option>
-                        <option value="04">
-                            April
-                        </option>
-                        <option value="05">
-                            May
-                        </option>
-                        <option value="06">
-                            June
-                        </option>
-                        <option value="07">
-                            July
-                        </option>
-                        <option value="08">
-                            August
-                        </option>
-                        <option value="09">
-                            September
-                        </option>
-                        <option value="10">
-                            October
-                        </option>
-                        <option value="11">
-                            November
-                        </option>
-                        <option value="12">
-                            December
-                        </option>
-                    </select>
-                </label>
-                <label>
-                    Year
-                    <select id="vaultYearFilter">
-                        <option value="">
-                            All years
-                        </option>
-                    </select>
-                </label>
-            </div>
-        </section>
-        <section class="vault-card">
-            <div class="vault-section-head">
-                <div>
-                            <span>
-                                FAMILY STORAGE
-                            </span>
-                    <h2>
-                        Vault Overview
-                    </h2>
-                </div>
-                <button id="openVaultTrashButton" type="button">
-                    <i class="bi bi-trash3">
-                    </i>
-                    Trash
-                </button>
-            </div>
+
             <div class="vault-summary">
-                <div>
-                    <strong id="vaultTotalCount">
-                        0
-                    </strong>
-                    <span>
-                                Files
-                            </span>
-                </div>
-                <div>
-                    <strong id="vaultReceiptCount">
-                        0
-                    </strong>
-                    <span>
-                                Receipts
-                            </span>
-                </div>
-                <div>
-                    <strong id="vaultWarrantyCount">
-                        0
-                    </strong>
-                    <span>
-                                Warranties
-                            </span>
-                </div>
-                <div>
-                    <strong id="vaultDocumentCount">
-                        0
-                    </strong>
-                    <span>
-                                Documents
-                            </span>
-                </div>
+                <button id="vaultOverviewFiles" class="vault-summary-item active" type="button">
+                    <span class="vault-summary-icon files">
+                        <i class="bi bi-file-earmark-text"></i>
+                    </span>
+                    <strong id="vaultTotalCount">0</strong>
+                    <small>Files</small>
+                </button>
+
+                <button id="vaultOverviewFolders" class="vault-summary-item" type="button">
+                    <span class="vault-summary-icon folders">
+                        <i class="bi bi-folder"></i>
+                    </span>
+                    <strong id="vaultFolderCount">0</strong>
+                    <small>Folders</small>
+                </button>
+
+                <button id="vaultOverviewFavorites" class="vault-summary-item" type="button">
+                    <span class="vault-summary-icon favorites">
+                        <i class="bi bi-heart"></i>
+                    </span>
+                    <strong id="vaultFavoriteCount">0</strong>
+                    <small>Favorites</small>
+                </button>
             </div>
         </section>
+
+        <div class="vault-view-toggle vault-view-toggle-main" role="group" aria-label="Choose list or grid view">
+            <button id="vaultListViewButton" type="button" aria-label="Use list view">
+                <i class="bi bi-list-ul"></i>
+            </button>
+
+            <button id="vaultGridViewButton" class="active" type="button" aria-label="Use grid view">
+                <i class="bi bi-grid"></i>
+            </button>
+        </div>
+
         <section class="vault-section">
             <div class="vault-section-head">
                 <div>
@@ -203,10 +132,8 @@
                         Folders
                     </h2>
                 </div>
-                <button id="vaultCreateFolderButton" type="button">
-                    <i class="bi bi-folder-plus">
-                    </i>
-                    New Folder
+                <button id="vaultFoldersViewAll" class="vault-text-button" type="button">
+                    View all
                 </button>
             </div>
             <div id="vaultFolderGrid" class="vault-folder-grid">
@@ -222,14 +149,69 @@
                         Recent Files
                     </h2>
                 </div>
-                <strong id="vaultVisibleCount">
-                    0 items
-                </strong>
+                <div class="vault-files-head-actions">
+                    <strong id="vaultVisibleCount">
+                        0 items
+                    </strong>
+
+                    <button id="vaultFilesViewAll" class="vault-text-button" type="button">
+                        View all
+                    </button>
+                </div>
             </div>
             <div id="vaultFileList" class="vault-file-list">
             </div>
         </section>
     </div>
+
+    <section id="vaultBrowserPage" class="vault-browser-page" hidden>
+        <header class="vault-browser-header">
+            <button id="vaultBrowserBackButton" class="vault-browser-header-button" type="button" aria-label="Return to Secure Vault">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+
+            <h1 id="vaultBrowserTitle">Files</h1>
+
+            <button id="vaultBrowserMenuButton" class="vault-browser-header-button" type="button" aria-label="Open Trash">
+                <i class="bi bi-trash3"></i>
+            </button>
+        </header>
+
+        <div class="vault-browser-tools">
+            <button id="vaultBrowserSortButton" class="vault-browser-sort" type="button">
+                <span>
+                    <small>Sort by</small>
+                    <strong id="vaultBrowserSortLabel">Date modified</strong>
+                </span>
+
+                <i class="bi bi-chevron-down"></i>
+            </button>
+
+            <div class="vault-view-toggle vault-browser-view-toggle" role="group" aria-label="Choose list or grid view">
+                <button id="vaultBrowserListViewButton" type="button" aria-label="Use list view">
+                    <i class="bi bi-list-ul"></i>
+                </button>
+
+                <button id="vaultBrowserGridViewButton" class="active" type="button" aria-label="Use grid view">
+                    <i class="bi bi-grid"></i>
+                </button>
+            </div>
+        </div>
+
+        <nav
+                id="vaultBrowserBreadcrumb"
+                class="vault-browser-breadcrumb"
+                aria-label="Folder path"
+                hidden
+        ></nav>
+
+        <div id="vaultBrowserContent" class="vault-browser-content"></div>
+
+        <button id="vaultBrowserAddButton" class="vault-browser-add-button" type="button" aria-label="Add to Secure Vault">
+            <i class="bi bi-plus-lg"></i>
+        </button>
+    </section>
+
     <nav class="vault-bottom-nav">
         <button id="vaultNavHome">
             <i class="bi bi-house">
@@ -265,6 +247,67 @@
         </button>
     </nav>
 </main>
+<!-- Date Filter Sheet -->
+<div id="vaultDateBackdrop" class="vault-overlay" hidden></div>
+
+<section id="vaultDateSheet" class="vault-sheet vault-date-sheet" hidden>
+    <div class="vault-handle"></div>
+
+    <header>
+        <div>
+            <span>JUMP TO DATE</span>
+            <h2>Select month and year</h2>
+        </div>
+
+        <button id="closeVaultDateSheet" type="button" aria-label="Close date filter">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </header>
+
+    <div class="vault-date-sheet-grid">
+        <label for="vaultMonthFilter">
+            Month
+            <select id="vaultMonthFilter">
+                <option value="">All months</option>
+                <option value="01">January</option>
+                <option value="02">February</option>
+                <option value="03">March</option>
+                <option value="04">April</option>
+                <option value="05">May</option>
+                <option value="06">June</option>
+                <option value="07">July</option>
+                <option value="08">August</option>
+                <option value="09">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
+        </label>
+
+        <label for="vaultYearFilter">
+            Year
+            <select id="vaultYearFilter">
+                <option value="">All years</option>
+            </select>
+        </label>
+    </div>
+
+    <div id="vaultDateFilterHint" class="vault-date-hint">
+        <i class="bi bi-stars"></i>
+        <span>Choose a month and year to narrow the files shown.</span>
+    </div>
+
+    <div class="vault-date-sheet-actions">
+        <button id="clearVaultDateFilter" class="secondary" type="button">
+            Reset
+        </button>
+
+        <button id="applyVaultDateFilter" class="primary" type="button">
+            Apply Filter
+        </button>
+    </div>
+</section>
+
 <div id="vaultAddBackdrop" class="vault-overlay" hidden>
 </div>
 <section id="vaultAddSheet" class="vault-sheet" hidden>
@@ -337,6 +380,38 @@
     <input id="vaultReceiptUploadInput" type="file" accept="image/*" hidden>
     <input id="vaultDocumentUploadInput" type="file" accept="image/*,application/pdf" hidden>
 </section>
+<div id="vaultAllFoldersBackdrop" class="vault-overlay" hidden></div>
+
+<section id="vaultAllFoldersSheet" class="vault-sheet vault-all-folders-sheet" hidden>
+    <div class="vault-handle"></div>
+
+    <header>
+        <div>
+            <span>ORGANIZE</span>
+            <h2>All Folders</h2>
+        </div>
+
+        <button id="closeVaultAllFoldersSheet" type="button" aria-label="Close all folders">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </header>
+
+    <button id="vaultCreateFolderButton" class="vault-all-folders-create" type="button">
+        <span>
+            <i class="bi bi-folder-plus"></i>
+        </span>
+
+        <span class="vault-all-folders-create-copy">
+            <strong>New Folder</strong>
+            <small>Create a folder for shared family files</small>
+        </span>
+
+        <i class="bi bi-chevron-right"></i>
+    </button>
+
+    <div id="vaultAllFoldersList" class="vault-all-folders-list"></div>
+</section>
+
 <div id="vaultFolderBackdrop" class="vault-overlay" hidden>
 </div>
 <section id="vaultFolderSheet" class="vault-sheet" hidden>
@@ -347,9 +422,13 @@
                     <span>
                         ORGANIZE
                     </span>
-            <h2>
+            <h2 id="vaultFolderSheetTitle">
                 Create Folder
             </h2>
+
+            <p id="vaultFolderLocationText" class="vault-folder-location-text">
+                Create in Family Vault
+            </p>
         </div>
         <button id="closeVaultFolderSheet">
             <i class="bi bi-x-lg">
@@ -402,21 +481,25 @@
                         </strong>
                     </span>
         </button>
-        <button id="vaultDownloadOption">
-            <i class="bi bi-download">
-            </i>
+        <button id="vaultFavoriteOption">
+            <i class="bi bi-heart"></i>
             <span>
-                        <strong>
-                            Download
-                        </strong>
-                    </span>
+                <strong id="vaultFavoriteOptionText">Add to Favorites</strong>
+            </span>
+        </button>
+
+        <button id="vaultDownloadOption">
+            <i class="bi bi-download"></i>
+            <span>
+                <strong>Download</strong>
+            </span>
         </button>
         <button id="vaultTrashOption" class="danger">
             <i class="bi bi-trash3">
             </i>
             <span>
                         <strong>
-                            Move to Trash
+                            Delete File
                         </strong>
                     </span>
         </button>
@@ -471,26 +554,48 @@
     <div id="vaultMoveFolderList" class="vault-actions">
     </div>
 </section>
-<div id="vaultPreviewBackdrop" class="vault-overlay" hidden>
-</div>
-<section id="vaultPreviewSheet" class="vault-sheet" hidden>
-    <div class="vault-handle">
-    </div>
-    <header>
-        <div>
-                    <span>
-                        FILE DETAILS
-                    </span>
-            <h2 id="vaultPreviewTitle">
-                File
-            </h2>
-        </div>
-        <button id="closeVaultPreviewSheet">
-            <i class="bi bi-x-lg">
-            </i>
+<section id="vaultPreviewPage" class="vault-viewer-page" hidden>
+    <header class="vault-viewer-header">
+        <button id="closeVaultPreviewPage" class="vault-viewer-header-button" type="button" aria-label="Go back">
+            <i class="bi bi-arrow-left"></i>
         </button>
+
+        <h2 id="vaultPreviewTitle">File</h2>
+
+        <span class="vault-viewer-header-spacer" aria-hidden="true"></span>
     </header>
-    <div id="vaultPreviewContent">
+
+    <div class="vault-viewer-scroll">
+        <div id="vaultPreviewVisual" class="vault-viewer-visual"></div>
+
+        <section class="vault-viewer-info">
+            <h3 id="vaultViewerFileName">File</h3>
+            <p id="vaultViewerFileMeta">Document</p>
+        </section>
+
+        <div class="vault-viewer-actions">
+            <button id="vaultViewerShareButton" type="button">
+                <i class="bi bi-share"></i>
+                <span>Share</span>
+            </button>
+
+            <button id="vaultViewerDownloadButton" type="button">
+                <i class="bi bi-download"></i>
+                <span>Download</span>
+            </button>
+
+            <button id="vaultViewerFavoriteButton" type="button">
+                <i class="bi bi-heart"></i>
+                <span>Favorites</span>
+            </button>
+
+            <button id="vaultViewerMoreActionButton" type="button">
+                <i class="bi bi-three-dots"></i>
+                <span>More</span>
+            </button>
+        </div>
+
+        <section id="vaultPreviewContent" class="vault-viewer-details"></section>
     </div>
 </section>
 <div id="vaultTrashBackdrop" class="vault-overlay" hidden>
@@ -518,6 +623,68 @@
         Empty Trash
     </button>
 </section>
+
+
+<div id="vaultFolderOptionsBackdrop" class="vault-overlay" hidden></div>
+
+<section id="vaultFolderOptionsSheet" class="vault-sheet" hidden>
+    <div class="vault-handle"></div>
+
+    <header>
+        <div>
+            <span>FOLDER</span>
+            <h2 id="vaultFolderOptionsTitle">Folder options</h2>
+        </div>
+
+        <button id="closeVaultFolderOptionsSheet" type="button" aria-label="Close folder options">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </header>
+
+    <div class="vault-folder-options-list">
+        <button id="openSelectedFolderButton" type="button">
+            <i class="bi bi-folder2-open"></i>
+            <span><strong>Open Folder</strong></span>
+        </button>
+
+        <button id="deleteSelectedFolderButton" class="danger" type="button">
+            <i class="bi bi-trash3"></i>
+            <span><strong>Delete Folder</strong></span>
+        </button>
+    </div>
+</section>
+
+<div id="vaultSortBackdrop" class="vault-overlay" hidden></div>
+
+<section id="vaultSortSheet" class="vault-sheet vault-sort-sheet" hidden>
+    <div class="vault-handle"></div>
+
+    <header>
+        <div>
+            <span>ARRANGE</span>
+            <h2>Sort by</h2>
+        </div>
+
+        <button id="closeVaultSortSheet" type="button" aria-label="Close sort options">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </header>
+
+    <div class="vault-sort-options">
+        <button type="button" data-vault-sort="date">
+            <i class="bi bi-clock-history"></i>
+            <span>Date modified</span>
+            <i class="bi bi-check-lg"></i>
+        </button>
+
+        <button type="button" data-vault-sort="name">
+            <i class="bi bi-sort-alpha-down"></i>
+            <span>Name</span>
+            <i class="bi bi-check-lg"></i>
+        </button>
+    </div>
+</section>
+
 <div id="vaultToast" class="vault-toast">
 </div>
 <script src="auth-service.js">

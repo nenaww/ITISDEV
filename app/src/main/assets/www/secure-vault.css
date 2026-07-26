@@ -588,3 +588,2420 @@ body[data-page="secure-vault"] {
     white-space: nowrap;
     border: 0;
 }
+
+/* =========================================================
+   REFINED DATE FILTER
+   ========================================================= */
+
+.vault-date-filter {
+    width: 100%;
+    min-height: 72px;
+    margin-top: 18px;
+    border: 1px solid rgba(107, 92, 165, 0.14);
+    border-radius: 22px;
+    background: #ffffff;
+    padding: 13px 15px;
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) 24px;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+    box-shadow: 0 10px 26px rgba(92, 83, 78, 0.08);
+}
+
+.vault-date-filter:active {
+    transform: scale(0.99);
+}
+
+.vault-date-filter-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: #f1edff;
+    color: #6b5ca5;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+}
+
+.vault-date-filter-copy {
+    min-width: 0;
+    display: block;
+}
+
+.vault-date-filter-copy small,
+.vault-date-filter-copy strong,
+.vault-date-filter-copy em {
+    display: block;
+}
+
+.vault-date-filter-copy small {
+    color: #7a68b0;
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.vault-date-filter-copy strong {
+    margin-top: 3px;
+    color: #403735;
+    font-size: 15px;
+    line-height: 1.25;
+}
+
+.vault-date-filter-copy em {
+    margin-top: 2px;
+    color: #8b817d;
+    font-size: 9px;
+    font-style: normal;
+    font-weight: 700;
+}
+
+.vault-date-filter-chevron {
+    color: #6b5ca5;
+    font-size: 14px;
+}
+
+.vault-date-sheet {
+    background:
+        radial-gradient(
+            circle at 82% 12%,
+            rgba(210, 193, 255, 0.30),
+            transparent 34%
+        ),
+        #f8f4ff;
+}
+
+.vault-date-sheet-grid {
+    margin-top: 22px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.8fr);
+    gap: 12px;
+}
+
+.vault-date-sheet-grid label {
+    color: #5e5450;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.vault-date-sheet-grid select {
+    width: 100%;
+    height: 52px;
+    margin-top: 8px;
+    border: 1px solid rgba(107, 92, 165, 0.12);
+    border-radius: 17px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.90);
+    color: #403735;
+    padding: 0 14px;
+    font: 700 12px inherit;
+}
+
+.vault-date-hint {
+    margin-top: 16px;
+    padding: 14px;
+    border-radius: 17px;
+    background: rgba(255, 255, 255, 0.58);
+    color: #6f618f;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 10px;
+    line-height: 1.5;
+    font-weight: 700;
+}
+
+.vault-date-hint i {
+    flex: 0 0 auto;
+    font-size: 16px;
+}
+
+.vault-date-sheet-actions {
+    margin-top: 22px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.vault-date-sheet-actions button {
+    min-height: 50px;
+    border: 0;
+    border-radius: 16px;
+    font: 800 11px inherit;
+}
+
+.vault-date-sheet-actions .secondary {
+    background: #ffffff;
+    color: #403735;
+}
+
+.vault-date-sheet-actions .primary {
+    background: #9b72b2;
+    color: #ffffff;
+}
+
+/* =========================================================
+   CLICKABLE VAULT OVERVIEW
+   ========================================================= */
+
+.vault-overview-card {
+    padding-bottom: 16px;
+}
+
+.vault-summary {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.vault-summary-item {
+    min-width: 0;
+    min-height: 96px;
+    border: 1px solid transparent;
+    border-radius: 18px;
+    background: #fff9f5;
+    padding: 11px 6px;
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 4px;
+    color: #403735;
+    transition:
+        transform 0.18s ease,
+        border-color 0.18s ease,
+        background 0.18s ease;
+}
+
+.vault-summary-item:nth-child(2) {
+    background: #fff8ed;
+}
+
+.vault-summary-item:nth-child(3) {
+    background: #fff5f7;
+}
+
+.vault-summary-item.active {
+    border-color: rgba(107, 92, 165, 0.30);
+    background: #f5f0ff;
+}
+
+.vault-summary-item:active {
+    transform: scale(0.97);
+}
+
+.vault-summary-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+}
+
+.vault-summary-icon.files {
+    background: #f1edff;
+    color: #6b5ca5;
+}
+
+.vault-summary-icon.folders {
+    background: #fff1d6;
+    color: #d7981f;
+}
+
+.vault-summary-icon.favorites {
+    background: #ffecef;
+    color: #df5d75;
+}
+
+.vault-summary-item strong {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.vault-summary-item small {
+    color: #817772;
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.vault-file-row-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 3px;
+}
+
+.vault-favorite-indicator {
+    color: #df5d75;
+    font-size: 14px;
+}
+
+.vault-file-menu-button {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+}
+
+.vault-pills button[data-vault-type="favorite"] {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+@media (max-width: 360px) {
+    .vault-date-sheet-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .vault-summary-item {
+        min-height: 88px;
+    }
+}
+
+
+/* =========================================================
+   Refined overview, years, and section actions
+   ========================================================= */
+
+.vault-section-head-actions,
+.vault-files-head-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.vault-files-head-actions {
+    gap: 10px;
+}
+
+.vault-section-head .vault-text-button,
+.vault-files-head-actions .vault-text-button {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #6B5CA5;
+    padding: 8px 4px;
+    box-shadow: none;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.vault-section-head .vault-text-button:active,
+.vault-files-head-actions .vault-text-button:active {
+    opacity: 0.65;
+}
+
+.vault-files-head-actions > strong {
+    color: var(--muted, #817872);
+    font-size: 10px;
+    font-weight: 800;
+}
+
+/*
+ * This overrides the earlier generic .vault-summary span rule,
+ * which made the Bootstrap icons appear extremely small.
+ */
+.vault-summary .vault-summary-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.vault-summary .vault-summary-icon i {
+    display: block;
+    font-size: inherit;
+    line-height: 1;
+}
+
+.vault-summary .vault-summary-icon.files {
+    background: #F1EDFF;
+    color: #6B5CA5;
+}
+
+.vault-summary .vault-summary-icon.folders {
+    background: #FFF5D8;
+    color: #B48A28;
+}
+
+.vault-summary .vault-summary-icon.favorites {
+    background: #FFECEF;
+    color: #DF5D75;
+}
+
+.vault-summary-item {
+    min-height: 100px;
+    border-radius: 20px;
+    box-shadow: 0 7px 18px rgba(92, 83, 78, 0.05);
+}
+
+.vault-summary-item strong {
+    color: var(--neutral-dark, #211A17);
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.vault-summary-item small {
+    color: var(--muted, #817872);
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.vault-summary-item.active {
+    border-color: rgba(107, 92, 165, 0.35);
+    box-shadow:
+        0 0 0 1px rgba(107, 92, 165, 0.08),
+        0 8px 20px rgba(92, 83, 78, 0.06);
+}
+
+.vault-card,
+.vault-folder-card,
+.vault-file-list,
+.vault-date-filter {
+    border: 1px solid rgba(92, 83, 78, 0.06);
+}
+
+.vault-date-filter {
+    box-shadow: var(--soft-shadow, 0 10px 24px rgba(92, 83, 78, 0.08));
+}
+
+.vault-section-head h2,
+.vault-date-filter-copy strong {
+    color: var(--neutral-dark, #211A17);
+}
+
+.vault-section-head span,
+.vault-date-filter-copy small,
+.vault-date-filter-copy em {
+    color: var(--muted, #817872);
+}
+
+@media (max-width: 380px) {
+    .vault-section-head-actions {
+        gap: 4px;
+    }
+
+    .vault-section-head .vault-text-button,
+    .vault-files-head-actions .vault-text-button {
+        font-size: 9px;
+    }
+
+    .vault-summary .vault-summary-icon {
+        width: 34px;
+        height: 34px;
+        font-size: 16px;
+    }
+}
+
+
+/* =========================================================
+   Family banner and folder View All refinement
+   ========================================================= */
+
+.vault-family-banner {
+    min-height: 70px;
+    padding: 14px 16px;
+}
+
+.vault-family-banner-icon {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 15px !important;
+    font-size: 20px !important;
+    flex: 0 0 auto;
+}
+
+.vault-family-banner-copy {
+    min-width: 0;
+}
+
+.vault-family-banner-copy small {
+    display: block;
+    color: #6B5CA5;
+    font-size: 8px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: 0.55px;
+}
+
+.vault-family-banner-copy h2 {
+    margin-top: 5px;
+    color: var(--neutral-dark, #211A17);
+    font-size: 13px;
+    line-height: 1.2;
+    font-weight: 800;
+    letter-spacing: 0.15px;
+}
+
+/* Main page only shows a preview of the first four folders. */
+.vault-folder-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* All Folders sheet */
+.vault-all-folders-sheet {
+    max-height: min(82dvh, 720px);
+}
+
+.vault-all-folders-create {
+    width: 100%;
+    min-height: 76px;
+    margin-top: 18px;
+    border: 1px solid rgba(233, 139, 95, 0.16);
+    border-radius: 22px;
+    background: #FFF1E8;
+    color: var(--neutral-dark, #211A17);
+    padding: 13px 15px;
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+}
+
+.vault-all-folders-create > span {
+    width: 46px;
+    height: 46px;
+    border-radius: 15px;
+    background: #FFFFFF;
+    color: #C96E4B;
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+}
+
+.vault-all-folders-create strong,
+.vault-all-folders-create small {
+    display: block;
+}
+
+.vault-all-folders-create strong {
+    color: var(--neutral-dark, #211A17);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.vault-all-folders-create small {
+    margin-top: 4px;
+    color: var(--muted, #817872);
+    font-size: 9px;
+    line-height: 1.35;
+    font-weight: 700;
+}
+
+.vault-all-folders-create > i {
+    color: var(--muted, #817872);
+    font-size: 14px;
+}
+
+.vault-all-folders-list {
+    margin-top: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(92, 83, 78, 0.07);
+    border-radius: 24px;
+    background: #FFFFFF;
+    box-shadow: var(--soft-shadow, 0 10px 24px rgba(92, 83, 78, 0.08));
+}
+
+.vault-all-folders-row {
+    width: 100%;
+    min-height: 72px;
+    border: 0;
+    border-bottom: 1px solid rgba(92, 83, 78, 0.08);
+    background: transparent;
+    padding: 12px 15px;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+}
+
+.vault-all-folders-row:last-child {
+    border-bottom: 0;
+}
+
+.vault-all-folders-row.active {
+    background: #F7F3FF;
+}
+
+.vault-all-folders-row-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: #FFF5D8;
+    color: #D7981F;
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+}
+
+.vault-all-folders-row.active .vault-all-folders-row-icon {
+    background: #F1EDFF;
+    color: #6B5CA5;
+}
+
+.vault-all-folders-row-copy {
+    min-width: 0;
+}
+
+.vault-all-folders-row-copy strong,
+.vault-all-folders-row-copy small {
+    display: block;
+}
+
+.vault-all-folders-row-copy strong {
+    color: var(--neutral-dark, #211A17);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.vault-all-folders-row-copy small {
+    margin-top: 4px;
+    color: var(--muted, #817872);
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.vault-all-folders-row > i {
+    color: var(--neutral-light, #A99C94);
+    font-size: 13px;
+}
+
+@media (max-width: 380px) {
+    .vault-family-banner {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .vault-all-folders-sheet {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+}
+
+
+/* =========================================================
+   Drive-inspired view switch, compact family chip, and viewer
+   ========================================================= */
+
+.vault-family-banner {
+    width: fit-content;
+    max-width: 100%;
+    min-height: 0;
+    margin-top: 18px;
+    padding: 9px 12px;
+    border-radius: 18px;
+    gap: 9px;
+    box-shadow: 0 7px 18px rgba(92, 83, 78, 0.05);
+}
+
+.vault-family-banner-icon {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 12px !important;
+    font-size: 16px !important;
+}
+
+.vault-family-banner-copy small {
+    font-size: 7px;
+    letter-spacing: 0.45px;
+}
+
+.vault-family-banner-copy h2 {
+    margin-top: 3px;
+    font-size: 11px;
+    letter-spacing: 0.1px;
+}
+
+.vault-view-toolbar {
+    min-height: 54px;
+    margin-top: 14px;
+    padding: 8px 10px 8px 15px;
+    border: 1px solid rgba(92, 83, 78, 0.06);
+    border-radius: 18px;
+    background: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    box-shadow: 0 8px 22px rgba(92, 83, 78, 0.06);
+}
+
+.vault-view-toolbar small,
+.vault-view-toolbar strong {
+    display: block;
+}
+
+.vault-view-toolbar small {
+    color: var(--muted, #817872);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.vault-view-toolbar strong {
+    margin-top: 3px;
+    color: var(--neutral-dark, #211A17);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.vault-view-toggle {
+    height: 38px;
+    padding: 4px;
+    border-radius: 14px;
+    background: #F4EFEC;
+    display: grid;
+    grid-template-columns: 38px 38px;
+    gap: 3px;
+}
+
+.vault-view-toggle button {
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--neutral-light, #A99C94);
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+}
+
+.vault-view-toggle button.active {
+    background: #FFFFFF;
+    color: #6B5CA5;
+    box-shadow: 0 4px 10px rgba(92, 83, 78, 0.08);
+}
+
+.vault-icon-button {
+    width: 32px;
+    height: 32px;
+    padding: 0 !important;
+    border-radius: 11px !important;
+    display: grid;
+    place-items: center;
+}
+
+.vault-files-head-actions {
+    gap: 6px;
+}
+
+/* Folder view modes */
+
+.vault-folder-grid.grid-view {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.vault-folder-grid.list-view {
+    grid-template-columns: 1fr;
+    gap: 9px;
+}
+
+.vault-folder-card {
+    position: relative;
+}
+
+.vault-folder-card-icon,
+.vault-folder-card-copy {
+    display: block;
+}
+
+.vault-folder-card-copy small {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted, #817872);
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.vault-folder-card-chevron {
+    display: none;
+}
+
+.vault-folder-grid.list-view .vault-folder-card {
+    min-height: 72px;
+    padding: 12px 14px;
+    border-radius: 20px;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+}
+
+.vault-folder-grid.list-view .vault-folder-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: #FFF5D8;
+    display: grid;
+    place-items: center;
+}
+
+.vault-folder-grid.list-view .vault-folder-card-icon i {
+    font-size: 20px;
+}
+
+.vault-folder-grid.list-view .vault-folder-card-copy strong {
+    margin: 0;
+}
+
+.vault-folder-grid.list-view .vault-folder-card-chevron {
+    display: block;
+    color: var(--neutral-light, #A99C94);
+    font-size: 13px;
+}
+
+.vault-folder-grid.grid-view .vault-folder-card-icon i {
+    font-size: 27px;
+}
+
+.vault-folder-grid.grid-view .vault-folder-card-copy strong {
+    display: block;
+    margin-top: 12px;
+}
+
+/* All folders sheet follows selected view */
+
+.vault-all-folders-list.grid-view {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    overflow: visible;
+}
+
+.vault-all-folders-list.grid-view .vault-all-folders-row {
+    min-height: 116px;
+    border: 1px solid rgba(92, 83, 78, 0.07);
+    border-radius: 20px;
+    background: #FFFFFF;
+    padding: 14px;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto 1fr;
+    align-items: start;
+    box-shadow: 0 7px 18px rgba(92, 83, 78, 0.05);
+}
+
+.vault-all-folders-list.grid-view .vault-all-folders-row-icon {
+    grid-column: 1;
+}
+
+.vault-all-folders-list.grid-view .vault-all-folders-row-copy {
+    grid-column: 1 / -1;
+}
+
+.vault-all-folders-list.grid-view .vault-all-folders-row > i {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+/* File list mode */
+
+.vault-file-list.list-view {
+    display: block;
+}
+
+.vault-file-preview-button {
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    display: contents;
+    text-align: left;
+}
+
+.vault-file-icon img {
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    object-fit: cover;
+}
+
+.vault-file-list.list-view .vault-file-row {
+    grid-template-columns: 50px minmax(0, 1fr) auto;
+}
+
+.vault-file-list.list-view .vault-file-preview-button {
+    display: contents;
+}
+
+/* File grid mode: 2 x 2 cards */
+
+.vault-file-list.grid-view {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px;
+    overflow: visible;
+    background: transparent;
+    box-shadow: none;
+}
+
+.vault-file-list.grid-view .vault-file-row {
+    min-width: 0;
+    min-height: 176px;
+    padding: 12px;
+    border: 1px solid rgba(92, 83, 78, 0.07);
+    border-radius: 22px;
+    background: #FFFFFF;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: 1fr auto;
+    gap: 8px;
+    box-shadow: 0 8px 22px rgba(92, 83, 78, 0.07);
+}
+
+.vault-file-list.grid-view .vault-file-preview-button {
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.vault-file-list.grid-view .vault-file-icon {
+    width: 100%;
+    height: 88px;
+    border-radius: 16px;
+    font-size: 27px;
+}
+
+.vault-file-list.grid-view .vault-file-copy {
+    min-width: 0;
+}
+
+.vault-file-list.grid-view .vault-file-copy strong,
+.vault-file-list.grid-view .vault-file-copy span,
+.vault-file-list.grid-view .vault-file-copy small {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vault-file-list.grid-view .vault-file-row-actions {
+    position: absolute;
+    top: 10px;
+    right: 9px;
+    z-index: 2;
+}
+
+.vault-file-list.grid-view .vault-file-menu-button {
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.90);
+}
+
+/* Full-page file viewer */
+
+.vault-viewer-page {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background: #FFF9F5;
+    opacity: 0;
+    transform: translateX(12px);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.vault-viewer-page[hidden] {
+    display: none !important;
+}
+
+.vault-viewer-page.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.vault-viewer-header {
+    height: calc(env(safe-area-inset-top, 0px) + 76px);
+    padding:
+        calc(env(safe-area-inset-top, 0px) + 18px)
+        24px
+        10px;
+    background: rgba(255, 249, 245, 0.96);
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) 42px;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    backdrop-filter: blur(12px);
+}
+
+.vault-viewer-header h2 {
+    margin: 0;
+    color: var(--neutral-dark, #211A17);
+    font-size: 14px;
+    font-weight: 800;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vault-viewer-header-button {
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 50%;
+    background: #FFFFFF;
+    color: var(--neutral, #5C534E);
+    display: grid;
+    place-items: center;
+    font-size: 17px;
+    box-shadow: 0 8px 20px rgba(92, 83, 78, 0.08);
+}
+
+.vault-viewer-scroll {
+    height: calc(100dvh - env(safe-area-inset-top, 0px) - 76px);
+    overflow-y: auto;
+    padding: 10px 24px calc(env(safe-area-inset-bottom, 0px) + 124px);
+}
+
+.vault-viewer-visual {
+    min-height: 390px;
+    border: 1px solid rgba(92, 83, 78, 0.07);
+    border-radius: 24px;
+    background: #FFFFFF;
+    padding: 14px;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 10px 26px rgba(92, 83, 78, 0.08);
+}
+
+.vault-viewer-image {
+    width: 100%;
+    max-height: 520px;
+    object-fit: contain;
+    border-radius: 16px;
+}
+
+.vault-document-preview {
+    width: 100%;
+    max-width: 320px;
+    min-height: 350px;
+    padding: 28px 24px;
+    border: 1px solid rgba(92, 83, 78, 0.10);
+    background: #FFFFFF;
+    color: #2B2725;
+    box-shadow: 0 8px 22px rgba(92, 83, 78, 0.07);
+}
+
+.vault-document-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    font-size: 20px;
+}
+
+.vault-document-preview h4 {
+    margin: 28px 0 24px;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+.vault-document-line {
+    padding: 11px 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    border-bottom: 1px solid rgba(92, 83, 78, 0.08);
+    font-size: 10px;
+}
+
+.vault-document-line span {
+    color: var(--muted, #817872);
+}
+
+.vault-document-line strong {
+    text-align: right;
+}
+
+.vault-document-divider {
+    margin: 24px 0;
+    border-top: 1px dashed rgba(92, 83, 78, 0.22);
+}
+
+.vault-document-preview p {
+    margin: 0;
+    color: var(--muted, #817872);
+    text-align: center;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.vault-viewer-info {
+    margin-top: 16px;
+}
+
+.vault-viewer-info h3 {
+    margin: 0;
+    color: var(--neutral-dark, #211A17);
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.vault-viewer-info p {
+    margin: 5px 0 0;
+    color: var(--muted, #817872);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.vault-viewer-actions {
+    margin-top: 18px;
+    padding: 13px 6px;
+    border-radius: 22px;
+    background: #FFFFFF;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    box-shadow: 0 8px 22px rgba(92, 83, 78, 0.07);
+}
+
+.vault-viewer-actions button {
+    min-height: 56px;
+    border: 0;
+    background: transparent;
+    color: var(--neutral, #5C534E);
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 7px;
+}
+
+.vault-viewer-actions button i {
+    font-size: 19px;
+}
+
+.vault-viewer-actions button span {
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.vault-viewer-actions button.active {
+    color: #DF5D75;
+}
+
+.vault-viewer-details {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 22px;
+    background: #FFFFFF;
+    box-shadow: 0 8px 22px rgba(92, 83, 78, 0.07);
+}
+
+.vault-viewer-details div {
+    min-height: 40px;
+    border-bottom: 1px solid rgba(92, 83, 78, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.vault-viewer-details div:last-child {
+    border-bottom: 0;
+}
+
+.vault-viewer-details span {
+    color: var(--muted, #817872);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.vault-viewer-details strong {
+    color: var(--neutral-dark, #211A17);
+    font-size: 10px;
+    font-weight: 800;
+    text-align: right;
+}
+
+.vault-bottom-nav {
+    z-index: 60;
+}
+
+@media (max-width: 380px) {
+    .vault-viewer-scroll {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .vault-viewer-header {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .vault-viewer-visual {
+        min-height: 340px;
+    }
+
+    .vault-file-list.grid-view {
+        gap: 9px;
+    }
+
+    .vault-file-list.grid-view .vault-file-row {
+        min-height: 164px;
+        padding: 10px;
+    }
+}
+
+
+/* =========================================================
+   Final navigation and dedicated Vault pages
+   ========================================================= */
+
+/* Family code banner removed from the overview page. */
+
+.vault-view-toggle-main {
+    width: fit-content;
+    margin: 14px 0 0 auto;
+}
+
+.vault-view-toggle-main,
+.vault-browser-view-toggle {
+    height: 38px;
+    padding: 4px;
+    border-radius: 14px;
+    background: #F4EFEC;
+    display: grid;
+    grid-template-columns: 38px 38px;
+    gap: 3px;
+}
+
+.vault-view-toggle-main button,
+.vault-browser-view-toggle button {
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--neutral-light, #A99C94);
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+}
+
+.vault-view-toggle-main button.active,
+.vault-browser-view-toggle button.active {
+    background: #FFFFFF;
+    color: #6B5CA5;
+    box-shadow: 0 4px 10px rgba(92, 83, 78, 0.08);
+}
+
+/* Dedicated folders/files page */
+
+.vault-browser-page {
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    background:
+        radial-gradient(circle at 85% 14%, rgba(255, 218, 185, 0.20), transparent 24%),
+        #FFF9F5;
+    opacity: 0;
+    transform: translateX(14px);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.vault-browser-page[hidden] {
+    display: none !important;
+}
+
+.vault-browser-page.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.vault-browser-header {
+    height: calc(env(safe-area-inset-top, 0px) + 76px);
+    padding:
+        calc(env(safe-area-inset-top, 0px) + 18px)
+        24px
+        10px;
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) 42px;
+    align-items: center;
+    gap: 12px;
+}
+
+.vault-browser-header h1 {
+    margin: 0;
+    color: var(--neutral-dark, #211A17);
+    font-size: 19px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.vault-browser-header-button {
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 50%;
+    background: #FFFFFF;
+    color: var(--neutral, #5C534E);
+    display: grid;
+    place-items: center;
+    font-size: 17px;
+    box-shadow: var(--soft-shadow, 0 10px 24px rgba(92, 83, 78, 0.08));
+}
+
+.vault-browser-tools {
+    margin: 20px 24px 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.vault-browser-sort {
+    border: 0;
+    background: transparent;
+    color: var(--neutral, #5C534E);
+    padding: 0;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    text-align: left;
+}
+
+.vault-browser-sort small,
+.vault-browser-sort strong {
+    display: block;
+}
+
+.vault-browser-sort small {
+    color: var(--muted, #817872);
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.vault-browser-sort strong {
+    margin-top: 4px;
+    color: var(--neutral-dark, #211A17);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.vault-browser-sort > i {
+    margin-bottom: 2px;
+    color: var(--muted, #817872);
+    font-size: 11px;
+}
+
+.vault-browser-content {
+    position: absolute;
+    inset:
+        calc(env(safe-area-inset-top, 0px) + 150px)
+        0
+        0;
+    overflow-y: auto;
+    padding: 18px 24px calc(env(safe-area-inset-bottom, 0px) + 130px);
+}
+
+.vault-browser-add-button {
+    position: fixed;
+    right: 28px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 106px);
+    width: 58px;
+    height: 58px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--primary, #E98B5F);
+    color: #FFFFFF;
+    display: grid;
+    place-items: center;
+    font-size: 23px;
+    box-shadow: 0 16px 30px rgba(233, 139, 95, 0.30);
+}
+
+/* Folder page: grid and list */
+
+.vault-browser-folders {
+    gap: 11px;
+}
+
+.vault-browser-folders.grid-view {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.vault-browser-folders.list-view {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.vault-browser-folder-card {
+    width: 100%;
+    border: 1px solid rgba(92, 83, 78, 0.07);
+    background: #FFFFFF;
+    text-align: left;
+    box-shadow: 0 8px 22px rgba(92, 83, 78, 0.07);
+}
+
+.vault-browser-folders.grid-view .vault-browser-folder-card {
+    min-height: 120px;
+    border-radius: 22px;
+    padding: 15px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto 1fr;
+    gap: 12px;
+}
+
+.vault-browser-folders.list-view .vault-browser-folder-card {
+    min-height: 76px;
+    border-radius: 20px;
+    padding: 13px 15px;
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+}
+
+.vault-browser-folder-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 15px;
+    background: #FFF5D8;
+    color: #D7981F;
+    display: grid;
+    place-items: center;
+    font-size: 21px;
+}
+
+.vault-browser-folders.grid-view .vault-browser-folder-copy {
+    grid-column: 1 / -1;
+}
+
+.vault-browser-folder-copy strong,
+.vault-browser-folder-copy small {
+    display: block;
+}
+
+.vault-browser-folder-copy strong {
+    color: var(--neutral-dark, #211A17);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.vault-browser-folder-copy small {
+    margin-top: 4px;
+    color: var(--muted, #817872);
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.vault-browser-folder-card > i {
+    color: var(--muted, #817872);
+}
+
+/* Files page: grid and list */
+
+.vault-browser-files {
+    gap: 11px;
+}
+
+.vault-browser-files.grid-view {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.vault-browser-files.list-view {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.vault-browser-file-card {
+    position: relative;
+    border: 1px solid rgba(92, 83, 78, 0.07);
+    border-radius: 22px;
+    background: #FFFFFF;
+    box-shadow: 0 8px 22px rgba(92, 83, 78, 0.07);
+    overflow: hidden;
+}
+
+.vault-browser-files.grid-view .vault-browser-file-card {
+    min-height: 190px;
+}
+
+.vault-browser-files.list-view .vault-browser-file-card {
+    min-height: 82px;
+    border-radius: 18px;
+}
+
+.vault-browser-file-open {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    text-align: left;
+}
+
+.vault-browser-files.grid-view .vault-browser-file-open {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.vault-browser-files.list-view .vault-browser-file-open {
+    min-height: 82px;
+    padding: 12px 48px 12px 12px;
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+}
+
+.vault-browser-file-preview {
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    font-size: 24px;
+}
+
+.vault-browser-files.grid-view .vault-browser-file-preview {
+    width: 100%;
+    height: 100px;
+}
+
+.vault-browser-files.list-view .vault-browser-file-preview {
+    width: 52px;
+    height: 58px;
+}
+
+.vault-browser-file-preview.receipt {
+    background: #F1EDFF;
+    color: #6B5CA5;
+}
+
+.vault-browser-file-preview.warranty {
+    background: #FFF5D8;
+    color: #B48A28;
+}
+
+.vault-browser-file-preview.document {
+    background: #EAF3F8;
+    color: #4F7F99;
+}
+
+.vault-browser-file-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.vault-browser-file-copy {
+    min-width: 0;
+}
+
+.vault-browser-file-copy strong,
+.vault-browser-file-copy small,
+.vault-browser-file-copy em {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vault-browser-file-copy strong {
+    color: var(--neutral-dark, #211A17);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.vault-browser-file-copy small,
+.vault-browser-file-copy em {
+    margin-top: 4px;
+    color: var(--muted, #817872);
+    font-size: 9px;
+    line-height: 1.3;
+    font-style: normal;
+    font-weight: 700;
+}
+
+.vault-browser-file-menu {
+    position: absolute;
+    top: 10px;
+    right: 8px;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--neutral, #5C534E);
+    display: grid;
+    place-items: center;
+}
+
+/* Sort sheet */
+
+.vault-sort-options {
+    margin-top: 16px;
+    overflow: hidden;
+    border-radius: 22px;
+    background: #FFFFFF;
+    box-shadow: var(--soft-shadow, 0 10px 24px rgba(92, 83, 78, 0.08));
+}
+
+.vault-sort-options button {
+    width: 100%;
+    min-height: 60px;
+    border: 0;
+    border-bottom: 1px solid rgba(92, 83, 78, 0.08);
+    background: transparent;
+    padding: 0 16px;
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr) 24px;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+    color: var(--neutral-dark, #211A17);
+}
+
+.vault-sort-options button:last-child {
+    border-bottom: 0;
+}
+
+.vault-sort-options button > i:first-child {
+    color: var(--muted, #817872);
+}
+
+.vault-sort-options button > i:last-child {
+    opacity: 0;
+    color: #6B5CA5;
+}
+
+.vault-sort-options button.active > i:last-child {
+    opacity: 1;
+}
+
+.vault-sort-options span {
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.vault-bottom-nav {
+    z-index: 60;
+}
+
+@media (max-width: 380px) {
+    .vault-browser-header,
+    .vault-browser-content {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .vault-browser-tools {
+        margin-left: 18px;
+        margin-right: 18px;
+    }
+
+    .vault-browser-add-button {
+        right: 22px;
+    }
+
+    .vault-browser-files.grid-view,
+    .vault-browser-folders.grid-view {
+        gap: 9px;
+    }
+}
+
+
+/* =========================================================
+   Final compact display controls and viewer-header correction
+   ========================================================= */
+
+/* Remove the oversized visual gap around the main view controls. */
+.vault-view-toggle-main {
+    width: 70px;
+    height: 32px;
+    margin: 7px 0 2px auto;
+    padding: 3px;
+    border-radius: 11px;
+    grid-template-columns: repeat(2, 30px);
+    gap: 4px;
+}
+
+.vault-view-toggle-main button {
+    width: 30px;
+    height: 26px;
+    border-radius: 8px;
+    padding: 0;
+    font-size: 14px;
+}
+
+/* Keep the following section close to the compact view controls. */
+.vault-view-toggle-main + .vault-section {
+    margin-top: 13px;
+}
+
+/* Preserve the centered viewer title after removing the right-side menu. */
+.vault-viewer-header-spacer {
+    width: 42px;
+    height: 42px;
+    display: block;
+}
+
+@media (max-width: 380px) {
+    .vault-view-toggle-main {
+        margin-top: 6px;
+        margin-bottom: 1px;
+    }
+
+    .vault-view-toggle-main + .vault-section {
+        margin-top: 11px;
+    }
+}
+
+
+/* =========================================================
+   Folder contents and proportional collection sizing
+   ========================================================= */
+
+.vault-browser-header-button {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+}
+
+.vault-browser-folders.grid-view {
+    gap: 9px;
+}
+
+.vault-browser-folders.grid-view .vault-browser-folder-card {
+    min-height: 104px;
+    padding: 12px;
+    border-radius: 18px;
+    gap: 8px;
+}
+
+.vault-browser-folders.list-view .vault-browser-folder-card {
+    min-height: 66px;
+    padding: 10px 12px;
+    border-radius: 17px;
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+    gap: 10px;
+}
+
+.vault-browser-folder-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    font-size: 17px;
+}
+
+.vault-browser-folder-copy strong {
+    font-size: 11px;
+}
+
+.vault-browser-folder-copy small {
+    font-size: 8px;
+}
+
+.vault-browser-files.grid-view {
+    gap: 9px;
+}
+
+.vault-browser-files.grid-view .vault-browser-file-card {
+    min-height: 158px;
+    border-radius: 18px;
+}
+
+.vault-browser-files.grid-view .vault-browser-file-open {
+    padding: 10px;
+    gap: 8px;
+}
+
+.vault-browser-files.grid-view .vault-browser-file-preview {
+    height: 72px;
+    border-radius: 13px;
+    font-size: 20px;
+}
+
+.vault-browser-files.list-view .vault-browser-file-card {
+    min-height: 68px;
+    border-radius: 16px;
+}
+
+.vault-browser-files.list-view .vault-browser-file-open {
+    min-height: 68px;
+    padding: 9px 42px 9px 10px;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 10px;
+}
+
+.vault-browser-files.list-view .vault-browser-file-preview {
+    width: 42px;
+    height: 48px;
+    border-radius: 12px;
+    font-size: 17px;
+}
+
+.vault-browser-file-copy strong {
+    font-size: 10.5px;
+}
+
+.vault-browser-file-copy small,
+.vault-browser-file-copy em {
+    margin-top: 3px;
+    font-size: 8px;
+}
+
+.vault-browser-file-menu {
+    top: 7px;
+    right: 6px;
+    width: 29px;
+    height: 29px;
+    border-radius: 9px;
+    font-size: 13px;
+}
+
+.vault-browser-add-button {
+    width: 54px;
+    height: 54px;
+    font-size: 21px;
+}
+
+.vault-folder-grid.grid-view .vault-folder-card-icon i {
+    font-size: 22px;
+}
+
+.vault-folder-grid.list-view .vault-folder-card-icon {
+    width: 38px;
+    height: 38px;
+}
+
+.vault-folder-grid.list-view .vault-folder-card-icon i {
+    font-size: 17px;
+}
+
+.vault-file-list.grid-view .vault-file-icon {
+    height: 72px;
+    border-radius: 13px;
+    font-size: 20px;
+}
+
+.vault-file-list.list-view .vault-file-icon {
+    width: 42px;
+    height: 48px;
+    border-radius: 12px;
+    font-size: 17px;
+}
+
+@media (max-width: 380px) {
+    .vault-browser-files.grid-view,
+    .vault-browser-folders.grid-view {
+        gap: 8px;
+    }
+
+    .vault-browser-files.grid-view .vault-browser-file-card {
+        min-height: 150px;
+    }
+
+    .vault-browser-files.grid-view .vault-browser-file-preview {
+        height: 66px;
+    }
+
+    .vault-browser-folder-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+}
+
+
+/* =========================================================
+   Folder navigation, compact chips, and dashboard text fix
+   ========================================================= */
+
+/*
+ * Compact list/grid controls on both dedicated folder and file pages.
+ * The previous control had excessive internal spacing and looked too large.
+ */
+.vault-browser-view-toggle {
+    width: 68px;
+    height: 32px;
+    padding: 3px;
+    border-radius: 11px;
+    grid-template-columns: repeat(2, 29px);
+    gap: 4px;
+}
+
+.vault-browser-view-toggle button {
+    width: 29px;
+    height: 26px;
+    padding: 0;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.vault-browser-tools {
+    align-items: center;
+}
+
+/*
+ * Keep the dashboard view control visually consistent with the browser-page
+ * control without adding unnecessary vertical space.
+ */
+.vault-view-toggle-main {
+    width: 68px;
+    height: 32px;
+    padding: 3px;
+    grid-template-columns: repeat(2, 29px);
+    gap: 4px;
+}
+
+.vault-view-toggle-main button {
+    width: 29px;
+    height: 26px;
+    font-size: 13px;
+}
+
+/*
+ * Folder names on the dashboard should use the same dark text hierarchy
+ * as file names.
+ */
+.vault-folder-card strong,
+.vault-folder-card-copy strong {
+    color: var(--neutral-dark, #211A17) !important;
+    opacity: 1;
+}
+
+.vault-folder-card span,
+.vault-folder-card-copy small {
+    color: var(--muted, #817872);
+}
+
+/*
+ * Keep dedicated Folders-page cards compact now that "All Files"
+ * has been removed.
+ */
+.vault-browser-folders.list-view .vault-browser-folder-card {
+    min-height: 62px;
+}
+
+.vault-browser-folders.grid-view .vault-browser-folder-card {
+    min-height: 98px;
+}
+
+@media (max-width: 380px) {
+    .vault-browser-view-toggle,
+    .vault-view-toggle-main {
+        width: 64px;
+        grid-template-columns: repeat(2, 27px);
+        gap: 4px;
+    }
+
+    .vault-browser-view-toggle button,
+    .vault-view-toggle-main button {
+        width: 27px;
+        font-size: 12px;
+    }
+}
+
+
+/* =========================================================
+   Dedicated folder/file page card-height correction
+   ========================================================= */
+
+/*
+ * The dedicated browser content occupies the remaining screen height.
+ * Because it also becomes a CSS grid, its rows previously stretched to
+ * fill that height when only a few items existed. This caused a single
+ * folder or file to become an extremely tall card.
+ */
+.vault-browser-folders,
+.vault-browser-files {
+    align-content: start;
+    align-items: start;
+    grid-auto-rows: max-content;
+}
+
+/* List rows should always keep their natural compact height. */
+.vault-browser-folders.list-view .vault-browser-folder-card,
+.vault-browser-files.list-view .vault-browser-file-card {
+    height: auto;
+    align-self: start;
+}
+
+/* Grid cards should remain compact rather than filling the page vertically. */
+.vault-browser-folders.grid-view .vault-browser-folder-card,
+.vault-browser-files.grid-view .vault-browser-file-card {
+    height: auto;
+    align-self: start;
+}
+
+/* Keep file-open buttons sized to their content in grid mode. */
+.vault-browser-files.grid-view .vault-browser-file-open {
+    height: auto;
+    min-height: 0;
+}
+
+/* Prevent a one-item list or grid from stretching its only row. */
+.vault-browser-content.list-view,
+.vault-browser-content.grid-view {
+    align-content: start;
+    grid-auto-rows: max-content;
+}
+
+/* Final compact card proportions. */
+.vault-browser-files.grid-view .vault-browser-file-card {
+    min-height: 0;
+}
+
+.vault-browser-files.grid-view .vault-browser-file-open {
+    min-height: 146px;
+}
+
+.vault-browser-files.list-view .vault-browser-file-card,
+.vault-browser-files.list-view .vault-browser-file-open {
+    min-height: 68px;
+}
+
+.vault-browser-folders.grid-view .vault-browser-folder-card {
+    min-height: 98px;
+}
+
+.vault-browser-folders.list-view .vault-browser-folder-card {
+    min-height: 62px;
+}
+
+
+/* =========================================================
+   Non-redundant Vault navigation refinement
+   ========================================================= */
+
+.vault-overview-card .vault-section-head {
+    justify-content: flex-start;
+}
+
+.vault-overview-card .vault-section-head > div {
+    width: 100%;
+}
+
+/*
+ * Navigation is intentionally limited to:
+ * - clickable Files, Folders, and Favorites overview cards
+ * - Folders View all
+ * - Recent Files View all
+ */
+
+
+/* =========================================================
+   Nested folders
+   ========================================================= */
+
+.vault-browser-breadcrumb {
+    position: absolute;
+    top: calc(env(safe-area-inset-top, 0px) + 136px);
+    left: 24px;
+    right: 24px;
+    min-height: 30px;
+    overflow-x: auto;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    scrollbar-width: none;
+    z-index: 2;
+}
+
+.vault-browser-breadcrumb[hidden] {
+    display: none !important;
+}
+
+.vault-browser-breadcrumb::-webkit-scrollbar {
+    display: none;
+}
+
+.vault-browser-breadcrumb button {
+    border: 0;
+    background: transparent;
+    color: #6B5CA5;
+    padding: 5px 2px;
+    font-size: 9px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.vault-browser-breadcrumb button[aria-current="page"] {
+    color: var(--neutral-dark, #211A17);
+}
+
+.vault-browser-breadcrumb i {
+    color: var(--neutral-light, #A99C94);
+    font-size: 8px;
+}
+
+/* Folder pages need room for the breadcrumb row. */
+.vault-browser-page:has(.vault-browser-breadcrumb:not([hidden]))
+    .vault-browser-content {
+    top: calc(env(safe-area-inset-top, 0px) + 178px);
+}
+
+/* Fallback for browsers without :has support. */
+.vault-folder-contents {
+    top: calc(env(safe-area-inset-top, 0px) + 178px);
+}
+
+.vault-folder-content-section + .vault-folder-content-section {
+    margin-top: 24px;
+}
+
+.vault-folder-content-heading {
+    min-height: 30px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.vault-folder-content-heading h2 {
+    margin: 0;
+    color: var(--neutral-dark, #211A17);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.vault-folder-content-heading span {
+    color: var(--muted, #817872);
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.vault-folder-content-grid {
+    align-content: start;
+    align-items: start;
+    grid-auto-rows: max-content;
+}
+
+.vault-folder-content-grid.grid-view {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.vault-folder-content-grid.list-view {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 9px;
+}
+
+.vault-folder-content-empty {
+    grid-column: 1 / -1;
+    padding: 22px 14px;
+    border: 1px dashed rgba(92, 83, 78, 0.13);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.56);
+    color: var(--muted, #817872);
+    text-align: center;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.vault-folder-location-text {
+    margin: 5px 0 0;
+    color: var(--muted, #817872);
+    font-size: 9px;
+    line-height: 1.3;
+    font-weight: 700;
+}
+
+@media (max-width: 380px) {
+    .vault-browser-breadcrumb {
+        left: 18px;
+        right: 18px;
+    }
+
+    .vault-folder-content-grid.grid-view {
+        gap: 8px;
+    }
+}
+
+
+/* =========================================================
+   Delete options for files and folders
+   ========================================================= */
+
+.vault-browser-folder-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.vault-browser-folder-open {
+    width: 100%;
+    min-height: inherit;
+    border: 0;
+    background: transparent;
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr);
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+}
+
+.vault-browser-folders.grid-view .vault-browser-folder-open,
+.vault-folder-content-grid.grid-view .vault-browser-folder-open {
+    min-height: 98px;
+    padding: 12px 38px 12px 12px;
+    align-content: start;
+}
+
+.vault-browser-folders.list-view .vault-browser-folder-open,
+.vault-folder-content-grid.list-view .vault-browser-folder-open {
+    min-height: 62px;
+    padding: 10px 42px 10px 12px;
+}
+
+.vault-browser-folder-menu {
+    position: absolute;
+    top: 7px;
+    right: 6px;
+    width: 29px;
+    height: 29px;
+    border: 0;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.94);
+    color: var(--neutral, #5C534E);
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+}
+
+.vault-folder-options-list {
+    margin-top: 16px;
+    overflow: hidden;
+    border-radius: 22px;
+    background: #FFFFFF;
+    box-shadow: var(--soft-shadow, 0 10px 24px rgba(92, 83, 78, 0.08));
+}
+
+.vault-folder-options-list button {
+    width: 100%;
+    min-height: 60px;
+    border: 0;
+    border-bottom: 1px solid rgba(92, 83, 78, 0.08);
+    background: transparent;
+    padding: 0 16px;
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    color: var(--neutral-dark, #211A17);
+    text-align: left;
+}
+
+.vault-folder-options-list button:last-child {
+    border-bottom: 0;
+}
+
+.vault-folder-options-list button i {
+    color: var(--muted, #817872);
+    font-size: 16px;
+}
+
+.vault-folder-options-list button strong {
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.vault-folder-options-list button.danger,
+.vault-folder-options-list button.danger i {
+    color: #B84C4C;
+}
+
+
+/* =========================================================
+   Folder item-count text alignment fix
+   ========================================================= */
+
+/* Keep "1 item" and "0 items" on one line. */
+.vault-browser-folder-copy small {
+    display: block;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+    line-height: 1.2;
+}
+
+/* Give the text column enough width in list view. */
+.vault-browser-folders.list-view .vault-browser-folder-open,
+.vault-folder-content-grid.list-view .vault-browser-folder-open {
+    grid-template-columns: 38px minmax(0, 1fr);
+}
+
+/* Prevent the count label from being squeezed by long folder names. */
+.vault-browser-folder-copy {
+    min-width: 0;
+}
+
+.vault-browser-folder-copy strong {
+    display: block;
+    white-space: normal;
+    line-height: 1.25;
+}
+
+.vault-browser-folder-copy small {
+    width: max-content;
+    max-width: 100%;
+}
+
+
+/* =========================================================
+   File Details visibility fix
+   ========================================================= */
+
+/*
+ * File Details must appear above the dedicated Files, Favorites,
+ * and folder-content pages.
+ */
+.vault-preview-page {
+    z-index: 75;
+}
+
+.vault-browser-page {
+    z-index: 45;
+}
+
+
+/* =========================================================
+   Clear File Details transition without dashboard flash
+   ========================================================= */
+
+/*
+ * Keep the current Files/Folder/Favorites page visible underneath the
+ * File Details page. This prevents the Secure Vault dashboard from flashing
+ * during the opening and closing animation.
+ */
+.vault-preview-page {
+    z-index: 75;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(18px);
+    pointer-events: none;
+    transition:
+        opacity 0.24s ease,
+        transform 0.24s ease,
+        visibility 0s linear 0.24s;
+    will-change: opacity, transform;
+}
+
+.vault-preview-page.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    pointer-events: auto;
+    transition:
+        opacity 0.24s ease,
+        transform 0.24s ease,
+        visibility 0s linear 0s;
+}
+
+/*
+ * A subtle overlay makes it visually clear that File Details is a new page,
+ * while the source page remains in place behind it.
+ */
+.vault-preview-page::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: rgba(33, 26, 23, 0.04);
+    opacity: 0;
+    transition: opacity 0.24s ease;
+    pointer-events: none;
+}
+
+.vault-preview-page.show::before {
+    opacity: 1;
+}
+
+/* The browser page stays stable instead of being hidden and rebuilt. */
+.vault-browser-page {
+    z-index: 45;
+}
+
+/* Respect reduced-motion preferences. */
+@media (prefers-reduced-motion: reduce) {
+    .vault-preview-page,
+    .vault-preview-page::before {
+        transition-duration: 0.01ms !important;
+        transform: none !important;
+    }
+}
+
+
+/* =========================================================
+   Final file-opening and transition correction
+   ========================================================= */
+
+/*
+ * The File Details element uses the class .vault-viewer-page.
+ * It must appear above the dedicated folder/files page, but below
+ * the fixed bottom navigation.
+ */
+.vault-viewer-page {
+    z-index: 55;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(22px);
+    pointer-events: none;
+    transition:
+        opacity 0.24s ease,
+        transform 0.24s ease,
+        visibility 0s linear 0.24s;
+    will-change: opacity, transform;
+}
+
+.vault-viewer-page.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    pointer-events: auto;
+    transition:
+        opacity 0.24s ease,
+        transform 0.24s ease,
+        visibility 0s linear 0s;
+}
+
+/*
+ * Keep the opened folder page behind File Details so there is no
+ * dashboard flash and Back returns smoothly to the same folder.
+ */
+.vault-browser-page {
+    z-index: 45;
+}
+
+/* Keep bottom navigation visible above File Details. */
+.vault-bottom-nav {
+    z-index: 60;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vault-viewer-page {
+        transition-duration: 0.01ms !important;
+        transform: none !important;
+    }
+}
+
+
+/* =========================================================
+   HTML validation fix for the New Folder button
+   ========================================================= */
+
+.vault-all-folders-create-copy {
+    min-width: 0;
+    display: block;
+    text-align: left;
+}
