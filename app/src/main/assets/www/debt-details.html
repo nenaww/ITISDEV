@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>KABALIKAT Debt Details</title>
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="style.css" rel="stylesheet"/>
+    <link href="debt-details.css" rel="stylesheet"/>
+</head>
+<body data-page="debt-details">
+<main class="debt-details-page">
+    <div class="debt-details-scroll">
+        <header class="debt-details-header">
+            <button aria-label="Back to Bills and Debt" class="debt-back-button" id="backToBills" type="button">
+                <i aria-hidden="true" class="bi bi-arrow-left"></i>
+            </button>
+            <div>
+                <h1>Debt Details</h1>
+                <p>
+                    Review what you need to pay and what others need to return.
+                </p>
+            </div>
+        </header>
+        <section aria-label="Overall debt summary" class="debt-details-summary">
+            <div class="debt-summary-grid">
+                <article class="debt-summary-item payable">
+<span aria-hidden="true" class="debt-summary-icon">
+<i class="bi bi-arrow-up-right"></i>
+</span>
+                    <div>
+                        <span>You Owe</span>
+                        <strong id="detailsYouOweAmount">₱0</strong>
+                        <small id="detailsYouOweCount">0 active debts</small>
+                    </div>
+                </article>
+                <article class="debt-summary-item receivable">
+<span aria-hidden="true" class="debt-summary-icon">
+<i class="bi bi-arrow-down-left"></i>
+</span>
+                    <div>
+                        <span>Owed to You</span>
+                        <strong id="detailsOwedToYouAmount">₱0</strong>
+                        <small id="detailsOwedToYouCount">0 active debts</small>
+                    </div>
+                </article>
+            </div>
+            <div class="debt-details-overdue" hidden="" id="detailsOverdueNotice">
+                <i aria-hidden="true" class="bi bi-exclamation-circle-fill"></i>
+                <span id="detailsOverdueText">
+                    0 overdue debts need attention
+                </span>
+            </div>
+        </section>
+        <section aria-label="Debt filters" class="debt-details-controls">
+            <div aria-label="Filter debts by direction" class="debt-direction-filter" role="group">
+                <button class="active" data-debt-filter="all" type="button">
+                    All
+                </button>
+                <button data-debt-filter="payable" type="button">
+                    You Owe
+                </button>
+                <button data-debt-filter="receivable" type="button">
+                    Owed to You
+                </button>
+            </div>
+
+        </section>
+        <section class="debt-records-section">
+            <div class="debt-records-heading">
+                <div>
+                    <span>Debt records</span>
+                    <h2 id="debtRecordHeading">All Debts</h2>
+                </div>
+                <span class="debt-record-count" id="debtRecordCount">
+                    0 records
+                </span>
+            </div><div aria-label="Filter debts by status" class="debt-status-button-filter" role="group"><button class="active" data-debt-status-filter="all" type="button">All</button><button data-debt-status-filter="active" type="button">Active</button><button data-debt-status-filter="overdue" type="button">Overdue</button><button data-debt-status-filter="completed" type="button">Completed</button></div>
+            <div class="debt-records-list" id="debtRecordsList"></div>
+        </section>
+    </div>
+    <nav aria-label="Main navigation" class="debt-details-bottom-nav">
+        <button id="detailsNavHome" type="button">
+            <i class="bi bi-house"></i>
+            <span>Home</span>
+        </button>
+        <button id="detailsNavExpenses" type="button">
+            <i class="bi bi-receipt"></i>
+            <span>Expenses</span>
+        </button>
+        <button aria-label="Scan receipt" class="debt-details-nav-scan" id="detailsNavScan" type="button">
+            <i class="bi bi-upc-scan"></i>
+        </button>
+        <button class="active" id="detailsNavBills" type="button">
+            <i class="bi bi-calendar-check-fill"></i>
+            <span>Bills</span>
+        </button>
+        <button id="detailsNavProfile" type="button">
+            <i class="bi bi-person"></i>
+            <span>Profile</span>
+        </button>
+    </nav>
+</main>
+<div aria-live="polite" class="debt-details-toast" id="debtDetailsToast" role="status"></div>
+<script src="debt-details.js"></script>
+</body>
+</html>

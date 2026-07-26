@@ -1,0 +1,868 @@
+:root {
+    --detail-primary: #E98B5F;
+    --detail-primary-dark: #C96E4B;
+    --detail-cream: #FFF9F5;
+    --detail-text: #251F1D;
+    --detail-neutral: #5C534E;
+    --detail-muted: #8A817C;
+    --detail-green: #4F916B;
+    --detail-red: #C33F3F;
+    --detail-shadow: 0 14px 32px rgba(92, 83, 78, 0.09);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--detail-cream);
+}
+
+body {
+    color: var(--detail-text);
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 12px;
+    -webkit-font-smoothing: antialiased;
+}
+
+button,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+.detail-page-shell {
+    position: relative;
+    width: 100%;
+    height: 100dvh;
+    overflow: hidden;
+    background:
+        radial-gradient(
+            circle at 20% 8%,
+            rgba(194, 219, 235, 0.18),
+            transparent 27%
+        ),
+        radial-gradient(
+            circle at 84% 23%,
+            rgba(255, 221, 197, 0.25),
+            transparent 28%
+        ),
+        var(--detail-cream);
+}
+
+.detail-page-scroll {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    padding:
+        calc(env(safe-area-inset-top, 0px) + 26px)
+        22px
+        calc(env(safe-area-inset-bottom, 0px) + 34px);
+}
+
+.detail-page-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.detail-page-header {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+}
+
+.detail-page-back {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    background: transparent;
+    color: var(--detail-primary-dark);
+    font-size: 19px;
+}
+
+.detail-page-header h1 {
+    margin: 0;
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: -0.6px;
+}
+
+.detail-page-header p {
+    margin: 5px 0 0;
+    color: var(--detail-neutral);
+    font-size: 8.8px;
+    font-weight: 600;
+}
+
+.detail-month-button {
+    width: 100%;
+    height: 58px;
+    margin-top: 20px;
+    border: 1px solid rgba(92, 83, 78, 0.06);
+    border-radius: 22px;
+    background: #FFFFFF;
+    color: var(--detail-neutral);
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: var(--detail-shadow);
+}
+
+.detail-summary-card {
+    margin-top: 20px;
+    border-radius: 24px;
+    background: #FFFFFF;
+    padding: 18px;
+    box-shadow: var(--detail-shadow);
+}
+
+.detail-summary-card span {
+    display: block;
+    color: var(--detail-muted);
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.detail-summary-card strong {
+    display: block;
+    margin-top: 7px;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.detail-summary-card small {
+    display: block;
+    margin-top: 10px;
+    color: var(--detail-neutral);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.detail-segmented-filter {
+    min-height: 48px;
+    margin-top: 15px;
+    border-radius: 999px;
+    background: #FFFFFF;
+    padding: 4px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    box-shadow: var(--detail-shadow);
+}
+
+.detail-segmented-filter button {
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--detail-text);
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.detail-segmented-filter button.active {
+    background: #F7C8B4;
+}
+
+.detail-section {
+    margin-top: 25px;
+}
+
+.detail-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.detail-section-heading h2 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+}
+
+.detail-section-heading button,
+.detail-section-heading > span {
+    min-height: 34px;
+    border: 0;
+    border-radius: 999px;
+    background: #FFFFFF;
+    color: var(--detail-text);
+    padding: 0 13px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 9px;
+    font-weight: 800;
+    box-shadow: 0 8px 20px rgba(92, 83, 78, 0.06);
+}
+
+.month-picker {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    display: grid;
+    align-items: end;
+}
+
+.month-picker-backdrop {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    background: rgba(34, 29, 27, 0.34);
+    backdrop-filter: blur(3px);
+}
+
+.month-picker-sheet {
+    position: relative;
+    width: 100%;
+    border-radius: 30px 30px 0 0;
+    background: #F1EDFF;
+    padding:
+        12px
+        24px
+        calc(env(safe-area-inset-bottom, 0px) + 22px);
+    box-shadow: 0 -18px 50px rgba(38, 31, 29, 0.18);
+}
+
+.month-picker-handle {
+    width: 46px;
+    height: 5px;
+    margin: 0 auto 14px;
+    border-radius: 999px;
+    background: #C9A1C8;
+}
+
+.month-picker-sheet header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.month-picker-sheet header span {
+    color: #8A6B8D;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.month-picker-sheet header h2 {
+    margin: 4px 0 0;
+    font-size: 18px;
+}
+
+.month-picker-sheet header button {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.76);
+    color: #6F5274;
+}
+
+.month-picker-fields {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: 1.25fr 0.75fr;
+    gap: 12px;
+}
+
+.month-picker-fields label {
+    display: grid;
+    gap: 8px;
+    color: var(--detail-neutral);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.month-picker-fields select {
+    height: 52px;
+    border: 1px solid rgba(111, 82, 116, 0.12);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--detail-text);
+    padding: 0 14px;
+    font-weight: 800;
+}
+
+.month-picker-actions {
+    margin-top: 22px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.month-picker-actions button {
+    min-height: 48px;
+    border: 0;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.month-picker-actions button:first-child {
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--detail-neutral);
+}
+
+.month-picker-actions button:last-child {
+    background: #C9A1C8;
+    color: var(--detail-text);
+}
+
+.detail-toast {
+    position: fixed;
+    left: 22px;
+    right: 22px;
+    bottom: 24px;
+    z-index: 140;
+    border-radius: 16px;
+    background: var(--detail-neutral);
+    color: #FFFFFF;
+    padding: 13px;
+    opacity: 0;
+    transform: translateY(80px);
+    transition: 0.2s ease;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.detail-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (max-width: 360px) {
+    .month-picker-fields {
+        grid-template-columns: 1fr;
+    }
+}
+
+.category-grid {
+    margin-top: 12px;
+    border-radius: 24px;
+    background: #FFFFFF;
+    padding: 14px;
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    box-shadow: var(--detail-shadow);
+}
+
+.category-card {
+    min-width: 0;
+    min-height: 82px;
+    border: 1.5px solid transparent;
+    border-radius: 18px;
+    padding: 12px;
+    display: grid;
+    grid-template-columns:
+        34px minmax(0, 1fr);
+    align-items: center;
+    gap: 9px;
+    color: var(--detail-text);
+    text-align: left;
+}
+
+.category-card.active {
+    border-color: #8A817C;
+}
+
+.category-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    background: rgba(
+        255,
+        255,
+        255,
+        0.82
+    );
+    display: grid;
+    place-items: center;
+    font-size: 15px;
+}
+
+.category-copy {
+    min-width: 0;
+}
+
+.category-copy strong,
+.category-copy span {
+    display: block;
+}
+
+.category-copy strong {
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.category-copy span {
+    margin-top: 4px;
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.category-empty {
+    grid-column: 1 / -1;
+    min-height: 110px;
+    display: grid;
+    place-items: center;
+    color: var(--detail-muted);
+    text-align: center;
+    font-size: 9px;
+}
+
+.active-category-notice {
+    min-height: 38px;
+    margin-top: 11px;
+    border-radius: 14px;
+    background: #EAF3F8;
+    color: #4F7F99;
+    padding: 0 11px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.active-category-notice button {
+    border: 0;
+    border-radius: 999px;
+    background: #FFFFFF;
+    color: #4F7F99;
+    padding: 6px 10px;
+    font-size: 8px;
+    font-weight: 800;
+}
+
+.bill-records-list {
+    margin-top: 12px;
+    display: grid;
+    gap: 11px;
+}
+
+.bill-record-card {
+    border-radius: 22px;
+    background: #FFFFFF;
+    padding: 14px;
+    box-shadow: var(--detail-shadow);
+}
+
+.bill-record-card.overdue {
+    background:
+        linear-gradient(
+            90deg,
+            #FCE5E5,
+            #FFF8F7 72%,
+            #FFFFFF
+        );
+    box-shadow:
+        inset 5px 0 0 var(--detail-red),
+        var(--detail-shadow);
+}
+
+.bill-record-summary {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    text-align: left;
+}
+
+.bill-record-top {
+    display: grid;
+    grid-template-columns:
+        40px
+        minmax(0, 1fr)
+        auto;
+    align-items: center;
+    gap: 9px;
+}
+
+.bill-record-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
+    background: var(--soft);
+    color: var(--accent);
+    display: grid;
+    place-items: center;
+    font-size: 17px;
+}
+
+.bill-record-title {
+    min-width: 0;
+}
+
+.bill-record-title strong,
+.bill-record-title small {
+    display: block;
+}
+
+.bill-record-title strong {
+    color: var(--detail-text);
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bill-record-title small {
+    margin-top: 3px;
+    color: var(--detail-neutral);
+    font-size: 8px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bill-record-amount {
+    color: var(--detail-primary-dark);
+    font-size: 13px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.bill-record-card.overdue
+.bill-record-title strong,
+.bill-record-card.overdue
+.bill-record-amount {
+    color: #A93232;
+}
+
+.bill-record-meta {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.bill-tag {
+    min-height: 23px;
+    border-radius: 999px;
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 7.5px;
+    font-weight: 800;
+}
+
+.bill-tag.category {
+    background: #EAF3F8;
+    color: #4F7F99;
+}
+
+.bill-tag.status {
+    background: #FFF1E8;
+    color: var(--detail-primary-dark);
+}
+
+.bill-tag.status.paid {
+    background: #EEF6F0;
+    color: var(--detail-green);
+}
+
+.bill-tag.status.overdue {
+    background: var(--detail-red);
+    color: #FFFFFF;
+}
+
+.expand-prompt {
+    margin-top: 10px;
+    padding-top: 9px;
+    border-top:
+        1px solid
+        rgba(92, 83, 78, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--detail-muted);
+    font-size: 8px;
+    font-weight: 800;
+}
+
+.expand-prompt i {
+    transition: transform 0.18s ease;
+}
+
+.bill-record-summary[
+    aria-expanded="true"
+] .expand-prompt i {
+    transform: rotate(180deg);
+}
+
+.bill-record-details {
+    margin-top: 10px;
+    animation: reveal-bill 0.18s ease;
+}
+
+@keyframes reveal-bill {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.bill-information {
+    border-radius: 15px;
+    background: #FAF7F5;
+    overflow: hidden;
+}
+
+.bill-information-row {
+    min-height: 40px;
+    padding: 8px 10px;
+    border-bottom:
+        1px solid
+        rgba(92, 83, 78, 0.07);
+    display: grid;
+    grid-template-columns:
+        24px
+        minmax(0, 1fr)
+        auto;
+    align-items: center;
+    gap: 8px;
+}
+
+.bill-information-row:last-child {
+    border-bottom: 0;
+}
+
+.bill-information-row i {
+    color: var(--detail-primary-dark);
+    font-size: 11px;
+}
+
+.bill-information-row span {
+    color: var(--detail-muted);
+    font-size: 7.5px;
+    font-weight: 700;
+}
+
+.bill-information-row strong {
+    color: var(--detail-text);
+    font-size: 8px;
+    font-weight: 800;
+    text-align: right;
+}
+
+.bill-record-notes {
+    margin-top: 10px;
+    border-left:
+        3px solid
+        rgba(128, 87, 216, 0.35);
+    border-radius:
+        0 12px 12px 0;
+    background: #F7F3FF;
+    padding: 10px;
+}
+
+.bill-record-notes span {
+    color: #8057D8;
+    font-size: 8px;
+    font-weight: 800;
+}
+
+.bill-record-notes p {
+    margin: 4px 0 0;
+    color: var(--detail-neutral);
+    font-size: 8px;
+    line-height: 1.4;
+}
+
+.bill-record-action {
+    width: 100%;
+    min-height: 40px;
+    margin-top: 10px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--detail-primary);
+    color: #FFFFFF;
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.bill-record-action.completed {
+    border:
+        1px solid
+        rgba(92, 83, 78, 0.15);
+    background: #FFFFFF;
+    color: var(--detail-neutral);
+}
+
+.empty-bill-records {
+    min-height: 160px;
+    border-radius: 22px;
+    background: #FFFFFF;
+    padding: 22px;
+    display: grid;
+    place-items: center;
+    color: var(--detail-muted);
+    text-align: center;
+    font-size: 9px;
+    box-shadow: var(--detail-shadow);
+}
+
+@media (max-width: 360px) {
+    .category-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================================
+   Expenses Category Breakdown typography parity
+   ========================================================= */
+
+.category-grid {
+    margin-top: 12px;
+    border-radius: 26px;
+    padding: 16px;
+    gap: 10px;
+    box-shadow:
+        0 10px 24px
+        rgba(92, 83, 78, 0.07);
+}
+
+.category-card {
+    min-height: 92px;
+    border: 0;
+    border-radius: 22px;
+    padding: 14px;
+    grid-template-columns:
+        40px minmax(0, 1fr);
+    gap: 10px;
+    box-shadow:
+        0 9px 20px
+        rgba(92, 83, 78, 0.08);
+}
+
+.category-card.active {
+    border: 0;
+    outline:
+        2px solid
+        rgba(92, 83, 78, 0.48);
+    outline-offset: -2px;
+}
+
+.category-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    font-size: 17px;
+}
+
+.category-copy strong {
+    color: #342C29;
+    font-size: 12px;
+    line-height: 1.3;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+.category-copy span {
+    margin-top: 5px;
+    color: #5C534E;
+    font-size: 12px;
+    line-height: 1.2;
+}
+
+#toggleCategories {
+    min-height: 38px;
+    padding: 0 14px;
+    font-size: 12px;
+}
+
+@media (max-width: 380px) {
+    .category-grid {
+        gap: 8px;
+    }
+
+    .category-card {
+        min-height: 88px;
+        padding: 12px 10px;
+    }
+
+    .category-copy strong,
+    .category-copy span {
+        font-size: 11px;
+    }
+}
+
+/* =========================================================
+   Softer past-due bill treatment
+   ========================================================= */
+
+.bill-record-card.overdue {
+    background:
+        linear-gradient(
+            90deg,
+            #FFF2EC 0%,
+            #FFF9F6 72%,
+            #FFFFFF 100%
+        ) !important;
+    box-shadow:
+        inset 4px 0 0 #E9A07B,
+        var(--detail-shadow) !important;
+}
+
+.bill-record-card.overdue
+.bill-record-title strong {
+    color: #342C29 !important;
+}
+
+.bill-record-card.overdue
+.bill-record-title small {
+    color: #6F625C !important;
+}
+
+.bill-record-card.overdue
+.bill-record-amount {
+    color: #C96E4B !important;
+}
+
+.bill-record-card.overdue
+.bill-record-icon {
+    outline:
+        1.5px solid
+        rgba(233, 160, 123, 0.28) !important;
+}
+
+.bill-tag.status.overdue {
+    background: #F7D8C8 !important;
+    color: #84513E !important;
+    box-shadow: none !important;
+}

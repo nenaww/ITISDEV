@@ -189,6 +189,16 @@ async function loginSampleUser(event) {
         loggedInAt: new Date().toISOString()
     });
 
+    localStorage.setItem("kabalikat_profile_v1", JSON.stringify({
+        id: user.id,
+        name: user.name || "Family Member",
+        email: user.email || "",
+        phone: user.phone || "",
+        role: user.role || "Family Member",
+        familyCode: user.familyCode || "",
+        profileImage: ""
+    }));
+
     showLoginToast(translations[currentLanguage].loginSuccess);
 
     setTimeout(() => {
@@ -209,6 +219,7 @@ async function seedSampleHeadAccount() {
         id: "sample-head",
         name: "Elena Dela Cruz",
         email: "elena@test.com",
+        phone: "0917 123 4567",
         password: "123456",
         role: "Household Head",
         familyCode: "KABA-4821",
@@ -219,6 +230,7 @@ async function seedSampleHeadAccount() {
         id: "sample-member-1",
         name: "Ana Dela Cruz",
         email: "ana@test.com",
+        phone: "0918 234 5678",
         password: "123456",
         role: "Family Member",
         familyCode: "KABA-4821",
@@ -229,6 +241,7 @@ async function seedSampleHeadAccount() {
         id: "sample-member-2",
         name: "Marco Dela Cruz",
         email: "marco@test.com",
+        phone: "0919 345 6789",
         password: "123456",
         role: "Family Member",
         familyCode: "KABA-4821",
@@ -246,7 +259,16 @@ async function upsertUserByEmail(user) {
     const existingUser = await getByIndex("users", "email", user.email);
 
     if (existingUser) {
-        user.id = existingUser.id;
+        /* Preserve the member's changed password and profile data. */
+        await putRecord("users", {
+            ...user,
+            ...existingUser,
+            id: existingUser.id,
+            email: existingUser.email,
+            phone: existingUser.phone || user.phone || "",
+            password: existingUser.password
+        });
+        return;
     }
 
     await putRecord("users", user);
