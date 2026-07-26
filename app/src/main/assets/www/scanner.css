@@ -1129,3 +1129,304 @@ body[data-page="scanner"] {
     line-height: 1.45;
     font-family: monospace;
 }
+
+/* =========================================================
+   KABALIKAT logo inside the scanning receipt animation
+   ========================================================= */
+
+.mini-receipt-logo img {
+    width: 88% !important;
+    height: 88% !important;
+    object-fit: contain !important;
+    display: block;
+}
+
+.mini-receipt-logo span {
+    color: rgba(92, 83, 78, 0.50);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   v3 — reliable Save button and Add Expense-style animation
+   ========================================================= */
+
+/* Keep the review controls above the receipt and Android safe area. */
+.review-action-bar {
+    z-index: 500 !important;
+    pointer-events: auto !important;
+    isolation: isolate;
+}
+
+.review-action-bar button,
+#saveExpensesBtn {
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#saveExpensesBtn {
+    position: relative;
+    z-index: 2;
+    cursor: pointer;
+}
+
+#saveExpensesBtn:disabled {
+    opacity: 0.62;
+    cursor: wait;
+}
+
+/* Same animated check treatment as Add Expense. */
+.scanner-save-success-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 700;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(37, 31, 29, 0.18);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.scanner-save-success-overlay.hidden {
+    display: none !important;
+}
+
+.scanner-save-success-overlay.show {
+    opacity: 1;
+}
+
+.scanner-save-success-card {
+    width: min(290px, calc(100vw - 48px));
+    border-radius: 28px;
+    background: #FFFFFF;
+    padding: 24px 22px 22px;
+    text-align: center;
+    box-shadow: 0 18px 42px rgba(92, 83, 78, 0.18);
+    transform: translateY(8px) scale(0.96);
+    transition: transform 0.28s ease;
+}
+
+.scanner-save-success-overlay.show .scanner-save-success-card {
+    transform: translateY(0) scale(1);
+}
+
+.scanner-save-success-check {
+    width: 74px;
+    height: 74px;
+    margin: 0 auto 14px;
+}
+
+.scanner-save-success-check svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.scanner-save-success-overlay .success-circle {
+    fill: none;
+    stroke: #F3CBAF;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 151;
+    stroke-dashoffset: 151;
+}
+
+.scanner-save-success-overlay .success-check {
+    fill: none;
+    stroke: #E98B5F;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 36;
+    stroke-dashoffset: 36;
+}
+
+.scanner-save-success-overlay.show .success-circle {
+    animation: scannerSuccessCircleDraw 0.55s ease forwards;
+}
+
+.scanner-save-success-overlay.show .success-check {
+    animation: scannerSuccessCheckDraw 0.35s ease 0.35s forwards;
+}
+
+.scanner-save-success-card strong {
+    display: block;
+    color: #251F1D;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.scanner-save-success-card p {
+    margin: 7px 0 0;
+    color: #5C534E;
+    font-size: 13px;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+@keyframes scannerSuccessCircleDraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes scannerSuccessCheckDraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+
+/* =========================================================
+   v6 — duplicate detection modal before receipt preview
+   ========================================================= */
+
+.duplicate-receipt-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 650;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(255, 249, 245, 0.56);
+    backdrop-filter: blur(14px);
+}
+
+.duplicate-receipt-modal.hidden {
+    display: none !important;
+}
+
+.duplicate-receipt-card {
+    width: 100%;
+    max-width: 304px;
+    border-radius: 30px;
+    background: rgba(255, 249, 245, 0.97);
+    padding: 24px 20px 20px;
+    text-align: center;
+    box-shadow: 0 20px 46px rgba(92, 83, 78, 0.17);
+}
+
+.duplicate-x-animation {
+    width: 78px;
+    height: 78px;
+    margin: 0 auto 14px;
+}
+
+.duplicate-x-animation svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.duplicate-x-circle {
+    fill: none;
+    stroke: #F1B7B7;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 195;
+    stroke-dashoffset: 195;
+}
+
+.duplicate-x-line {
+    fill: none;
+    stroke: #D66B6B;
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-dasharray: 32;
+    stroke-dashoffset: 32;
+}
+
+.duplicate-receipt-modal.animate .duplicate-x-circle {
+    animation: duplicateCircleDraw 0.52s ease forwards;
+}
+
+.duplicate-receipt-modal.animate .duplicate-x-line-one {
+    animation: duplicateLineDraw 0.28s ease 0.38s forwards;
+}
+
+.duplicate-receipt-modal.animate .duplicate-x-line-two {
+    animation: duplicateLineDraw 0.28s ease 0.55s forwards;
+}
+
+.duplicate-receipt-card h2 {
+    margin: 0;
+    color: var(--neutral-dark);
+    font-size: 19px;
+    line-height: 1.2;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+}
+
+.duplicate-receipt-card p {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+    font-weight: 700;
+}
+
+.duplicate-receipt-actions {
+    margin-top: 21px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.duplicate-receipt-actions button {
+    min-height: 48px;
+    border-radius: 16px;
+    padding: 10px;
+    font-size: 11px;
+    line-height: 1.25;
+    font-weight: 800;
+}
+
+.duplicate-secondary-action {
+    border: 1px solid rgba(92, 83, 78, 0.10);
+    background: #FFFFFF;
+    color: var(--neutral);
+}
+
+.duplicate-primary-action {
+    border: 0;
+    background: #F2B7A0;
+    color: #4F352C;
+}
+
+@keyframes duplicateCircleDraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes duplicateLineDraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@media (max-width: 360px) {
+    .duplicate-receipt-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* =========================================================
+   v13 — duplicate receipt action colors
+   ========================================================= */
+
+.duplicate-secondary-action {
+    border: 0 !important;
+    background: #DDECF5 !important;
+    color: #3F718C !important;
+}
+
+.duplicate-primary-action {
+    border: 0 !important;
+    background: #DDEFE3 !important;
+    color: #3F7452 !important;
+}

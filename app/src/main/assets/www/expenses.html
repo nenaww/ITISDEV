@@ -31,7 +31,7 @@
             </button>
         </section>
 
-        <section class="budget-overview-section" aria-label="Monthly spending progress">
+        <section id="budget-overview" class="budget-overview-section" aria-label="Monthly spending progress">
             <h2 class="budget-overview-title">Budget Overview</h2>
             <div class="budget-gauge-card">
             <div class="budget-gauge-wrap">
@@ -80,25 +80,6 @@
 
                     <div id="seasonalMiniPlans" class="seasonal-mini-plans"></div>
                 </article>
-
-                <article class="seasonal-card thirteenth-card">
-                    <div class="seasonal-card-head">
-                        <div>
-                            <h2>13th Month Pay</h2>
-                            <p id="thirteenthStatusText">Status</p>
-                        </div>
-                        <button id="openThirteenthPanel" type="button">View</button>
-                    </div>
-
-                    <div class="thirteenth-main-row">
-                        <div>
-                            <strong id="thirteenthReceivedMain">Not yet</strong>
-                            <small id="thirteenthRemainingSummary">Create an allocation plan after receiving</small>
-                        </div>
-                    </div>
-
-                    <div id="thirteenthActions" class="thirteenth-action-list" hidden></div>
-                </article>
             </div>
         </section>
 
@@ -113,7 +94,8 @@
             </div>
         </section>
 
-        <section class="expense-section household-section">
+
+        <section id="household-spending" class="expense-section household-section">
             <div class="section-heading">
                 <h2>Household Spending</h2>
             </div>
@@ -143,9 +125,9 @@
             <span>Bills</span>
         </button>
 
-        <button id="navProfile" type="button">
-            <i class="bi bi-person"></i>
-            <span>Profile</span>
+        <button id="navSavings" type="button">
+            <i class="bi bi-piggy-bank"></i>
+            <span>Savings</span>
         </button>
     </nav>
 </main>
@@ -210,10 +192,10 @@
 
         <div id="breakdownFilterChips" class="inline-chips"></div>
         <div class="panel-subheading">
-            <h3>Categories</h3>
-            <span>Tap a card for details</span>
+            <h3>Transaction History</h3>
+            <span id="categoryHistoryFilterLabel">All categories</span>
         </div>
-        <div id="categoryListCards" class="category-list-cards"></div>
+        <div id="categoryListCards" class="dated-history-list category-history-list"></div>
     </div>
 </section>
 
@@ -225,6 +207,46 @@
     </header>
 
     <div id="categoryDetailsContent" class="panel-content"></div>
+</section>
+
+
+<section id="receiptsPanel" class="full-panel receipts-full-panel" hidden>
+    <header>
+        <button id="closeReceiptsPanel" type="button" aria-label="Back to category breakdown">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+        <h2>Receipts</h2>
+        <button id="receiptsPanelOpenPeriod" type="button" aria-label="Select receipt month">
+            <i class="bi bi-calendar3"></i>
+        </button>
+    </header>
+
+    <div class="panel-content">
+        <section class="receipts-panel-summary">
+            <span id="receiptsPanelPeriod">July 2026</span>
+            <strong id="receiptsPanelCount">0</strong>
+            <p>Saved receipts</p>
+        </section>
+
+        <div class="panel-subheading">
+            <h3>Receipt History</h3>
+            <span id="receiptsPanelItemCount">0 receipts</span>
+        </div>
+
+        <div id="receiptsPanelList" class="receipt-bundle-list"></div>
+    </div>
+</section>
+
+<section id="receiptDetailsPanel" class="full-panel receipt-details-full-panel" hidden>
+    <header>
+        <button id="closeReceiptDetailsPanel" type="button" aria-label="Back to receipts">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+        <h2 id="receiptDetailsTitle">Receipt Details</h2>
+        <span class="receipt-panel-header-spacer" aria-hidden="true"></span>
+    </header>
+
+    <div id="receiptDetailsContent" class="panel-content"></div>
 </section>
 
 <section id="memberDetailsPanel" class="full-panel" hidden>
@@ -275,23 +297,6 @@
     </header>
     <div id="seasonalPlanDetailsContent" class="panel-content"></div>
 </section>
-
-<section id="thirteenthMonthPanel" class="full-panel" hidden>
-    <header>
-        <button data-close-panel type="button"><i class="bi bi-arrow-left"></i></button>
-        <h2>13th Month Pay</h2>
-        <button id="thirteenthInfoBtn" type="button"><i class="bi bi-info-circle"></i></button>
-    </header>
-
-    <div class="panel-content">
-        <section class="thirteenth-panel-hero">
-            <div>
-                <span>13th Month Pay</span>
-                <strong id="thirteenthHeroAmount">₱0</strong>
-                <p id="thirteenthHeroDate">Received on Dec 15, 2026</p>
-            </div>
-            <div class="thirteenth-gift-icon large"><i class="bi bi-gift"></i></div>
-        </section>
 
         <div class="thirteenth-summary-grid">
             <article>
@@ -387,6 +392,25 @@
         <p>Your expense has been saved successfully.</p>
     </div>
 </div>
+
+
+<section id="expenseReceiptModal" class="expense-receipt-modal" hidden aria-modal="true" role="dialog" aria-labelledby="expenseReceiptModalTitle">
+    <button id="expenseReceiptBackdrop" class="expense-receipt-backdrop" type="button" aria-label="Close receipt image"></button>
+    <div class="expense-receipt-modal-card">
+        <header>
+            <div>
+                <span>Attached receipt</span>
+                <h2 id="expenseReceiptModalTitle">Receipt Image</h2>
+            </div>
+            <button id="closeExpenseReceiptModal" type="button" aria-label="Close receipt image">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </header>
+        <div class="expense-receipt-image-wrap">
+            <img id="expenseReceiptModalImage" src="" alt="Scanned receipt">
+        </div>
+    </div>
+</section>
 
 <div id="expenseToast" class="expense-toast"></div>
 

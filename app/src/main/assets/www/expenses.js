@@ -9,6 +9,314 @@ const EXPENSE_CATEGORIES = {
     Other: { color: '#D5CDE8', soft: '#EBE6F5', icon: 'bi-three-dots' }
 };
 
+const RECEIPTS_CATEGORY_NAME = 'Receipts';
+
+const RECEIPTS_CATEGORY_META = {
+    color: '#7F7874',
+    soft: '#ECEAE8',
+    icon: 'bi-receipt-cutoff'
+};
+
+/* Prototype-only receipt records. No browser storage is required. */
+const PROTOTYPE_RECEIPTS = [
+    {
+        id: 'savemore1',
+        store: 'Savemore',
+        logoFile: 'images/savemore.png',
+        receiptNumber: '01-00009997',
+        date: '2026-07-23',
+        member: 'Elena',
+
+        /*
+            Cool blue-gray tones reference the uploaded Savemore
+            receipt image and its dark printed logo.
+        */
+        panelColor: '#FFF5D8',
+        paperColor: '#FFF5D8',
+        accentColor: '#B48A28',
+        imageBaseName: 'savemore1',
+
+        adjustments: [
+            {
+                label: 'SC/PWD Discount',
+                amount: -3.66
+            }
+        ],
+
+        items: [
+            {
+                id: 'savemore-whole-wheat',
+                title: 'Whole Wheat Bread 600g',
+                category: 'Food',
+                quantity: 1,
+                amount: 82,
+                countedAmount: 78.34
+            }
+        ]
+    },
+    {
+        id: '7111',
+        store: '7-Eleven',
+        logoFile: 'images/711.png',
+        receiptNumber: '100057512',
+        date: '2026-07-21',
+        member: 'Marco',
+
+        /*
+            Warm paper tones reference the uploaded 7-Eleven
+            receipt while the accent follows its brand identity.
+        */
+        panelColor: '#FFF1E8',
+        paperColor: '#FFF1E8',
+        accentColor: '#E98B5F',
+        imageBaseName: '7111',
+        adjustments: [],
+
+        items: [
+            {
+                id: '711-coke-zero',
+                title: 'Coca-Cola No Sugar 250mL',
+                category: 'Food',
+                quantity: 1,
+                amount: 28,
+                countedAmount: 28
+            }
+        ]
+    },
+    {
+        id: 'mercury1',
+        store: 'Mercury Drug',
+        logoFile: 'images/mercury.png',
+        receiptNumber: '00304',
+        date: '2026-07-20',
+        member: 'Elena',
+
+        /*
+            Soft cool gray-blue tones reference the uploaded
+            Mercury receipt and its pharmacy presentation.
+        */
+        panelColor: '#FFE8EE',
+        paperColor: '#FFE8EE',
+        accentColor: '#C85F72',
+        imageBaseName: 'mercury1',
+        adjustments: [],
+
+        items: [
+            {
+                id: 'mercury-lexapro',
+                title: 'Lexapro FCT 10mg',
+                category: 'Health',
+                quantity: 30,
+                amount: 3855,
+                countedAmount: 3855
+            }
+        ]
+    },
+    {
+        id: 'alphamart1',
+        store: 'Alphamart',
+        logoFile: 'images/alphamart.png',
+        receiptNumber: 'AM-071926-032',
+        date: '2026-07-19',
+        member: 'Ana',
+        panelColor: '#FFE6E6',
+        paperColor: '#FFE6E6',
+        accentColor: '#D66B6B',
+        imageBaseName: 'alphamart1',
+        adjustments: [],
+
+        items: [
+            {
+                id: 'alphamart-eggs',
+                title: 'Eggs 12pcs',
+                category: 'Food',
+                quantity: 1,
+                amount: 110,
+                countedAmount: 110
+            },
+            {
+                id: 'alphamart-soap',
+                title: 'Laundry Soap',
+                category: 'Other',
+                quantity: 1,
+                amount: 78,
+                countedAmount: 78
+            },
+            {
+                id: 'alphamart-bread',
+                title: 'Loaf Bread',
+                category: 'Food',
+                quantity: 1,
+                amount: 55,
+                countedAmount: 55
+            }
+        ]
+    },
+    {
+        id: 'puregold1',
+        store: 'Puregold',
+        logoFile: 'images/puregold.png',
+        receiptNumber: 'PG-071826-105',
+        date: '2026-07-18',
+        member: 'Elena',
+        panelColor: '#EEF6F0',
+        paperColor: '#EEF6F0',
+        accentColor: '#6C9278',
+        imageBaseName: 'puregold1',
+        adjustments: [],
+
+        items: [
+            {
+                id: 'puregold-chicken',
+                title: 'Whole Chicken',
+                category: 'Food',
+                quantity: 1,
+                amount: 220,
+                countedAmount: 220
+            },
+            {
+                id: 'puregold-oil',
+                title: 'Cooking Oil 1L',
+                category: 'Food',
+                quantity: 1,
+                amount: 150,
+                countedAmount: 150
+            },
+            {
+                id: 'puregold-notebook',
+                title: 'Notebook',
+                category: 'Education',
+                quantity: 1,
+                amount: 60,
+                countedAmount: 60
+            }
+        ]
+    }
+];
+function getPrototypeReceiptSubtotal(receipt) {
+    return (receipt?.items || []).reduce((sum,item)=>sum+Number(item.amount||0),0);
+}
+function getPrototypeReceiptTotal(receipt) {
+    const subtotal =
+        getPrototypeReceiptSubtotal(
+            receipt
+        );
+
+    const adjustmentTotal =
+        (
+            Array.isArray(
+                receipt?.adjustments
+            )
+                ? receipt.adjustments
+                : []
+        )
+            .reduce(
+                (sum, adjustment) =>
+                    sum +
+                    Number(
+                        adjustment.amount ||
+                        0
+                    ),
+                0
+            );
+
+    return Math.max(
+        Number(
+            (
+                subtotal +
+                adjustmentTotal
+            ).toFixed(2)
+        ),
+        0
+    );
+}
+
+function getLighterReceiptColor(
+    hexColor,
+    strength = 0.22
+) {
+    const normalized =
+        String(
+            hexColor ||
+            ''
+        )
+            .replace(
+                '#',
+                ''
+            )
+            .trim();
+
+    if (
+        !/^[0-9a-f]{6}$/i.test(
+            normalized
+        )
+    ) {
+        return hexColor;
+    }
+
+    const amount =
+        Math.min(
+            Math.max(
+                Number(
+                    strength
+                ) ||
+                0,
+                0
+            ),
+            1
+        );
+
+    const channels = [
+        parseInt(
+            normalized.slice(
+                0,
+                2
+            ),
+            16
+        ),
+        parseInt(
+            normalized.slice(
+                2,
+                4
+            ),
+            16
+        ),
+        parseInt(
+            normalized.slice(
+                4,
+                6
+            ),
+            16
+        )
+    ];
+
+    return (
+        '#' +
+        channels
+            .map(channel => {
+                return Math.round(
+                    channel +
+                    (
+                        255 -
+                        channel
+                    ) *
+                    amount
+                )
+                    .toString(16)
+                    .padStart(
+                        2,
+                        '0'
+                    );
+            })
+            .join('')
+    );
+}
+
+function findPrototypeReceipt(receiptId) {
+    return PROTOTYPE_RECEIPTS.find(receipt=>String(receipt.id)===String(receiptId||'')) || null;
+}
+
+
 const MONTH_OPTIONS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const APP_START_DATE_KEY = 'kabalikat_app_start_date';
 
@@ -118,20 +426,7 @@ const SEASONAL_PLANS = [
     }
 ];
 
-const THIRTEENTH_MONTH_PAY = {
-    received: false,
-    expectedAmount: 50000,
-    amount: 0,
-    receivedDate: '',
-    allocations: [
-        { name: 'Christmas & Noche Buena', allocated: 15000, spent: 0, remaining: 15000, icon: 'bi-gift', soft: '#F0E0F2' },
-        { name: 'Savings', allocated: 15000, spent: 0, remaining: 15000, icon: 'bi-wallet2', soft: '#FBE5D8' },
-        { name: 'Bills & Debt', allocated: 10000, spent: 0, remaining: 10000, icon: 'bi-receipt', soft: '#E5F1E8' },
-        { name: 'School Needs', allocated: 5000, spent: 0, remaining: 5000, icon: 'bi-book', soft: '#E0EEF4' },
-        { name: 'Emergency Fund', allocated: 3000, spent: 0, remaining: 3000, icon: 'bi-shield-check', soft: '#FAF0C6' },
-        { name: 'Other', allocated: 2000, spent: 0, remaining: 2000, icon: 'bi-three-dots', soft: '#F4EFEC' }
-    ]
-};
+
 
 const state = {
     budget: 25000,
@@ -160,15 +455,277 @@ const state = {
 };
 
 let currentCategoryDetail = 'Food';
+let activePrototypeReceiptId = '';
 
 document.addEventListener('DOMContentLoaded', () => {
     initializeExpensesPage();
 });
 
-function initializeExpensesPage() {
+async function initializeExpensesPage() {
+    await loadScannedExpensesIntoState();
     document.getElementById('newExpenseDate').value = new Date().toISOString().slice(0, 10);
     bindEvents();
     renderAll();
+    handleExpensesDeepLink();
+}
+
+
+
+async function loadScannedExpensesIntoState() {
+    const existingIds = new Set(state.expenses.map(expense => String(expense.id)));
+    const prototypeExpenses = [];
+
+    PROTOTYPE_RECEIPTS.forEach(receipt => {
+        receipt.items.forEach(item => {
+            const itemId = `prototype:${receipt.id}:${item.id}`;
+            if (existingIds.has(itemId)) return;
+            existingIds.add(itemId);
+            prototypeExpenses.push({
+                id: itemId,
+                category: normalizeScannedExpenseCategory(item.category),
+                title: item.title,
+                amount: Number(item.countedAmount ?? item.amount ?? 0),
+                quantity: Number(item.quantity || 1),
+                member: receipt.member,
+                date: receipt.date,
+                seasonalPlanId: '',
+                source: 'Prototype Receipt',
+                receiptId: receipt.id,
+                receiptStore: receipt.store,
+                receiptNumber: receipt.receiptNumber
+            });
+        });
+    });
+
+    if (prototypeExpenses.length) {
+        state.expenses = [...prototypeExpenses, ...state.expenses];
+    }
+}
+
+function openScannedReceiptDatabaseForExpenses() {
+    return new Promise(
+        (resolve, reject) => {
+            const request =
+                indexedDB.open(
+                    "kabalikat_scanned_expenses_db",
+                    1
+                );
+
+            request.onupgradeneeded =
+                event => {
+                    const database =
+                        event.target.result;
+
+                    if (
+                        !database
+                            .objectStoreNames
+                            .contains(
+                                "receipts"
+                            )
+                    ) {
+                        database
+                            .createObjectStore(
+                                "receipts",
+                                {
+                                    keyPath: "id"
+                                }
+                            );
+                    }
+                };
+
+            request.onsuccess =
+                event => {
+                    resolve(
+                        event.target.result
+                    );
+                };
+
+            request.onerror = () => {
+                reject(
+                    request.error ||
+                    new Error(
+                        "Receipt storage is unavailable."
+                    )
+                );
+            };
+        }
+    );
+}
+
+async function getSavedScannedReceiptRecords() {
+    const database =
+        await openScannedReceiptDatabaseForExpenses();
+
+    return new Promise(
+        (resolve, reject) => {
+            const transaction =
+                database.transaction(
+                    "receipts",
+                    "readonly"
+                );
+
+            const request =
+                transaction
+                    .objectStore(
+                        "receipts"
+                    )
+                    .getAll();
+
+            request.onsuccess = () => {
+                const records =
+                    Array.isArray(
+                        request.result
+                    )
+                        ? request.result
+                        : [];
+
+                resolve(
+                    records.sort(
+                        (first, second) =>
+                            new Date(
+                                second.createdAt ||
+                                0
+                            ) -
+                            new Date(
+                                first.createdAt ||
+                                0
+                            )
+                    )
+                );
+            };
+
+            request.onerror = () => {
+                reject(
+                    request.error ||
+                    new Error(
+                        "Saved receipts could not be read."
+                    )
+                );
+            };
+
+            transaction.oncomplete = () => {
+                database.close();
+            };
+        }
+    );
+}
+
+function getScannedReceiptMetadataFallback() {
+    try {
+        const stored =
+            JSON.parse(
+                localStorage.getItem(
+                    "kabalikat_scanned_expense_metadata"
+                ) ||
+                "[]"
+            );
+
+        return Array.isArray(stored)
+            ? stored
+            : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function normalizeScannedExpenseCategory(category) {
+    const value =
+        String(category || "")
+            .trim()
+            .toLowerCase();
+
+    const categoryMap = {
+        food: "Food",
+        grocery: "Food",
+        groceries: "Food",
+        utilities: "Utilities",
+        utility: "Utilities",
+        transportation: "Transportation",
+        transport: "Transportation",
+        medicine: "Health",
+        medical: "Health",
+        health: "Health",
+        school: "Education",
+        education: "Education",
+        rent: "Rent",
+        housing: "Rent",
+        debt: "Debt",
+        "debt / utang": "Debt",
+        loan: "Debt",
+        emergency: "Other",
+        shopping: "Other",
+        other: "Other",
+        others: "Other"
+    };
+
+    return (
+        categoryMap[value] ||
+        "Other"
+    );
+}
+
+function normalizeImportedExpenseDate(value) {
+    const text =
+        String(value || "")
+            .trim();
+
+    if (
+        /^\d{4}-\d{2}-\d{2}$/.test(
+            text
+        )
+    ) {
+        return text;
+    }
+
+    const parsed =
+        new Date(text);
+
+    if (
+        !Number.isNaN(
+            parsed.getTime()
+        )
+    ) {
+        return (
+            `${parsed.getFullYear()}-` +
+            `${String(
+                parsed.getMonth() + 1
+            ).padStart(2, "0")}-` +
+            `${String(
+                parsed.getDate()
+            ).padStart(2, "0")}`
+        );
+    }
+
+    return new Date()
+        .toISOString()
+        .slice(0, 10);
+}
+
+function handleExpensesDeepLink() {
+    const params = new URLSearchParams(window.location.search);
+    const requestedView = String(params.get('view') || '').toLowerCase();
+    const requestedReceiptId = String(params.get('receiptId') || '');
+    const requestedSection = params.get('section') || window.location.hash.replace(/^#/, '');
+
+    window.requestAnimationFrame(() => {
+        if (requestedView === 'add-expense') {
+            openPanel('addExpensePanel');
+            return;
+        }
+        if (requestedView === 'receipt-details') {
+            renderPrototypeReceiptDetails(findPrototypeReceipt(requestedReceiptId) || PROTOTYPE_RECEIPTS[0]);
+            return;
+        }
+        if (requestedView === 'category-breakdown') {
+            openPanel('categoryBreakdownPanel');
+            return;
+        }
+        if (!requestedSection) return;
+        const target = document.getElementById(requestedSection);
+        const scrollArea = document.querySelector('.expenses-scroll-area');
+        if (!target || !scrollArea) return;
+        scrollArea.scrollTo({top:Math.max(target.offsetTop-18,0),behavior:'auto'});
+    });
 }
 
 function bindEvents() {
@@ -185,10 +742,6 @@ function bindEvents() {
         renderSeasonalPanel();
         openPanel('seasonalSpendingPanel');
     });
-    document.getElementById('openThirteenthPanel').addEventListener('click', () => {
-        renderThirteenthMonthPanel();
-        openPanel('thirteenthMonthPanel');
-    });
     document.getElementById('addCustomSeasonalPlan').addEventListener('click', createCustomSeasonalPlan);
     document.getElementById('memberDetailsCalendar').addEventListener('click', openPeriodSheet);
 
@@ -200,6 +753,21 @@ function bindEvents() {
     document.getElementById('navScan').addEventListener('click', () => {
         window.location.href = 'scanner.html';
     });
+
+    const savingsButton = document.getElementById('navSavings');
+    if (savingsButton) {
+        savingsButton.addEventListener('click', () => {
+            const target = document.getElementById('budget-overview');
+            const scrollArea = document.querySelector('.expenses-scroll-area');
+
+            if (target && scrollArea) {
+                scrollArea.scrollTo({
+                    top: Math.max(target.offsetTop - 18, 0),
+                    behavior: 'smooth'
+                });
+            }
+        });
+    }
 
     document.querySelectorAll('[data-close-panel]').forEach(button => {
         button.addEventListener('click', () => {
@@ -223,13 +791,39 @@ function bindEvents() {
     document.getElementById("navBills")?.addEventListener("click", () => {
         window.location.href = "bills.html";
     });
+
+    /*
+        A receipt detail uses the existing Category Details panel.
+        Its back button must return to the Receipts view instead
+        of closing directly to the Expenses home screen.
+    */
+    document.addEventListener(
+        'click',
+        handlePrototypeReceiptBack,
+        true
+    );
+
+    document.addEventListener("click", handleReceiptPreviewClick);
+
+    document
+        .getElementById("closeExpenseReceiptModal")
+        ?.addEventListener(
+            "click",
+            closeExpenseReceiptModal
+        );
+
+    document
+        .getElementById("expenseReceiptBackdrop")
+        ?.addEventListener(
+            "click",
+            closeExpenseReceiptModal
+        );
 }
 
 function renderAll() {
     renderPeriodHeader();
     renderPiggyBank();
     renderSeasonalOverview();
-    renderThirteenthMonthPanel();
     renderHomeCategoryBreakdown();
     renderHouseholdSpending();
     renderAllExpensesPanel();
@@ -266,30 +860,109 @@ function renderPiggyBank() {
 
 
 function renderHomeCategoryBreakdown() {
-    const totals = getCategoryTotals();
-    const container = document.getElementById('categoryLegend');
+    const totals =
+        getCategoryTotals();
 
-    container.innerHTML = Object.entries(EXPENSE_CATEGORIES).map(([categoryName, meta]) => `
-        <button
-            class="category-grid-item"
-            type="button"
-            data-category-row="${escapeHtml(categoryName)}"
-            style="--category-soft:${escapeHtml(meta.soft)}; --category-accent:${escapeHtml(meta.color)}">
-            <span class="category-grid-icon"><i class="bi ${escapeHtml(meta.icon)}"></i></span>
-            <span class="category-grid-copy">
-                <strong>${escapeHtml(categoryName)}</strong>
-                <small>${peso(totals[categoryName] || 0)}</small>
-            </span>
-        </button>
-    `).join('');
+    const receiptBundles =
+        getVisibleReceiptBundles();
 
-    container.querySelectorAll('[data-category-row]').forEach(button => {
-        button.addEventListener('click', () => openCategoryDetails(button.dataset.categoryRow));
-    });
+    const container =
+        document.getElementById(
+            'categoryLegend'
+        );
+
+    const categoryEntries = [
+        ...Object.entries(
+            EXPENSE_CATEGORIES
+        ),
+        [
+            RECEIPTS_CATEGORY_NAME,
+            RECEIPTS_CATEGORY_META
+        ]
+    ];
+
+    container.innerHTML =
+        categoryEntries
+            .map(
+                ([categoryName, meta]) => {
+                    const isReceipts =
+                        categoryName ===
+                        RECEIPTS_CATEGORY_NAME;
+
+                    const secondaryText =
+                        isReceipts
+                            ? `${receiptBundles.length} ${
+                                receiptBundles.length === 1
+                                    ? 'receipt'
+                                    : 'receipts'
+                            }`
+                            : peso(
+                                totals[
+                                    categoryName
+                                ] ||
+                                0
+                            );
+
+                    return `
+                        <button
+                            class="category-grid-item ${
+                                isReceipts
+                                    ? 'receipts-category-item'
+                                    : ''
+                            }"
+                            type="button"
+                            data-category-row="${escapeHtml(
+                                categoryName
+                            )}"
+                            style="
+                                --category-soft:${escapeHtml(
+                                    meta.soft
+                                )};
+                                --category-accent:${escapeHtml(
+                                    meta.color
+                                )}
+                            ">
+                            <span class="category-grid-icon">
+                                <i class="bi ${escapeHtml(
+                                    meta.icon
+                                )}"></i>
+                            </span>
+
+                            <span class="category-grid-copy">
+                                <strong>
+                                    ${escapeHtml(
+                                        categoryName
+                                    )}
+                                </strong>
+
+                                <small>
+                                    ${escapeHtml(
+                                        secondaryText
+                                    )}
+                                </small>
+                            </span>
+                        </button>
+                    `;
+                }
+            )
+            .join('');
+
+    container
+        .querySelectorAll(
+            '[data-category-row]'
+        )
+        .forEach(button => {
+            button.addEventListener(
+                'click',
+                () => {
+                    openCategoryDetails(
+                        button.dataset
+                            .categoryRow
+                    );
+                }
+            );
+        });
 }
-
-function renderRecentTransactions() {}
-
 
 function renderHouseholdSpending() {
     const container = document.getElementById('householdSpendingList');
@@ -342,6 +1015,12 @@ function openMemberDetails(member) {
     const totalTransactions = member.expenses.length;
     const average = totalTransactions > 0 ? Math.round(member.amount / totalTransactions) : 0;
     const topCategory = member.categoryTotals[0] || { category: 'No spending', amount: 0 };
+    const availableCategories = [...new Set(
+        member.expenses
+            .map(expense => expense.category)
+            .filter(category => EXPENSE_CATEGORIES[category])
+    )];
+
     let angle = 0;
     const gradientParts = member.categoryTotals.filter(item => item.amount > 0).map(item => {
         const meta = EXPENSE_CATEGORIES[item.category];
@@ -370,19 +1049,84 @@ function openMemberDetails(member) {
             <strong>${peso(member.amount)}</strong>
             <span>${member.share}% of household spending</span>
         </section>
+
         <div class="member-stat-grid">
             <article><span>Transactions</span><strong>${totalTransactions}</strong><small>${getSelectedPeriodLabel()}</small></article>
             <article><span>Top Category</span><strong>${escapeHtml(topCategory.category)}</strong><small>${peso(topCategory.amount)}</small></article>
             <article><span>Average Spend</span><strong>${peso(average)}</strong><small>per transaction</small></article>
         </div>
-        <div class="panel-subheading"><h3>Spending by Category</h3><span>${peso(member.amount)} total</span></div>
+
+        <div class="panel-subheading">
+            <h3>Spending by Category</h3>
+            <span>${peso(member.amount)} total</span>
+        </div>
+
         <section class="member-category-card">
-            <div class="member-category-donut" style="background:${gradientParts.length ? `conic-gradient(${gradientParts.join(',')})` : '#F4EFEC'}"><div><strong>${peso(member.amount)}</strong><span>Total</span></div></div>
+            <div class="member-category-donut" style="background:${gradientParts.length ? `conic-gradient(${gradientParts.join(',')})` : '#F4EFEC'}">
+                <div><strong>${peso(member.amount)}</strong><span>Total</span></div>
+            </div>
             <div class="member-category-list">${categoryRows || '<p class="empty-state">No category spending yet.</p>'}</div>
         </section>
-        <div class="panel-subheading"><h3>Recent Transactions</h3><span>${totalTransactions} total</span></div>
-        <div class="expense-list">${member.expenses.length ? member.expenses.sort((a,b) => new Date(b.date)-new Date(a.date)).slice(0,5).map(transactionCard).join('') : '<p class="empty-state">No transactions yet.</p>'}</div>
+
+        <div class="panel-subheading member-recent-heading">
+            <h3>Recent Transactions</h3>
+            <span id="memberTransactionCount">${totalTransactions} total</span>
+        </div>
+
+        <div id="memberTransactionFilters" class="member-transaction-filters" aria-label="Filter member transactions">
+            <button class="active" type="button" data-member-category-filter="All">All</button>
+            ${availableCategories.map(category => {
+                const meta = EXPENSE_CATEGORIES[category];
+                return `
+                    <button
+                        type="button"
+                        data-member-category-filter="${escapeHtml(category)}"
+                        style="--filter-soft:${escapeHtml(meta.soft)}; --filter-accent:${escapeHtml(meta.color)}">
+                        ${escapeHtml(category)}
+                    </button>
+                `;
+            }).join('')}
+        </div>
+
+        <div id="memberTransactionHistory" class="dated-history-list member-history-list"></div>
     `;
+
+    const filterContainer = document.getElementById('memberTransactionFilters');
+    const historyContainer = document.getElementById('memberTransactionHistory');
+    const countLabel = document.getElementById('memberTransactionCount');
+
+    const renderMemberTransactionHistory = (selectedCategory = 'All') => {
+        const filteredExpenses = member.expenses
+            .filter(expense => selectedCategory === 'All' || expense.category === selectedCategory)
+            .sort((first, second) => new Date(second.date) - new Date(first.date));
+
+        if (historyContainer) {
+            historyContainer.innerHTML = filteredExpenses.length
+                ? renderGroupedTransactionHistory(filteredExpenses.slice(0, 5))
+                : '<p class="empty-state">No transactions in this category yet.</p>';
+        }
+
+        if (countLabel) {
+            countLabel.textContent = selectedCategory === 'All'
+                ? `${totalTransactions} total`
+                : `${filteredExpenses.length} ${filteredExpenses.length === 1 ? 'transaction' : 'transactions'}`;
+        }
+
+        filterContainer?.querySelectorAll('[data-member-category-filter]').forEach(button => {
+            button.classList.toggle(
+                'active',
+                button.dataset.memberCategoryFilter === selectedCategory
+            );
+        });
+    };
+
+    filterContainer?.querySelectorAll('[data-member-category-filter]').forEach(button => {
+        button.addEventListener('click', () => {
+            renderMemberTransactionHistory(button.dataset.memberCategoryFilter || 'All');
+        });
+    });
+
+    renderMemberTransactionHistory('All');
     openPanel('memberDetailsPanel');
 }
 
@@ -414,50 +1158,155 @@ function renderAllExpensesPanel() {
 }
 
 function renderBreakdownPanel() {
-    const totalSpent = getTotalSpent();
-    const totals = getCategoryTotals();
+    const totalSpent =
+        getTotalSpent();
 
-    setText('categoryPanelTotal', peso(totalSpent));
+    setText(
+        'categoryPanelTotal',
+        peso(totalSpent)
+    );
 
-    const chipContainer = document.getElementById('breakdownFilterChips');
-    const chips = ['All', ...Object.keys(EXPENSE_CATEGORIES)];
+    const chipContainer =
+        document.getElementById(
+            'breakdownFilterChips'
+        );
 
-    chipContainer.innerHTML = chips.map(category => `
-        <button class="${state.selectedBreakdownCategory === category ? 'active' : ''}" type="button" data-breakdown-category="${escapeHtml(category)}">${escapeHtml(shortLabel(category))}</button>
-    `).join('');
+    const chips = [
+        'All',
+        ...Object.keys(
+            EXPENSE_CATEGORIES
+        ),
+        RECEIPTS_CATEGORY_NAME
+    ];
 
-    chipContainer.querySelectorAll('[data-breakdown-category]').forEach(button => {
-        button.addEventListener('click', () => {
-            state.selectedBreakdownCategory = button.dataset.breakdownCategory;
-            renderBreakdownPanel();
-        });
-    });
-
-    const categoriesToShow = state.selectedBreakdownCategory === 'All'
-        ? Object.keys(EXPENSE_CATEGORIES)
-        : [state.selectedBreakdownCategory];
-
-    const cardsContainer = document.getElementById('categoryListCards');
-    cardsContainer.innerHTML = categoriesToShow.map(categoryName => {
-        const meta = EXPENSE_CATEGORIES[categoryName];
-        const amount = totals[categoryName] || 0;
-        return `
-            <button class="category-list-card" type="button" data-open-category="${escapeHtml(categoryName)}" style="--category-soft:${escapeHtml(meta.soft)}; --category-accent:${escapeHtml(meta.color)}">
-                <div class="category-list-icon" style="background:${escapeHtml(meta.soft)}"><i class="bi ${escapeHtml(meta.icon)}"></i></div>
-                <div class="category-list-main">
-                    <h4>${escapeHtml(categoryName)}</h4>
-                    <p>${expenseCountText(categoryName)}</p>
-                </div>
-                <div class="category-list-value">
-                    <strong>${peso(amount)}</strong>
-                </div>
+    chipContainer.innerHTML =
+        chips.map(category => `
+            <button
+                class="${
+                    state
+                        .selectedBreakdownCategory ===
+                    category
+                        ? 'active'
+                        : ''
+                }"
+                type="button"
+                data-breakdown-category="${escapeHtml(
+                    category
+                )}">
+                ${escapeHtml(
+                    shortLabel(category)
+                )}
             </button>
-        `;
-    }).join('');
+        `).join('');
 
-    cardsContainer.querySelectorAll('[data-open-category]').forEach(button => {
-        button.addEventListener('click', () => openCategoryDetails(button.dataset.openCategory));
-    });
+    chipContainer
+        .querySelectorAll(
+            '[data-breakdown-category]'
+        )
+        .forEach(button => {
+            button.addEventListener(
+                'click',
+                () => {
+                    const category =
+                        button.dataset
+                            .breakdownCategory;
+
+                    if (
+                        category ===
+                        RECEIPTS_CATEGORY_NAME
+                    ) {
+                        openCategoryDetails(
+                            RECEIPTS_CATEGORY_NAME
+                        );
+
+                        return;
+                    }
+
+                    state
+                        .selectedBreakdownCategory =
+                        category;
+
+                    renderBreakdownPanel();
+                }
+            );
+        });
+
+    const historyContainer =
+        document.getElementById(
+            'categoryListCards'
+        );
+
+    if (
+        state.selectedBreakdownCategory ===
+        RECEIPTS_CATEGORY_NAME
+    ) {
+        const receiptBundles =
+            getVisibleReceiptBundles();
+
+        historyContainer.className =
+            'receipt-bundle-list';
+
+        historyContainer.innerHTML =
+            receiptBundles.length
+                ? receiptBundles
+                    .map(
+                        receiptBundleCard
+                    )
+                    .join('')
+                : `
+                    <p class="empty-state">
+                        No scanned receipts for this month.
+                    </p>
+                `;
+
+        setText(
+            'categoryHistoryFilterLabel',
+            receiptBundles.length === 1
+                ? '1 saved receipt'
+                : `${receiptBundles.length} saved receipts`
+        );
+
+        return;
+    }
+
+    const filteredExpenses =
+        getVisibleExpenses()
+            .filter(expense => {
+                return (
+                    state
+                        .selectedBreakdownCategory ===
+                        'All' ||
+                    expense.category ===
+                        state
+                            .selectedBreakdownCategory
+                );
+            })
+            .sort(
+                (first, second) =>
+                    new Date(
+                        second.date
+                    ) -
+                    new Date(
+                        first.date
+                    )
+            );
+
+    historyContainer.className =
+        'dated-history-list category-history-list';
+
+    historyContainer.innerHTML =
+        renderGroupedTransactionHistory(
+            filteredExpenses
+        );
+
+    setText(
+        'categoryHistoryFilterLabel',
+        state.selectedBreakdownCategory ===
+            'All'
+            ? 'All categories'
+            : state
+                .selectedBreakdownCategory
+    );
 }
 
 function renderDonutAndLegend({ donutId, legendId, filteredCategory, centerLabelType, onRowClick }) {
@@ -520,6 +1369,20 @@ function openCategoryDetails(categoryName) {
 }
 
 function renderCategoryDetails(categoryName) {
+    if (
+        categoryName ===
+        RECEIPTS_CATEGORY_NAME
+    ) {
+        renderReceiptCategoryDetails();
+        return;
+    }
+
+    renderRegularCategoryDetails(
+        categoryName
+    );
+}
+
+function renderRegularCategoryDetails(categoryName) {
     const meta = EXPENSE_CATEGORIES[categoryName];
     const categoryExpenses = getVisibleExpenses()
         .filter(expense => expense.category === categoryName)
@@ -540,7 +1403,7 @@ function renderCategoryDetails(categoryName) {
                 <div class="category-summary-icon"><i class="bi ${escapeHtml(meta.icon)}"></i></div>
                 <div>
                     <h3>${escapeHtml(categoryName)}</h3>
-                    <p>${escapeHtml(periodModeLabel())} • ${escapeHtml(getSelectedPeriodLabel())}</p>
+                    <p>${escapeHtml(getSelectedPeriodLabel())}</p>
                 </div>
             </div>
 
@@ -553,8 +1416,8 @@ function renderCategoryDetails(categoryName) {
                     <strong>${peso(previousAmount)}</strong>
                 </div>
                 <div>
-                    <span>Change</span>
-                    <strong>${change >= 0 ? '+' : '-'}${peso(Math.abs(change))} (${changePercent}%)</strong>
+                    <span>Transactions</span>
+                    <strong>${categoryExpenses.length}</strong>
                 </div>
             </div>
         </section>
@@ -563,8 +1426,12 @@ function renderCategoryDetails(categoryName) {
             <h3>Recent ${escapeHtml(categoryName)} Transactions</h3>
         </div>
 
-        <div class="expense-list">
-            ${categoryExpenses.length ? categoryExpenses.map(transactionCard).join('') : '<p class="empty-state">No transactions in this category yet.</p>'}
+        <div class="dated-history-list category-detail-history-list">
+            ${categoryExpenses.length
+                ? renderGroupedTransactionHistory(
+                    [...categoryExpenses].sort((first, second) => new Date(second.date) - new Date(first.date))
+                )
+                : '<p class="empty-state">No transactions in this category yet.</p>'}
         </div>
 
         <div class="insight-card">
@@ -572,6 +1439,92 @@ function renderCategoryDetails(categoryName) {
             <span>${change > 0 ? `${categoryName} spending increased compared with the previous period.` : `You spent less on ${categoryName} compared with the previous period.`}</span>
         </div>
     `;
+}
+
+
+function renderReceiptCategoryDetails() {
+    const receiptBundles =
+        getVisibleReceiptBundles();
+
+    setText(
+        'categoryDetailsTitle',
+        'Receipts'
+    );
+
+    document
+        .getElementById(
+            'categoryDetailsContent'
+        )
+        .innerHTML = `
+            <section
+                class="category-summary receipts-category-summary"
+                style="
+                    --category-soft:${escapeHtml(
+                        RECEIPTS_CATEGORY_META.soft
+                    )};
+                    --category-accent:${escapeHtml(
+                        RECEIPTS_CATEGORY_META.color
+                    )}
+                ">
+                <div class="category-summary-top">
+                    <div class="category-summary-icon">
+                        <i class="bi ${escapeHtml(
+                            RECEIPTS_CATEGORY_META.icon
+                        )}"></i>
+                    </div>
+
+                    <div>
+                        <h3>Saved Receipts</h3>
+                        <p>
+                            ${escapeHtml(
+                                getSelectedPeriodLabel()
+                            )}
+                        </p>
+                    </div>
+                </div>
+
+                <strong>
+                    ${receiptBundles.length}
+                </strong>
+
+                <p>
+                    ${
+                        receiptBundles.length === 1
+                            ? 'receipt saved'
+                            : 'receipts saved'
+                    }
+                </p>
+
+                <div class="receipt-reference-note">
+                    <i class="bi bi-info-circle"></i>
+
+                    <span>
+                        Receipts are grouped here. Items remain
+                        counted in their own categories.
+                    </span>
+                </div>
+            </section>
+
+            <div class="category-expenses-title">
+                <h3>Scanned Receipts</h3>
+            </div>
+
+            <div class="receipt-bundle-list">
+                ${
+                    receiptBundles.length
+                        ? receiptBundles
+                            .map(
+                                receiptBundleCard
+                            )
+                            .join('')
+                        : `
+                            <p class="empty-state">
+                                No scanned receipts for this month.
+                            </p>
+                        `
+                }
+            </div>
+        `;
 }
 
 function getSelectedMonthNumber() {
@@ -731,7 +1684,7 @@ function renderSeasonalPanel() {
         .slice(0, 5);
 
     recent.innerHTML = recentExpenses.length
-        ? recentExpenses.map(seasonalExpenseCard).join('')
+        ? renderGroupedTransactionHistory(recentExpenses)
         : '<p class="empty-state">No seasonal expenses yet.</p>';
 
     if (plans.length) {
@@ -833,9 +1786,13 @@ function renderSeasonalPlanDetails() {
             <h3>Recent Transactions</h3>
         </div>
 
-        <div class="expense-list seasonal-detail-transactions">
+        <div class="seasonal-detail-transactions dated-history-list">
             ${plan.expenses.length
-                ? plan.expenses.slice(0, 5).map(seasonalExpenseCard).join('')
+                ? renderGroupedTransactionHistory(
+                    [...plan.expenses]
+                        .sort((first, second) => new Date(second.date) - new Date(first.date))
+                        .slice(0, 5)
+                )
                 : '<p class="empty-state">No seasonal transactions yet.</p>'}
         </div>
     `;
@@ -896,114 +1853,140 @@ function createCustomSeasonalPlan() {
     showToast('Custom seasonal plan added.');
 }
 
-function renderThirteenthMonthPanel() {
-    const allocated = THIRTEENTH_MONTH_PAY.allocations.reduce(
-        (sum, item) => sum + Number(item.allocated || 0),
-        0
-    );
-    const spent = THIRTEENTH_MONTH_PAY.allocations.reduce(
-        (sum, item) => sum + Number(item.spent || 0),
-        0
-    );
-    const baseAmount = THIRTEENTH_MONTH_PAY.received
-        ? Number(THIRTEENTH_MONTH_PAY.amount || 0)
-        : Number(THIRTEENTH_MONTH_PAY.expectedAmount || 0);
-    const remaining = THIRTEENTH_MONTH_PAY.received
-        ? Math.max(baseAmount - spent, 0)
-        : Math.max(baseAmount - allocated, 0);
 
-    setText(
-        'thirteenthStatusText',
-        THIRTEENTH_MONTH_PAY.received
-            ? `Received on ${THIRTEENTH_MONTH_PAY.receivedDate}`
-            : 'Status'
-    );
 
-    setText(
-        'thirteenthReceivedMain',
-        THIRTEENTH_MONTH_PAY.received ? peso(baseAmount) : 'Not yet received'
-    );
+function renderGroupedTransactionHistory(expenses) {
+    const sortedExpenses = [...expenses]
+        .sort((first, second) => new Date(second.date) - new Date(first.date));
 
-    setText(
-        'thirteenthRemainingSummary',
-        THIRTEENTH_MONTH_PAY.received
-            ? `${peso(remaining)} remaining`
-            : 'Create an allocation plan after receiving'
-    );
-
-    const actions = document.getElementById('thirteenthActions');
-    if (actions) {
-        actions.innerHTML = '';
-        actions.hidden = true;
+    if (!sortedExpenses.length) {
+        return '<p class="empty-state">No transactions yet.</p>';
     }
 
-    // Full 13th Month Pay details panel remains functional.
-    setText(
-        'thirteenthHeroAmount',
-        THIRTEENTH_MONTH_PAY.received ? peso(baseAmount) : 'Not yet received'
-    );
-    setText(
-        'thirteenthHeroDate',
-        THIRTEENTH_MONTH_PAY.received
-            ? `Received on ${THIRTEENTH_MONTH_PAY.receivedDate}`
-            : ''
-    );
-    setText('thirteenthGridAllocated', peso(allocated));
-    setText('thirteenthGridSpent', peso(spent));
-    setText('thirteenthGridRemaining', peso(remaining));
-    setText(
-        'thirteenthGridAllocatedPct',
-        baseAmount > 0 ? `${Math.round((allocated / baseAmount) * 100)}%` : '0%'
-    );
-    setText(
-        'thirteenthGridSpentPct',
-        baseAmount > 0 ? `${Math.round((spent / baseAmount) * 100)}%` : '0%'
-    );
-    setText(
-        'thirteenthGridRemainingPct',
-        baseAmount > 0 ? `${Math.round((remaining / baseAmount) * 100)}%` : '0%'
-    );
+    const grouped = new Map();
 
-    const list = document.getElementById('thirteenthAllocationList');
-    if (list) {
-        list.innerHTML = THIRTEENTH_MONTH_PAY.allocations.map(item => `
-            <article class="allocation-card">
-                <div class="allocation-icon" style="background:${escapeHtml(item.soft)}"><i class="bi ${escapeHtml(item.icon)}"></i></div>
-                <div class="allocation-main">
-                    <h4>${escapeHtml(item.name)}</h4>
-                    <p>Allocated ${peso(item.allocated)} • Spent ${peso(item.spent)}</p>
-                </div>
-                <div class="allocation-values">
-                    <strong>${peso(item.remaining)}</strong>
-                    <span>${item.allocated > 0 ? Math.round((item.remaining / item.allocated) * 100) : 0}%</span>
-                </div>
-            </article>
-        `).join('');
-    }
+    sortedExpenses.forEach(expense => {
+        const groupKey = expense.date || 'unknown-date';
+
+        if (!grouped.has(groupKey)) {
+            grouped.set(groupKey, []);
+        }
+
+        grouped.get(groupKey).push(expense);
+    });
+
+    return [...grouped.entries()].map(([date, entries]) => `
+        <section class="dated-history-group">
+            <div class="dated-history-date">${escapeHtml(formatSeasonalTransactionDate(date))}</div>
+            <div class="dated-history-rows">
+                ${entries.map(datedTransactionRow).join('')}
+            </div>
+        </section>
+    `).join('');
+}
+
+function datedTransactionRow(expense) {
+    const meta = EXPENSE_CATEGORIES[expense.category] || EXPENSE_CATEGORIES.Other;
+
+    return `
+        <article class="dated-history-row">
+            <span class="dated-history-icon" style="background:${escapeHtml(meta.soft)}">
+                <i class="bi ${escapeHtml(meta.icon || expense.icon || 'bi-stars')}"></i>
+            </span>
+
+            <div class="dated-history-copy">
+                <h4>${escapeHtml(expense.title)}</h4>
+                <p>${escapeHtml(expense.category)} <b>|</b> ${escapeHtml(expense.member || 'Member')}</p>
+            </div>
+
+            <strong class="dated-history-amount">-${peso(expense.amount)}</strong>
+        </article>
+    `;
 }
 
 
-function bindThirteenthActions() {
-    document.querySelectorAll('[data-thirteenth-action]').forEach(button => {
-        button.addEventListener('click', () => {
-            const action = button.dataset.thirteenthAction;
-            if (action === 'set-expected') {
-                const value = Number(prompt('Enter expected 13th month pay amount:', THIRTEENTH_MONTH_PAY.expectedAmount));
-                if (value > 0) THIRTEENTH_MONTH_PAY.expectedAmount = value;
-            } else if (action === 'create-plan' || action === 'edit-plan' || action === 'view-plan') {
-                openPanel('thirteenthMonthPanel');
-            } else if (action === 'mark-received') {
-                const value = Number(prompt('Enter received 13th month pay amount:', THIRTEENTH_MONTH_PAY.expectedAmount));
-                if (value > 0) {
-                    THIRTEENTH_MONTH_PAY.amount = value;
-                    THIRTEENTH_MONTH_PAY.received = true;
-                    THIRTEENTH_MONTH_PAY.receivedDate = new Date().toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
-                }
-            }
-            renderThirteenthMonthPanel();
-        });
+function seasonalDetailExpenseCard(expense) {
+    const meta = EXPENSE_CATEGORIES[expense.category] || EXPENSE_CATEGORIES.Other;
+
+    return `
+        <div class="seasonal-ledger-entry">
+            <div class="seasonal-ledger-date">${escapeHtml(formatSeasonalTransactionDate(expense.date))}</div>
+
+            <article class="seasonal-ledger-row">
+                <span class="seasonal-ledger-icon" style="background:${escapeHtml(meta.soft)}">
+                    <i class="bi ${escapeHtml(meta.icon || expense.icon || 'bi-stars')}"></i>
+                </span>
+
+                <div class="seasonal-ledger-copy">
+                    <h4>${escapeHtml(expense.title)}</h4>
+                    <p>${escapeHtml(expense.category)} <b>|</b> ${escapeHtml(expense.member || 'Member')}</p>
+                </div>
+
+                <strong class="seasonal-ledger-amount">-${peso(expense.amount)}</strong>
+            </article>
+        </div>
+    `;
+}
+
+function formatHistoryDate(value) {
+    return formatSeasonalTransactionDate(value);
+}
+
+function formatReceiptDate(value) {
+    const receiptDate =
+        value
+            ? new Date(
+                `${value}T00:00:00`
+            )
+            : null;
+
+    if (
+        !receiptDate ||
+        Number.isNaN(
+            receiptDate.getTime()
+        )
+    ) {
+        return 'Date unavailable';
+    }
+
+    return receiptDate.toLocaleDateString(
+        'en-PH',
+        {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric'
+        }
+    );
+}
+
+function formatSeasonalTransactionDate(value) {
+    const transactionDate = value ? new Date(`${value}T00:00:00`) : null;
+
+    if (!transactionDate || Number.isNaN(transactionDate.getTime())) {
+        return 'Date unavailable';
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    if (transactionDate.getTime() === today.getTime()) {
+        return 'Today';
+    }
+
+    if (transactionDate.getTime() === yesterday.getTime()) {
+        return 'Yesterday';
+    }
+
+    return transactionDate.toLocaleDateString('en-PH', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
     });
 }
+
 
 function seasonalExpenseCard(expense) {
     const meta = EXPENSE_CATEGORIES[expense.category] || EXPENSE_CATEGORIES.Other;
@@ -1021,10 +2004,10 @@ function seasonalExpenseCard(expense) {
 
             <div class="transaction-info">
                 <h3>${escapeHtml(expense.title)}</h3>
-                <p>${escapeHtml(expense.category)} <b>|</b> ${escapeHtml(expense.member)}</p>
+                <p>${escapeHtml(expense.category)} <b>|</b> ${escapeHtml(expense.member || 'Member')}</p>
             </div>
 
-            <div class="transaction-amount">-${peso(expense.amount)}</div>
+            <div class="transaction-amount">${Number(expense.amount || 0) < 0 ? '+' : '-'}${peso(Math.abs(Number(expense.amount || 0)))}</div>
         </article>
     `;
 }
@@ -1163,27 +2146,1356 @@ function saveExpense(event) {
     showSaveSuccess();
 }
 
-function transactionCard(expense) {
-    const meta = EXPENSE_CATEGORIES[expense.category] || EXPENSE_CATEGORIES.Other;
+function getVisibleReceiptBundles() {
+    const selectedMonth = getSelectedMonthDate();
+    return PROTOTYPE_RECEIPTS
+        .filter(receipt => {
+            const date = new Date(`${receipt.date}T00:00:00`);
+            return !Number.isNaN(date.getTime()) &&
+                date.getFullYear() === selectedMonth.getFullYear() &&
+                date.getMonth() === selectedMonth.getMonth();
+        })
+        .map(receipt => ({
+            ...receipt,
+            itemCount: receipt.items.length,
+            totalAmount: getPrototypeReceiptTotal(receipt)
+        }))
+        .sort((a,b)=>new Date(`${b.date}T00:00:00`)-new Date(`${a.date}T00:00:00`));
+}
+
+function receiptBundleCard(receipt) {
+    const referenceText =
+        receipt.receiptNumber
+            ? `Receipt #${receipt.receiptNumber}`
+            : 'Prototype receipt';
+
     return `
-        <article class="transaction-card">
+        <button
+            class="receipt-bundle-card"
+            type="button"
+            data-receipt-bundle-id="${escapeHtml(
+                receipt.id
+            )}"
+            aria-label="Open ${escapeHtml(
+                receipt.store
+            )} receipt details"
+            style="
+                background:${escapeHtml(
+                    receipt.panelColor
+                )};
+                border:
+                    1px solid
+                    ${escapeHtml(
+                        receipt.accentColor
+                    )}22;
+                box-shadow:
+                    0 12px 28px
+                    ${escapeHtml(
+                        receipt.accentColor
+                    )}18;
+            ">
+
+            <span
+                class="receipt-bundle-thumbnail"
+                style="
+                    background:
+                        rgba(
+                            255,
+                            255,
+                            255,
+                            .72
+                        );
+                    color:${escapeHtml(
+                        receipt.accentColor
+                    )};
+                    overflow:hidden;
+                ">
+
+                <img
+                    src="${escapeHtml(
+                        receipt.logoFile
+                    )}"
+                    alt="${escapeHtml(
+                        receipt.store
+                    )} logo"
+                    style="
+                        display:block;
+                        width:82%;
+                        height:82%;
+                        object-fit:contain;
+                    "
+                    onerror="
+                        this.style.display='none';
+                        this.nextElementSibling.style.display='grid';
+                    ">
+
+                <i
+                    class="bi bi-shop"
+                    style="
+                        display:none;
+                        width:100%;
+                        height:100%;
+                        place-items:center;
+                        color:${escapeHtml(
+                            receipt.accentColor
+                        )};
+                        font-size:20px;
+                    ">
+                </i>
+            </span>
+
+            <span class="receipt-bundle-main">
+                <strong>
+                    ${escapeHtml(
+                        receipt.store
+                    )}
+                </strong>
+
+                <small>
+                    ${escapeHtml(
+                        referenceText
+                    )}
+                </small>
+
+                <span>
+                    <i class="bi bi-calendar3"></i>
+
+                    ${escapeHtml(
+                        formatReceiptDate(
+                            receipt.date
+                        )
+                    )}
+
+                    •
+                    ${receipt.itemCount}
+                    ${
+                        receipt.itemCount === 1
+                            ? 'item'
+                            : 'items'
+                    }
+                </span>
+            </span>
+
+            <span class="receipt-bundle-value">
+                <strong
+                    style="
+                        color:var(--neutral-dark);
+                    ">
+                    ${peso(
+                        receipt.totalAmount
+                    )}
+                </strong>
+
+                <small>
+                    View details
+                </small>
+            </span>
+
+            <i
+                class="
+                    bi
+                    bi-chevron-right
+                    receipt-bundle-chevron
+                "
+                style="
+                    color:${escapeHtml(
+                        receipt.accentColor
+                    )};
+                ">
+            </i>
+        </button>
+    `;
+}
+
+function transactionCard(expense) {
+    const meta =
+        EXPENSE_CATEGORIES[
+            expense.category
+        ] ||
+        EXPENSE_CATEGORIES.Other;
+
+    const hasReceiptImage =
+        Boolean(
+            expense.receiptImage
+        );
+
+    const visual = hasReceiptImage
+        ? `
+            <button
+                class="transaction-receipt-preview"
+                type="button"
+                data-receipt-preview-id="${escapeHtml(
+                    String(expense.id)
+                )}"
+                aria-label="View attached receipt for ${escapeHtml(
+                    expense.title
+                )}">
+                <img
+                    src="${escapeHtml(
+                        expense.receiptImage
+                    )}"
+                    alt="Receipt thumbnail">
+                <span>
+                    <i class="bi bi-receipt"></i>
+                </span>
+            </button>
+        `
+        : `
+            <div
+                class="transaction-icon"
+                style="background:${escapeHtml(
+                    meta.soft
+                )}">
+                <i class="bi ${escapeHtml(
+                    meta.icon
+                )}"></i>
+            </div>
+        `;
+
+    const amount =
+        Number(
+            expense.amount ||
+            0
+        );
+
+    return `
+        <article class="transaction-card ${
+            hasReceiptImage
+                ? "has-receipt-image"
+                : ""
+        }">
             <span class="scan-corner top-left"></span>
             <span class="scan-corner top-right"></span>
             <span class="scan-corner bottom-left"></span>
             <span class="scan-corner bottom-right"></span>
 
-            <div class="transaction-icon" style="background:${escapeHtml(meta.soft)}">
-                <i class="bi ${escapeHtml(meta.icon)}"></i>
-            </div>
+            ${visual}
 
             <div class="transaction-info">
                 <h3>${escapeHtml(expense.category)}</h3>
-                <p>${escapeHtml(expense.title)} • ${escapeHtml(expense.member)}</p>
+                <p>
+                    ${escapeHtml(expense.title)}
+                    •
+                    ${escapeHtml(expense.member)}
+                </p>
+                ${
+                    hasReceiptImage
+                        ? `<small class="transaction-receipt-label"><i class="bi bi-image"></i> Receipt attached</small>`
+                        : ""
+                }
             </div>
 
-            <div class="transaction-amount">-${peso(expense.amount)}</div>
+            <div class="transaction-amount">
+                ${amount < 0 ? "+" : "-"}${peso(
+                    Math.abs(amount)
+                )}
+            </div>
         </article>
     `;
+}
+
+function getPrototypeReceiptImageCandidates(
+    receipt
+) {
+    const baseName =
+        String(
+            receipt?.imageBaseName ||
+            receipt?.id ||
+            ''
+        );
+
+    if (!baseName) {
+        return [];
+    }
+
+    return [
+        `images/receipts/${baseName}.jpg`,
+        `images/receipts/${baseName}.jpeg`,
+        `images/receipts/${baseName}.png`,
+        `images/receipts/${baseName}.webp`,
+        `images/receipts/${baseName}`
+    ];
+}
+
+function openPrototypeReceiptImage(receipt) {
+    const candidates = getPrototypeReceiptImageCandidates(receipt);
+    let index = 0;
+    const tryNext = () => {
+        if (index >= candidates.length) {
+            showToast(`Add ${receipt.imageBaseName}.jpg to the images folder.`);
+            return;
+        }
+        const source = candidates[index++];
+        const tester = new Image();
+        tester.onload = () => openReceiptImageModal(source, `${receipt.store} Receipt`, receipt.store);
+        tester.onerror = tryNext;
+        tester.src = source;
+    };
+    tryNext();
+}
+
+function renderPrototypeReceiptDetails(
+    receipt
+) {
+    if (!receipt) {
+        showToast(
+            'Receipt details are unavailable.'
+        );
+
+        return;
+    }
+
+    activePrototypeReceiptId =
+        receipt.id;
+
+    const subtotal =
+        getPrototypeReceiptSubtotal(
+            receipt
+        );
+
+    const total =
+        getPrototypeReceiptTotal(
+            receipt
+        );
+
+    const adjustments =
+        Array.isArray(
+            receipt.adjustments
+        )
+            ? receipt.adjustments
+            : [];
+
+    setText(
+        'categoryDetailsTitle',
+        `${receipt.store} Receipt`
+    );
+
+    const itemsMarkup =
+        receipt.items
+            .map(
+                (
+                    item,
+                    itemIndex,
+                    allItems
+                ) => {
+                    const category =
+                        normalizeScannedExpenseCategory(
+                            item.category
+                        );
+
+                    const meta =
+                        EXPENSE_CATEGORIES[
+                            category
+                        ] ||
+                        EXPENSE_CATEGORIES.Other;
+
+                    return `
+                        <div
+                            style="
+                                padding:14px 0;
+                                border-bottom:
+                                    ${
+                                        itemIndex <
+                                        allItems.length - 1
+                                            ? '1px dashed rgba(92,83,78,.20)'
+                                            : '0'
+                                    };
+                            ">
+                            <div
+                                style="
+                                    display:grid;
+                                    grid-template-columns:
+                                        38px minmax(0,1fr) auto;
+                                    align-items:start;
+                                    gap:10px;
+                                ">
+                                <strong
+                                    style="
+                                        color:var(--neutral);
+                                        font-size:12px;
+                                        font-weight:800;
+                                    ">
+                                    ${Number(
+                                        item.quantity ||
+                                        1
+                                    )}x
+                                </strong>
+
+                                <div
+                                    style="
+                                        min-width:0;
+                                    ">
+                                    <strong
+                                        style="
+                                            display:block;
+                                            color:var(--neutral-dark);
+                                            font-size:13px;
+                                            line-height:1.35;
+                                            font-weight:800;
+                                        ">
+                                        ${escapeHtml(
+                                            item.title
+                                        )}
+                                    </strong>
+
+                                    <span
+                                        style="
+                                            display:inline-flex;
+                                            align-items:center;
+                                            gap:6px;
+                                            margin-top:7px;
+                                            padding:5px 9px;
+                                            border-radius:999px;
+                                            background:${escapeHtml(
+                                                meta.soft
+                                            )};
+                                            color:#251F1D;
+                                            font-size:9px;
+                                            line-height:1;
+                                            font-weight:800;
+                                        ">
+                                        <i class="bi ${escapeHtml(
+                                            meta.icon
+                                        )}"></i>
+
+                                        ${escapeHtml(
+                                            category
+                                        )}
+                                    </span>
+                                </div>
+
+                                <strong
+                                    style="
+                                        color:var(--neutral-dark);
+                                        font-size:13px;
+                                        font-weight:800;
+                                        white-space:nowrap;
+                                    ">
+                                    ${peso(
+                                        item.amount
+                                    )}
+                                </strong>
+                            </div>
+                        </div>
+                    `;
+                }
+            )
+            .join('');
+
+    const adjustmentsMarkup =
+        adjustments
+            .map(
+                adjustment => {
+                    const amount =
+                        Number(
+                            adjustment.amount ||
+                            0
+                        );
+
+                    const displayAmount =
+                        amount < 0
+                            ? `-${peso(
+                                Math.abs(
+                                    amount
+                                )
+                            )}`
+                            : peso(
+                                amount
+                            );
+
+                    return `
+                        <div
+                            style="
+                                display:flex;
+                                justify-content:space-between;
+                                align-items:center;
+                                gap:16px;
+                                padding:7px 0;
+                                color:${
+                                    amount < 0
+                                        ? '#C96C4B'
+                                        : 'var(--neutral)'
+                                };
+                                font-size:12px;
+                                font-weight:800;
+                            ">
+                            <span>
+                                ${escapeHtml(
+                                    adjustment.label
+                                )}
+                            </span>
+
+                            <strong>
+                                ${displayAmount}
+                            </strong>
+                        </div>
+                    `;
+                }
+            )
+            .join('');
+
+    const content =
+        document.getElementById(
+            'categoryDetailsContent'
+        );
+
+    if (!content) {
+        return;
+    }
+
+    content.innerHTML = `
+        <section
+            style="
+                padding:18px;
+                border-radius:28px;
+                background:${escapeHtml(
+                    receipt.panelColor
+                )};
+                box-shadow:
+                    0 14px 34px
+                    ${escapeHtml(
+                        receipt.accentColor
+                    )}1F;
+            ">
+            <article
+                style="
+                    position:relative;
+                    overflow:hidden;
+                    padding:26px 20px 24px;
+                    border-radius:22px;
+                    background:
+                        linear-gradient(
+                            rgba(
+                                255,
+                                255,
+                                255,
+                                .30
+                            ),
+                            rgba(
+                                255,
+                                255,
+                                255,
+                                .30
+                            )
+                        ),
+                        ${escapeHtml(
+                            receipt.paperColor
+                        )};
+                    border:
+                        1px solid
+                        rgba(
+                            255,
+                            255,
+                            255,
+                            .74
+                        );
+                    box-shadow:
+                        0 12px 28px
+                        ${escapeHtml(
+                            receipt.accentColor
+                        )}18;
+                ">
+                <header
+                    style="
+                        text-align:center;
+                    ">
+                    <div
+                        style="
+                            min-height:64px;
+                            display:grid;
+                            place-items:center;
+                        ">
+                        <img
+                            src="${escapeHtml(
+                                receipt.logoFile
+                            )}"
+                            alt="${escapeHtml(
+                                receipt.store
+                            )} logo"
+                            style="
+                                display:block;
+                                max-width:150px;
+                                max-height:64px;
+                                width:auto;
+                                height:auto;
+                                object-fit:contain;
+                            "
+                            onerror="
+                                this.style.display='none';
+                                this.nextElementSibling.style.display='grid';
+                            ">
+
+                        <span
+                            style="
+                                display:none;
+                                width:58px;
+                                height:58px;
+                                margin:0 auto;
+                                place-items:center;
+                                border-radius:18px;
+                                background:rgba(255,255,255,.78);
+                                color:${escapeHtml(
+                                    receipt.accentColor
+                                )};
+                                font-size:24px;
+                            ">
+                            <i class="bi bi-shop"></i>
+                        </span>
+                    </div>
+
+                    <h3
+                        style="
+                            margin:12px 0 0;
+                            color:var(--neutral-dark);
+                            font-size:18px;
+                            font-weight:800;
+                        ">
+                        ${escapeHtml(
+                            receipt.store
+                        )}
+                    </h3>
+
+                    <p
+                        style="
+                            margin:6px 0 0;
+                            color:var(--muted);
+                            font-size:10px;
+                            font-weight:700;
+                        ">
+                        RECEIPT DETAILS
+                    </p>
+                </header>
+
+                <div
+                    style="
+                        margin-top:18px;
+                        padding:13px 0;
+                        border-top:
+                            1px dashed
+                            rgba(92,83,78,.22);
+                        border-bottom:
+                            1px dashed
+                            rgba(92,83,78,.22);
+                        display:grid;
+                        gap:8px;
+                    ">
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:space-between;
+                            gap:14px;
+                            color:var(--neutral);
+                            font-size:11px;
+                            font-weight:700;
+                        ">
+                        <span>Receipt No.</span>
+                        <strong
+                            style="
+                                color:var(--neutral-dark);
+                            ">
+                            ${escapeHtml(
+                                receipt.receiptNumber
+                            )}
+                        </strong>
+                    </div>
+
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:space-between;
+                            gap:14px;
+                            color:var(--neutral);
+                            font-size:11px;
+                            font-weight:700;
+                        ">
+                        <span>Date</span>
+                        <strong
+                            style="
+                                color:var(--neutral-dark);
+                            ">
+                            ${escapeHtml(
+                                formatReceiptDate(
+                                    receipt.date
+                                )
+                            )}
+                        </strong>
+                    </div>
+
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:space-between;
+                            gap:14px;
+                            color:var(--neutral);
+                            font-size:11px;
+                            font-weight:700;
+                        ">
+                        <span>Paid by</span>
+                        <strong
+                            style="
+                                color:var(--neutral-dark);
+                            ">
+                            ${escapeHtml(
+                                receipt.member
+                            )}
+                        </strong>
+                    </div>
+                </div>
+
+                <div
+                    style="
+                        margin-top:18px;
+                        display:grid;
+                        grid-template-columns:
+                            38px minmax(0,1fr) auto;
+                        gap:10px;
+                        color:var(--muted);
+                        font-size:9px;
+                        font-weight:800;
+                        letter-spacing:.5px;
+                    ">
+                    <span>QTY</span>
+                    <span>ITEM / CATEGORY</span>
+                    <span>PRICE</span>
+                </div>
+
+                <div>
+                    ${itemsMarkup}
+                </div>
+
+                <div
+                    style="
+                        margin-top:15px;
+                        padding-top:14px;
+                        border-top:
+                            1px dashed
+                            rgba(92,83,78,.22);
+                    ">
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:space-between;
+                            align-items:center;
+                            gap:16px;
+                            padding:7px 0;
+                            color:var(--neutral);
+                            font-size:12px;
+                            font-weight:800;
+                        ">
+                        <span>SUBTOTAL</span>
+                        <strong>
+                            ${peso(
+                                subtotal
+                            )}
+                        </strong>
+                    </div>
+
+                    ${adjustmentsMarkup}
+
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:space-between;
+                            align-items:center;
+                            gap:16px;
+                            margin-top:8px;
+                            padding-top:14px;
+                            border-top:
+                                1px dashed
+                                rgba(92,83,78,.22);
+                            color:var(--neutral-dark);
+                            font-size:17px;
+                            font-weight:900;
+                        ">
+                        <span>TOTAL</span>
+
+                        <strong
+                            style="
+                                color:var(--neutral-dark);
+                                font-size:22px;
+                            ">
+                            ${peso(
+                                total
+                            )}
+                        </strong>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <button
+            id="openPrototypeReceiptImage"
+            type="button"
+            style="
+                width:100%;
+                min-height:54px;
+                margin-top:16px;
+                border:0;
+                border-radius:999px;
+                background:${escapeHtml(
+                    getLighterReceiptColor(
+                        receipt.accentColor,
+                        0.20
+                    )
+                )};
+                color:#FFFFFF;
+                font-family:inherit;
+                font-size:13px;
+                font-weight:800;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                gap:9px;
+            ">
+            <i class="bi bi-image"></i>
+            View Receipt Image
+        </button>
+
+        <div
+            class="receipt-reference-note"
+            style="
+                margin-top:14px;
+            ">
+            <i class="bi bi-info-circle"></i>
+
+            <span>
+                This receipt is shown as one grouped record.
+                Its products are counted individually under
+                their official expense categories.
+            </span>
+        </div>
+    `;
+
+    document
+        .getElementById(
+            'openPrototypeReceiptImage'
+        )
+        ?.addEventListener(
+            'click',
+            () => {
+                openPrototypeReceiptImage(
+                    receipt
+                );
+            }
+        );
+
+    openPanel(
+        'categoryDetailsPanel'
+    );
+}
+
+function openPrototypeReceiptDetails(receiptId) {
+    renderPrototypeReceiptDetails(findPrototypeReceipt(receiptId));
+}
+
+function handlePrototypeReceiptBack(
+    event
+) {
+    if (!activePrototypeReceiptId) {
+        return;
+    }
+
+    const backButton =
+        event.target.closest(
+            '#categoryDetailsPanel [data-close-panel]'
+        );
+
+    if (!backButton) {
+        return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    activePrototypeReceiptId =
+        '';
+
+    /*
+        Reuse the same panel and return directly to the
+        Saved Receipts view.
+    */
+    renderReceiptCategoryDetails();
+
+    const panel =
+        document.getElementById(
+            'categoryDetailsPanel'
+        );
+
+    if (panel) {
+        panel.hidden =
+            false;
+
+        panel.scrollTop =
+            0;
+    }
+}
+
+function handleReceiptPreviewClick(event) {
+    const bundleButton = event.target.closest('[data-receipt-bundle-id]');
+    if (bundleButton) {
+        event.preventDefault();
+        event.stopPropagation();
+        openPrototypeReceiptDetails(bundleButton.dataset.receiptBundleId);
+        return;
+    }
+
+    const button = event.target.closest('[data-receipt-preview-id]');
+    if (!button) return;
+    event.preventDefault();
+    event.stopPropagation();
+
+    const expense = state.expenses.find(item => String(item.id) === String(button.dataset.receiptPreviewId));
+    if (expense?.receiptId) {
+        openPrototypeReceiptDetails(expense.receiptId);
+        return;
+    }
+    openReceiptImageModal(expense?.receiptImage, expense?.receiptStore || 'Receipt Image', expense?.title || 'Receipt');
+}
+
+const receiptImageZoomState = {
+    scale: 1,
+    translateX: 0,
+    translateY: 0,
+    pointers: new Map(),
+    startDistance: 0,
+    startScale: 1,
+    dragStartX: 0,
+    dragStartY: 0,
+    startTranslateX: 0,
+    startTranslateY: 0
+};
+
+function applyReceiptImageZoom(
+    image
+) {
+    if (!image) {
+        return;
+    }
+
+    image.style.transform =
+        `translate(` +
+        `${receiptImageZoomState.translateX}px, ` +
+        `${receiptImageZoomState.translateY}px` +
+        `) scale(${receiptImageZoomState.scale})`;
+
+    image.style.cursor =
+        receiptImageZoomState.scale > 1
+            ? 'grab'
+            : 'zoom-in';
+}
+
+function resetReceiptImageZoom() {
+    receiptImageZoomState.scale =
+        1;
+
+    receiptImageZoomState.translateX =
+        0;
+
+    receiptImageZoomState.translateY =
+        0;
+
+    receiptImageZoomState.pointers
+        .clear();
+
+    const image =
+        document.getElementById(
+            'expenseReceiptModalImage'
+        );
+
+    applyReceiptImageZoom(
+        image
+    );
+}
+
+function bindReceiptImageZoom() {
+    const image =
+        document.getElementById(
+            'expenseReceiptModalImage'
+        );
+
+    const wrap =
+        image?.closest(
+            '.expense-receipt-image-wrap'
+        );
+
+    if (
+        !image ||
+        !wrap
+    ) {
+        return;
+    }
+
+    wrap.style.overflow =
+        'hidden';
+
+    wrap.style.touchAction =
+        'none';
+
+    image.style.transformOrigin =
+        'center center';
+
+    image.style.transition =
+        'transform 0.16s ease';
+
+    image.style.userSelect =
+        'none';
+
+    image.style.webkitUserDrag =
+        'none';
+
+    if (
+        wrap.dataset
+            .receiptZoomBound ===
+        'true'
+    ) {
+        resetReceiptImageZoom();
+
+        return;
+    }
+
+    wrap.dataset
+        .receiptZoomBound =
+        'true';
+
+    const distanceBetweenPointers =
+        () => {
+            const points = [
+                ...receiptImageZoomState
+                    .pointers
+                    .values()
+            ];
+
+            if (
+                points.length < 2
+            ) {
+                return 0;
+            }
+
+            return Math.hypot(
+                points[1].x -
+                    points[0].x,
+                points[1].y -
+                    points[0].y
+            );
+        };
+
+    wrap.addEventListener(
+        'dblclick',
+        event => {
+            event.preventDefault();
+
+            if (
+                receiptImageZoomState.scale >
+                1
+            ) {
+                resetReceiptImageZoom();
+            } else {
+                receiptImageZoomState.scale =
+                    2.4;
+
+                applyReceiptImageZoom(
+                    image
+                );
+            }
+        }
+    );
+
+    wrap.addEventListener(
+        'wheel',
+        event => {
+            event.preventDefault();
+
+            const nextScale =
+                receiptImageZoomState.scale +
+                (
+                    event.deltaY < 0
+                        ? 0.20
+                        : -0.20
+                );
+
+            receiptImageZoomState.scale =
+                Math.min(
+                    Math.max(
+                        nextScale,
+                        1
+                    ),
+                    4
+                );
+
+            if (
+                receiptImageZoomState.scale ===
+                1
+            ) {
+                receiptImageZoomState.translateX =
+                    0;
+
+                receiptImageZoomState.translateY =
+                    0;
+            }
+
+            applyReceiptImageZoom(
+                image
+            );
+        },
+        {
+            passive: false
+        }
+    );
+
+    wrap.addEventListener(
+        'pointerdown',
+        event => {
+            wrap.setPointerCapture?.(
+                event.pointerId
+            );
+
+            receiptImageZoomState
+                .pointers
+                .set(
+                    event.pointerId,
+                    {
+                        x: event.clientX,
+                        y: event.clientY
+                    }
+                );
+
+            image.style.transition =
+                'none';
+
+            if (
+                receiptImageZoomState
+                    .pointers
+                    .size ===
+                2
+            ) {
+                receiptImageZoomState
+                    .startDistance =
+                    distanceBetweenPointers();
+
+                receiptImageZoomState
+                    .startScale =
+                    receiptImageZoomState
+                        .scale;
+            } else {
+                receiptImageZoomState
+                    .dragStartX =
+                    event.clientX;
+
+                receiptImageZoomState
+                    .dragStartY =
+                    event.clientY;
+
+                receiptImageZoomState
+                    .startTranslateX =
+                    receiptImageZoomState
+                        .translateX;
+
+                receiptImageZoomState
+                    .startTranslateY =
+                    receiptImageZoomState
+                        .translateY;
+            }
+        }
+    );
+
+    wrap.addEventListener(
+        'pointermove',
+        event => {
+            if (
+                !receiptImageZoomState
+                    .pointers
+                    .has(
+                        event.pointerId
+                    )
+            ) {
+                return;
+            }
+
+            receiptImageZoomState
+                .pointers
+                .set(
+                    event.pointerId,
+                    {
+                        x: event.clientX,
+                        y: event.clientY
+                    }
+                );
+
+            if (
+                receiptImageZoomState
+                    .pointers
+                    .size >=
+                2
+            ) {
+                const currentDistance =
+                    distanceBetweenPointers();
+
+                if (
+                    receiptImageZoomState
+                        .startDistance >
+                    0
+                ) {
+                    receiptImageZoomState
+                        .scale =
+                        Math.min(
+                            Math.max(
+                                receiptImageZoomState
+                                    .startScale *
+                                (
+                                    currentDistance /
+                                    receiptImageZoomState
+                                        .startDistance
+                                ),
+                                1
+                            ),
+                            4
+                        );
+                }
+            } else if (
+                receiptImageZoomState.scale >
+                1
+            ) {
+                receiptImageZoomState
+                    .translateX =
+                    receiptImageZoomState
+                        .startTranslateX +
+                    (
+                        event.clientX -
+                        receiptImageZoomState
+                            .dragStartX
+                    );
+
+                receiptImageZoomState
+                    .translateY =
+                    receiptImageZoomState
+                        .startTranslateY +
+                    (
+                        event.clientY -
+                        receiptImageZoomState
+                            .dragStartY
+                    );
+            }
+
+            applyReceiptImageZoom(
+                image
+            );
+        }
+    );
+
+    const releasePointer =
+        event => {
+            receiptImageZoomState
+                .pointers
+                .delete(
+                    event.pointerId
+                );
+
+            image.style.transition =
+                'transform 0.16s ease';
+
+            if (
+                receiptImageZoomState.scale <=
+                1
+            ) {
+                resetReceiptImageZoom();
+            }
+        };
+
+    wrap.addEventListener(
+        'pointerup',
+        releasePointer
+    );
+
+    wrap.addEventListener(
+        'pointercancel',
+        releasePointer
+    );
+
+    wrap.addEventListener(
+        'pointerleave',
+        event => {
+            if (
+                event.pointerType ===
+                'mouse'
+            ) {
+                releasePointer(
+                    event
+                );
+            }
+        }
+    );
+}
+
+function openReceiptImageModal(
+    imageSource,
+    titleText,
+    altText
+) {
+    if (!imageSource) {
+        showToast(
+            'Receipt image is unavailable.'
+        );
+
+        return;
+    }
+
+    const modal =
+        document.getElementById(
+            'expenseReceiptModal'
+        );
+
+    const image =
+        document.getElementById(
+            'expenseReceiptModalImage'
+        );
+
+    const title =
+        document.getElementById(
+            'expenseReceiptModalTitle'
+        );
+
+    if (image) {
+        image.src =
+            imageSource;
+
+        image.alt =
+            `Receipt for ${altText}`;
+    }
+
+    if (title) {
+        title.textContent =
+            titleText;
+    }
+
+    if (modal) {
+        modal.hidden =
+            false;
+    }
+
+    resetReceiptImageZoom();
+    bindReceiptImageZoom();
+}
+
+function closeExpenseReceiptModal() {
+    const modal =
+        document.getElementById(
+            "expenseReceiptModal"
+        );
+
+    const image =
+        document.getElementById(
+            "expenseReceiptModalImage"
+        );
+
+    if (modal) {
+        modal.hidden = true;
+    }
+
+    if (image) {
+        image.removeAttribute("src");
+    }
+
+    resetReceiptImageZoom();
 }
 
 function openPanel(id) {
