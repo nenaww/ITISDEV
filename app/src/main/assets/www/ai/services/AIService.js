@@ -197,7 +197,12 @@ class AIService {
             })),
 
             // Preserve Gemini's previous functionCall
-            previousResponse.candidates?.[0]?.content,
+            {
+                role: "model",
+                parts:
+                    previousResponse.candidates?.[0]?.content?.parts
+                        ?.filter(part => part.functionCall) || []
+            },
 
             {
 
@@ -206,13 +211,10 @@ class AIService {
                 parts: toolResults.map(result => ({
 
                     functionResponse: {
-
                         name: result.name,
-
                         response: {
                             result: result.output
                         }
-
                     }
 
                 }))
