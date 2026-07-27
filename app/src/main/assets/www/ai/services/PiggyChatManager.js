@@ -1,146 +1,317 @@
 /*
 ==========================================================
 Piggy Chat Manager
-Gemini Implementation
+Gemini Multi-Tool Implementation
 ==========================================================
 */
+
 class PiggyChatManager {
 
     constructor() {
 
-        this.ai = new AIService();
+        this.ai =
+            new AIService();
 
         this.history = [];
 
+        /*
+        Safety limit.
+
+        Piggy can use several tools for one question,
+        but cannot loop forever.
+        */
+        this.maxToolRounds = 5;
     }
+
 
     async ask(userPrompt) {
 
         try {
 
-            // Store user message
+            /*
+            ==================================================
+            STORE USER MESSAGE
+            ==================================================
+            */
 
             this.history.push({
-
                 role: "user",
-
                 content: userPrompt
-
             });
 
-            // Build conversation
 
-            const messages = PromptBuilder.buildMessages(
+            /*
+            ==================================================
+            BUILD PROMPT
+            ==================================================
+            */
 
-                this.history
+            const messages =
+                PromptBuilder.buildMessages(
+                    this.history
+                );
 
-            );
 
-            // First Gemini request
+            const systemMessage =
+                messages.find(
+                    m => m.role === "system"
+                );
 
-            const response = await this.ai.sendMessage(
 
-                messages,
+            const conversation =
+                messages.filter(
+                    m => m.role !== "system"
+                );
 
-                ToolRegistry.getTools()
 
-            );
+            /*
+            This contains the COMPLETE Gemini conversation
+            for the current request.
 
-            // Check if Gemini requested tools
+            We keep adding function calls and responses
+            until Gemini actually produces text.
+            */
 
-            const toolCalls =
+            const contents =
+                conversation.map(
+                    message =>
+                        this.ai.messageToGemini(
+                            message
+                        )
+                );
 
-                this.ai.extractToolCalls(response);
 
-            // If no tools were requested
+            const tools =
+                ToolRegistry.getTools();
 
-            if (toolCalls.length === 0) {
 
-                const text =
+            /*
+            ==================================================
+            FIRST GEMINI REQUEST
+            ==================================================
+            */
 
-                    this.ai.extractText(response);
+            let response =
+                await this.ai.generate(
+                    contents,
+                    systemMessage?.content,
+                    tools
+                );
 
-                this.history.push({
 
-                    role: "assistant",
+            /*
+            ==================================================
+            TOOL LOOP
+            ==================================================
+            */
 
-                    content: text
+            for (
+                let round = 0;
+                round < this.maxToolRounds;
+                round++
+            ) {
+
+                /*
+                ----------------------------------------------
+                Does Gemini want tools?
+                ----------------------------------------------
+                */
+
+                const toolCalls =
+                    this.ai.extractToolCalls(
+                        response
+                    );
+
+
+                /*
+                ==============================================
+                NO TOOL CALL = FINAL RESPONSE
+                ==============================================
+                */
+
+                if (toolCalls.length === 0) {
+
+                    const text =
+                        this.ai.extractText(
+                            response
+                        );
+
+
+                    /*
+                    NEVER return an empty successful message.
+                    */
+
+                    if (!text) {
+
+                        console.error(
+                            "Gemini returned no text:",
+                            response
+                        );
+
+                        throw new Error(
+                            "Piggy couldn't generate a response."
+                        );
+                    }
+
+
+                    /*
+                    Only now do we store Piggy's message.
+                    */
+
+                    this.history.push({
+                        role: "assistant",
+                        content: text
+                    });
+
+
+                    return {
+                        success: true,
+                        text
+                    };
+                }
+
+
+                /*
+                ==============================================
+                GEMINI REQUESTED TOOL(S)
+                ==============================================
+                */
+
+
+                /*
+                Preserve Gemini's EXACT response.
+
+                This is important.
+
+                Do NOT manually rebuild the functionCall.
+                */
+
+                const modelContent =
+                    response
+                        ?.candidates
+                        ?.[0]
+                        ?.content;
+
+
+                if (!modelContent?.parts) {
+
+                    throw new Error(
+                        "Gemini returned an invalid tool call."
+                    );
+                }
+
+
+                contents.push(
+                    modelContent
+                );
+
+
+                /*
+                ----------------------------------------------
+                WAIT FOR TOOL RETRIEVAL
+                ----------------------------------------------
+
+                Piggy's typing animation should remain active
+                while this is awaited.
+                */
+
+                const toolOutputs =
+                    await RetrievalService.retrieve(
+                        toolCalls
+                    );
+
+
+                /*
+                ----------------------------------------------
+                SEND TOOL RESULTS BACK
+                ----------------------------------------------
+                */
+
+                const functionResponses =
+                    this.ai.buildFunctionResponses(
+                        toolCalls,
+                        toolOutputs
+                    );
+
+
+                contents.push({
+
+                    role: "user",
+
+                    parts:
+                        functionResponses
 
                 });
 
-                return {
 
-                    success: true,
+                /*
+                ----------------------------------------------
+                ASK GEMINI AGAIN
+                ----------------------------------------------
 
-                    text
+                IMPORTANT:
 
-                };
+                Tools remain available.
 
+                Gemini can either:
+
+                A. produce the final text
+
+                OR
+
+                B. request another tool.
+
+                We DO NOT display anything yet.
+                ----------------------------------------------
+                */
+
+                response =
+                    await this.ai.generate(
+                        contents,
+                        systemMessage?.content,
+                        tools
+                    );
             }
 
-            // Execute tools
 
-            const toolOutputs =
+            /*
+            ==================================================
+            SAFETY LIMIT REACHED
+            ==================================================
+            */
 
-                await RetrievalService.retrieve(
-
-                    toolCalls
-
-                );
-
-            // Continue conversation with tool responses
-
-            const finalResponse =
-                await this.ai.continueConversation(
-                    messages,
-                    response,
-                    toolOutputs
-                );
-
-            const finalText =
-
-                this.ai.extractText(finalResponse);
-
-            this.history.push({
-
-                role: "assistant",
-
-                content: finalText
-
-            });
-
-            return {
-
-                success: true,
-
-                text: finalText
-
-            };
+            throw new Error(
+                "Piggy needed too many steps to answer that request."
+            );
 
         }
-
         catch (error) {
 
-            console.error(error);
+            console.error(
+                "PiggyChatManager error:",
+                error
+            );
+
 
             return {
 
                 success: false,
 
-                text: error.message
+                text:
+                    error?.message ||
+                    "Piggy had trouble answering that."
 
             };
-
         }
-
     }
+
 
     clearHistory() {
 
         this.history = [];
-
     }
-
 }
 
-window.PiggyChatManager = PiggyChatManager;
+
+window.PiggyChatManager =
+    PiggyChatManager;

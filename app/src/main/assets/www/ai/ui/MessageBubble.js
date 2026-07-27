@@ -19,44 +19,32 @@ class MessageBubble {
         const bubble = document.createElement("div");
 
         bubble.className =
-
             this.sender === "user"
+                ? "bubble-user"
+                : "bubble-piggy";
 
-            ? "bubble-user"
-
-            : "bubble-piggy";
+        const formattedText =
+            this.sender === "piggy"
+                ? marked.parse(this.text)
+                : this.text;
 
         bubble.innerHTML =
-
             this.sender === "piggy"
+                ? `
+                    <img
+                        src="images/piggy-chat.png"
+                        class="bubble-avatar"
+                    >
 
-            ?
-
-            `
-                <img
-                    src="images/piggy-chat.png"
-                    class="bubble-avatar"
-                >
-
-                <div class="bubble-text">
-
-                    ${this.text}
-
-                </div>
-
-            `
-
-            :
-
-            `
-
-                <div class="bubble-text">
-
-                    ${this.text}
-
-                </div>
-
-            `;
+                    <div class="bubble-text">
+                        ${formattedText}
+                    </div>
+                `
+                : `
+                    <div class="bubble-text">
+                        ${this.text}
+                    </div>
+                `;
 
         return bubble;
 
