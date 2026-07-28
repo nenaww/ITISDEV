@@ -21,9 +21,7 @@ rel="stylesheet">
 
 <link rel="stylesheet" href="budget-calculator.css">
 
-
 </head>
-
 
 
 <body>
@@ -32,39 +30,27 @@ rel="stylesheet">
 <main class="budget-page">
 
 
-
 <!-- HEADER -->
 
 <header class="budget-header">
 
 
 <button class="back-button">
-
 <i class="bi bi-chevron-left"></i>
-
 </button>
 
 
-
-<div class="header-text">
+<div>
 
 <h1>
 Budget Calculator
 </h1>
 
 <p>
-Make smarter spending decisions
+Make smarter household decisions
 </p>
 
-
 </div>
-
-
-
-<img 
-src="images/icon1.png"
-class="pig-icon"
-alt="pig">
 
 
 </header>
@@ -75,15 +61,18 @@ alt="pig">
 
 
 
-<!-- BUDGET OVERVIEW -->
 
-<section class="card overview-card">
+<!-- ======================
+BUDGET OVERVIEW
+====================== -->
+
+
+<section class="card">
 
 
 <h2>
 Budget Overview
 </h2>
-
 
 
 <div class="overview-grid">
@@ -95,16 +84,17 @@ Budget Overview
 
 <div>
 
-<span>Total Budget</span>
+<span>
+Total Budget
+</span>
 
 <strong id="totalBudget">
---
+₱25,000
 </strong>
 
 </div>
 
 </div>
-
 
 
 
@@ -115,16 +105,17 @@ Budget Overview
 
 <div>
 
-<span>Spent</span>
+<span>
+Spent
+</span>
 
 <strong id="spentAmount">
---
+₱8,000
 </strong>
 
 </div>
 
 </div>
-
 
 
 
@@ -135,16 +126,17 @@ Budget Overview
 
 <div>
 
-<span>Remaining</span>
+<span>
+Remaining
+</span>
 
 <strong id="remainingAmount">
---
+₱17,000
 </strong>
 
 </div>
 
 </div>
-
 
 
 
@@ -155,16 +147,17 @@ Budget Overview
 
 <div>
 
-<span>Days Left</span>
+<span>
+Days Left
+</span>
 
 <strong id="daysRemaining">
---
+15
 </strong>
 
 </div>
 
 </div>
-
 
 
 </div>
@@ -180,13 +173,12 @@ Budget Overview
 
 
 
-<!-- ==========================
-BUDGET DECISION CALCULATOR
-========================== -->
+<!-- ======================
+DECISION CALCULATOR
+====================== -->
 
 
 <section class="card decision-card">
-
 
 
 <h2>
@@ -197,7 +189,9 @@ Budget Decision Calculator
 
 
 
-<!-- FUNCTION SELECTOR -->
+
+<!-- FUNCTIONS -->
+
 
 <div class="function-row">
 
@@ -206,19 +200,15 @@ Budget Decision Calculator
 class="function active"
 data-function="spend">
 
-<i class="bi bi-cart"></i>
-
 Spend
 
 </button>
 
 
 
-<button 
+<button
 class="function"
 data-function="save">
-
-<i class="bi bi-piggy-bank"></i>
 
 Save
 
@@ -226,11 +216,9 @@ Save
 
 
 
-<button 
+<button
 class="function"
 data-function="split">
-
-<i class="bi bi-people"></i>
 
 Split
 
@@ -238,8 +226,9 @@ Split
 
 
 
-<button 
-class="function more-button">
+<button
+id="moreButton"
+class="function">
 
 More
 
@@ -248,7 +237,6 @@ More
 </button>
 
 
-
 </div>
 
 
@@ -257,29 +245,34 @@ More
 
 
 
+<div 
+id="moreFunctions"
+class="more-functions hidden">
 
-<!-- MORE FUNCTIONS -->
 
-<div class="more-functions hidden">
-
-
-<button data-function="daily">
+<button 
+class="function"
+data-function="daily">
 
 Per Day
 
 </button>
 
 
-<button data-function="member">
+<button 
+class="function"
+data-function="member">
 
 Per Member
 
 </button>
 
 
-<button data-function="percent">
+<button 
+class="function"
+data-function="percent">
 
-% Budget
+%
 
 </button>
 
@@ -293,8 +286,7 @@ Per Member
 
 
 
-
-<!-- AMOUNT DISPLAY -->
+<!-- AMOUNT -->
 
 
 <div class="amount-display">
@@ -307,6 +299,7 @@ Amount to Spend
 </span>
 
 
+
 <h1 id="amountValue">
 
 ₱0
@@ -316,18 +309,16 @@ Amount to Spend
 
 
 
-
-
-<button class="category-button">
+<button 
+id="categoryButton"
+class="category-button">
 
 
 <i class="bi bi-cart"></i>
 
 
 <span id="categoryName">
-
 Grocery
-
 </span>
 
 
@@ -346,62 +337,100 @@ Grocery
 
 
 
-<!-- CATEGORY MENU -->
+<!-- CATEGORY -->
 
 
-<div class="category-menu hidden">
+<div 
+id="categoryMenu"
+class="category-menu hidden">
 
 
 <button data-category="Grocery">
-
 🛒 Grocery
-
 </button>
 
 
 <button data-category="Food">
-
 🍚 Food
-
 </button>
 
 
 <button data-category="Utilities">
-
 💡 Utilities
-
 </button>
 
 
 <button data-category="Transportation">
-
 🚗 Transportation
-
 </button>
 
 
 <button data-category="Health">
-
 💊 Health
-
 </button>
 
 
 <button data-category="School">
-
 📚 School
-
 </button>
 
 
 <button data-category="Rent">
-
 🏠 Rent
-
 </button>
 
 
 </div>
+
+
+
+
+
+
+
+
+
+<!-- EXTRA INPUTS -->
+
+<div 
+id="extraInputs"
+class="extra-inputs hidden">
+
+
+<div>
+
+<label>
+Members
+</label>
+
+<input 
+id="memberInput"
+type="number"
+placeholder="0">
+
+
+</div>
+
+
+
+<div>
+
+<label>
+Days
+</label>
+
+<input
+id="daysInput"
+type="number"
+placeholder="0">
+
+
+</div>
+
+
+
+</div>
+
 
 
 
@@ -438,7 +467,6 @@ C
 
 
 
-
 <button>
 7
 </button>
@@ -457,7 +485,6 @@ C
 <button class="operator">
 ×
 </button>
-
 
 
 
@@ -484,7 +511,6 @@ C
 
 
 
-
 <button>
 1
 </button>
@@ -503,7 +529,6 @@ C
 <button class="operator">
 +
 </button>
-
 
 
 
@@ -528,6 +553,7 @@ C
 </button>
 
 
+
 </div>
 
 
@@ -542,10 +568,12 @@ C
 
 
 
-<!-- BUDGET IMPACT -->
+<!-- ======================
+IMPACT
+====================== -->
 
 
-<section class="card impact-card">
+<section class="card">
 
 
 <h2>
@@ -564,22 +592,21 @@ Remaining Budget
 </span>
 
 <strong id="impactBudget">
---
+₱17,000
 </strong>
 
 </div>
 
 
 
-
 <div>
 
 <span>
-Category Budget Left
+Category
 </span>
 
 <strong id="impactCategory">
---
+Grocery
 </strong>
 
 </div>
@@ -590,15 +617,14 @@ Category Budget Left
 <div>
 
 <span>
-Budget Affected
+Budget Used
 </span>
 
 <strong id="impactPercent">
---
+0%
 </strong>
 
 </div>
-
 
 
 
@@ -610,12 +636,10 @@ Status
 </span>
 
 <strong id="impactStatus">
---
+Safe
 </strong>
 
 </div>
-
-
 
 
 </div>
@@ -631,15 +655,15 @@ Status
 
 
 
-<!-- ==========================
-BUDGET PLANNER
-========================== -->
+<!-- ======================
+PLANNER
+====================== -->
 
 
 <section class="card planner-card">
 
 
-<div class="planner-title">
+<div class="planner-header">
 
 
 <div>
@@ -650,13 +674,14 @@ Budget Planner
 
 
 <p>
-Plan your monthly household allocation
+Plan your monthly allocation
 </p>
 
 </div>
 
 
-<button id="togglePlanner">
+
+<button id="plannerToggle">
 
 <i class="bi bi-chevron-down"></i>
 
@@ -671,21 +696,21 @@ Plan your monthly household allocation
 
 
 
+<div id="plannerBody">
 
-<div id="plannerContent">
 
 
 <div class="planner-input">
 
-
 <label>
-Monthly Income / Available Budget
+Monthly Income
 </label>
 
 
-<strong>
-₱0
-</strong>
+<input 
+id="incomeInput"
+type="number"
+placeholder="0">
 
 
 </div>
@@ -693,35 +718,37 @@ Monthly Income / Available Budget
 
 
 
-<div class="planner-input">
 
+<div class="planner-input">
 
 <label>
 Fixed Bills
 </label>
 
 
-<strong>
-₱0
-</strong>
+<input
+id="billsInput"
+type="number"
+placeholder="0">
 
 
 </div>
+
 
 
 
 
 <div class="planner-input">
 
-
 <label>
 Savings Goal
 </label>
 
 
-<strong>
-₱0
-</strong>
+<input
+id="savingsInput"
+type="number"
+placeholder="0">
 
 
 </div>
@@ -730,7 +757,9 @@ Savings Goal
 
 
 
-<div class="planner-more hidden">
+<div 
+id="advancedPlanner"
+class="hidden">
 
 
 
@@ -740,9 +769,12 @@ Savings Goal
 Additional Income
 </label>
 
-<strong>
-₱0
-</strong>
+
+<input
+id="additionalInput"
+type="number"
+placeholder="0">
+
 
 </div>
 
@@ -754,11 +786,15 @@ Additional Income
 Debt Payments
 </label>
 
-<strong>
-₱0
-</strong>
+
+<input
+id="debtInput"
+type="number"
+placeholder="0">
+
 
 </div>
+
 
 
 
@@ -768,29 +804,20 @@ Debt Payments
 Seasonal Expenses
 </label>
 
-<strong>
-₱0
-</strong>
+
+<input
+id="seasonalInput"
+type="number"
+placeholder="0">
+
 
 </div>
 
-
-
-<div class="planner-input">
-
-<label>
-Household Members
-</label>
-
-<strong>
-0
-</strong>
-
-</div>
 
 
 
 </div>
+
 
 
 </div>
@@ -806,16 +833,15 @@ Household Members
 
 
 
-<!-- PLANNER RESULTS -->
+<!-- RESULTS -->
 
 
-<section class="card results-card">
+<section class="card">
 
 
 <h2>
 Planning Results
 </h2>
-
 
 
 <div class="result-grid">
@@ -827,11 +853,12 @@ Planning Results
 After Bills
 </span>
 
-<strong>
---
+<strong id="afterBills">
+₱0
 </strong>
 
 </div>
+
 
 
 <div>
@@ -840,8 +867,8 @@ After Bills
 After Savings
 </span>
 
-<strong>
---
+<strong id="afterSavings">
+₱0
 </strong>
 
 </div>
@@ -854,8 +881,8 @@ After Savings
 Daily Limit
 </span>
 
-<strong>
---
+<strong id="dailyLimit">
+₱0
 </strong>
 
 </div>
@@ -865,15 +892,14 @@ Daily Limit
 <div>
 
 <span>
-Plan Status
+Status
 </span>
 
-<strong>
+<strong id="planStatus">
 Balanced
 </strong>
 
 </div>
-
 
 
 </div>
@@ -892,7 +918,7 @@ Balanced
 <!-- ALLOCATION -->
 
 
-<section class="card allocation-card">
+<section class="card">
 
 
 <h2>
@@ -906,72 +932,48 @@ Category Allocation
 
 <div>
 Food
-
 <span>
 ₱0
 </span>
-
 </div>
-
 
 
 <div>
 Transportation
-
 <span>
 ₱0
 </span>
-
 </div>
-
-
 
 
 <div>
 Utilities
-
 <span>
 ₱0
 </span>
-
 </div>
-
 
 
 <div>
 Savings
-
 <span>
 ₱0
 </span>
-
 </div>
-
 
 
 <div>
 Other Expenses
-
 <span>
 ₱0
 </span>
-
 </div>
 
 
-
 </div>
-
-
-<button class="adjust-button">
-
-Adjust Categories
-
-</button>
 
 
 </section>
-
 
 
 
@@ -997,14 +999,12 @@ Save Draft
 
 
 <button class="apply">
-
 Apply Plan
-
 </button>
 
 
-
 </div>
+
 
 
 

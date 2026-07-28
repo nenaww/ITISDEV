@@ -1,38 +1,20 @@
-// ========================================
-// KABALIKAT BUDGET CALCULATOR
-// ========================================
+document.addEventListener("DOMContentLoaded", () => {
 
 
-// ==============================
-// STATE
-// ==============================
-
-
-let currentInput = "";
-
-let firstNumber = null;
-
-let currentOperator = null;
-
-
-let selectedFunction = "spend";
-
-let selectedCategory = "Grocery";
-
-
-
-// Future database values
+// ======================================
+// TEMP HOUSEHOLD DATA
 // Replace with Supabase later
+// ======================================
 
 let householdBudget = {
 
-    total: null,
+    total: 25000,
 
-    spent: null,
+    spent: 8000,
 
-    remaining: null,
+    remaining: 17000,
 
-    daysLeft: null
+    daysLeft: 15
 
 };
 
@@ -40,163 +22,238 @@ let householdBudget = {
 
 
 
+// ======================================
+// STATE
+// ======================================
+
+let currentInput = "";
+
+let previousValue = null;
+
+let operator = null;
+
+let selectedMode = "spend";
+
+let selectedCategory = "Grocery";
 
 
-// ==============================
+
+
+
+
+
+// ======================================
 // ELEMENTS
-// ==============================
+// ======================================
 
 
-const amountValue =
-document.getElementById(
-"amountValue"
-);
+const amountDisplay =
+document.getElementById("amountValue");
 
 
 const amountLabel =
-document.getElementById(
-"amountLabel"
-);
+document.getElementById("amountLabel");
 
 
 
 const categoryName =
+document.getElementById("categoryName");
+
+
+
+
+
+
+
+
+
+// ======================================
+// INITIAL BUDGET DISPLAY
+// ======================================
+
+
 document.getElementById(
-"categoryName"
+"totalBudget"
+).textContent =
+formatMoney(
+householdBudget.total
 );
 
 
 
-
-
-
-
-
-// ==============================
-// KEYPAD
-// ==============================
-
-
-const keys =
-document.querySelectorAll(
-".keypad button"
+document.getElementById(
+"spentAmount"
+).textContent =
+formatMoney(
+householdBudget.spent
 );
 
 
 
-keys.forEach(key => {
+document.getElementById(
+"remainingAmount"
+).textContent =
+formatMoney(
+householdBudget.remaining
+);
 
 
-    key.addEventListener(
-    "click",
-    ()=>{
 
+document.getElementById(
+"daysRemaining"
+).textContent =
+householdBudget.daysLeft;
 
-        const value =
-        key.textContent;
 
 
 
-        // CLEAR
 
-        if(value === "C"){
 
-            resetCalculator();
 
-            return;
+// ======================================
+// FORMAT MONEY
+// ======================================
 
-        }
 
+function formatMoney(value){
 
+return "₱" +
+Number(value)
+.toLocaleString("en-PH");
 
+}
 
-        // DELETE
 
-        if(value === "⌫"){
 
-            currentInput =
-            currentInput.slice(0,-1);
 
 
-            updateAmount();
 
 
-            return;
+// ======================================
+// CALCULATOR KEYPAD
+// ======================================
 
-        }
 
+document
+.querySelectorAll(".keypad button")
+.forEach(button=>{
 
 
+button.addEventListener(
+"click",
+()=>{
 
 
-        // EQUAL
+let value =
+button.textContent.trim();
 
-        if(value === "="){
 
-            calculate();
 
 
-            return;
 
-        }
+// CLEAR
 
+if(value==="C"){
 
+resetCalculator();
 
+return;
 
+}
 
-        // OPERATOR
 
-        if(
-        ["+","−","×","÷"]
-        .includes(value)
-        ){
 
-            setOperator(value);
 
 
-            return;
 
-        }
+// DELETE
 
+if(value==="⌫"){
 
+currentInput =
+currentInput.slice(0,-1);
 
+updateDisplay();
 
+return;
 
+}
 
-        // PERCENT
 
-        if(value === "%"){
 
 
-            currentInput =
-            String(
-                Number(currentInput || 0)
-                /100
-            );
 
 
-            updateAmount();
 
+// EQUAL
 
-            return;
+if(value==="="){
 
-        }
+calculateExpression();
 
+return;
 
+}
 
 
 
 
-        // NUMBER INPUT
 
-        currentInput += value;
 
 
-        updateAmount();
+// OPERATOR
 
+if(
+["+","−","×","÷"]
+.includes(value)
+){
 
+setOperator(value);
 
-    });
+return;
+
+}
+
+
+
+
+
+
+
+// PERCENT
+
+if(value==="%"){
+
+currentInput =
+String(
+Number(currentInput || 0)
+/100
+);
+
+
+updateDisplay();
+
+return;
+
+}
+
+
+
+
+
+
+
+// NUMBER
+
+currentInput += value;
+
+
+updateDisplay();
+
+
+}
+
+);
 
 
 });
@@ -208,163 +265,25 @@ keys.forEach(key => {
 
 
 
-function updateAmount(){
 
 
-    if(currentInput === ""){
+function updateDisplay(){
 
 
-        amountValue.textContent =
-        "₱0";
+if(currentInput===""){
 
+amountDisplay.textContent="₱0";
 
-        return;
-
-    }
-
-
-
-    amountValue.textContent =
-
-    "₱" +
-
-    Number(currentInput)
-    .toLocaleString(
-        "en-PH"
-    );
-
+return;
 
 }
 
 
-
-
-
-
-
-
-// ==============================
-// CALCULATOR MATH
-// ==============================
-
-
-function setOperator(operator){
-
-
-    if(currentInput === "")
-    return;
-
-
-
-    firstNumber =
-    Number(currentInput);
-
-
-
-    currentOperator =
-    operator;
-
-
-    currentInput = "";
-
+amountDisplay.textContent =
+formatMoney(currentInput);
 
 
 }
-
-
-
-
-
-
-function calculate(){
-
-
-    if(
-    firstNumber === null ||
-    currentOperator === null ||
-    currentInput === ""
-    ){
-
-        updateBudgetImpact();
-
-        return;
-
-    }
-
-
-
-
-    let secondNumber =
-    Number(currentInput);
-
-
-
-    let answer = 0;
-
-
-
-    switch(currentOperator){
-
-
-        case "+":
-
-            answer =
-            firstNumber + secondNumber;
-
-        break;
-
-
-
-        case "−":
-
-            answer =
-            firstNumber - secondNumber;
-
-        break;
-
-
-
-        case "×":
-
-            answer =
-            firstNumber * secondNumber;
-
-        break;
-
-
-
-        case "÷":
-
-            answer =
-            firstNumber / secondNumber;
-
-        break;
-
-
-    }
-
-
-
-
-    currentInput =
-    String(answer);
-
-
-
-    firstNumber = null;
-
-    currentOperator = null;
-
-
-
-    updateAmount();
-
-
-    updateBudgetImpact();
-
-
-}
-
 
 
 
@@ -376,15 +295,139 @@ function calculate(){
 function resetCalculator(){
 
 
-    currentInput="";
+currentInput="";
 
-    firstNumber=null;
+previousValue=null;
 
-    currentOperator=null;
+operator=null;
 
 
-    amountValue.textContent =
-    "₱0";
+amountDisplay.textContent="₱0";
+
+
+}
+
+
+
+
+
+
+
+
+// ======================================
+// MATH OPERATIONS
+// ======================================
+
+
+function setOperator(op){
+
+
+if(currentInput==="")
+return;
+
+
+
+previousValue =
+Number(currentInput);
+
+
+
+operator = op;
+
+
+currentInput="";
+
+
+
+}
+
+
+
+
+function calculateExpression(){
+
+
+if(
+previousValue===null ||
+operator===null ||
+currentInput===""
+){
+
+updateBudgetImpact();
+
+return;
+
+}
+
+
+
+let second =
+Number(currentInput);
+
+
+
+let result;
+
+
+
+switch(operator){
+
+
+case "+":
+
+result =
+previousValue + second;
+
+break;
+
+
+
+case "−":
+
+result =
+previousValue - second;
+
+break;
+
+
+
+case "×":
+
+result =
+previousValue * second;
+
+break;
+
+
+
+case "÷":
+
+result =
+previousValue / second;
+
+break;
+
+
+}
+
+
+
+
+currentInput =
+String(result);
+
+
+
+previousValue=null;
+
+operator=null;
+
+
+
+updateDisplay();
+
+
+updateBudgetImpact();
 
 
 }
@@ -397,53 +440,51 @@ function resetCalculator(){
 
 
 
+// ======================================
+// MODE BUTTONS
+// ======================================
 
-// ==============================
-// FUNCTION MODES
-// ==============================
+
+document
+.querySelectorAll(".function[data-function]")
+.forEach(button=>{
 
 
-const functionButtons =
-document.querySelectorAll(
+button.addEventListener(
+"click",
+()=>{
+
+
+document
+.querySelectorAll(
 ".function"
+)
+.forEach(btn=>
+btn.classList.remove(
+"active"
+)
 );
 
 
 
-functionButtons.forEach(button=>{
-
-
-    button.addEventListener(
-    "click",
-    ()=>{
-
-
-        functionButtons.forEach(btn=>{
-
-            btn.classList.remove(
-            "active"
-            );
-
-        });
+button.classList.add(
+"active"
+);
 
 
 
-        button.classList.add(
-        "active"
-        );
+selectedMode =
+button.dataset.function;
 
 
 
-        selectedFunction =
-        button.dataset.function;
+updateMode();
 
 
 
-        updateFunctionLabel();
+}
 
-
-
-    });
+);
 
 
 });
@@ -455,70 +496,110 @@ functionButtons.forEach(button=>{
 
 
 
-function updateFunctionLabel(){
+
+function updateMode(){
 
 
-switch(selectedFunction){
-
-
-    case "spend":
-
-        amountLabel.textContent =
-        "Amount to Spend";
-
-    break;
+const extra =
+document.getElementById(
+"extraInputs"
+);
 
 
 
-    case "save":
-
-        amountLabel.textContent =
-        "Amount to Save";
-
-    break;
+switch(selectedMode){
 
 
 
-    case "split":
+case "spend":
 
-        amountLabel.textContent =
-        "Amount to Split";
+amountLabel.textContent =
+"Amount to Spend";
 
-    break;
+extra.classList.add(
+"hidden"
+);
 
-
-
-    case "daily":
-
-        amountLabel.textContent =
-        "Daily Spending Limit";
-
-    break;
+break;
 
 
 
-    case "member":
 
-        amountLabel.textContent =
-        "Amount Per Member";
+case "save":
 
-    break;
+amountLabel.textContent =
+"Amount to Save";
+
+extra.classList.add(
+"hidden"
+);
+
+break;
 
 
 
-    case "percent":
 
-        amountLabel.textContent =
-        "Budget Percentage";
+case "split":
 
-    break;
+amountLabel.textContent =
+"Amount to Split";
+
+extra.classList.remove(
+"hidden"
+);
+
+break;
+
+
+
+
+case "daily":
+
+amountLabel.textContent =
+"Daily Spending";
+
+extra.classList.remove(
+"hidden"
+);
+
+break;
+
+
+
+
+case "member":
+
+amountLabel.textContent =
+"Amount Per Member";
+
+extra.classList.remove(
+"hidden"
+);
+
+break;
+
+
+
+
+case "percent":
+
+amountLabel.textContent =
+"Budget Percentage";
+
+extra.classList.add(
+"hidden"
+);
+
+break;
+
+
+}
 
 
 
 }
 
 
-}
 
 
 
@@ -526,34 +607,26 @@ switch(selectedFunction){
 
 
 
+// ======================================
+// MORE BUTTON
+// ======================================
 
 
-
-// ==============================
-// MORE FUNCTIONS DROPDOWN
-// ==============================
-
-
-const moreButton =
-document.querySelector(
-".more-button"
-);
-
-
-
-const moreFunctions =
-document.querySelector(
-".more-functions"
-);
-
-
-
-moreButton.addEventListener(
+document
+.getElementById(
+"moreButton"
+)
+.addEventListener(
 "click",
 ()=>{
 
 
-moreFunctions.classList.toggle(
+document
+.getElementById(
+"moreFunctions"
+)
+.classList
+.toggle(
 "hidden"
 );
 
@@ -568,31 +641,26 @@ moreFunctions.classList.toggle(
 
 
 
-// ==============================
-// CATEGORY SELECTOR
-// ==============================
+// ======================================
+// CATEGORY DROPDOWN
+// ======================================
 
 
-const categoryButton =
-document.querySelector(
-".category-button"
-);
-
-
-
-const categoryMenu =
-document.querySelector(
-".category-menu"
-);
-
-
-
-categoryButton.addEventListener(
+document
+.getElementById(
+"categoryButton"
+)
+.addEventListener(
 "click",
 ()=>{
 
 
-categoryMenu.classList.toggle(
+document
+.getElementById(
+"categoryMenu"
+)
+.classList
+.toggle(
 "hidden"
 );
 
@@ -604,24 +672,20 @@ categoryMenu.classList.toggle(
 
 
 
-
-const categories =
-document.querySelectorAll(
-".category-menu button"
-);
-
-
-
-categories.forEach(category=>{
+document
+.querySelectorAll(
+"#categoryMenu button"
+)
+.forEach(button=>{
 
 
-category.addEventListener(
+button.addEventListener(
 "click",
 ()=>{
 
 
 selectedCategory =
-category.dataset.category;
+button.dataset.category;
 
 
 
@@ -630,7 +694,12 @@ selectedCategory;
 
 
 
-categoryMenu.classList.add(
+document
+.getElementById(
+"categoryMenu"
+)
+.classList
+.add(
 "hidden"
 );
 
@@ -639,7 +708,6 @@ categoryMenu.classList.add(
 updateBudgetImpact();
 
 
-
 });
 
 
@@ -653,200 +721,223 @@ updateBudgetImpact();
 
 
 
-// ==============================
-// PLANNER EXPAND
-// ==============================
-
-
-const togglePlanner =
-document.getElementById(
-"togglePlanner"
-);
-
-
-const plannerMore =
-document.querySelector(
-".planner-more"
-);
-
-
-
-togglePlanner.addEventListener(
-"click",
-()=>{
-
-
-plannerMore.classList.toggle(
-"hidden"
-);
-
-
-
-});
-
-
-
-
-
-
-
-
-
-// ==============================
+// ======================================
 // BUDGET IMPACT
-// ==============================
+// ======================================
 
 
 function updateBudgetImpact(){
 
 
-
-const amount =
+let amount =
 Number(currentInput || 0);
 
 
 
-const remaining =
-document.getElementById(
-"impactBudget"
-);
-
-
-
-const category =
-document.getElementById(
-"impactCategory"
-);
-
-
-
-const percent =
-document.getElementById(
-"impactPercent"
-);
-
-
-
-const status =
-document.getElementById(
-"impactStatus"
-);
-
-
-
-
-
-
-// No database yet
-
-if(
-householdBudget.remaining === null
-){
-
-
-remaining.textContent =
-"--";
-
-
-category.textContent =
-selectedCategory;
-
-
-percent.textContent =
-"--";
-
-
-status.textContent =
-"Waiting";
-
-
-return;
-
-}
-
-
-
-
-
-let newRemaining =
-
+let result =
 householdBudget.remaining;
 
 
 
-if(selectedFunction === "spend"){
+switch(selectedMode){
 
-newRemaining -= amount;
+
+
+case "spend":
+
+result =
+householdBudget.remaining
+-
+amount;
+
+break;
+
+
+
+case "save":
+
+result =
+householdBudget.remaining
+-
+amount;
+
+break;
+
+
+
+
+case "split":
+
+
+let members =
+Number(
+document.getElementById(
+"memberInput"
+).value
+||1
+);
+
+
+
+result =
+amount / members;
+
+
+break;
+
+
+
+
+
+case "daily":
+
+
+let days =
+Number(
+document.getElementById(
+"daysInput"
+).value
+||1
+);
+
+
+result =
+amount / days;
+
+
+break;
+
+
+
+
+
+case "member":
+
+
+let people =
+Number(
+document.getElementById(
+"memberInput"
+).value
+||1
+);
+
+
+result =
+amount / people;
+
+
+break;
+
+
+
+
+case "percent":
+
+
+result =
+(amount /
+householdBudget.total)
+*
+100;
+
+
+break;
+
+
 
 }
+
+
+
+
+
+
+document
+.getElementById(
+"impactBudget"
+)
+.textContent =
+selectedMode==="percent"
+
+?
+
+result.toFixed(1)+"%"
+
+:
+
+formatMoney(
+Math.max(result,0)
+);
+
+
+
+
+
+document
+.getElementById(
+"impactCategory"
+)
+.textContent =
+selectedCategory;
 
 
 
 
 
 let used =
+(amount /
+householdBudget.total)
+*
+100;
 
-(
-amount /
-householdBudget.total
+
+
+
+document
+.getElementById(
+"impactPercent"
 )
-*100;
+.textContent =
+used.toFixed(1)+"%";
 
 
 
 
 
-remaining.textContent =
 
-"₱" +
 
-Math.max(
-newRemaining,
-0
-)
-.toLocaleString(
-"en-PH"
+let status =
+document
+.getElementById(
+"impactStatus"
 );
 
 
 
-percent.textContent =
-
-used.toFixed(1)
-+
-"%";
-
-
-
-
-
-if(newRemaining < 0){
-
+if(result < 0){
 
 status.textContent =
 "Over Budget";
 
-
 }
+
 
 
 else if(used > 70){
 
-
 status.textContent =
 "Be Careful";
 
-
 }
+
 
 
 else{
 
-
 status.textContent =
 "Safe";
 
-
 }
 
 
@@ -861,39 +952,256 @@ status.textContent =
 
 
 
-
-// ==============================
-// DATABASE CONNECTION READY
-// ==============================
-
-
-function loadHouseholdBudget(data){
+// ======================================
+// EXTRA INPUT LISTENERS
+// ======================================
 
 
-householdBudget = data;
+document
+.querySelectorAll(
+"#memberInput,#daysInput"
+)
+.forEach(input=>{
 
 
-/*
+input.addEventListener(
+"input",
+updateBudgetImpact
+);
 
-Example:
-
-loadHouseholdBudget({
-
-total:25000,
-
-spent:10484,
-
-remaining:14516,
-
-daysLeft:12
 
 });
 
 
-*/
 
 
-updateBudgetImpact();
+
+
+
+
+
+// ======================================
+// PLANNER
+// ======================================
+
+
+document
+.getElementById(
+"plannerToggle"
+)
+.addEventListener(
+"click",
+()=>{
+
+
+document
+.getElementById(
+"advancedPlanner"
+)
+.classList
+.toggle(
+"hidden"
+);
+
+
+});
+
+
+
+
+
+
+
+document
+.querySelectorAll(
+".planner-input input"
+)
+.forEach(input=>{
+
+
+input.addEventListener(
+"input",
+calculatePlanner
+);
+
+
+});
+
+
+
+
+
+
+
+
+function calculatePlanner(){
+
+
+let income =
+Number(
+document.getElementById(
+"incomeInput"
+).value ||0
+);
+
+
+
+let bills =
+Number(
+document.getElementById(
+"billsInput"
+).value ||0
+);
+
+
+
+let savings =
+Number(
+document.getElementById(
+"savingsInput"
+).value ||0
+);
+
+
+
+
+let additional =
+Number(
+document.getElementById(
+"additionalInput"
+).value ||0
+);
+
+
+
+let debt =
+Number(
+document.getElementById(
+"debtInput"
+).value ||0
+);
+
+
+
+let seasonal =
+Number(
+document.getElementById(
+"seasonalInput"
+).value ||0
+);
+
+
+
+
+
+let available =
+income
++
+additional;
+
+
+
+let afterBills =
+available
+-
+bills
+-
+debt;
+
+
+
+let afterSavings =
+afterBills
+-
+savings;
+
+
+
+let final =
+afterSavings
+-
+seasonal;
+
+
+
+
+
+
+document
+.getElementById(
+"afterBills"
+)
+.textContent =
+formatMoney(
+afterBills
+);
+
+
+
+
+document
+.getElementById(
+"afterSavings"
+)
+.textContent =
+formatMoney(
+afterSavings
+);
+
+
+
+
+
+document
+.getElementById(
+"dailyLimit"
+)
+.textContent =
+formatMoney(
+final /
+householdBudget.daysLeft
+);
+
+
+
+
+
+
+let status =
+document
+.getElementById(
+"planStatus"
+);
+
+
+
+if(final < 0){
+
+status.textContent =
+"Over Budget";
+
+}
+
+else if(final < 3000){
+
+status.textContent =
+"Tight";
+
+}
+
+else{
+
+status.textContent =
+"Balanced";
+
+}
+
 
 
 }
+
+
+
+
+
+});

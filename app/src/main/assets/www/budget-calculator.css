@@ -18,7 +18,6 @@ body{
 }
 
 
-
 .budget-page{
 
     padding:20px;
@@ -31,10 +30,9 @@ body{
 
 
 
-
-/* =========================
+/* ==========================
 HEADER
-========================= */
+========================== */
 
 
 .budget-header{
@@ -59,9 +57,9 @@ HEADER
 
     border:none;
 
-    background:white;
-
     border-radius:50%;
+
+    background:#ffffff;
 
     display:flex;
 
@@ -74,13 +72,13 @@ HEADER
     color:#4a4038;
 
     box-shadow:
-    0 4px 12px rgba(0,0,0,.05);
+    0 5px 12px rgba(0,0,0,.05);
 
 }
 
 
 
-.header-text h1{
+.budget-header h1{
 
     margin:0;
 
@@ -92,9 +90,9 @@ HEADER
 
 
 
-.header-text p{
+.budget-header p{
 
-    margin:4px 0 0;
+    margin:4px 0;
 
     font-size:13px;
 
@@ -104,28 +102,15 @@ HEADER
 
 
 
-.pig-icon{
-
-    width:55px;
-
-    height:55px;
-
-    margin-left:auto;
-
-    object-fit:contain;
-
-}
 
 
 
 
 
 
-
-
-/* =========================
+/* ==========================
 CARDS
-========================= */
+========================== */
 
 
 .card{
@@ -137,7 +122,6 @@ CARDS
     padding:18px;
 
     margin-bottom:16px;
-
 
     box-shadow:
 
@@ -165,9 +149,9 @@ CARDS
 
 
 
-/* =========================
-BUDGET OVERVIEW
-========================= */
+/* ==========================
+OVERVIEW
+========================== */
 
 
 .overview-grid{
@@ -184,15 +168,15 @@ BUDGET OVERVIEW
 
 .overview-box{
 
+    padding:12px;
+
+    border-radius:18px;
+
     display:flex;
 
     align-items:center;
 
     gap:10px;
-
-    padding:12px;
-
-    border-radius:18px;
 
 }
 
@@ -204,13 +188,13 @@ BUDGET OVERVIEW
 
     height:34px;
 
+    border-radius:50%;
+
     display:flex;
 
     justify-content:center;
 
     align-items:center;
-
-    border-radius:50%;
 
 }
 
@@ -236,6 +220,7 @@ BUDGET OVERVIEW
 
 
 
+
 .peach{
 
     background:#fff4e9;
@@ -245,11 +230,12 @@ BUDGET OVERVIEW
 
 .peach i{
 
-    background:#ffe0c8;
+    background:#ffd9bd;
 
     color:#ec8b45;
 
 }
+
 
 
 
@@ -270,6 +256,8 @@ BUDGET OVERVIEW
 
 
 
+
+
 .green{
 
     background:#f2f7f3;
@@ -279,11 +267,12 @@ BUDGET OVERVIEW
 
 .green i{
 
-    background:#d8efd9;
+    background:#d9efd9;
 
-    color:#4d9b68;
+    color:#4b9c68;
 
 }
+
 
 
 
@@ -296,7 +285,7 @@ BUDGET OVERVIEW
 
 .blue i{
 
-    background:#d8ebf7;
+    background:#d7ebfa;
 
     color:#5796d5;
 
@@ -310,9 +299,9 @@ BUDGET OVERVIEW
 
 
 
-/* =========================
+/* ==========================
 FUNCTION BUTTONS
-========================= */
+========================== */
 
 
 .function-row{
@@ -323,7 +312,7 @@ FUNCTION BUTTONS
 
     overflow-x:auto;
 
-    margin-bottom:12px;
+    margin-bottom:10px;
 
 }
 
@@ -331,21 +320,21 @@ FUNCTION BUTTONS
 
 .function{
 
-    flex-shrink:0;
-
     border:none;
 
-    border-radius:16px;
-
-    padding:10px 14px;
+    flex-shrink:0;
 
     background:#f7f4ef;
 
     color:#6d625a;
 
+    padding:10px 16px;
+
+    border-radius:16px;
+
     font-size:12px;
 
-    font-weight:600;
+    font-weight:700;
 
 }
 
@@ -355,7 +344,7 @@ FUNCTION BUTTONS
 
     background:#ecb08b;
 
-    color:white;
+    color:#ffffff;
 
 }
 
@@ -373,25 +362,9 @@ FUNCTION BUTTONS
 
 
 
-.more-functions button{
-
-    flex:1;
-
-    border:none;
-
-    background:#efeafe;
-
-    padding:10px;
-
-    border-radius:14px;
-
-}
-
-
-
 .hidden{
 
-    display:none;
+    display:none!important;
 
 }
 
@@ -402,23 +375,22 @@ FUNCTION BUTTONS
 
 
 
-
-/* =========================
+/* ==========================
 AMOUNT DISPLAY
-========================= */
+========================== */
 
 
 .amount-display{
 
     background:#fff4d8;
 
-    border-radius:22px;
+    padding:20px;
 
-    padding:18px;
+    border-radius:22px;
 
     text-align:center;
 
-    margin-bottom:15px;
+    margin-top:10px;
 
 }
 
@@ -426,9 +398,9 @@ AMOUNT DISPLAY
 
 .amount-display span{
 
-    font-size:13px;
-
     color:#8b8178;
+
+    font-size:13px;
 
 }
 
@@ -436,7 +408,7 @@ AMOUNT DISPLAY
 
 .amount-display h1{
 
-    margin:8px 0 15px;
+    margin:8px 0 18px;
 
     font-size:42px;
 
@@ -449,15 +421,16 @@ AMOUNT DISPLAY
 
 
 
+
 .category-button{
 
     width:100%;
 
-    border:none;
-
-    background:white;
-
     padding:13px;
+
+    background:#ffffff;
+
+    border:none;
 
     border-radius:16px;
 
@@ -485,20 +458,22 @@ AMOUNT DISPLAY
 
 
 
-/* =========================
+
+
+/* ==========================
 CATEGORY MENU
-========================= */
+========================== */
 
 
 .category-menu{
+
+    margin-top:12px;
 
     display:grid;
 
     grid-template-columns:1fr 1fr;
 
     gap:8px;
-
-    margin-bottom:15px;
 
 }
 
@@ -510,9 +485,9 @@ CATEGORY MENU
 
     background:#efeafe;
 
-    padding:10px;
+    border-radius:15px;
 
-    border-radius:14px;
+    padding:10px;
 
     font-size:12px;
 
@@ -525,9 +500,64 @@ CATEGORY MENU
 
 
 
-/* =========================
+/* ==========================
+EXTRA INPUTS
+========================== */
+
+
+.extra-inputs{
+
+    display:flex;
+
+    gap:10px;
+
+    margin:12px 0;
+
+}
+
+
+
+.extra-inputs div{
+
+    flex:1;
+
+}
+
+
+
+.extra-inputs label{
+
+    font-size:12px;
+
+    color:#8b8178;
+
+}
+
+
+
+.extra-inputs input{
+
+    width:100%;
+
+    padding:10px;
+
+    border-radius:14px;
+
+    border:1px solid #ddd;
+
+}
+
+
+
+
+
+
+
+
+
+/* ==========================
 KEYPAD
-========================= */
+========================== */
 
 
 .keypad{
@@ -538,13 +568,15 @@ KEYPAD
 
     gap:10px;
 
+    margin-top:15px;
+
 }
 
 
 
 .keypad button{
 
-    height:55px;
+    height:56px;
 
     border:none;
 
@@ -560,7 +592,7 @@ KEYPAD
 
     box-shadow:
 
-    0 3px 8px rgba(0,0,0,.05);
+    0 3px 10px rgba(0,0,0,.05);
 
 }
 
@@ -598,9 +630,9 @@ KEYPAD
 
 
 
-/* =========================
+/* ==========================
 IMPACT
-========================= */
+========================== */
 
 
 .impact-grid{
@@ -619,9 +651,9 @@ IMPACT
 
     background:#f8f7f4;
 
-    border-radius:16px;
+    padding:14px;
 
-    padding:12px;
+    border-radius:16px;
 
 }
 
@@ -653,12 +685,12 @@ IMPACT
 
 
 
-/* =========================
+/* ==========================
 PLANNER
-========================= */
+========================== */
 
 
-.planner-title{
+.planner-header{
 
     display:flex;
 
@@ -670,29 +702,29 @@ PLANNER
 
 
 
-.planner-title p{
+.planner-header p{
 
     margin:5px 0;
 
-    font-size:12px;
-
     color:#8b8178;
+
+    font-size:12px;
 
 }
 
 
 
-.planner-title button{
+.planner-header button{
 
     border:none;
 
     background:#efeafe;
 
+    border-radius:50%;
+
     width:35px;
 
     height:35px;
-
-    border-radius:50%;
 
 }
 
@@ -708,9 +740,9 @@ PLANNER
 
     align-items:center;
 
-    padding:13px 0;
+    padding:12px 0;
 
-    border-bottom:1px solid #f0ece6;
+    border-bottom:1px solid #f1ede8;
 
 }
 
@@ -724,9 +756,19 @@ PLANNER
 
 
 
-.planner-input strong{
+.planner-input input{
 
-    font-size:14px;
+    width:110px;
+
+    text-align:right;
+
+    border:none;
+
+    background:#f8f7f4;
+
+    border-radius:12px;
+
+    padding:10px;
 
 }
 
@@ -737,9 +779,10 @@ PLANNER
 
 
 
-/* =========================
+
+/* ==========================
 RESULTS
-========================= */
+========================== */
 
 
 .result-grid{
@@ -758,9 +801,9 @@ RESULTS
 
     background:#f2f7f3;
 
-    padding:12px;
-
     border-radius:16px;
+
+    padding:14px;
 
 }
 
@@ -770,9 +813,9 @@ RESULTS
 
     display:block;
 
-    font-size:11px;
-
     color:#8b8178;
+
+    font-size:11px;
 
 }
 
@@ -791,10 +834,9 @@ RESULTS
 
 
 
-
-/* =========================
+/* ==========================
 ALLOCATION
-========================= */
+========================== */
 
 
 .allocation-list div{
@@ -806,8 +848,6 @@ ALLOCATION
     padding:12px 0;
 
     border-bottom:1px solid #f0ece6;
-
-    font-size:14px;
 
 }
 
@@ -821,36 +861,14 @@ ALLOCATION
 
 
 
-.adjust-button{
-
-    width:100%;
-
-    margin-top:15px;
-
-    padding:12px;
-
-    border:none;
-
-    border-radius:16px;
-
-    background:#efeafe;
-
-    color:#8060d8;
-
-    font-weight:700;
-
-}
 
 
 
 
 
-
-
-
-/* =========================
+/* ==========================
 BOTTOM ACTIONS
-========================= */
+========================== */
 
 
 .bottom-actions{
