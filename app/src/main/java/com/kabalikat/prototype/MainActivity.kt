@@ -1,9 +1,14 @@
 package com.kabalikat.prototype
 
+import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Base64
 import android.webkit.JavascriptInterface
@@ -12,10 +17,13 @@ import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.scale
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
@@ -45,9 +53,22 @@ class MainActivity : ComponentActivity() {
             filePathCallback = null
         }
 
+    private val notificationPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { granted ->
+            if (!granted) {
+                Toast.makeText(
+                    this,
+                    "Notifications are disabled. Bills will still be saved, but reminders will not appear.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+
     private val documentScannerLauncher =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
-            if (result.resultCode != Activity.RESULT_OK) {
+            if (result.resultCode != RESULT_OK) {
                 sendDocumentScannerResult(
                     success = false,
                     imageDataUrl = "",
@@ -106,7 +127,10 @@ class MainActivity : ComponentActivity() {
             }
         })
 
-        WebView.setWebContentsDebuggingEnabled(true)
+        val isDebuggable =
+            applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
+
+        WebView.setWebContentsDebuggingEnabled(isDebuggable)
 
         webView.settings.apply {
             javaScriptEnabled = true
@@ -123,8 +147,38 @@ class MainActivity : ComponentActivity() {
 
         webView.addJavascriptInterface(ocrBridge, "AndroidOCR")
         webView.addJavascriptInterface(documentScannerBridge, "AndroidScanner")
+        webView.addJavascriptInterface(BillCalendarBridge(this), "KabalikatAndroid")
 
-        webView.webViewClient = WebViewClient()
+        BillReminderWorker.createNotificationChannel(this)
+        webView.webViewClient = object : WebViewClient() {
+
+            override fun shouldOverrideUrlLoading(
+                view: WebView?,
+                request: android.webkit.WebResourceRequest?
+            ): Boolean {
+                val uri = request?.url ?: return true
+                val url = uri.toString()
+
+                val isInternalPage =
+                    url.startsWith("file:///android_asset/www/")
+
+                if (isInternalPage) {
+                    return false
+                }
+
+                return try {
+                    val externalIntent = Intent(
+                        Intent.ACTION_VIEW,
+                        uri
+                    )
+
+                    startActivity(externalIntent)
+                    true
+                } catch (_: ActivityNotFoundException) {
+                    true
+                }
+            }
+        }
 
         webView.webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(
@@ -154,7 +208,51 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        webView.loadUrl("file:///android_asset/www/index.html")
+        val requestedPage =
+            intent.getStringExtra("openPage")
+                ?: "index.html"
+
+        loadInternalPage(requestedPage)
+    }
+
+    fun ensureNotificationPermission() {
+        if (
+            Build.VERSION.SDK_INT >=
+            Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            notificationPermissionLauncher.launch(
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+        }
+    }
+
+    private fun loadInternalPage(
+        requestedPage: String?
+    ) {
+        val allowedPage = when (requestedPage) {
+            "bills.html" -> "bills.html"
+            "index.html" -> "index.html"
+            else -> "index.html"
+        }
+
+        webView.loadUrl(
+            "file:///android_asset/www/$allowedPage"
+        )
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+
+        val requestedPage =
+            intent.getStringExtra("openPage")
+                ?: return
+
+        loadInternalPage(requestedPage)
     }
 
     inner class DocumentScannerBridge {
@@ -226,7 +324,9 @@ class MainActivity : ComponentActivity() {
         }
 
         private fun runReceiptOcrPasses(originalBitmap: android.graphics.Bitmap) {
-            val ocrBitmaps = buildReceiptOcrBitmaps(originalBitmap)
+            val ocrBitmaps = listOf(
+                resizeBitmapForOcr(originalBitmap, 2600)
+            )
             val collectedTexts = mutableListOf<String>()
 
             fun processNext(index: Int) {
@@ -332,8 +432,7 @@ class MainActivity : ComponentActivity() {
             val newWidth = (width * scale).toInt()
             val newHeight = (height * scale).toInt()
 
-            return android.graphics.Bitmap.createScaledBitmap(
-                bitmap,
+            return bitmap.scale(
                 newWidth,
                 newHeight,
                 true
@@ -409,6 +508,19 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         if (::ocrBridge.isInitialized) {
             ocrBridge.close()
+        }
+
+        if (::webView.isInitialized) {
+            webView.apply {
+                stopLoading()
+                loadUrl("about:blank")
+                removeJavascriptInterface("AndroidOCR")
+                removeJavascriptInterface("AndroidScanner")
+                removeJavascriptInterface("KabalikatAndroid")
+                webChromeClient = null
+                webViewClient = WebViewClient()
+                destroy()
+            }
         }
 
         ocrExecutor.shutdown()

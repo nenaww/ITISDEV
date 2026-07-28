@@ -1622,7 +1622,7 @@ button {
 }
 
 .thirteenth-stats span,
-.thirteenth-summary-grid span {
+thirteenth-summary-grid span {
     display: block;
     color: var(--muted);
     font-size: 11px;
@@ -1630,7 +1630,7 @@ button {
 }
 
 .thirteenth-stats strong,
-.thirteenth-summary-grid strong {
+thirteenth-summary-grid strong {
     display: block;
     margin-top: 4px;
     color: var(--neutral-dark);
@@ -1656,14 +1656,14 @@ button {
 }
 
 .seasonal-panel-summary span,
-.thirteenth-panel-hero span {
+thirteenth-panel-hero span {
     color: var(--muted);
     font-size: 12px;
     font-weight: 800;
 }
 
 .seasonal-panel-summary strong,
-.thirteenth-panel-hero strong {
+thirteenth-panel-hero strong {
     display: block;
     margin-top: 8px;
     color: var(--neutral-dark);
@@ -1672,7 +1672,7 @@ button {
 }
 
 .seasonal-panel-summary p,
-.thirteenth-panel-hero p {
+thirteenth-panel-hero p {
     margin: 8px 0 0;
     color: var(--neutral);
     font-size: 13px;
@@ -2456,27 +2456,30 @@ button {
     font-weight: 800;
 }
 
-.transaction-card.simple.seasonal-expense-card .transaction-icon,
-.seasonal-plan-icon,
-.seasonal-plan-icon.large {
-    display: grid;
-    place-items: center;
+.thirteenth-gift-icon,
+.thirteenth-stats {
+    display: none !important;
 }
 
-.seasonal-plan-icon i,
-.seasonal-plan-icon.large i {
-    font-size: 24px;
-    color: var(--primary-dark);
+.category-card {
+    align-items: start;
 }
 
-.section-heading button,
-.seasonal-card-head button,
-.home-like-pill {
-    background: #FFFFFF;
+.category-legend {
+    gap: 9px;
 }
 
-.expenses-bottom-nav button.active {
-    color: var(--primary-dark);
+.legend-main strong {
+    font-size: 11px;
+}
+
+.legend-main small,
+.legend-percent {
+    font-size: 9px;
+}
+
+.recent-section {
+    display: none !important;
 }
 
 .month-year-picker-groups {
@@ -3945,12 +3948,12 @@ button {
 }
 
 .household-member-info h3,
-.household-member-value strong {
+household-member-value strong {
     color: #2D2522;
 }
 
 .household-member-info p,
-.household-member-value span {
+household-member-value span {
     color: #6F625C;
 }
 
@@ -3973,12 +3976,12 @@ button {
 }
 
 .household-member-info h3,
-.household-member-value strong {
+household-member-value strong {
     color: #332B27;
 }
 
 .household-member-info p,
-.household-member-value span {
+household-member-value span {
     color: #766A64;
 }
 
@@ -5228,3 +5231,4 @@ button {
     border: 1px solid rgba(92, 83, 78, 0.08) !important;
     box-shadow: 0 1px 0 rgba(255,255,255,0.25) !important;
 }
+

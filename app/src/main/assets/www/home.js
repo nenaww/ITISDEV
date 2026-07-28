@@ -4,6 +4,7 @@ let homeCurrentEvents = [];
 let expandedFamilyMemberIndex = -1;
 
 const KABALIKAT_PET_KEY = "kabalikat_pet_state_v1";
+const KABALIKAT_PROFILE_KEY = "kabalikat_profile_v1";
 
 const defaultPetState = {
     ownerName: "Elena",
@@ -247,14 +248,15 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function renderHomeDashboard() {
-    const firstName = sampleUser.name.split(" ")[0];
+    const currentUser = getHomeUser();
 
-    setProfileInitials(sampleUser.name);
+    const firstName = String(currentUser.name || sampleUser.name).trim().split(/\s+/)[0];
 
+    setProfileInitials(currentUser.name);
     setText("homeDateText", getTodayHeaderText());
     setText("homeGreetingName", `Welcome, ${firstName}`);
-    setText("homeRoleChip", homeText[homeCurrentLanguage].householdHead);
-    setText("homeFamilyCodeChip", `${homeText[homeCurrentLanguage].code}: ${sampleUser.familyCode}`);
+    setText("homeRoleChip", currentUser.role || homeText[homeCurrentLanguage].householdHead);
+    setText("homeFamilyCodeChip", `${homeText[homeCurrentLanguage].code}: ${currentUser.familyCode || sampleUser.familyCode}`);
 
     setText("homeMonthLabel", getCurrentMonthText());
     setText("homeBudgetTitle", homeText[homeCurrentLanguage].familyBudget);
@@ -305,6 +307,7 @@ function renderHomeDashboard() {
 }
 
 function bindHomeActions() {
+    const profileButton = document.getElementById("homeProfileButton");
     const petButton = document.getElementById("homePetButton");
     const scanButton = document.getElementById("navScan");
     const expenseButtons = ["quickAddExpense", "navExpenses", "homeBudgetViewButton", "overviewFilter", "transactionsViewAll"];
@@ -317,6 +320,12 @@ function bindHomeActions() {
     ];
     const billsButtons = ["quickBills"];
     const savingsButton = document.getElementById("navSavings");
+
+    if (profileButton) {
+        profileButton.addEventListener("click", () => {
+            window.location.href = "profile.html";
+        });
+    }
 
     if (petButton) {
         petButton.addEventListener("click", () => {
@@ -346,6 +355,14 @@ function bindHomeActions() {
         }
     });
 
+    const billsNavigationButton = document.getElementById("navBills");
+
+    if (billsNavigationButton) {
+        billsNavigationButton.addEventListener("click", () => {
+            window.location.href = "bills.html";
+        });
+    }
+
     actionButtons.forEach(id => {
         const button = document.getElementById(id);
 
@@ -365,6 +382,33 @@ function bindHomeActions() {
             });
         }
     });
+}
+
+function getHomeUser() {
+    try {
+        const savedProfile =
+            localStorage.getItem(KABALIKAT_PROFILE_KEY);
+
+        if (!savedProfile) {
+            return {
+                ...sampleUser
+            };
+        }
+
+        return {
+            ...sampleUser,
+            ...JSON.parse(savedProfile)
+        };
+    } catch (error) {
+        console.error(
+            "Unable to load the saved profile:",
+            error
+        );
+
+        return {
+            ...sampleUser
+        };
+    }
 }
 
 function getPetState() {

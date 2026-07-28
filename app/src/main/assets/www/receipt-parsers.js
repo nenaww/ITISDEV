@@ -725,6 +725,8 @@ function parseKabalikatReceipt(rawText, receiptImage = "") {
         items = parseSavemoreItems(rawText, receiptImage);
     } else if (store.id === "alfamart") {
         items = parseAlfamartItems(rawText, receiptImage);
+    } else if (store.id === "seveneleven") {
+        items = parseSevenElevenItems(rawText, receiptImage);
     } else {
         items = parseGenericReceiptItems(rawText, store, receiptImage);
     }
@@ -1742,4 +1744,311 @@ function cleanAlfamartProductName(name) {
         .trim();
 
     return titleCaseProduct(clean);
+}
+
+function parseSevenElevenItems(rawText, receiptImage = "") {
+
+    const lines = splitReceiptLines(rawText);
+
+    const productLines = [];
+    const priceLines = [];
+    const items = [];
+
+    let collectingProducts = false;
+    let collectingPrices = false;
+
+    for (const rawLine of lines) {
+
+        const line = String(rawLine || "").trim();
+
+        if (!line) {
+            continue;
+        }
+
+        const upper = line.toUpperCase();
+
+        /*
+            Product lines look like:
+
+            Ryal TrOrngeP t500ml 1
+            SprteZrSgrPET500ml 1
+        */
+        if (
+            !collectingPrices &&
+            /[A-Za-z]/.test(line) &&
+            /\b\d+\s*$/.test(line) &&
+            !isSevenElevenReceiptMeta(line)
+        ) {
+
+            collectingProducts = true;
+
+            productLines.push(
+                line.replace(/\s+\d+\s*$/, "").trim()
+            );
+
+            continue;
+        }
+
+        /*
+            Once we reach prices, switch mode.
+
+            47.00V
+            47.00V
+            94.00
+        */
+        if (/^\d+\.\d{2}[A-Z]?$/.test(line)) {
+
+            collectingPrices = true;
+
+            const match = line.match(/(\d+\.\d{2})/);
+
+            if (match) {
+                priceLines.push(parseMoney(match[1]));
+            }
+
+            continue;
+        }
+
+        /*
+            Stop once totals/payment begin.
+        */
+        if (collectingPrices && isSevenElevenReceiptMeta(line)) {
+            break;
+        }
+    }
+
+    /*
+        Pair products with prices.
+        Ignore the final total if there are more prices than products.
+    */
+
+    const count = Math.min(productLines.length, priceLines.length);
+
+    for (let i = 0; i < count; i++) {
+
+        const rawName = productLines[i];
+        const cleanName = cleanSevenElevenProductName(rawName);
+
+        items.push({
+
+            id: createParserId("item"),
+
+            quantity: 1,
+
+            name: cleanName,
+
+            rawName,
+
+            unitPrice: priceLines[i],
+
+            price: priceLines[i],
+
+            category:
+                autoCategoryFromText(
+                    cleanName,
+                    "seveneleven"
+                ) || "Groceries",
+
+            receiptImage
+
+        });
+
+    }
+
+    return items;
+
+}
+
+function parseSevenElevenItemLine(line) {
+
+    const clean = String(line)
+        .replace(/[₱]/g, "")
+        .trim();
+
+    /*
+        Matches:
+        RoyalTrOrngePt500ml47.00V
+        Royal PET 500ml      47.00
+        Royal PET 500ml      47.00 V
+    */
+
+    const match = clean.match(/^(.*?)\s*(\d+\.\d{2})\s*[A-Z]?$/);
+
+    if (!match) {
+        return null;
+    }
+
+    const rawName = match[1].trim();
+    const price = parseMoney(match[2]);
+
+    if (!rawName || price <= 0) {
+        return null;
+    }
+
+    return {
+
+        rawName,
+
+        name: cleanSevenElevenProductName(rawName),
+
+        price
+
+    };
+
+}
+
+function looksLikeSevenElevenProductLine(line) {
+
+    const text = String(line || "").trim();
+
+    if (isSevenElevenReceiptMeta(text)) {
+        return false;
+    }
+
+    /*
+        Product lines should end in a price.
+    */
+    if (!/\d+\.\d{2}[A-Z]?$/.test(text)) {
+        return false;
+    }
+
+    /*
+        Product name should contain letters.
+    */
+    if (!/[A-Za-z]/.test(text)) {
+        return false;
+    }
+
+    return true;
+
+}
+
+function cleanSevenElevenProductName(name) {
+
+    let clean = String(name || "")
+        .replace(/[_\-]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+    const replacements = [
+
+        [/RYAL/gi, "Royal"],
+        [/TR\b/gi, "Tru"],
+        [/ORNGE/gi, "Orange"],
+        [/ORNG/gi, "Orange"],
+
+        [/SPRTE/gi, "Sprite"],
+        [/SPRT/gi, "Sprite"],
+
+        [/ZR/gi, "Zero"],
+        [/SGR/gi, "Sugar"],
+
+        [/MTDEW/gi, "Mountain Dew"],
+        [/MTNDEW/gi, "Mountain Dew"],
+
+        [/COKEZERO/gi, "Coke Zero"],
+        [/COCACOLA/gi, "Coca Cola"],
+
+        [/PET/gi, "PET "],
+
+        [/ML/gi, "ml"],
+
+        [/L\b/gi, "L"],
+
+        [/CHOCO/gi, "Chocolate"],
+
+        [/CRM/gi, "Cream"],
+
+        [/VNLA/gi, "Vanilla"],
+
+        [/STRW/gi, "Strawberry"],
+
+        [/LMN/gi, "Lemon"],
+
+        [/MNGO/gi, "Mango"],
+
+        [/APL/gi, "Apple"],
+
+        [/GRN/gi, "Green"],
+
+        [/TEA/gi, "Tea"]
+
+    ];
+
+    replacements.forEach(([pattern, replacement]) => {
+        clean = clean.replace(pattern, replacement);
+    });
+
+    /*
+        Put a space before size.
+
+        PET500ml
+        ↓
+        PET 500ml
+    */
+
+    clean = clean.replace(/([A-Za-z])(\d+(?:ml|g|kg|L))/gi, "$1 $2");
+
+    /*
+        Collapse spaces again.
+    */
+
+    clean = clean.replace(/\s+/g, " ").trim();
+
+    return clean;
+}
+
+function isSevenElevenReceiptMeta(line) {
+
+    const upper = String(line || "")
+        .toUpperCase()
+        .trim();
+
+    const blocked = [
+
+        "TOTAL",
+        "SUBTOTAL",
+        "VAT",
+        "VATABLE",
+        "VAT-EXEMPT",
+        "VAT EXEMPT",
+        "ZERO-RATED",
+        "ZERO RATED",
+
+        "CASH",
+        "CHANGE",
+        "E-PAYMENT",
+        "PAYMENT",
+
+        "LOYALTY",
+        "POINTS",
+
+        "AMOUNT DUE",
+
+        "REFERENCE",
+
+        "AUTH",
+
+        "REGISTER",
+
+        "POS",
+
+        "OR #",
+
+        "TIN",
+
+        "DATE",
+
+        "TIME",
+
+        "THANK",
+
+        "VISIT",
+
+        "CUSTOMER"
+
+    ];
+
+    return blocked.some(word => upper.startsWith(word));
+
 }

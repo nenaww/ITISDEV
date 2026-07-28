@@ -4,6 +4,15 @@ let currentReceiptImage = "";
 let currentDetectedItems = [];
 let pendingDeleteItemId = null;
 let currentReceiptAdjustment = null;
+let isSavingScannedExpenses = false;
+let duplicateModalMode = "";
+let allowDuplicateReceiptSave = false;
+
+const SCANNED_EXPENSE_DB_NAME =
+    "kabalikat_scanned_expenses_db";
+
+const SCANNED_EXPENSE_DB_VERSION = 2;
+const SCANNED_RECEIPT_STORE = "receipts";
 
 let mlKitProgressTimer = null;
 let mlKitFakeProgress = 0;
@@ -38,18 +47,23 @@ const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 
 const invalidReceiptModal = document.getElementById("invalidReceiptModal");
 const closeInvalidReceiptBtn = document.getElementById("closeInvalidReceiptBtn");
+const duplicateReceiptModal = document.getElementById("duplicateReceiptModal");
+const duplicateScanAgainBtn = document.getElementById("duplicateScanAgainBtn");
+const duplicateContinueBtn = document.getElementById("duplicateContinueBtn");
 
-const defaultCategories = [
+const EXPENSE_CATEGORY_OPTIONS = [
     "Food",
-    "Groceries",
     "Utilities",
     "Transportation",
-    "Medicine",
-    "School",
-    "Debt / Utang",
-    "Emergency",
-    "Shopping",
-    "Others"
+    "Health",
+    "Education",
+    "Rent",
+    "Debt",
+    "Other"
+];
+
+const defaultCategories = [
+    ...EXPENSE_CATEGORY_OPTIONS
 ];
 
 const storeScanThemes = {
@@ -89,9 +103,71 @@ const storeScanThemes = {
 
 document.addEventListener("DOMContentLoaded", () => {
     setPageMode("scan");
+    initializeKabalikatScanningLogo();
     bindScannerActions();
     startCamera();
 });
+
+
+function initializeKabalikatScanningLogo() {
+    const logo =
+        document.getElementById(
+            "kabalikatScanningLogo"
+        );
+
+    const fallback =
+        document.getElementById(
+            "kabalikatScanningLogoFallback"
+        );
+
+    if (!logo) {
+        return;
+    }
+
+    const candidates = [
+        "images/KABALIKAT LOGO.png",
+        "images/KABALIKAT LOGO.PNG",
+        "images/KABALIKAT LOGO.webp",
+        "images/KABALIKAT LOGO.jpg",
+        "images/KABALIKAT LOGO.jpeg",
+        "images/KABALIKAT LOGO"
+    ];
+
+    let candidateIndex = 0;
+
+    const showFallback = () => {
+        logo.hidden = true;
+
+        if (fallback) {
+            fallback.hidden = false;
+        }
+    };
+
+    const loadNextCandidate = () => {
+        if (candidateIndex >= candidates.length) {
+            showFallback();
+            return;
+        }
+
+        logo.src = candidates[candidateIndex];
+        candidateIndex += 1;
+    };
+
+    logo.addEventListener("load", () => {
+        logo.hidden = false;
+
+        if (fallback) {
+            fallback.hidden = true;
+        }
+    });
+
+    logo.addEventListener(
+        "error",
+        loadNextCandidate
+    );
+
+    loadNextCandidate();
+}
 
 function bindScannerActions() {
     if (scanBackBtn) {
@@ -132,6 +208,20 @@ function bindScannerActions() {
 
     if (closeInvalidReceiptBtn) {
         closeInvalidReceiptBtn.addEventListener("click", closeInvalidReceiptModal);
+    }
+
+    if (duplicateScanAgainBtn) {
+        duplicateScanAgainBtn.addEventListener(
+            "click",
+            handleDuplicateScanAgain
+        );
+    }
+
+    if (duplicateContinueBtn) {
+        duplicateContinueBtn.addEventListener(
+            "click",
+            handleDuplicateContinue
+        );
     }
 }
 
@@ -306,21 +396,50 @@ async function handleMlKitOcrResult(payload) {
             primarySource: "mlkit"
         });
 
-        parsedReceipt = repairReceiptItemsFromRawProductSequence(parsedReceipt, mlKitText);
+        const storeId = normalizeStoreId(parsedReceipt.store.id);
 
-        if (!parsedReceipt.sequenceRepaired) {
-            parsedReceipt = rescueStandaloneProductCodeRows(parsedReceipt, mlKitText);
+        switch (storeId) {
+
+            case "savemore":
+
+                parsedReceipt =
+                    repairReceiptItemsFromRawProductSequence(
+                        parsedReceipt,
+                        mlKitText
+                    );
+
+                if (!parsedReceipt.sequenceRepaired) {
+
+                    parsedReceipt =
+                        rescueStandaloneProductCodeRows(
+                            parsedReceipt,
+                            mlKitText
+                        );
+                }
+
+                break;
+
+            case "seveneleven":
+
+                /*
+                    7-Eleven parser already produces final rows.
+                    No quantity inference.
+                    No subtotal repair.
+                    No rescue.
+                */
+
+                break;
+
+            default:
+
+                break;
         }
 
-        /*
-            Final database authority pass.
-            This makes sure the UI receives the canonical product name from Supabase,
-            even after parser repair/rescue changed the item list.
-        */
-        parsedReceipt.items = applyFinalDatabaseProductNames(
-            parsedReceipt.items,
-            parsedReceipt
-        );
+        parsedReceipt.items =
+            applyFinalDatabaseProductNames(
+                parsedReceipt.items,
+                parsedReceipt
+            );
 
         if (!isLikelyReceipt(mlKitText, parsedReceipt)) {
             stopMlKitProgressLoop();
@@ -330,16 +449,40 @@ async function handleMlKitOcrResult(payload) {
             return;
         }
 
-        const storeId = normalizeStoreId(getStoreId(parsedReceipt));
-        setScanningStoreTheme(storeId);
+        const themeStoreId = normalizeStoreId(getStoreId(parsedReceipt));
+        setScanningStoreTheme(themeStoreId);
 
-        mlKitProgressMessage = "Finalizing receipt...";
+        /*
+            Build the hidden review state first so the exact same
+            normalized products and fingerprint are used for both
+            duplicate checking and saving.
+        */
+        renderReview(
+            parsedReceipt,
+            mlKitText
+        );
+
+        mlKitProgressMessage = "Checking for duplicate receipts...";
         await finishMlKitProgress();
 
-        renderReview(parsedReceipt, mlKitText);
+        const isDuplicate =
+            await isCurrentReceiptDuplicate();
+
         hideScanningModal();
-        showReviewView();
         isScanning = false;
+
+        if (isDuplicate) {
+            duplicateModalMode =
+                "preview";
+
+            showDuplicateReceiptModal();
+            return;
+        }
+
+        allowDuplicateReceiptSave =
+            false;
+
+        showReviewView();
     } catch (error) {
         console.error(error);
         stopMlKitProgressLoop();
@@ -364,6 +507,10 @@ function applyFinalDatabaseProductNames(items, receipt) {
     const storeName = getReceiptStoreNameForMatcher(receipt);
 
     return items.map(item => {
+        if (item && item.preserveOcrName === true) {
+            return item;
+        }
+
         const candidates = getFinalMatcherCandidates(item);
 
         let best = null;
@@ -1877,7 +2024,13 @@ function renderReview(receipt, rawText) {
     currentDetectedItems = applyFinalDatabaseProductNames(
         currentDetectedItems,
         receipt
-    );
+    ).map(item => ({
+        ...item,
+        category:
+            normalizeReceiptExpenseCategory(
+                item.category
+            )
+    }));
 
     currentDetectedItems = dedupeAndSortReceiptItems(
         currentDetectedItems,
@@ -1944,7 +2097,7 @@ function renderDetectedItems(items) {
 
     if (!items || items.length === 0) {
         list.innerHTML = `
-            <article class="receipt-item-card" data-category="Others">
+            <article class="receipt-item-card" data-category="Other">
                 <div class="receipt-item-inner">
                     <div class="receipt-item-line">
                         <span class="receipt-item-qty">0</span>
@@ -1961,7 +2114,10 @@ function renderDetectedItems(items) {
 
     list.innerHTML = items.map(item => {
         const itemId = item.id || makeItemId();
-        const itemCategory = item.category || "Others";
+        const itemCategory =
+            normalizeReceiptExpenseCategory(
+                item.category
+            );
 
         item.id = itemId;
         item.category = itemCategory;
@@ -2737,6 +2893,12 @@ function showReviewView() {
 }
 
 function showScanView() {
+    allowDuplicateReceiptSave =
+        false;
+
+    duplicateModalMode =
+        "";
+
     if (reviewView) {
         reviewView.classList.remove("active");
     }
@@ -2760,48 +2922,806 @@ function showScanView() {
     }
 }
 
-function saveExpenses() {
+function getPrototypeReceiptIdForStore(storeName) {
+    const normalized = String(storeName || '').toLowerCase().replace(/[^a-z0-9]+/g,'');
+    if (normalized.includes('savemore')) return 'savemore1';
+    if (normalized.includes('puregold')) return 'puregold1';
+    if (normalized.includes('mercury')) return 'mercury1';
+    if (normalized.includes('alfamart') || normalized.includes('alphamart')) return 'alphamart1';
+    if (normalized.includes('7eleven') || normalized.includes('seveneleven') || normalized.includes('711')) return '7111';
+    return 'savemore1';
+}
+
+async function saveExpenses() {
+    if (isSavingScannedExpenses) return;
     if (!currentDetectedItems || currentDetectedItems.length === 0) {
-        showToast("No detected items to save.");
+        showToast('No detected items to save.');
         return;
     }
 
-    const savedExpenses = JSON.parse(localStorage.getItem("kabalikat_scanned_expenses")) || [];
+    isSavingScannedExpenses = true;
+    if (saveExpensesBtn) {
+        saveExpensesBtn.disabled = true;
+        const label = saveExpensesBtn.querySelector('span');
+        if (label) label.textContent = 'Saving...';
+    }
 
-    const newExpenses = currentDetectedItems.map(item => ({
-        id: item.id || makeItemId(),
-        title: item.name || "Unnamed Item",
-        rawTitle: item.rawName || item.name || "Unnamed Item",
-        quantity: Number(item.quantity || 1),
-        category: item.category || "Others",
-        amount: Number(item.price || 0),
-        receiptImage: item.receiptImage || currentReceiptImage,
-        addedBy: "Shared",
-        source: "OCR Receipt Scanner",
-        createdAt: new Date().toISOString()
-    }));
+    try {
+        await showScannerSaveSuccess();
+        const storeName = document.getElementById('storeNameText')?.textContent?.trim() || 'Savemore';
+        const receiptId = getPrototypeReceiptIdForStore(storeName);
+        const url = new URL('expenses.html', window.location.href);
+        url.searchParams.set('view','receipt-details');
+        url.searchParams.set('receiptId',receiptId);
+        window.location.href = url.href;
+    } catch (error) {
+        console.error('Prototype receipt redirect failed:', error);
+        showToast('Could not open the prototype receipt details.');
+        isSavingScannedExpenses = false;
+        resetScannerSaveButton();
+    }
+}
 
-    if (currentReceiptAdjustment && currentReceiptAdjustment.amount > 0) {
-        newExpenses.push({
+function resetScannerSaveButton() {
+    isSavingScannedExpenses = false;
+
+    if (!saveExpensesBtn) {
+        return;
+    }
+
+    saveExpensesBtn.disabled = false;
+
+    const label =
+        saveExpensesBtn.querySelector(
+            "span"
+        );
+
+    if (label) {
+        label.textContent = "Save";
+    }
+}
+
+function showDuplicateReceiptModal() {
+    if (!duplicateReceiptModal) {
+        showToast(
+            "A possible duplicate receipt was detected."
+        );
+
+        return;
+    }
+
+    duplicateReceiptModal.classList.remove(
+        "hidden"
+    );
+
+    /*
+        Restart the SVG X animation every time the modal appears.
+    */
+    duplicateReceiptModal.classList.remove(
+        "animate"
+    );
+
+    void duplicateReceiptModal.offsetWidth;
+
+    duplicateReceiptModal.classList.add(
+        "animate"
+    );
+}
+
+function closeDuplicateReceiptModal() {
+    duplicateReceiptModal?.classList.add(
+        "hidden"
+    );
+
+    duplicateReceiptModal?.classList.remove(
+        "animate"
+    );
+}
+
+function handleDuplicateScanAgain() {
+    closeDuplicateReceiptModal();
+
+    duplicateModalMode =
+        "";
+
+    allowDuplicateReceiptSave =
+        false;
+
+    resetScannerSaveButton();
+    showScanView();
+}
+
+function handleDuplicateContinue() {
+    const mode =
+        duplicateModalMode;
+
+    closeDuplicateReceiptModal();
+
+    duplicateModalMode =
+        "";
+
+    allowDuplicateReceiptSave =
+        true;
+
+    if (mode === "save") {
+        resetScannerSaveButton();
+
+        window.setTimeout(() => {
+            saveExpenses();
+        }, 80);
+
+        return;
+    }
+
+    showReviewView();
+}
+
+function openScannedExpenseDatabase() {
+    return new Promise(
+        (resolve, reject) => {
+            const request =
+                indexedDB.open(
+                    SCANNED_EXPENSE_DB_NAME,
+                    SCANNED_EXPENSE_DB_VERSION
+                );
+
+            request.onupgradeneeded =
+                event => {
+                    const database =
+                        event.target.result;
+
+                    let store = null;
+
+                    if (
+                        !database
+                            .objectStoreNames
+                            .contains(
+                                SCANNED_RECEIPT_STORE
+                            )
+                    ) {
+                        store =
+                            database
+                                .createObjectStore(
+                                    SCANNED_RECEIPT_STORE,
+                                    {
+                                        keyPath: "id"
+                                    }
+                                );
+                    } else {
+                        store =
+                            event.target
+                                .transaction
+                                .objectStore(
+                                    SCANNED_RECEIPT_STORE
+                                );
+                    }
+
+                    if (
+                        !store.indexNames.contains(
+                            "createdAt"
+                        )
+                    ) {
+                        store.createIndex(
+                            "createdAt",
+                            "createdAt",
+                            {
+                                unique: false
+                            }
+                        );
+                    }
+
+                    if (
+                        !store.indexNames.contains(
+                            "fingerprint"
+                        )
+                    ) {
+                        store.createIndex(
+                            "fingerprint",
+                            "fingerprint",
+                            {
+                                unique: true
+                            }
+                        );
+                    }
+                };
+
+            request.onsuccess =
+                event => {
+                    resolve(
+                        event.target.result
+                    );
+                };
+
+            request.onerror = () => {
+                reject(
+                    request.error ||
+                    new Error(
+                        "Receipt storage is unavailable."
+                    )
+                );
+            };
+        }
+    );
+}
+
+async function saveScannedReceiptRecord(
+    receiptRecord
+) {
+    const database =
+        await openScannedExpenseDatabase();
+
+    try {
+        const duplicate =
+            await findReceiptByFingerprint(
+                database,
+                receiptRecord.fingerprint
+            );
+
+        if (duplicate) {
+            const error =
+                new Error(
+                    "This receipt has already been saved."
+                );
+
+            error.name =
+                "DuplicateReceiptError";
+
+            throw error;
+        }
+
+        await putScannedReceiptRecord(
+            database,
+            receiptRecord
+        );
+
+        return receiptRecord;
+    } finally {
+        database.close();
+    }
+}
+
+function findReceiptByFingerprint(
+    database,
+    fingerprint
+) {
+    return new Promise(
+        (resolve, reject) => {
+            if (!fingerprint) {
+                resolve(null);
+                return;
+            }
+
+            const transaction =
+                database.transaction(
+                    SCANNED_RECEIPT_STORE,
+                    "readonly"
+                );
+
+            const store =
+                transaction.objectStore(
+                    SCANNED_RECEIPT_STORE
+                );
+
+            if (
+                store.indexNames.contains(
+                    "fingerprint"
+                )
+            ) {
+                const request =
+                    store
+                        .index(
+                            "fingerprint"
+                        )
+                        .get(
+                            fingerprint
+                        );
+
+                request.onsuccess = () => {
+                    resolve(
+                        request.result ||
+                        null
+                    );
+                };
+
+                request.onerror = () => {
+                    reject(request.error);
+                };
+
+                return;
+            }
+
+            const request =
+                store.getAll();
+
+            request.onsuccess = () => {
+                const records =
+                    Array.isArray(
+                        request.result
+                    )
+                        ? request.result
+                        : [];
+
+                resolve(
+                    records.find(record => {
+                        const recordFingerprint =
+                            record.fingerprint ||
+                            createReceiptFingerprint(
+                                record
+                            );
+
+                        return (
+                            recordFingerprint ===
+                            fingerprint
+                        );
+                    }) ||
+                    null
+                );
+            };
+
+            request.onerror = () => {
+                reject(request.error);
+            };
+        }
+    );
+}
+
+function putScannedReceiptRecord(
+    database,
+    receiptRecord
+) {
+    return new Promise(
+        (resolve, reject) => {
+            const transaction =
+                database.transaction(
+                    SCANNED_RECEIPT_STORE,
+                    "readwrite"
+                );
+
+            const request =
+                transaction
+                    .objectStore(
+                        SCANNED_RECEIPT_STORE
+                    )
+                    .add(
+                        receiptRecord
+                    );
+
+            let requestError = null;
+
+            request.onerror = event => {
+                requestError =
+                    request.error ||
+                    new Error(
+                        "The receipt could not be stored."
+                    );
+
+                event.preventDefault();
+            };
+
+            transaction.oncomplete = () => {
+                resolve(receiptRecord);
+            };
+
+            transaction.onabort = () => {
+                if (
+                    requestError?.name ===
+                    "ConstraintError"
+                ) {
+                    const duplicateError =
+                        new Error(
+                            "This receipt has already been saved."
+                        );
+
+                    duplicateError.name =
+                        "DuplicateReceiptError";
+
+                    reject(
+                        duplicateError
+                    );
+                    return;
+                }
+
+                reject(
+                    requestError ||
+                    transaction.error ||
+                    new Error(
+                        "The receipt could not be stored."
+                    )
+                );
+            };
+        }
+    );
+}
+
+function createReceiptFingerprint(
+    receiptRecord
+) {
+    const receiptNumber =
+        normalizeReceiptFingerprintText(
+            receiptRecord.receiptNumber
+        );
+
+    const normalizedReceiptNumber =
+        ["", "na", "n/a", "-"].includes(
+            receiptNumber
+        )
+            ? ""
+            : receiptNumber;
+
+    const items =
+        Array.isArray(
+            receiptRecord.items
+        )
+            ? receiptRecord.items
+            : [];
+
+    const itemSignature =
+        items
+            .map(item => {
+                return [
+                    normalizeReceiptFingerprintText(
+                        item.title ||
+                        item.rawTitle
+                    ),
+                    Number(
+                        item.quantity ||
+                        1
+                    ),
+                    Number(
+                        item.amount ||
+                        0
+                    ).toFixed(2),
+                    normalizeReceiptExpenseCategory(
+                        item.category
+                    )
+                ].join(":");
+            })
+            .join("|");
+
+    const total =
+        items.reduce(
+            (sum, item) =>
+                sum +
+                Number(
+                    item.amount ||
+                    0
+                ),
+            0
+        );
+
+    const signature = [
+        normalizeReceiptFingerprintText(
+            receiptRecord.storeName
+        ),
+        normalizedReceiptNumber,
+        String(
+            receiptRecord.date ||
+            ""
+        ),
+        total.toFixed(2),
+        itemSignature
+    ].join("||");
+
+    return (
+        "receipt-v1-" +
+        stableReceiptHash(
+            signature
+        ) +
+        "-" +
+        stableReceiptHash(
+            signature
+                .split("")
+                .reverse()
+                .join("")
+        )
+    );
+}
+
+function normalizeReceiptFingerprintText(
+    value
+) {
+    return String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function stableReceiptHash(value) {
+    let hash = 2166136261;
+
+    for (
+        let index = 0;
+        index < value.length;
+        index += 1
+    ) {
+        hash ^=
+            value.charCodeAt(index);
+
+        hash =
+            Math.imul(
+                hash,
+                16777619
+            );
+    }
+
+    return (
+        hash >>> 0
+    ).toString(16);
+}
+
+function saveScannedReceiptMetadataFallback(
+    receiptRecord
+) {
+    try {
+        const existing =
+            JSON.parse(
+                localStorage.getItem(
+                    "kabalikat_scanned_expense_metadata"
+                ) ||
+                "[]"
+            );
+
+        const records =
+            Array.isArray(existing)
+                ? existing
+                : [];
+
+        const lightweightRecord = {
+            ...receiptRecord,
+            image: ""
+        };
+
+        localStorage.setItem(
+            "kabalikat_scanned_expense_metadata",
+            JSON.stringify([
+                lightweightRecord,
+                ...records
+            ].slice(0, 30))
+        );
+    } catch (error) {
+        console.warn(
+            "Metadata fallback was skipped:",
+            error
+        );
+    }
+}
+
+function showScannerSaveSuccess() {
+    return new Promise(resolve => {
+        const overlay =
+            document.getElementById(
+                "scannerSaveSuccessOverlay"
+            );
+
+        if (!overlay) {
+            showToast(
+                "Scanned expenses saved."
+            );
+
+            window.setTimeout(
+                resolve,
+                500
+            );
+
+            return;
+        }
+
+        overlay.classList.remove(
+            "hidden",
+            "show"
+        );
+
+        void overlay.offsetWidth;
+
+        overlay.classList.add("show");
+
+        window.setTimeout(() => {
+            overlay.classList.remove(
+                "show"
+            );
+
+            window.setTimeout(() => {
+                overlay.classList.add(
+                    "hidden"
+                );
+
+                resolve();
+            }, 260);
+        }, 1700);
+    });
+}
+
+function buildCurrentReceiptItemsForStorage() {
+    const items =
+        currentDetectedItems.map(item => ({
+            id:
+                item.id ||
+                makeItemId(),
+
+            title:
+                item.name ||
+                "Unnamed Item",
+
+            rawTitle:
+                item.rawName ||
+                item.name ||
+                "Unnamed Item",
+
+            quantity:
+                Number(
+                    item.quantity ||
+                    1
+                ),
+
+            category:
+                normalizeReceiptExpenseCategory(
+                    item.category
+                ),
+
+            amount:
+                Number(
+                    item.price ||
+                    0
+                )
+        }));
+
+    if (
+        currentReceiptAdjustment &&
+        currentReceiptAdjustment.amount > 0
+    ) {
+        items.push({
             id: makeItemId(),
-            title: currentReceiptAdjustment.label,
-            rawTitle: currentReceiptAdjustment.label,
+
+            title:
+                currentReceiptAdjustment.label,
+
+            rawTitle:
+                currentReceiptAdjustment.label,
+
             quantity: 1,
-            category: "Others",
-            amount: -Number(currentReceiptAdjustment.amount || 0),
-            receiptImage: currentReceiptImage,
-            addedBy: "Shared",
-            source: "OCR Receipt Scanner",
-            createdAt: new Date().toISOString()
+            category: "Other",
+
+            amount:
+                -Number(
+                    currentReceiptAdjustment.amount ||
+                    0
+                )
         });
     }
 
-    localStorage.setItem(
-        "kabalikat_scanned_expenses",
-        JSON.stringify([...newExpenses, ...savedExpenses])
-    );
+    return items;
+}
 
-    showToast("Scanned expenses saved.");
+function buildCurrentReceiptFingerprintRecord() {
+    return {
+        date:
+            getScannedExpenseDate(),
+
+        storeName:
+            document
+                .getElementById(
+                    "storeNameText"
+                )
+                ?.textContent
+                ?.trim() ||
+            "Receipt",
+
+        receiptNumber:
+            document
+                .getElementById(
+                    "receiptNumberText"
+                )
+                ?.textContent
+                ?.trim() ||
+            "",
+
+        items:
+            buildCurrentReceiptItemsForStorage()
+    };
+}
+
+async function isCurrentReceiptDuplicate() {
+    if (
+        !currentDetectedItems ||
+        currentDetectedItems.length === 0
+    ) {
+        return false;
+    }
+
+    const fingerprintRecord =
+        buildCurrentReceiptFingerprintRecord();
+
+    const fingerprint =
+        createReceiptFingerprint(
+            fingerprintRecord
+        );
+
+    const database =
+        await openScannedExpenseDatabase();
+
+    try {
+        const duplicate =
+            await findReceiptByFingerprint(
+                database,
+                fingerprint
+            );
+
+        return Boolean(
+            duplicate
+        );
+    } finally {
+        database.close();
+    }
+}
+
+function getScannedExpenseDate() {
+    const receiptDateText =
+        document
+            .getElementById(
+                "receiptDateText"
+            )
+            ?.textContent
+            ?.trim() ||
+        "";
+
+    const isoMatch =
+        receiptDateText.match(
+            /^(\d{4})-(\d{2})-(\d{2})$/
+        );
+
+    if (isoMatch) {
+        return receiptDateText;
+    }
+
+    const localMatch =
+        receiptDateText.match(
+            /^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/
+        );
+
+    if (localMatch) {
+        const month =
+            String(
+                Number(localMatch[1])
+            ).padStart(2, "0");
+
+        const day =
+            String(
+                Number(localMatch[2])
+            ).padStart(2, "0");
+
+        return (
+            `${localMatch[3]}-` +
+            `${month}-${day}`
+        );
+    }
+
+    const parsedDate =
+        new Date(
+            receiptDateText
+        );
+
+    if (
+        receiptDateText &&
+        !Number.isNaN(
+            parsedDate.getTime()
+        )
+    ) {
+        return (
+            `${parsedDate.getFullYear()}-` +
+            `${String(
+                parsedDate.getMonth() + 1
+            ).padStart(2, "0")}-` +
+            `${String(
+                parsedDate.getDate()
+            ).padStart(2, "0")}`
+        );
+    }
+
+    return new Date()
+        .toISOString()
+        .slice(0, 10);
 }
 
 function showScanningModal(message, percent = 0) {
@@ -3000,11 +3920,52 @@ function getStoreName(receipt) {
 }
 
 function getCategoryList() {
-    if (typeof KABALIKAT_CATEGORIES !== "undefined" && Array.isArray(KABALIKAT_CATEGORIES)) {
-        return KABALIKAT_CATEGORIES;
-    }
+    return [
+        ...EXPENSE_CATEGORY_OPTIONS
+    ];
+}
 
-    return defaultCategories;
+function normalizeReceiptExpenseCategory(category) {
+    const value =
+        String(category || "")
+            .trim()
+            .toLowerCase();
+
+    const categoryMap = {
+        food: "Food",
+        grocery: "Food",
+        groceries: "Food",
+        supermarket: "Food",
+        utilities: "Utilities",
+        utility: "Utilities",
+        electricity: "Utilities",
+        water: "Utilities",
+        transportation: "Transportation",
+        transport: "Transportation",
+        fare: "Transportation",
+        medicine: "Health",
+        medical: "Health",
+        health: "Health",
+        pharmacy: "Health",
+        school: "Education",
+        education: "Education",
+        rent: "Rent",
+        housing: "Rent",
+        debt: "Debt",
+        loan: "Debt",
+        utang: "Debt",
+        "debt / utang": "Debt",
+        emergency: "Other",
+        shopping: "Other",
+        household: "Other",
+        other: "Other",
+        others: "Other"
+    };
+
+    return (
+        categoryMap[value] ||
+        "Other"
+    );
 }
 
 function makeItemId() {

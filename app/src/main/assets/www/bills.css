@@ -1,0 +1,5240 @@
+:root {
+    --bills-primary: #E98B5F;
+    --bills-primary-dark: #C96E4B;
+    --bills-primary-soft: #FFF1E8;
+    --bills-blue: #AFCBDD;
+    --bills-blue-soft: #EAF3F8;
+    --bills-green: #8FAE9A;
+    --bills-green-soft: #EEF6F0;
+    --bills-lavender: #C9A1C8;
+    --bills-lavender-soft: #F1EDFF;
+    --bills-yellow-soft: #FFF5D8;
+    --bills-cream: #FFF9F5;
+    --bills-white: #FFFFFF;
+    --bills-text: #251F1D;
+    --bills-neutral: #5C534E;
+    --bills-muted: #8A817C;
+    --bills-line: rgba(92, 83, 78, 0.10);
+    --bills-shadow: 0 18px 40px rgba(92, 83, 78, 0.11);
+    --bills-soft-shadow: 0 10px 24px rgba(92, 83, 78, 0.075);
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html,
+body[data-page="bills"] {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--bills-cream);
+}
+
+body[data-page="bills"] {
+    color: var(--bills-text);
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 12.5px;
+    font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button,
+select,
+input[type="date"],
+.setting-row {
+    -webkit-tap-highlight-color: transparent;
+}
+
+button {
+    cursor: pointer;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.bills-page {
+    position: relative;
+    width: 100%;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 18% 8%, rgba(175, 203, 221, 0.24), transparent 29%),
+        radial-gradient(circle at 86% 22%, rgba(255, 218, 185, 0.30), transparent 27%),
+        var(--bills-cream);
+}
+
+.bills-scroll-area {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
+    padding: calc(env(safe-area-inset-top, 0px) + 28px) 24px calc(env(safe-area-inset-bottom, 0px) + 150px);
+}
+
+.bills-scroll-area::-webkit-scrollbar,
+.bill-panel-scroll::-webkit-scrollbar {
+    display: none;
+    width: 0;
+}
+
+/* Typography adjusted to match the compact scanner-page scale */
+
+/* Header */
+
+.bills-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 18px;
+}
+
+.bills-header h1 {
+    margin: 0;
+    color: var(--bills-text);
+    font-size: 19px;
+    line-height: 1.08;
+    font-weight: 800;
+    letter-spacing: -0.65px;
+}
+
+.bills-header p {
+    margin: 7px 0 0;
+    color: var(--bills-neutral);
+    font-size: 10.5px;
+    line-height: 1.45;
+    font-weight: 600;
+}
+
+.bills-header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 9px;
+}
+
+.bills-header-actions button {
+    min-height: 44px;
+    border-radius: 999px;
+    padding: 0 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.bills-primary-action {
+    border: none;
+    background: var(--bills-primary);
+    color: #FFFFFF;
+    box-shadow: 0 12px 25px rgba(233, 139, 95, 0.24);
+}
+
+.bills-secondary-action {
+    border: 1.5px solid var(--bills-primary);
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--bills-primary-dark);
+}
+
+/* Summary */
+
+.bills-summary-card {
+    margin-top: 24px;
+    padding: 22px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: var(--bills-shadow);
+}
+
+.summary-top-row {
+    display: grid;
+    grid-template-columns: 1fr 1.45fr;
+    gap: 20px;
+    align-items: stretch;
+}
+
+.summary-amount-block {
+    padding-right: 18px;
+    border-right: 1px solid var(--bills-line);
+}
+
+.summary-amount-block span,
+.summary-paid-copy span {
+    display: block;
+    color: var(--bills-muted);
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.summary-amount-block strong {
+    display: block;
+    margin-top: 9px;
+    color: var(--bills-text);
+    font-size: clamp(29px, 7vw, 38px);
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -1.2px;
+    white-space: nowrap;
+}
+
+/* Paid summary */
+
+.summary-paid-block {
+    position: relative;
+    min-width: 0;
+    min-height: 76px;
+    padding: 0;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 32px;
+    grid-template-rows: auto 11px;
+    column-gap: 14px;
+    row-gap: 12px;
+    align-items: start;
+}
+
+.summary-paid-copy {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+}
+
+.summary-paid-copy span {
+    color: #4F916B;
+}
+
+.summary-paid-copy strong {
+    display: block;
+    margin-top: 9px;
+    color: #4F916B;
+    font-size: 20px;
+    line-height: 1;
+    font-weight: 800;
+}
+
+.summary-calendar-icon {
+    position: static;
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: var(--bills-green-soft);
+    color: #4F916B;
+
+    display: grid;
+    place-items: center;
+
+    font-size: 12px;
+}
+
+.summary-progress-track {
+    position: relative;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    align-self: end;
+
+    width: 100%;
+    height: 11px;
+
+    border-radius: 999px;
+    overflow: hidden;
+    background: #ECE7E4;
+}
+
+.summary-progress-fill {
+    width: 0;
+    min-width: 0;
+    height: 100%;
+
+    border-radius: inherit;
+    background: #4F9B70;
+
+    transition: width 0.35s ease;
+}
+
+/* Bills and debt totals */
+
+.summary-type-grid {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    overflow: hidden;
+    border-radius: 21px;
+
+    background: linear-gradient(
+        90deg,
+        #F2F7FB 0%,
+        #F2F7FB 50%,
+        #FFF1EC 50%,
+        #FFF1EC 100%
+    );
+}
+
+.summary-type-grid div {
+    padding: 16px 14px;
+    text-align: center;
+}
+
+.summary-type-grid div + div {
+    border-left: 1px solid rgba(92, 83, 78, 0.08);
+}
+
+.summary-type-grid span {
+    display: block;
+    color: var(--bills-neutral);
+    font-size: 9.5px;
+    font-weight: 700;
+}
+
+.summary-type-grid div:nth-child(2) span {
+    color: var(--bills-primary-dark);
+}
+
+.summary-type-grid strong {
+    display: block;
+    margin-top: 6px;
+    color: var(--bills-text);
+    font-size: 16px;
+    font-weight: 800;
+}
+
+/* Filters */
+
+.bills-filter-row {
+    margin-top: 22px;
+
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+
+.bills-type-filter {
+    min-height: 52px;
+    padding: 5px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: var(--bills-soft-shadow);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.bills-type-filter button {
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--bills-text);
+    font-size: 10.5px;
+    font-weight: 800;
+}
+
+.bills-type-filter button.active {
+    background: var(--bills-primary);
+    color: #FFFFFF;
+    box-shadow: 0 9px 18px rgba(233, 139, 95, 0.22);
+}
+
+.bills-period-filters {
+    width: 100%;
+}
+
+/* Main Bills month and year filter */
+
+.single-period-filter {
+    width: 100%;
+    display: block;
+}
+
+.bills-month-filter {
+    position: relative;
+    width: 100%;
+    height: 68px;
+
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.96);
+
+    box-shadow:
+        0 12px 28px
+        rgba(92, 83, 78, 0.08);
+}
+
+.bills-month-filter-button {
+    width: 100%;
+    height: 100%;
+
+    border: 0;
+    border-radius: inherit;
+    background: transparent;
+
+    color: var(--bills-neutral);
+    padding: 0 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    text-align: left;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.bills-month-filter-button i {
+    flex: 0 0 auto;
+
+    color: var(--bills-neutral);
+    font-size: 16px;
+}
+
+.bills-month-filter-button:active {
+    background: rgba(255, 249, 245, 0.78);
+}
+
+.bills-month-filter-button:focus-visible {
+    outline: 3px solid rgba(233, 139, 95, 0.18);
+    outline-offset: 2px;
+}
+
+@media (max-width: 430px) {
+    .bills-month-filter {
+        height: 60px;
+        border-radius: 22px;
+    }
+
+    .bills-month-filter-button {
+        padding: 0 19px;
+        font-size: 13px;
+    }
+
+    .bills-month-filter-button i {
+        font-size: 16px;
+    }
+}
+
+/* Sections and list */
+
+.bills-section {
+    margin-top: 28px;
+}
+
+.bills-section-heading {
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.bills-section-heading h2 {
+    margin: 0;
+    color: var(--bills-text);
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+}
+
+.bills-section-heading button {
+    min-height: 38px;
+    border: 0;
+    border-radius: 999px;
+    background: #FFFFFF;
+    color: var(--bills-text);
+    padding: 0 15px;
+    font-size: 9.5px;
+    font-weight: 800;
+    box-shadow: var(--bills-soft-shadow);
+}
+
+.simple-heading {
+    justify-content: flex-start;
+}
+
+.payments-list {
+    overflow: hidden;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: var(--bills-soft-shadow);
+}
+
+.payment-row {
+    width: 100%;
+    min-height: 92px;
+    border: 0;
+    border-bottom: 1px solid rgba(92, 83, 78, 0.08);
+    background: transparent;
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: 54px minmax(0, 1fr) auto 20px;
+    align-items: center;
+    gap: 13px;
+    text-align: left;
+}
+
+.payment-row:last-child {
+    border-bottom: 0;
+}
+
+.payment-row:active {
+    background: rgba(255, 249, 245, 0.86);
+}
+
+.payment-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: var(--payment-soft);
+    color: var(--payment-accent);
+    display: grid;
+    place-items: center;
+    font-size: 25px;
+}
+
+.payment-main {
+    min-width: 0;
+}
+
+.payment-main h3 {
+    margin: 0;
+    color: var(--bills-text);
+    font-size: 13px;
+    line-height: 1.2;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.payment-main > span {
+    display: block;
+    margin-top: 4px;
+    color: var(--bills-neutral);
+    font-size: 9.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.payment-due-date {
+    margin-top: 7px;
+    color: var(--bills-neutral);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+.payment-value {
+    min-width: 88px;
+    text-align: right;
+}
+
+.payment-value strong {
+    display: block;
+    color: var(--bills-primary-dark);
+    font-size: 15px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.payment-type-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 6px;
+    min-height: 27px;
+    min-width: 52px;
+    border-radius: 999px;
+    padding: 0 10px;
+    background: var(--bills-primary-soft);
+    color: var(--bills-primary-dark);
+    font-size: 8px;
+    font-weight: 800;
+}
+
+.payment-type-chip.debt {
+    background: var(--bills-primary-soft);
+    color: var(--bills-primary-dark);
+}
+
+.payment-type-chip.receivable {
+    background: var(--bills-green-soft);
+    color: #4F916B;
+}
+
+.payment-type-chip.paid {
+    background: var(--bills-green-soft);
+    color: #4F916B;
+}
+
+.payment-chevron {
+    color: var(--bills-neutral);
+    font-size: 19px;
+}
+
+.empty-payments {
+    min-height: 160px;
+    padding: 26px;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    text-align: center;
+}
+
+.empty-payments i {
+    color: var(--bills-primary);
+    font-size: 34px;
+}
+
+.empty-payments strong {
+    display: block;
+    margin-top: 10px;
+    color: var(--bills-text);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.empty-payments span {
+    display: block;
+    margin-top: 5px;
+    color: var(--bills-muted);
+    font-size: 9.5px;
+}
+
+/* Debt overview */
+
+.debt-overview-card {
+    border-radius: 28px;
+    padding: 18px;
+    background: #FFFFFF;
+    box-shadow: var(--bills-soft-shadow);
+}
+
+.debt-overview-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr);
+    align-items: stretch;
+    gap: 16px;
+}
+
+.debt-overview-divider {
+    width: 1px;
+    min-height: 92px;
+    background: rgba(92, 83, 78, 0.10);
+}
+
+.debt-overview-item {
+    min-width: 0;
+    border-radius: 20px;
+    padding: 14px;
+}
+
+.debt-you-owe {
+    background: linear-gradient(135deg, #FFF1EC, #FFF8F5);
+}
+
+.debt-owed-to-you {
+    background: linear-gradient(135deg, #EEF6F0, #F7FBF8);
+}
+
+.debt-overview-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--bills-neutral);
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.debt-overview-icon {
+    width: 27px;
+    height: 27px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+}
+
+.debt-you-owe .debt-overview-icon {
+    background: #FFFFFF;
+    color: var(--bills-primary-dark);
+}
+
+.debt-owed-to-you .debt-overview-icon {
+    background: #FFFFFF;
+    color: #4F916B;
+}
+
+.debt-overview-item > strong {
+    display: block;
+    margin-top: 12px;
+    color: var(--bills-text);
+    font-size: 22px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -0.55px;
+    white-space: nowrap;
+}
+
+.debt-you-owe > strong {
+    color: var(--bills-primary-dark);
+}
+
+.debt-owed-to-you > strong {
+    color: #4F916B;
+}
+
+.debt-overview-item > small {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-top: 9px;
+    color: var(--bills-neutral);
+    font-size: 8.8px;
+    font-weight: 600;
+}
+
+.debt-overview-item > small b {
+    color: var(--bills-text);
+    font-weight: 800;
+}
+
+.debt-overdue-notice {
+    min-height: 36px;
+    margin-top: 12px;
+    border-radius: 14px;
+    background: #FCECEC;
+    color: #B84747;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.debt-overview-card > button {
+    width: 100%;
+    min-height: 42px;
+    margin-top: 13px;
+    border: 1.5px solid rgba(92, 83, 78, 0.13);
+    border-radius: 999px;
+    background: #FFFFFF;
+    color: var(--bills-text);
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 9.5px;
+    font-weight: 800;
+}
+
+.debt-overview-card > button i {
+    color: var(--bills-primary-dark);
+    font-size: 12px;
+}
+
+/* Bottom navigation */
+
+.bills-bottom-nav {
+    position: fixed;
+    left: 24px;
+    right: 24px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+    height: 74px;
+    border: 1px solid rgba(92, 83, 78, 0.08);
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 18px 40px rgba(92, 83, 78, 0.14);
+    backdrop-filter: blur(12px);
+    display: grid;
+    grid-template-columns: 1fr 1fr 72px 1fr 1fr;
+    align-items: center;
+    z-index: 45;
+}
+
+.bills-bottom-nav button {
+    border: 0;
+    background: transparent;
+    color: #ADA19A;
+    display: grid;
+    place-items: center;
+    gap: 2px;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.bills-bottom-nav button span {
+    font-size: 8.5px;
+    font-weight: 800;
+}
+
+.bills-bottom-nav button.active {
+    color: var(--bills-primary-dark);
+}
+
+.bills-bottom-nav .bills-nav-scan {
+    width: 62px;
+    height: 62px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: var(--bills-primary);
+    color: #FFFFFF;
+    font-size: 25px;
+    transform: translateY(-16px);
+    box-shadow: 0 16px 30px rgba(233, 139, 95, 0.30);
+}
+
+/* Debt direction selector */
+
+.debt-direction-field {
+    margin-bottom: 20px;
+}
+
+.debt-direction-title {
+    display: block;
+    margin: 0 0 9px 8px;
+    color: var(--bills-text);
+    font-size: 10.5px;
+    font-weight: 700;
+}
+
+.debt-direction-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.debt-direction-options button {
+    min-width: 0;
+    min-height: 64px;
+    border: 1.5px solid transparent;
+    border-radius: 18px;
+    background: #F7F3F1;
+    color: var(--bills-neutral);
+    padding: 10px 12px;
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    align-items: center;
+    gap: 9px;
+    text-align: left;
+}
+
+.debt-direction-options button.active {
+    border-color: var(--bills-primary);
+    background: #FFF8F4;
+    color: var(--bills-primary-dark);
+}
+
+.debt-direction-option-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 11px;
+    background: #FFFFFF;
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+}
+
+.debt-direction-options button[data-debt-direction="receivable"].active {
+    border-color: #78A98A;
+    background: #F5FAF6;
+    color: #4F916B;
+}
+
+.debt-direction-option-copy {
+    min-width: 0;
+}
+
+.debt-direction-option-copy strong,
+.debt-direction-option-copy small {
+    display: block;
+}
+
+.debt-direction-option-copy strong {
+    font-size: 10.5px;
+    font-weight: 800;
+}
+
+.debt-direction-option-copy small {
+    margin-top: 3px;
+    color: var(--bills-muted);
+    font-size: 8px;
+    line-height: 1.25;
+    font-weight: 600;
+}
+
+/* Add Bill / Debt panel */
+
+.bill-full-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 16% 7%, rgba(175, 203, 221, 0.20), transparent 29%),
+        radial-gradient(circle at 88% 23%, rgba(255, 218, 185, 0.28), transparent 26%),
+        var(--bills-cream);
+}
+
+.bill-panel-scroll {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding: calc(env(safe-area-inset-top, 0px) + 24px) 24px calc(env(safe-area-inset-bottom, 0px) + 152px);
+}
+
+.add-panel-header {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    align-items: start;
+    gap: 16px;
+}
+
+.add-panel-header > button {
+    width: 48px;
+    height: 48px;
+    border: 0;
+    background: transparent;
+    color: var(--bills-primary-dark);
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+}
+
+.add-panel-header h2 {
+    margin: 0;
+    color: var(--bills-text);
+    font-size: 21px;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.6px;
+}
+
+.add-panel-header p {
+    margin: 8px 0 0;
+    color: var(--bills-neutral);
+    font-size: 10.5px;
+    line-height: 1.45;
+    font-weight: 600;
+}
+
+.entry-type-selector {
+    min-height: 66px;
+    margin-top: 24px;
+    padding: 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: var(--bills-soft-shadow);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.entry-type-selector button {
+    border: 1.5px solid transparent;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--bills-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 11.5px;
+    font-weight: 700;
+}
+
+.entry-type-selector button i {
+    color: #8258DD;
+    font-size: 19px;
+}
+
+.entry-type-selector button.active {
+    border-color: var(--bills-primary);
+    color: var(--bills-primary-dark);
+    background: rgba(255, 249, 245, 0.64);
+}
+
+.entry-type-selector button.active i {
+    color: var(--bills-primary-dark);
+}
+
+.bill-debt-form {
+    margin-top: 22px;
+    padding: 23px 18px 18px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: var(--bills-soft-shadow);
+}
+
+.bill-fieldset {
+    position: relative;
+    min-width: 0;
+    min-height: 70px;
+    margin: 0 0 19px;
+    padding: 4px 17px 0;
+    border: 1px solid rgba(92, 83, 78, 0.16);
+    border-radius: 17px;
+    background: #FFFFFF;
+}
+
+.bill-fieldset legend {
+    margin-left: 2px;
+    padding: 0 7px;
+    color: var(--bills-text);
+    font-size: 10.5px;
+    font-weight: 700;
+}
+
+.bill-fieldset input,
+.bill-fieldset select {
+    width: 100%;
+    height: 50px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--bills-text);
+    padding: 0 8px;
+    font-size: 11.5px;
+    font-weight: 600;
+}
+
+.bill-fieldset input::placeholder,
+.bill-fieldset select:invalid,
+.bill-fieldset select option[value=""] {
+    color: #A39DA1;
+}
+
+.currency-input {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 0 8px;
+}
+
+.currency-input > span {
+    color: #A39DA1;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.currency-input input {
+    padding-left: 0;
+}
+
+.select-fieldset {
+    padding-right: 48px;
+}
+
+.select-fieldset > i {
+    position: absolute;
+    right: 18px;
+    top: 30px;
+    color: var(--bills-neutral);
+    font-size: 15px;
+    pointer-events: none;
+}
+
+.select-fieldset select {
+    appearance: none;
+    cursor: pointer;
+}
+
+.date-fieldset {
+    padding-right: 17px;
+}
+
+.date-input-control {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    padding: 0 8px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.date-input-display {
+    min-width: 0;
+    color: var(--bills-text);
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.date-input-display.placeholder {
+    color: #A39DA1;
+    font-weight: 500;
+}
+
+.date-input-icon {
+    flex: 0 0 auto;
+    margin-left: auto;
+    color: var(--bills-neutral);
+    font-size: 13px;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.date-input-control input[type="date"] {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    opacity: 0;
+    cursor: pointer;
+}
+
+.date-input-control input[type="date"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+    margin: 0;
+
+    opacity: 0;
+    cursor: pointer;
+}
+
+.frequency-field {
+    margin-top: 2px;
+}
+
+.frequency-field > span {
+    display: block;
+    margin: 0 0 10px 10px;
+    color: var(--bills-text);
+    font-size: 10.5px;
+    font-weight: 700;
+}
+
+.frequency-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.frequency-options button {
+    min-height: 48px;
+    border: 1.5px solid transparent;
+    border-radius: 999px;
+    background: #F6F2F0;
+    color: var(--bills-neutral);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.frequency-options button.active {
+    border-color: var(--bills-primary);
+    background: #FFF8F4;
+    color: var(--bills-primary-dark);
+}
+
+.settings-list {
+    margin-top: 18px;
+}
+
+.setting-row,
+.notes-row {
+    position: relative;
+    min-height: 74px;
+    margin: 0;
+    border-bottom: 1px solid rgba(92, 83, 78, 0.10);
+    display: grid;
+    grid-template-columns: 50px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.setting-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+}
+
+.reminder-icon {
+    background: var(--bills-primary-soft);
+    color: var(--bills-primary-dark);
+}
+
+.family-icon {
+    background: var(--bills-green-soft);
+    color: #4F916B;
+}
+
+.notes-icon {
+    background: var(--bills-lavender-soft);
+    color: #8057D8;
+}
+
+.setting-copy {
+    min-width: 0;
+}
+
+.setting-copy strong,
+.notes-field-wrap > span {
+    display: block;
+    color: var(--bills-text);
+    font-size: 10.5px;
+    line-height: 1.3;
+    font-weight: 700;
+}
+
+.setting-copy strong em,
+.notes-field-wrap > span em {
+    color: var(--bills-neutral);
+    font-style: normal;
+    font-weight: 500;
+}
+
+.setting-copy small {
+    display: block;
+    margin-top: 4px;
+    color: var(--bills-neutral);
+    font-size: 9px;
+    line-height: 1.35;
+    font-weight: 500;
+}
+
+.switch-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.switch-control {
+    position: relative;
+    width: 52px;
+    height: 29px;
+    border-radius: 999px;
+    background: #DEDCDC;
+    transition: 0.2s ease;
+}
+
+.switch-control::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 23px;
+    height: 23px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    box-shadow: 0 3px 8px rgba(92, 83, 78, 0.18);
+    transition: 0.2s ease;
+}
+
+.switch-input:checked + .switch-control {
+    background: var(--bills-primary);
+}
+
+.switch-input:checked + .switch-control::after {
+    transform: translateX(23px);
+}
+
+.notes-row {
+    min-height: 112px;
+    border-bottom: 0;
+    align-items: start;
+    padding-top: 14px;
+    grid-template-columns: 50px minmax(0, 1fr);
+}
+
+.notes-field-wrap {
+    min-width: 0;
+}
+
+.notes-field-wrap textarea {
+    width: 100%;
+    min-height: 82px;
+    margin-top: 7px;
+    border: 1px solid rgba(92, 83, 78, 0.15);
+    border-radius: 17px;
+    outline: 0;
+    background: #FFFFFF;
+    color: var(--bills-text);
+    padding: 14px;
+    resize: vertical;
+    font-size: 10.5px;
+    font-weight: 600;
+}
+
+.notes-field-wrap textarea::placeholder {
+    color: #A39DA1;
+}
+
+.calendar-connection-note {
+    margin-top: 16px;
+    border-radius: 17px;
+    background: var(--bills-blue-soft);
+    color: #4F7F99;
+    padding: 12px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    font-size: 9.5px;
+    line-height: 1.45;
+    font-weight: 700;
+}
+
+.calendar-connection-note.warning {
+    background: #FFF5D8;
+    color: #8A6B1D;
+}
+
+.add-panel-actions {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.add-panel-actions button {
+    min-height: 54px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 800;
+}
+
+.cancel-entry-button {
+    border: 1.5px solid var(--bills-primary);
+    background: #FFFFFF;
+    color: var(--bills-primary-dark);
+}
+
+.save-entry-button {
+    border: 0;
+    background: var(--bills-primary);
+    color: #FFFFFF;
+    box-shadow: 0 12px 26px rgba(233, 139, 95, 0.23);
+}
+
+.save-entry-button:disabled {
+    opacity: 0.58;
+    cursor: wait;
+}
+
+.panel-bottom-nav {
+    z-index: 90;
+}
+
+/* Toast */
+
+.bill-toast {
+    position: fixed;
+    left: 24px;
+    right: 24px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 102px);
+    z-index: 120;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: var(--bills-neutral);
+    color: #FFFFFF;
+    box-shadow: var(--bills-shadow);
+    opacity: 0;
+    transform: translateY(120px);
+    transition: 0.25s ease;
+    pointer-events: none;
+    font-size: 10.5px;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+.bill-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Responsive refinements */
+
+@media (max-width: 720px) {
+    .bills-header {
+        grid-template-columns: 1fr;
+    }
+
+    .bills-header-actions {
+        justify-content: flex-start;
+    }
+
+    .bills-filter-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 430px) {
+    .bills-scroll-area,
+    .bill-panel-scroll {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .bills-header-actions button {
+        flex: 1;
+        padding: 0 12px;
+    }
+
+    .summary-top-row {
+        grid-template-columns: 1fr 1.15fr;
+        gap: 14px;
+    }
+
+    .summary-amount-block {
+        padding-right: 12px;
+    }
+
+    .summary-amount-block strong {
+        font-size: 28px;
+    }
+
+    .summary-paid-block {
+        min-height: 70px;
+        padding: 0;
+
+        grid-template-columns: minmax(0, 1fr) 28px;
+        grid-template-rows: auto 10px;
+
+        column-gap: 10px;
+        row-gap: 10px;
+    }
+
+    .summary-calendar-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 9px;
+        font-size: 12px;
+    }
+
+    .summary-progress-track {
+        height: 10px;
+    }
+
+    .summary-paid-copy strong {
+        font-size: 19px;
+    }
+
+    .payment-row {
+        grid-template-columns: 48px minmax(0, 1fr) auto 16px;
+        gap: 10px;
+        padding: 13px 12px;
+    }
+
+    .payment-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 22px;
+    }
+
+    .payment-value {
+        min-width: 74px;
+    }
+
+    .payment-value strong {
+        font-size: 14px;
+    }
+
+    .debt-overview-grid {
+        gap: 10px;
+    }
+
+    .debt-overview-item {
+        padding: 12px 10px;
+    }
+
+    .debt-overview-item > strong {
+        font-size: 19px;
+    }
+
+    .debt-overview-label {
+        font-size: 9px;
+    }
+
+    .bills-bottom-nav {
+        left: 18px;
+        right: 18px;
+    }
+
+    .add-panel-header h2 {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 360px) {
+    .debt-overview-grid {
+        grid-template-columns: 1fr;
+        gap: 9px;
+    }
+
+    .debt-overview-divider {
+        width: 100%;
+        min-height: 1px;
+        height: 1px;
+    }
+
+    .debt-direction-options {
+        grid-template-columns: 1fr;
+    }
+
+    .bills-summary-card {
+        padding: 18px;
+    }
+
+    .summary-top-row {
+        grid-template-columns: 1fr;
+    }
+
+    .summary-amount-block {
+        padding: 0 0 15px;
+        border-right: 0;
+        border-bottom: 1px solid var(--bills-line);
+    }
+
+    .summary-paid-block {
+        min-height: 72px;
+    }
+
+    .frequency-options {
+        gap: 7px;
+    }
+
+    .frequency-options button {
+        font-size: 10px;
+    }
+}
+
+/* =========================================================
+   Bills and Debt Calendar
+   ========================================================= */
+
+.summary-calendar-icon {
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.summary-calendar-icon:active {
+    transform: scale(0.94);
+}
+
+.summary-calendar-icon:focus-visible {
+    outline: 3px solid rgba(79, 145, 107, 0.22);
+    outline-offset: 3px;
+}
+
+.bills-calendar-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 16% 7%, rgba(175, 203, 221, 0.20), transparent 29%),
+        radial-gradient(circle at 88% 23%, rgba(255, 218, 185, 0.28), transparent 26%),
+        var(--bills-cream);
+}
+
+.bills-calendar-scroll {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding:
+        calc(env(safe-area-inset-top, 0px) + 24px)
+        24px
+        calc(env(safe-area-inset-bottom, 0px) + 34px);
+}
+
+.bills-calendar-scroll::-webkit-scrollbar {
+    display: none;
+    width: 0;
+}
+
+.calendar-page-header {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    align-items: start;
+    gap: 12px;
+}
+
+.calendar-back-button {
+    width: 46px;
+    height: 46px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.78);
+    color: var(--bills-primary-dark);
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    box-shadow: var(--bills-soft-shadow);
+}
+
+.calendar-page-header h2 {
+    margin: 0;
+    color: var(--bills-text);
+    font-size: 19px;
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.55px;
+}
+
+.calendar-page-header p {
+    margin: 7px 0 0;
+    color: var(--bills-neutral);
+    font-size: 9.5px;
+    line-height: 1.45;
+    font-weight: 600;
+}
+
+.calendar-card {
+    margin-top: 22px;
+    padding: 18px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: var(--bills-shadow);
+}
+
+.calendar-toolbar {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr) 40px;
+    align-items: center;
+    gap: 10px;
+}
+
+.calendar-month-button {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 50%;
+    background: #F6C6B4;
+    color: #3A302C;
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+}
+
+.calendar-month-copy {
+    min-width: 0;
+    text-align: center;
+}
+
+.calendar-current-period-button {
+    width: auto;
+    min-height: 34px;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--bills-text);
+    padding: 3px 6px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    box-shadow: none;
+}
+
+.calendar-current-period-button strong {
+    color: var(--bills-text);
+    font-size: 13px;
+    line-height: 1.2;
+    font-weight: 800;
+}
+
+.calendar-current-period-button i {
+    color: var(--bills-primary-dark);
+    font-size: 9px;
+    transition: transform 0.2s ease;
+}
+
+.calendar-current-period-button[aria-expanded="true"] i {
+    transform: rotate(180deg);
+}
+
+.calendar-toolbar-actions {
+    margin-top: 9px;
+    display: flex;
+    justify-content: center;
+}
+
+.calendar-today-button {
+    min-height: 32px;
+    border: 0;
+    border-radius: 999px;
+    background: #F6C6B4;
+    color: #3A302C;
+    padding: 0 11px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    font-size: 8.5px;
+    font-weight: 800;
+    box-shadow: 0 7px 16px rgba(233, 139, 95, 0.12);
+}
+
+.calendar-today-button i {
+    font-size: 10px;
+}
+
+.calendar-status-legend {
+    margin-top: 16px;
+    padding: 10px 12px;
+    border-radius: 15px;
+    background: #FAF7F5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.calendar-status-legend span {
+    color: var(--bills-neutral);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.calendar-legend-dot,
+.calendar-marker {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+}
+
+.calendar-legend-dot.paid,
+.calendar-marker.paid {
+    background: #4F9B70;
+}
+
+.calendar-legend-dot.unpaid,
+.calendar-marker.unpaid {
+    background: var(--bills-primary);
+}
+
+.calendar-legend-dot.overdue,
+.calendar-marker.overdue {
+    background: #C74F4F;
+}
+
+.calendar-weekdays,
+.bills-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.calendar-weekdays {
+    margin-top: 16px;
+}
+
+.calendar-weekdays span {
+    padding: 7px 0;
+    color: var(--bills-muted);
+    text-align: center;
+    font-size: 8px;
+    font-weight: 800;
+}
+
+.bills-calendar-grid {
+    gap: 5px;
+}
+
+.calendar-day {
+    position: relative;
+    min-width: 0;
+    min-height: 59px;
+    border: 1px solid transparent;
+    border-radius: 15px;
+    background: #FBF9F8;
+    color: var(--bills-text);
+    padding: 6px 3px 5px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 3px;
+}
+
+.calendar-day.outside-month {
+    opacity: 0.38;
+}
+
+.calendar-day.today {
+    border-color: rgba(233, 139, 95, 0.55);
+}
+
+.calendar-day.selected {
+    border-color: transparent;
+    background: #F6C6B4;
+    box-shadow: 0 8px 18px rgba(233, 139, 95, 0.16);
+}
+
+.calendar-day-number {
+    font-size: 10px;
+    line-height: 1;
+    font-weight: 800;
+}
+
+.calendar-day.today .calendar-day-number {
+    color: var(--bills-primary-dark);
+}
+
+.calendar-day-items {
+    min-height: 15px;
+    margin-top: 1px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+}
+
+.calendar-day-entry-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 5px;
+    background: var(--entry-soft);
+    color: var(--entry-accent);
+
+    display: grid;
+    place-items: center;
+
+    font-size: 8px;
+    line-height: 1;
+}
+
+.calendar-day-more {
+    min-width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: var(--bills-blue-soft);
+    color: #4F7F99;
+    padding: 0 3px;
+
+    display: grid;
+    place-items: center;
+
+    font-size: 6.5px;
+    line-height: 1;
+    font-weight: 800;
+}
+
+.calendar-day-markers {
+    min-height: 7px;
+    margin-top: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+}
+
+.calendar-marker {
+    width: 5px;
+    height: 5px;
+}
+
+.calendar-date-details {
+    margin-top: 18px;
+    padding: 18px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: var(--bills-soft-shadow);
+}
+
+.calendar-date-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.calendar-date-heading > div > span {
+    display: block;
+    color: var(--bills-muted);
+    font-size: 8.5px;
+    font-weight: 700;
+}
+
+.calendar-date-heading h3 {
+    margin: 4px 0 0;
+    color: var(--bills-text);
+    font-size: 13px;
+    line-height: 1.25;
+    font-weight: 800;
+}
+
+.calendar-selected-count {
+    flex: 0 0 auto;
+    min-height: 30px;
+    border-radius: 999px;
+    background: var(--bills-blue-soft);
+    color: #4F7F99;
+    padding: 0 11px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 8.5px;
+    font-weight: 800;
+}
+
+.calendar-selected-entries {
+    margin-top: 14px;
+    overflow: hidden;
+    border-radius: 20px;
+    border: 1px solid rgba(92, 83, 78, 0.08);
+}
+
+.calendar-entry-row {
+    width: 100%;
+    min-height: 72px;
+    border: 0;
+    border-bottom: 1px solid rgba(92, 83, 78, 0.08);
+    background: #FFFFFF;
+    padding: 12px;
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+}
+
+.calendar-entry-row:last-child {
+    border-bottom: 0;
+}
+
+.calendar-entry-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--payment-soft);
+    color: var(--payment-accent);
+    display: grid;
+    place-items: center;
+    font-size: 19px;
+}
+
+.calendar-entry-main {
+    min-width: 0;
+}
+
+.calendar-entry-main strong {
+    display: block;
+    color: var(--bills-text);
+    font-size: 10px;
+    line-height: 1.25;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.calendar-entry-main span {
+    display: block;
+    margin-top: 3px;
+    color: var(--bills-neutral);
+    font-size: 8.2px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.calendar-entry-value {
+    text-align: right;
+}
+
+.calendar-entry-value strong {
+    display: block;
+    color: var(--bills-primary-dark);
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.calendar-entry-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5px;
+    min-height: 23px;
+    border-radius: 999px;
+    padding: 0 8px;
+    font-size: 8px;
+    font-weight: 800;
+}
+
+.calendar-entry-status.paid {
+    background: var(--bills-green-soft);
+    color: #4F916B;
+}
+
+.calendar-entry-status.unpaid {
+    background: var(--bills-primary-soft);
+    color: var(--bills-primary-dark);
+}
+
+.calendar-entry-status.overdue {
+    background: #FCECEC;
+    color: #B84747;
+}
+
+.calendar-empty-date {
+    min-height: 110px;
+    padding: 20px;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    text-align: center;
+}
+
+.calendar-empty-date i {
+    color: var(--bills-primary);
+    font-size: 26px;
+}
+
+.calendar-empty-date strong {
+    margin-top: 8px;
+    color: var(--bills-text);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.calendar-empty-date span {
+    margin-top: 4px;
+    color: var(--bills-muted);
+    font-size: 9px;
+    line-height: 1.4;
+}
+
+@media (max-width: 430px) {
+    .bills-calendar-scroll {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .calendar-card,
+    .calendar-date-details {
+        padding: 15px;
+    }
+
+    .calendar-day {
+        min-height: 55px;
+        border-radius: 13px;
+        padding: 5px 2px 4px;
+    }
+
+    .calendar-day-number {
+        font-size: 9px;
+    }
+
+    .calendar-marker {
+        width: 5px;
+        height: 5px;
+    }
+}
+
+@media (max-width: 360px) {
+    .calendar-card,
+    .calendar-date-details {
+        padding: 13px;
+    }
+
+    .bills-calendar-grid {
+        gap: 3px;
+    }
+
+    .calendar-day {
+        min-height: 51px;
+    }
+}
+
+/* =========================================================
+   Calendar month and year selector
+   ========================================================= */
+
+.calendar-month-year-picker {
+    position: fixed;
+    inset: 0;
+    z-index: 180;
+
+    display: grid;
+    align-items: end;
+    justify-items: center;
+
+    padding:
+        16px
+        16px
+        calc(env(safe-area-inset-bottom, 0px) + 16px);
+}
+
+.calendar-picker-backdrop {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+    border: 0;
+
+    background: rgba(37, 31, 29, 0.35);
+    backdrop-filter: blur(3px);
+}
+
+.calendar-picker-sheet {
+    position: relative;
+    z-index: 1;
+
+    width: min(100%, 430px);
+    border-radius: 28px;
+    background: #FFFFFF;
+    padding: 20px;
+
+    box-shadow:
+        0 24px 60px
+        rgba(37, 31, 29, 0.22);
+}
+
+.calendar-picker-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.calendar-picker-header > div > span {
+    display: block;
+    color: var(--bills-primary-dark);
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.calendar-picker-header h3 {
+    margin: 5px 0 0;
+    color: var(--bills-text);
+    font-size: 16px;
+    line-height: 1.25;
+    font-weight: 800;
+}
+
+.calendar-picker-header > button {
+    flex: 0 0 auto;
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 50%;
+
+    background: var(--bills-primary-soft);
+    color: var(--bills-primary-dark);
+
+    display: grid;
+    place-items: center;
+
+    font-size: 14px;
+}
+
+.calendar-picker-fields {
+    margin-top: 20px;
+
+    display: grid;
+    grid-template-columns: 1.25fr 0.75fr;
+    gap: 12px;
+}
+
+.calendar-picker-field {
+    min-width: 0;
+}
+
+.calendar-picker-field-label {
+    display: block;
+    margin: 0 0 7px 5px;
+
+    color: var(--bills-neutral);
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.calendar-picker-select-wrap {
+    position: relative;
+    width: 100%;
+    height: 52px;
+    border: 1px solid rgba(92, 83, 78, 0.13);
+    border-radius: 16px;
+    background: #FBF9F8;
+
+    display: block;
+}
+
+.calendar-picker-select-wrap select {
+    width: 100%;
+    height: 100%;
+
+    appearance: none;
+    border: 0;
+    outline: 0;
+    background: transparent;
+
+    color: var(--bills-text);
+    padding: 0 38px 0 14px;
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.calendar-picker-select-wrap i {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    transform: translateY(-50%);
+
+    color: var(--bills-neutral);
+    font-size: 10px;
+    pointer-events: none;
+}
+
+.calendar-picker-actions {
+    margin-top: 20px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 11px;
+}
+
+.calendar-picker-actions button {
+    min-height: 50px;
+    border-radius: 999px;
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.calendar-picker-cancel {
+    border: 1.5px solid var(--bills-primary);
+    background: #FFFFFF;
+    color: var(--bills-primary-dark);
+}
+
+.calendar-picker-apply {
+    border: 0;
+    background: var(--bills-primary);
+    color: #FFFFFF;
+
+    box-shadow:
+        0 12px 24px
+        rgba(233, 139, 95, 0.22);
+}
+
+@media (max-width: 360px) {
+    .calendar-picker-sheet {
+        padding: 17px;
+    }
+
+    .calendar-picker-fields {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+.calendar-day.selected .calendar-day-number {
+    color: #302724;
+}
+
+/* =========================================================
+   Expenses-page visual alignment
+   ========================================================= */
+
+body[data-page="bills"] {
+    font-size: 12px;
+}
+
+.bills-page,
+.bill-full-panel,
+.bills-calendar-panel {
+    background:
+        radial-gradient(
+            circle at 24% 7%,
+            rgba(194, 219, 235, 0.18),
+            transparent 26%
+        ),
+        radial-gradient(
+            circle at 82% 24%,
+            rgba(255, 221, 197, 0.25),
+            transparent 28%
+        ),
+        #FFF9F5;
+}
+
+.bills-scroll-area {
+    padding:
+        calc(env(safe-area-inset-top, 0px) + 32px)
+        22px
+        calc(env(safe-area-inset-bottom, 0px) + 136px);
+}
+
+.bills-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.bills-header > div:first-child {
+    min-width: 0;
+}
+
+.bills-header h1 {
+    font-size: 22px;
+    line-height: 1.1;
+    letter-spacing: -0.7px;
+}
+
+.bills-header p {
+    display: none;
+}
+
+.bills-header-actions {
+    flex: 0 0 auto;
+    gap: 7px;
+}
+
+.bills-header-actions button {
+    min-height: 46px;
+    padding: 0 15px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    box-shadow: none;
+}
+
+.bills-primary-action {
+    background: #F7A186;
+    color: #251F1D;
+}
+
+.bills-secondary-action {
+    border: 1px solid rgba(233, 139, 95, 0.55);
+    background: rgba(255, 255, 255, 0.84);
+    color: var(--bills-primary-dark);
+}
+
+.bills-period-row {
+    margin-top: 22px;
+}
+
+.bills-period-row .bills-period-filters {
+    width: 100%;
+}
+
+.bills-month-filter {
+    height: 54px;
+    border-radius: 19px;
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: 0 10px 24px rgba(92, 83, 78, 0.065);
+}
+
+.bills-month-filter-button {
+    padding: 0 17px;
+    color: var(--bills-neutral);
+    font-size: 11.5px;
+}
+
+.bills-month-filter-button i {
+    font-size: 14px;
+}
+
+.bills-overview-title {
+    margin: 25px 0 0;
+    color: var(--bills-text);
+    font-size: 21px;
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -0.6px;
+}
+
+.bills-summary-card {
+    margin-top: 13px;
+    padding: 20px;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 12px 30px rgba(92, 83, 78, 0.075);
+}
+
+.summary-top-row {
+    grid-template-columns: 1fr 1.12fr;
+    gap: 15px;
+}
+
+.summary-amount-block {
+    padding-right: 14px;
+}
+
+.summary-amount-block span,
+.summary-paid-copy span {
+    font-size: 9px;
+}
+
+.summary-amount-block strong {
+    margin-top: 8px;
+    font-size: clamp(27px, 7vw, 34px);
+    letter-spacing: -1px;
+}
+
+.summary-paid-copy strong {
+    font-size: 18px;
+}
+
+.summary-progress-track {
+    height: 9px;
+}
+
+.summary-type-grid {
+    margin-top: 17px;
+    border-radius: 18px;
+}
+
+.summary-type-grid div {
+    padding: 14px 12px;
+}
+
+.summary-type-grid span {
+    font-size: 8.8px;
+}
+
+.summary-type-grid strong {
+    font-size: 15px;
+}
+
+.bills-type-filter-row {
+    margin-top: 17px;
+}
+
+.bills-type-filter {
+    min-height: 48px;
+    padding: 4px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 9px 22px rgba(92, 83, 78, 0.06);
+}
+
+.bills-type-filter button {
+    font-size: 9.5px;
+}
+
+.bills-type-filter button.active {
+    background: #F28A5C;
+    box-shadow: none;
+}
+
+.bills-section {
+    margin-top: 27px;
+}
+
+.bills-section-heading {
+    margin-bottom: 12px;
+}
+
+.bills-section-heading h2 {
+    font-size: 20px;
+    letter-spacing: -0.55px;
+}
+
+.bills-section-heading button {
+    min-height: 36px;
+    padding: 0 14px;
+    background: #FFFFFF;
+    font-size: 8.8px;
+    box-shadow: 0 8px 20px rgba(92, 83, 78, 0.06);
+}
+
+.payments-list {
+    border-radius: 24px;
+    box-shadow: 0 12px 28px rgba(92, 83, 78, 0.07);
+}
+
+.payment-row {
+    min-height: 84px;
+    grid-template-columns: 46px minmax(0, 1fr) auto 16px;
+    gap: 10px;
+    padding: 12px 13px;
+}
+
+.payment-icon {
+    width: 43px;
+    height: 43px;
+    font-size: 20px;
+}
+
+.payment-main h3 {
+    font-size: 11.5px;
+}
+
+.payment-main > span {
+    margin-top: 3px;
+    font-size: 8.5px;
+}
+
+.payment-due-date {
+    margin-top: 5px;
+    gap: 5px;
+    font-size: 7.8px;
+}
+
+.payment-value {
+    min-width: 67px;
+}
+
+.payment-value strong {
+    font-size: 13px;
+}
+
+.payment-type-chip {
+    min-height: 23px;
+    min-width: 44px;
+    margin-top: 5px;
+    padding: 0 8px;
+    font-size: 7.2px;
+}
+
+.payment-chevron {
+    font-size: 16px;
+}
+
+.debt-overview-card {
+    border-radius: 24px;
+    padding: 16px;
+    box-shadow: 0 12px 28px rgba(92, 83, 78, 0.07);
+}
+
+.debt-overview-item {
+    border-radius: 18px;
+}
+
+.debt-overview-card > button {
+    min-height: 40px;
+    border-color: rgba(92, 83, 78, 0.14);
+    color: var(--bills-text);
+}
+
+.bills-bottom-nav {
+    left: 22px;
+    right: 22px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+    height: 72px;
+    border-radius: 27px;
+    box-shadow: 0 16px 34px rgba(92, 83, 78, 0.13);
+}
+
+.bills-bottom-nav button {
+    font-size: 17px;
+}
+
+.bills-bottom-nav button span {
+    font-size: 7.8px;
+}
+
+.bills-bottom-nav .bills-nav-scan {
+    width: 58px;
+    height: 58px;
+    font-size: 23px;
+    transform: translateY(-13px);
+}
+
+/* Add Bill / Debt screen */
+
+.bill-panel-scroll {
+    padding:
+        calc(env(safe-area-inset-top, 0px) + 24px)
+        22px
+        calc(env(safe-area-inset-bottom, 0px) + 36px);
+}
+
+.add-panel-header {
+    min-height: 56px;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    align-items: center;
+    gap: 8px;
+}
+
+.add-panel-header > button {
+    width: 40px;
+    height: 40px;
+    color: var(--bills-text);
+    font-size: 18px;
+}
+
+.add-panel-header > div {
+    text-align: center;
+}
+
+.add-panel-header h2 {
+    font-size: 18px;
+    letter-spacing: -0.45px;
+}
+
+.add-panel-header p {
+    display: none;
+}
+
+.add-panel-header-check {
+    width: 40px;
+    height: 40px;
+    color: var(--bills-primary);
+    display: grid;
+    place-items: center;
+    justify-self: end;
+    font-size: 23px;
+}
+
+.entry-type-selector {
+    min-height: auto;
+    margin-top: 25px;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    gap: 12px;
+}
+
+.entry-type-selector button {
+    min-height: 66px;
+    border: 1px solid rgba(92, 83, 78, 0.14);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.90);
+    flex-direction: column;
+    gap: 5px;
+    font-size: 10px;
+}
+
+.entry-type-selector button i {
+    font-size: 18px;
+}
+
+.entry-type-selector button.active {
+    border-color: rgba(92, 83, 78, 0.55);
+    background: #FFFFFF;
+    color: var(--bills-text);
+}
+
+.bill-debt-form {
+    margin-top: 24px;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.debt-direction-field {
+    margin-bottom: 22px;
+}
+
+.debt-direction-title,
+.frequency-field > span {
+    margin: 0 0 9px;
+    color: var(--bills-text);
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.35px;
+}
+
+.debt-direction-options {
+    gap: 10px;
+}
+
+.debt-direction-options button {
+    min-height: 62px;
+    border-radius: 17px;
+    background: rgba(255, 255, 255, 0.91);
+}
+
+.bill-fieldset {
+    min-height: 0;
+    margin: 0 0 20px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+.bill-fieldset legend {
+    width: 100%;
+    margin: 0 0 9px;
+    padding: 0;
+    color: var(--bills-text);
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.35px;
+}
+
+.bill-fieldset input,
+.bill-fieldset select,
+.currency-input,
+.date-input-control {
+    width: 100%;
+    height: 54px;
+    border: 1px solid rgba(92, 83, 78, 0.12);
+    border-radius: 17px;
+    background: rgba(255, 255, 255, 0.96);
+    color: var(--bills-text);
+    padding: 0 15px;
+    font-size: 10.5px;
+}
+
+.currency-input {
+    gap: 7px;
+}
+
+.currency-input input {
+    height: 52px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
+}
+
+.select-fieldset {
+    padding-right: 0;
+}
+
+.select-fieldset select {
+    padding-right: 42px;
+}
+
+.select-fieldset > i {
+    right: 16px;
+    top: 43px;
+    font-size: 11px;
+}
+
+.date-fieldset {
+    padding-right: 0;
+}
+
+.date-input-display {
+    font-size: 10.5px;
+}
+
+.date-input-icon {
+    font-size: 12px;
+}
+
+.frequency-options {
+    gap: 9px;
+}
+
+.frequency-options button {
+    min-height: 46px;
+    border-radius: 17px;
+    background: rgba(255, 255, 255, 0.91);
+    font-size: 9px;
+}
+
+.settings-list {
+    margin-top: 22px;
+}
+
+.setting-row,
+.notes-row {
+    min-height: 68px;
+    border-bottom-color: rgba(92, 83, 78, 0.08);
+}
+
+.setting-copy strong,
+.notes-field-wrap > span {
+    font-size: 10px;
+}
+
+.setting-copy small {
+    font-size: 8.3px;
+}
+
+.notes-field-wrap textarea {
+    min-height: 88px;
+    border-radius: 17px;
+    background: rgba(255, 255, 255, 0.96);
+    font-size: 10px;
+}
+
+.calendar-connection-note {
+    border-radius: 16px;
+    font-size: 8.8px;
+}
+
+.add-panel-actions {
+    margin-top: 22px;
+}
+
+.add-panel-actions button {
+    min-height: 50px;
+    font-size: 10px;
+}
+
+.panel-bottom-nav {
+    display: none !important;
+}
+
+@media (max-width: 720px) {
+    .bills-header {
+        display: flex;
+    }
+
+    .bills-header-actions {
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 430px) {
+    .bills-scroll-area,
+    .bill-panel-scroll {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .bills-header h1 {
+        font-size: 21px;
+    }
+
+    .bills-header-actions button {
+        min-height: 44px;
+        padding: 0 12px;
+        font-size: 9.6px;
+    }
+
+    .bills-month-filter {
+        height: 54px;
+        border-radius: 19px;
+    }
+
+    .bills-month-filter-button {
+        padding: 0 17px;
+        font-size: 11.5px;
+    }
+
+    .summary-top-row {
+        grid-template-columns: 1fr 1.08fr;
+    }
+
+    .summary-amount-block strong {
+        font-size: 27px;
+    }
+
+    .debt-overview-grid {
+        gap: 9px;
+    }
+}
+
+/* Single Add Bill / Debt action */
+
+.bills-header-actions {
+    flex: 0 0 auto;
+}
+
+.bills-combined-add-action {
+    min-width: 106px;
+    min-height: 46px;
+    padding: 0 19px;
+    background: #F7A186;
+    color: #251F1D;
+    border: 0;
+    border-radius: 999px;
+    box-shadow: none;
+}
+
+.bills-combined-add-action i {
+    font-size: 12px;
+}
+
+.bills-combined-add-action span {
+    font-size: 10.5px;
+    font-weight: 800;
+}
+
+.bills-combined-add-action:active {
+    transform: scale(0.98);
+}
+
+@media (max-width: 430px) {
+    .bills-combined-add-action {
+        min-width: 98px;
+        min-height: 44px;
+        padding: 0 16px;
+    }
+
+    .bills-combined-add-action span {
+        font-size: 10px;
+    }
+}
+
+
+/* =========================================================
+   Expenses-parity typography, buttons, and bottom nav
+   ========================================================= */
+body[data-page="bills"] {
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+.bills-header h1 {
+    font-size: 23px !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.8px !important;
+    font-weight: 800 !important;
+}
+
+.bills-combined-add-action,
+.bills-primary-action,
+.bills-header-actions button {
+    min-height: 48px !important;
+    border: none !important;
+    border-radius: 999px !important;
+    padding: 0 20px !important;
+    background: #E98B5F !important;
+    color: #FFFFFF !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    box-shadow: 0 16px 30px rgba(233, 139, 95, 0.24) !important;
+}
+
+.bills-combined-add-action i,
+.bills-primary-action i,
+.bills-header-actions button i {
+    font-size: 13px !important;
+}
+
+.bills-combined-add-action span,
+.bills-primary-action span,
+.bills-header-actions button span {
+    font-size: 13px !important;
+    font-weight: 800 !important;
+}
+
+.bills-month-filter-button {
+    width: 100% !important;
+    min-height: 58px !important;
+    padding: 0 18px !important;
+    border: 1px solid rgba(92, 83, 78, 0.06) !important;
+    border-radius: 22px !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 10px 24px rgba(92, 83, 78, 0.07) !important;
+    color: #5C534E !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+}
+
+.bills-month-filter-button i {
+    font-size: 16px !important;
+}
+
+.bills-overview-title,
+.bills-section-heading h2,
+.bills-section-heading.simple-heading h2,
+.calendar-page-header h2,
+.add-panel-header h2,
+.calendar-picker-header h3 {
+    font-size: 22px !important;
+    line-height: 1.08 !important;
+    letter-spacing: -0.7px !important;
+    font-weight: 800 !important;
+}
+
+.summary-amount-block span,
+.summary-paid-copy span,
+.debt-overview-label,
+.debt-overview-item > small,
+.debt-overdue-notice,
+.calendar-page-header p,
+.add-panel-header p {
+    font-size: 12px !important;
+}
+
+.summary-amount-block strong {
+    font-size: clamp(32px, 8vw, 36px) !important;
+    font-weight: 800 !important;
+}
+
+.summary-paid-copy strong {
+    font-size: 18px !important;
+    font-weight: 800 !important;
+}
+
+.summary-type-grid span,
+.payment-due-date,
+.payment-type-chip {
+    font-size: 11px !important;
+}
+
+.summary-type-grid strong,
+.debt-overview-item > strong {
+    font-size: 18px !important;
+    font-weight: 800 !important;
+}
+
+.bills-type-filter button,
+.bills-section-heading button,
+.debt-overview-card > button,
+.calendar-today-button,
+.calendar-picker-apply,
+.calendar-picker-cancel,
+.add-panel-actions button {
+    font-size: 12px !important;
+    font-weight: 800 !important;
+}
+
+.payment-main h3 {
+    font-size: 14px !important;
+    font-weight: 800 !important;
+}
+
+.payment-main > span,
+.empty-payments strong {
+    font-size: 12px !important;
+}
+
+.payment-value strong {
+    font-size: 14px !important;
+    font-weight: 800 !important;
+}
+
+.bills-bottom-nav {
+    position: fixed !important;
+    left: 24px !important;
+    right: 24px !important;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 16px) !important;
+    height: 74px !important;
+    background: rgba(255, 255, 255, 0.94) !important;
+    border: 1px solid rgba(92, 83, 78, 0.08) !important;
+    border-radius: 30px !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 72px 1fr 1fr !important;
+    align-items: center !important;
+    box-shadow: 0 18px 40px rgba(92, 83, 78, 0.14) !important;
+    z-index: 30 !important;
+    backdrop-filter: blur(12px) !important;
+}
+
+.bills-bottom-nav button {
+    border: none !important;
+    background: transparent !important;
+    color: #ADA19A !important;
+    display: grid !important;
+    place-items: center !important;
+    gap: 2px !important;
+    font-size: 20px !important;
+    font-weight: 800 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.bills-bottom-nav button i {
+    font-size: 20px !important;
+    line-height: 1 !important;
+    display: block !important;
+}
+
+.bills-bottom-nav button span {
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    line-height: 1.1 !important;
+    display: block !important;
+}
+
+.bills-bottom-nav button.active {
+    color: #D86E49 !important;
+}
+
+.bills-bottom-nav #navSavings i {
+    font-size: 22px !important;
+}
+
+.bills-bottom-nav .bills-nav-scan {
+    width: 62px !important;
+    height: 62px !important;
+    margin: 0 auto !important;
+    border-radius: 50% !important;
+    background: #E98B5F !important;
+    color: #FFFFFF !important;
+    font-size: 28px !important;
+    transform: translateY(-16px) !important;
+    box-shadow: 0 16px 30px rgba(233, 139, 95, 0.30) !important;
+}
+
+@media (max-width: 430px) {
+    .bills-combined-add-action,
+    .bills-primary-action,
+    .bills-header-actions button {
+        min-height: 48px !important;
+        padding: 0 20px !important;
+        font-size: 13px !important;
+    }
+}
+
+
+/* =========================================================
+   v3 — exact Expenses parity for shared controls
+   ========================================================= */
+
+/* Add Bills/Debt = Add Expense */
+.bills-combined-add-action,
+.bills-primary-action,
+.bills-header-actions button {
+    min-height: 48px !important;
+    border: none !important;
+    border-radius: 999px !important;
+    padding: 0 20px !important;
+    background: #F7C8B4 !important;
+    color: #251F1D !important;
+    gap: 8px !important;
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    box-shadow: 0 12px 26px rgba(233, 139, 95, 0.16) !important;
+}
+
+.bills-combined-add-action i,
+.bills-primary-action i,
+.bills-header-actions button i {
+    font-size: 13px !important;
+}
+
+/* All / Bills / Debt active state = Add Expense color */
+.bills-type-filter button.active,
+.entry-type-selector button.active,
+.frequency-options button.active,
+.debt-direction-options button.active {
+    border-color: transparent !important;
+    background: #F7C8B4 !important;
+    color: #251F1D !important;
+    box-shadow: 0 9px 18px rgba(233, 139, 95, 0.14) !important;
+}
+
+/* Month button = Expenses period picker */
+.bills-month-filter {
+    width: 100% !important;
+    height: auto !important;
+    border-radius: 22px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.bills-month-filter-button {
+    width: 100% !important;
+    min-height: 60px !important;
+    height: 60px !important;
+    padding: 0 18px !important;
+    border: 1px solid rgba(92, 83, 78, 0.06) !important;
+    border-radius: 22px !important;
+    background: #FFFFFF !important;
+    color: #5C534E !important;
+    box-shadow: 0 10px 24px rgba(92, 83, 78, 0.07) !important;
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+}
+
+.bills-month-filter-button i {
+    color: #5C534E !important;
+    font-size: 16px !important;
+}
+
+/* Section headings = Expenses Category Breakdown */
+.bills-overview-title,
+.bills-section-heading h2,
+.bills-section-heading.simple-heading h2 {
+    margin: 0 !important;
+    color: #251F1D !important;
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    font-size: 17px !important;
+    line-height: 1.2 !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.4px !important;
+}
+
+/* Month/year sheet follows Expenses but uses purple */
+.calendar-month-year-picker {
+    padding: 0 !important;
+    display: grid !important;
+    align-items: end !important;
+}
+
+.calendar-picker-backdrop {
+    background: rgba(34, 29, 27, 0.34) !important;
+    backdrop-filter: blur(3px) !important;
+}
+
+.calendar-picker-sheet {
+    width: 100% !important;
+    max-width: none !important;
+    border-radius: 30px 30px 0 0 !important;
+    background: #F1EDFF !important;
+    padding: 12px 24px calc(env(safe-area-inset-bottom, 0px) + 22px) !important;
+    box-shadow: 0 -18px 50px rgba(38, 31, 29, 0.18) !important;
+}
+
+.calendar-picker-sheet::before {
+    content: "" !important;
+    display: block !important;
+    width: 46px !important;
+    height: 5px !important;
+    margin: 0 auto 14px !important;
+    border-radius: 999px !important;
+    background: #C9A1C8 !important;
+}
+
+.calendar-picker-header {
+    align-items: center !important;
+}
+
+.calendar-picker-header > div > span {
+    color: #8A6B8D !important;
+    font-size: 11px !important;
+}
+
+.calendar-picker-header h3 {
+    margin: 4px 0 0 !important;
+    color: #251F1D !important;
+    font-size: 19px !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.4px !important;
+}
+
+.calendar-picker-header > button {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 14px !important;
+    background: rgba(255, 255, 255, 0.76) !important;
+    color: #6F5274 !important;
+}
+
+.calendar-picker-fields {
+    margin-top: 18px !important;
+    gap: 12px !important;
+}
+
+.calendar-picker-field-label {
+    margin: 0 0 8px 4px !important;
+    color: #5C534E !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+}
+
+.calendar-picker-select-wrap {
+    height: 52px !important;
+    border: 1px solid rgba(111, 82, 116, 0.12) !important;
+    border-radius: 18px !important;
+    background: rgba(255, 255, 255, 0.82) !important;
+}
+
+.calendar-picker-select-wrap select {
+    color: #251F1D !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+}
+
+.calendar-picker-select-wrap i {
+    color: #6F5274 !important;
+}
+
+.calendar-picker-actions {
+    margin-top: 24px !important;
+    gap: 12px !important;
+}
+
+.calendar-picker-actions button {
+    min-height: 48px !important;
+    border-radius: 16px !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+}
+
+.calendar-picker-cancel {
+    border: 1px solid rgba(111, 82, 116, 0.10) !important;
+    background: rgba(255, 255, 255, 0.82) !important;
+    color: #5C534E !important;
+}
+
+.calendar-picker-apply {
+    border: 0 !important;
+    background: #C9A1C8 !important;
+    color: #251F1D !important;
+    box-shadow: none !important;
+}
+
+/* Bottom nav copied from Expenses */
+.bills-bottom-nav {
+    position: fixed !important;
+    left: 24px !important;
+    right: 24px !important;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 16px) !important;
+    height: 74px !important;
+    background: rgba(255, 255, 255, 0.94) !important;
+    border: 1px solid rgba(92, 83, 78, 0.08) !important;
+    border-radius: 30px !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 72px 1fr 1fr !important;
+    align-items: center !important;
+    box-shadow: 0 18px 40px rgba(92, 83, 78, 0.14) !important;
+    z-index: 30 !important;
+    backdrop-filter: blur(12px) !important;
+}
+
+.bills-bottom-nav button {
+    border: none !important;
+    background: transparent !important;
+    color: #ADA19A !important;
+    display: grid !important;
+    place-items: center !important;
+    gap: 2px !important;
+    padding: 0 !important;
+    font-size: 20px !important;
+    font-weight: 800 !important;
+}
+
+.bills-bottom-nav button i {
+    font-size: 20px !important;
+    line-height: 1 !important;
+}
+
+.bills-bottom-nav button span {
+    font-size: 10px !important;
+    line-height: 1.1 !important;
+    font-weight: 800 !important;
+}
+
+.bills-bottom-nav button.active {
+    color: #D86E49 !important;
+}
+
+.bills-bottom-nav #navSavings i {
+    font-size: 23px !important;
+    line-height: 1 !important;
+}
+
+.bills-bottom-nav .bills-nav-scan {
+    width: 62px !important;
+    height: 62px !important;
+    margin: 0 auto !important;
+    border-radius: 50% !important;
+    background: #E98B5F !important;
+    color: #FFFFFF !important;
+    font-size: 28px !important;
+    transform: translateY(-16px) !important;
+    box-shadow: 0 16px 30px rgba(233, 139, 95, 0.30) !important;
+}
+
+@media (max-width: 380px) {
+    .bills-bottom-nav {
+        left: 18px !important;
+        right: 18px !important;
+    }
+}
+
+
+/* =========================================================
+   v4 critical visibility fix
+   Keep the month/year selector hidden until the calendar button
+   is actually pressed.
+   ========================================================= */
+
+.calendar-month-year-picker[hidden],
+#calendarMonthYearPicker[hidden],
+.calendar-picker-backdrop[hidden],
+.calendar-picker-sheet[hidden] {
+    display: none !important;
+}
+
+.calendar-month-year-picker:not([hidden]) {
+    display: grid !important;
+}
+
+
+/* =========================================================
+   v5 — Bills overview spacing, centered divider, and exact
+   Expenses bottom-navigation parity
+   ========================================================= */
+
+/* Give Bills Overview the same clean section spacing. */
+.bills-overview-title {
+    margin: 28px 0 12px !important;
+}
+
+.bills-summary-card {
+    margin-top: 0 !important;
+}
+
+/* Keep the divider exactly centered between Total Due and Paid. */
+.summary-top-row {
+    position: relative !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0 !important;
+    align-items: stretch !important;
+}
+
+.summary-top-row::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    left: 50%;
+    width: 1px;
+    background: rgba(92, 83, 78, 0.10);
+    transform: translateX(-0.5px);
+    pointer-events: none;
+}
+
+.summary-amount-block {
+    padding: 0 22px 0 0 !important;
+    border-right: 0 !important;
+}
+
+.summary-paid-block {
+    padding: 0 0 0 22px !important;
+}
+
+/* Exact Expenses bottom navigation, with Bills active. */
+.bills-bottom-nav {
+    position: fixed !important;
+    left: 24px !important;
+    right: 24px !important;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 16px) !important;
+    height: 74px !important;
+    background: rgba(255, 255, 255, 0.94) !important;
+    border: 1px solid rgba(92, 83, 78, 0.08) !important;
+    border-radius: 30px !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 72px 1fr 1fr !important;
+    align-items: center !important;
+    box-shadow: 0 18px 40px rgba(92, 83, 78, 0.14) !important;
+    z-index: 30 !important;
+    backdrop-filter: blur(12px) !important;
+}
+
+.bills-bottom-nav button {
+    width: auto !important;
+    height: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    color: #ADA19A !important;
+    display: grid !important;
+    place-items: center !important;
+    gap: 2px !important;
+    font-size: 20px !important;
+    line-height: normal !important;
+    font-weight: 800 !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+.bills-bottom-nav button i {
+    display: block !important;
+    margin: 0 !important;
+    font-size: 20px !important;
+    line-height: 1 !important;
+}
+
+.bills-bottom-nav button span {
+    display: block !important;
+    margin: 0 !important;
+    font-size: 10px !important;
+    line-height: normal !important;
+    font-weight: 800 !important;
+}
+
+.bills-bottom-nav button.active {
+    color: #D86E49 !important;
+}
+
+.bills-bottom-nav #navSavings i {
+    font-size: 23px !important;
+    line-height: 1 !important;
+}
+
+.bills-bottom-nav .bills-nav-scan {
+    width: 62px !important;
+    height: 62px !important;
+    min-width: 62px !important;
+    min-height: 62px !important;
+    margin: 0 auto !important;
+    border-radius: 50% !important;
+    background: #E98B5F !important;
+    color: #FFFFFF !important;
+    font-size: 28px !important;
+    transform: translateY(-16px) !important;
+    box-shadow: 0 16px 30px rgba(233, 139, 95, 0.30) !important;
+}
+
+.bills-bottom-nav .bills-nav-scan i {
+    font-size: 28px !important;
+}
+
+@media (max-width: 380px) {
+    .bills-bottom-nav {
+        left: 18px !important;
+        right: 18px !important;
+    }
+
+    .summary-amount-block {
+        padding-right: 16px !important;
+    }
+
+    .summary-paid-block {
+        padding-left: 16px !important;
+    }
+}
+
+
+/* =========================================================
+   Add Bill / Debt — Add Expense design parity
+   All original fields and validation remain unchanged.
+   ========================================================= */
+
+#addBillDebtPanel.bill-full-panel {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 70 !important;
+    overflow: hidden !important;
+    background: #FFF9F5 !important;
+}
+
+#addBillDebtPanel .bill-panel-scroll {
+    position: absolute !important;
+    inset: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding: 0 0 calc(env(safe-area-inset-bottom, 0px) + 34px) !important;
+    background: #FFF9F5 !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+/* Same frozen title row as Add Expense */
+#addBillDebtPanel .add-panel-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 80 !important;
+    width: 100% !important;
+    min-height: 82px !important;
+    padding:
+        calc(env(safe-area-inset-top, 0px) + 14px)
+        18px
+        14px !important;
+    border-bottom: 1px solid rgba(92, 83, 78, 0.10) !important;
+    background: #FFF9F5 !important;
+    box-shadow: 0 2px 0 #FFF9F5 !important;
+    display: grid !important;
+    grid-template-columns: 40px minmax(0, 1fr) 40px !important;
+    align-items: end !important;
+    gap: 0 !important;
+    isolation: isolate !important;
+}
+
+#addBillDebtPanel .add-panel-header::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: -1 !important;
+    background: #FFF9F5 !important;
+}
+
+#addBillDebtPanel .add-panel-header h2 {
+    margin: 0 !important;
+    padding: 0 !important;
+    align-self: end !important;
+    justify-self: center !important;
+    color: #251F1D !important;
+    text-align: center !important;
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    font-size: 17px !important;
+    line-height: 1.1 !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.4px !important;
+}
+
+#addBillDebtPanel .add-panel-header > button {
+    width: 36px !important;
+    height: 36px !important;
+    margin: 0 0 2px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    display: grid !important;
+    place-items: center !important;
+    align-self: end !important;
+    color: #251F1D !important;
+    font-size: 20px !important;
+}
+
+#addBillDebtPanel .add-panel-header > button:last-child {
+    justify-self: end !important;
+    color: #E98B5F !important;
+    font-size: 30px !important;
+}
+
+#addBillDebtPanel .add-panel-header > button:last-child i {
+    font-size: 30px !important;
+    line-height: 1 !important;
+}
+
+#addBillDebtPanel .add-panel-header > button:disabled {
+    opacity: 0.45 !important;
+}
+
+/* Bill / Debt selector follows the Add Expense category-choice style */
+#addBillDebtPanel .entry-type-selector {
+    width: auto !important;
+    min-height: 0 !important;
+    margin: 22px 24px 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+}
+
+#addBillDebtPanel .entry-type-selector button {
+    min-width: 0 !important;
+    min-height: 78px !important;
+    padding: 10px 8px !important;
+    border: 1.5px solid transparent !important;
+    border-radius: 16px !important;
+    background: transparent !important;
+    color: #5C534E !important;
+    display: grid !important;
+    place-items: center !important;
+    align-content: center !important;
+    gap: 7px !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    box-shadow: none !important;
+}
+
+#addBillDebtPanel .entry-type-selector button i {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 14px !important;
+    background: #FBE5D8 !important;
+    color: #D86E49 !important;
+    display: grid !important;
+    place-items: center !important;
+    font-size: 18px !important;
+}
+
+#addBillDebtPanel .entry-type-selector button[data-entry-type="debt"] i {
+    background: #E0F0EC !important;
+    color: #527A60 !important;
+}
+
+#addBillDebtPanel .entry-type-selector button span {
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+    font-weight: 600 !important;
+}
+
+#addBillDebtPanel .entry-type-selector button.active {
+    border-color: #9B928D !important;
+    background: rgba(255, 255, 255, 0.56) !important;
+    color: #251F1D !important;
+}
+
+#addBillDebtPanel .entry-type-selector button.active span {
+    font-weight: 800 !important;
+}
+
+/* Remove the old white form card; use the same clean panel-content flow */
+#addBillDebtPanel .bill-debt-form {
+    display: block !important;
+    margin: 0 !important;
+    padding:
+        22px
+        24px
+        calc(env(safe-area-inset-bottom, 0px) + 30px) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+#addBillDebtPanel .bill-debt-form > * + * {
+    margin-top: 20px !important;
+}
+
+/* Required input fields match Add Expense labels and boxes */
+#addBillDebtPanel .bill-fieldset {
+    position: relative !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+}
+
+#addBillDebtPanel .bill-fieldset legend,
+#addBillDebtPanel .frequency-field > span,
+#addBillDebtPanel .debt-direction-title {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 0 10px !important;
+    padding: 0 !important;
+    color: #251F1D !important;
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    font-weight: 800 !important;
+}
+
+#addBillDebtPanel .bill-fieldset input,
+#addBillDebtPanel .bill-fieldset select,
+#addBillDebtPanel .currency-input,
+#addBillDebtPanel .date-input-control {
+    width: 100% !important;
+    min-height: 50px !important;
+    height: 50px !important;
+    border: 1px solid rgba(92, 83, 78, 0.08) !important;
+    border-radius: 16px !important;
+    background: #FFFFFF !important;
+    color: #251F1D !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+}
+
+#addBillDebtPanel .bill-fieldset > input,
+#addBillDebtPanel .bill-fieldset > select {
+    padding: 0 14px !important;
+}
+
+#addBillDebtPanel .currency-input {
+    padding: 0 14px !important;
+    gap: 8px !important;
+}
+
+#addBillDebtPanel .currency-input > span {
+    color: #251F1D !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+}
+
+#addBillDebtPanel .currency-input input {
+    min-height: 46px !important;
+    height: 46px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+}
+
+#addBillDebtPanel .date-input-control {
+    padding: 0 14px !important;
+}
+
+#addBillDebtPanel .date-input-display {
+    color: #251F1D !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+}
+
+#addBillDebtPanel .date-input-display.placeholder,
+#addBillDebtPanel input::placeholder,
+#addBillDebtPanel textarea::placeholder,
+#addBillDebtPanel select:invalid {
+    color: #9B928D !important;
+}
+
+#addBillDebtPanel .date-input-icon,
+#addBillDebtPanel .select-fieldset > i {
+    color: #8A817C !important;
+    font-size: 15px !important;
+}
+
+#addBillDebtPanel .select-fieldset {
+    padding: 0 !important;
+}
+
+#addBillDebtPanel .select-fieldset > i {
+    right: 16px !important;
+    top: 43px !important;
+}
+
+/* Debt direction and frequency use the same rounded selectable controls */
+#addBillDebtPanel .debt-direction-field,
+#addBillDebtPanel .frequency-field {
+    margin: 0 !important;
+}
+
+#addBillDebtPanel .debt-direction-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 9px !important;
+}
+
+#addBillDebtPanel .debt-direction-options button {
+    min-height: 72px !important;
+    border: 1.5px solid transparent !important;
+    border-radius: 16px !important;
+    background: #FFFFFF !important;
+    color: #5C534E !important;
+    padding: 10px !important;
+    box-shadow: none !important;
+}
+
+#addBillDebtPanel .debt-direction-options button.active {
+    border-color: #9B928D !important;
+    background: rgba(255, 255, 255, 0.72) !important;
+    color: #251F1D !important;
+}
+
+#addBillDebtPanel .debt-direction-option-icon {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 14px !important;
+    background: #FBE5D8 !important;
+    font-size: 16px !important;
+}
+
+#addBillDebtPanel .debt-direction-options button[data-debt-direction="receivable"] .debt-direction-option-icon {
+    background: #E0F0EC !important;
+    color: #527A60 !important;
+}
+
+#addBillDebtPanel .debt-direction-option-copy strong {
+    font-size: 11px !important;
+    font-weight: 800 !important;
+}
+
+#addBillDebtPanel .debt-direction-option-copy small {
+    margin-top: 4px !important;
+    font-size: 9px !important;
+    line-height: 1.3 !important;
+    font-weight: 600 !important;
+}
+
+#addBillDebtPanel .frequency-options {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 9px !important;
+}
+
+#addBillDebtPanel .frequency-options button {
+    min-height: 46px !important;
+    border: 1px solid rgba(92, 83, 78, 0.08) !important;
+    border-radius: 16px !important;
+    background: #FFFFFF !important;
+    color: #5C534E !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+}
+
+#addBillDebtPanel .frequency-options button.active {
+    border-color: transparent !important;
+    background: #FBD4C2 !important;
+    color: #6D3B2C !important;
+    font-weight: 800 !important;
+}
+
+/* Optional settings retain their functionality but follow the clean form rhythm */
+#addBillDebtPanel .settings-list {
+    margin: 0 !important;
+    display: grid !important;
+    gap: 12px !important;
+}
+
+#addBillDebtPanel .setting-row,
+#addBillDebtPanel .notes-row {
+    min-height: 72px !important;
+    margin: 0 !important;
+    padding: 12px 14px !important;
+    border: 1px solid rgba(92, 83, 78, 0.08) !important;
+    border-radius: 16px !important;
+    background: #FFFFFF !important;
+}
+
+#addBillDebtPanel .setting-row {
+    grid-template-columns: 42px minmax(0, 1fr) auto !important;
+}
+
+#addBillDebtPanel .notes-row {
+    min-height: 0 !important;
+    grid-template-columns: 42px minmax(0, 1fr) !important;
+    align-items: start !important;
+}
+
+#addBillDebtPanel .setting-icon {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 14px !important;
+}
+
+#addBillDebtPanel .setting-copy strong,
+#addBillDebtPanel .notes-field-wrap > span {
+    color: #251F1D !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+}
+
+#addBillDebtPanel .setting-copy small {
+    margin-top: 4px !important;
+    color: #8A817C !important;
+    font-size: 9px !important;
+    line-height: 1.35 !important;
+}
+
+#addBillDebtPanel .notes-field-wrap textarea {
+    width: 100% !important;
+    min-height: 90px !important;
+    margin-top: 9px !important;
+    border: 1px solid rgba(92, 83, 78, 0.08) !important;
+    border-radius: 16px !important;
+    background: #FFFFFF !important;
+    color: #251F1D !important;
+    padding: 14px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+}
+
+/* Keep the functional calendar reminder note, styled like an Expenses insight card */
+#addBillDebtPanel .calendar-connection-note {
+    margin: 0 !important;
+    border-radius: 18px !important;
+    background: #EAF3F8 !important;
+    color: #4F7F99 !important;
+    padding: 13px !important;
+    gap: 9px !important;
+    font-size: 11px !important;
+    line-height: 1.45 !important;
+    font-weight: 700 !important;
+}
+
+/* Add Expense saves from the top check, so hide the old bottom actions. */
+#addBillDebtPanel .add-panel-actions {
+    display: none !important;
+}
+
+@media (max-width: 380px) {
+    #addBillDebtPanel .add-panel-header {
+        min-height: 78px !important;
+        padding:
+            calc(env(safe-area-inset-top, 0px) + 12px)
+            16px
+            12px !important;
+    }
+
+    #addBillDebtPanel .entry-type-selector {
+        margin-left: 18px !important;
+        margin-right: 18px !important;
+        gap: 8px !important;
+    }
+
+    #addBillDebtPanel .bill-debt-form {
+        padding-left: 18px !important;
+        padding-right: 18px !important;
+    }
+
+    #addBillDebtPanel .debt-direction-options {
+        gap: 8px !important;
+    }
+
+    #addBillDebtPanel .frequency-options {
+        gap: 7px !important;
+    }
+}
+
+
+/* =========================================================
+   v2 — refined spacing and distinct optional-control designs
+   ========================================================= */
+
+/* Tighter and more consistent Add Bill / Debt spacing */
+#addBillDebtPanel .entry-type-selector {
+    margin-top: 18px !important;
+    gap: 12px !important;
+}
+
+#addBillDebtPanel .entry-type-selector button {
+    min-height: 72px !important;
+    padding: 9px 8px !important;
+}
+
+#addBillDebtPanel .bill-debt-form {
+    padding-top: 18px !important;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 34px) !important;
+    display: grid !important;
+    gap: 16px !important;
+}
+
+#addBillDebtPanel .bill-debt-form > * {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+#addBillDebtPanel .bill-debt-form > * + * {
+    margin-top: 0 !important;
+}
+
+#addBillDebtPanel .bill-fieldset legend,
+#addBillDebtPanel .frequency-field > span,
+#addBillDebtPanel .debt-direction-title {
+    margin-bottom: 8px !important;
+}
+
+#addBillDebtPanel .debt-direction-options {
+    gap: 10px !important;
+}
+
+#addBillDebtPanel .frequency-options {
+    gap: 8px !important;
+}
+
+/* Optional settings now form their own visual section */
+#addBillDebtPanel .settings-list {
+    margin-top: 4px !important;
+    padding-top: 2px !important;
+    display: grid !important;
+    gap: 10px !important;
+}
+
+#addBillDebtPanel .settings-section-title {
+    margin: 2px 0 2px !important;
+    padding: 0 2px !important;
+}
+
+#addBillDebtPanel .settings-section-title strong {
+    display: block !important;
+    color: #251F1D !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+}
+
+#addBillDebtPanel .settings-section-title small {
+    display: block !important;
+    margin-top: 4px !important;
+    color: #8A817C !important;
+    font-size: 9px !important;
+    line-height: 1.35 !important;
+    font-weight: 600 !important;
+}
+
+/* Reminder: warm yellow notification card */
+#addBillDebtPanel .setting-row.reminder-setting-row {
+    position: relative !important;
+    min-height: 74px !important;
+    padding: 13px 14px !important;
+    border: 1px solid rgba(214, 166, 61, 0.13) !important;
+    border-radius: 20px !important;
+    background: #FFF8DE !important;
+    overflow: hidden !important;
+}
+
+#addBillDebtPanel .setting-row.reminder-setting-row::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 auto 0 0 !important;
+    width: 4px !important;
+    background: #E9CF59 !important;
+}
+
+#addBillDebtPanel .reminder-setting-row .reminder-icon {
+    background: #FFFFFF !important;
+    color: #AA8024 !important;
+    box-shadow: 0 7px 16px rgba(170, 128, 36, 0.10) !important;
+}
+
+#addBillDebtPanel .reminder-setting-row .setting-copy strong {
+    color: #4F4021 !important;
+}
+
+#addBillDebtPanel .reminder-setting-row .setting-copy small {
+    color: #806E47 !important;
+}
+
+/* Shared with Family: soft green family card */
+#addBillDebtPanel .setting-row.family-setting-row {
+    position: relative !important;
+    min-height: 74px !important;
+    padding: 13px 14px !important;
+    border: 1px solid rgba(79, 145, 107, 0.12) !important;
+    border-radius: 20px !important;
+    background: #EDF7F0 !important;
+    overflow: hidden !important;
+}
+
+#addBillDebtPanel .setting-row.family-setting-row::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 auto 0 0 !important;
+    width: 4px !important;
+    background: #8FAE9A !important;
+}
+
+#addBillDebtPanel .family-setting-row .family-icon {
+    background: #FFFFFF !important;
+    color: #4F916B !important;
+    box-shadow: 0 7px 16px rgba(79, 145, 107, 0.10) !important;
+}
+
+#addBillDebtPanel .family-setting-row .setting-copy strong {
+    color: #355D43 !important;
+}
+
+#addBillDebtPanel .family-setting-row .setting-copy small {
+    color: #62806B !important;
+}
+
+/* Keep switches aligned and visually lighter */
+#addBillDebtPanel .setting-row {
+    grid-template-columns: 42px minmax(0, 1fr) 48px !important;
+    column-gap: 12px !important;
+}
+
+#addBillDebtPanel .switch-control {
+    width: 46px !important;
+    height: 26px !important;
+    justify-self: end !important;
+    background: rgba(92, 83, 78, 0.18) !important;
+}
+
+#addBillDebtPanel .switch-control::after {
+    top: 3px !important;
+    left: 3px !important;
+    width: 20px !important;
+    height: 20px !important;
+}
+
+#addBillDebtPanel .switch-input:checked + .switch-control {
+    background: #E98B5F !important;
+}
+
+#addBillDebtPanel .switch-input:checked + .switch-control::after {
+    transform: translateX(20px) !important;
+}
+
+#addBillDebtPanel .family-setting-row .switch-input:checked + .switch-control {
+    background: #6E9F7F !important;
+}
+
+/* Notes: separate lavender writing area instead of another toggle card */
+#addBillDebtPanel .notes-row {
+    min-height: 0 !important;
+    padding: 15px !important;
+    border: 1px solid rgba(128, 87, 216, 0.10) !important;
+    border-radius: 20px !important;
+    background: #F4F0FF !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+}
+
+#addBillDebtPanel .notes-heading {
+    display: flex !important;
+    align-items: center !important;
+    gap: 11px !important;
+}
+
+#addBillDebtPanel .notes-heading .notes-icon {
+    flex: 0 0 auto !important;
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 13px !important;
+    background: #FFFFFF !important;
+    color: #8057D8 !important;
+    box-shadow: 0 7px 16px rgba(128, 87, 216, 0.10) !important;
+}
+
+#addBillDebtPanel .notes-heading-copy {
+    min-width: 0 !important;
+}
+
+#addBillDebtPanel .notes-heading-copy strong {
+    display: block !important;
+    color: #4D376D !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+}
+
+#addBillDebtPanel .notes-heading-copy small {
+    display: block !important;
+    margin-top: 3px !important;
+    color: #7B6A8D !important;
+    font-size: 9px !important;
+    line-height: 1.3 !important;
+    font-weight: 600 !important;
+}
+
+#addBillDebtPanel .notes-field-wrap {
+    display: block !important;
+    width: 100% !important;
+}
+
+#addBillDebtPanel .notes-field-wrap textarea {
+    min-height: 96px !important;
+    margin: 0 !important;
+    border: 1px solid rgba(128, 87, 216, 0.10) !important;
+    border-radius: 16px !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+    color: #251F1D !important;
+    padding: 14px !important;
+    box-shadow: none !important;
+}
+
+/* Give the calendar note breathing room without creating a large gap */
+#addBillDebtPanel .calendar-connection-note {
+    margin-top: 2px !important;
+}
+
+/* Keep the last field clear of the phone bottom edge */
+#addBillDebtPanel .bill-debt-form::after {
+    content: "" !important;
+    display: block !important;
+    height: 4px !important;
+}
+
+@media (max-width: 380px) {
+    #addBillDebtPanel .entry-type-selector {
+        margin-top: 16px !important;
+        gap: 8px !important;
+    }
+
+    #addBillDebtPanel .entry-type-selector button {
+        min-height: 68px !important;
+    }
+
+    #addBillDebtPanel .bill-debt-form {
+        gap: 14px !important;
+        padding-top: 16px !important;
+    }
+
+    #addBillDebtPanel .setting-row.reminder-setting-row,
+    #addBillDebtPanel .setting-row.family-setting-row {
+        padding: 12px !important;
+    }
+}
+
+
+/* =========================================================
+   v3 — Notes now matches the normal Add Expense layout
+   ========================================================= */
+
+#addBillDebtPanel .bill-normal-notes-field {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+}
+
+#addBillDebtPanel .bill-normal-notes-field > span {
+    display: block !important;
+    margin: 0 0 8px !important;
+    color: #251F1D !important;
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    font-weight: 800 !important;
+}
+
+#addBillDebtPanel .bill-normal-notes-field > span em {
+    color: #8A817C !important;
+    font-style: normal !important;
+    font-weight: 600 !important;
+}
+
+#addBillDebtPanel .bill-normal-notes-field textarea {
+    width: 100% !important;
+    min-height: 90px !important;
+    margin: 0 !important;
+    padding: 14px !important;
+    border: 1px solid rgba(92, 83, 78, 0.08) !important;
+    border-radius: 16px !important;
+    background: #FFFFFF !important;
+    color: #251F1D !important;
+    outline: 0 !important;
+    resize: vertical !important;
+    box-shadow: none !important;
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    font-size: 12px !important;
+    line-height: 1.45 !important;
+    font-weight: 600 !important;
+}
+
+#addBillDebtPanel .bill-normal-notes-field textarea::placeholder {
+    color: #9B928D !important;
+}
+
+/* Disable the previous decorative Notes card rules. */
+#addBillDebtPanel .notes-row,
+#addBillDebtPanel .notes-heading,
+#addBillDebtPanel .notes-heading-copy,
+#addBillDebtPanel .notes-field-wrap {
+    all: unset;
+}
+
+
+/* =========================================================
+   Add Bill / Debt save success animation
+   Matches the Add Expense animated check.
+   ========================================================= */
+
+.bill-debt-success-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 220;
+    background: rgba(37, 31, 29, 0.18);
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.bill-debt-success-overlay[hidden] {
+    display: none !important;
+}
+
+.bill-debt-success-overlay.show {
+    opacity: 1;
+}
+
+.bill-debt-success-card {
+    width: min(290px, calc(100vw - 48px));
+    border-radius: 28px;
+    background: #FFFFFF;
+    box-shadow: 0 18px 42px rgba(92, 83, 78, 0.18);
+    padding: 24px 22px 22px;
+    text-align: center;
+    transform: translateY(8px) scale(0.96);
+    transition: transform 0.28s ease;
+}
+
+.bill-debt-success-overlay.show
+.bill-debt-success-card {
+    transform: translateY(0) scale(1);
+}
+
+.bill-debt-success-check {
+    width: 74px;
+    height: 74px;
+    margin: 0 auto 14px;
+}
+
+.bill-debt-success-check svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.bill-debt-success-overlay .success-circle {
+    fill: none;
+    stroke: #F3CBAF;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 151;
+    stroke-dashoffset: 151;
+}
+
+.bill-debt-success-overlay .success-check {
+    fill: none;
+    stroke: #E98B5F;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 36;
+    stroke-dashoffset: 36;
+}
+
+.bill-debt-success-overlay.show .success-circle {
+    animation:
+        billSuccessCircleDraw
+        0.55s
+        ease
+        forwards;
+}
+
+.bill-debt-success-overlay.show .success-check {
+    animation:
+        billSuccessCheckDraw
+        0.35s
+        ease
+        0.35s
+        forwards;
+}
+
+.bill-debt-success-card strong {
+    display: block;
+    color: #251F1D;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.bill-debt-success-card p {
+    margin: 7px 0 0;
+    color: #5C534E;
+    font-size: 13px;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+@keyframes billSuccessCircleDraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes billSuccessCheckDraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+
+/* =========================================================
+   v4 — guaranteed visible Bill / Debt success animation
+   ========================================================= */
+
+.bill-debt-success-overlay {
+    z-index: 1000 !important;
+}
+
+.bill-debt-success-overlay:not([hidden]) {
+    display: grid !important;
+}
+
+.bill-debt-success-overlay.show .success-circle {
+    animation: billSuccessCircleDraw 0.55s ease forwards !important;
+}
+
+.bill-debt-success-overlay.show .success-check {
+    animation: billSuccessCheckDraw 0.35s ease 0.35s forwards !important;
+}
+
+/* =========================================================
+   Final approved Bills flow
+   ========================================================= */
+
+.summary-history-button {
+    position: relative !important;
+    min-width: 0 !important;
+    margin: -7px -5px -5px -7px !important;
+    padding: 7px 28px 5px 7px !important;
+    border: 0 !important;
+    border-radius: 14px !important;
+    background: transparent !important;
+    color: inherit !important;
+    text-align: left !important;
+    box-shadow: none !important;
+}
+
+.summary-history-button > i {
+    position: absolute !important;
+    top: 50% !important;
+    right: 7px !important;
+    color: #4F916B !important;
+    font-size: 11px !important;
+    transform: translateY(-50%) !important;
+}
+
+.summary-history-button:active {
+    background: rgba(238, 246, 240, 0.78) !important;
+}
+
+.upcoming-overdue-notice {
+    min-height: 44px !important;
+    margin-bottom: 10px !important;
+    border: 1px solid rgba(190, 54, 54, 0.20) !important;
+    border-radius: 16px !important;
+    background: #F9DEDE !important;
+    color: #A93232 !important;
+    padding: 0 13px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 9px !important;
+    box-shadow: 0 9px 20px rgba(169, 50, 50, 0.08) !important;
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+    font-weight: 800 !important;
+}
+
+.upcoming-overdue-notice i {
+    flex: 0 0 auto !important;
+    font-size: 15px !important;
+}
+
+.payment-row.overdue {
+    position: relative !important;
+    background:
+        linear-gradient(
+            90deg,
+            #FCE5E5 0%,
+            #FFF8F7 72%,
+            #FFFFFF 100%
+        ) !important;
+    box-shadow: inset 5px 0 0 #C33F3F !important;
+}
+
+.payment-row.overdue .payment-main h3,
+.payment-row.overdue .payment-value strong,
+.payment-row.overdue .payment-due-date,
+.payment-row.overdue .payment-chevron {
+    color: #A93232 !important;
+}
+
+.payment-row.overdue .payment-icon {
+    outline: 2px solid rgba(195, 63, 63, 0.16) !important;
+}
+
+.payment-overdue-label {
+    width: max-content !important;
+    min-height: 23px !important;
+    margin-top: 6px !important;
+    border-radius: 999px !important;
+    background: #C33F3F !important;
+    color: #FFFFFF !important;
+    padding: 0 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    font-size: 8px !important;
+    line-height: 1 !important;
+    font-weight: 800 !important;
+}
+
+.payment-type-chip.overdue {
+    background: #C33F3F !important;
+    color: #FFFFFF !important;
+}
+
+.bills-overview-card {
+    border-radius: 24px !important;
+    padding: 16px !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 12px 28px rgba(92, 83, 78, 0.07) !important;
+}
+
+.bills-overview-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+}
+
+.bills-overview-item {
+    min-width: 0 !important;
+    border-radius: 18px !important;
+    padding: 14px !important;
+}
+
+.bills-overview-active {
+    background: linear-gradient(135deg, #FFF1EC, #FFF8F5) !important;
+}
+
+.bills-overview-paid {
+    background: linear-gradient(135deg, #EEF6F0, #F7FBF8) !important;
+}
+
+.bills-overview-label {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    color: #5C534E !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+}
+
+.bills-overview-icon {
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 10px !important;
+    background: #FFFFFF !important;
+    display: grid !important;
+    place-items: center !important;
+    font-size: 13px !important;
+}
+
+.bills-overview-active .bills-overview-icon,
+.bills-overview-active > strong {
+    color: #C96E4B !important;
+}
+
+.bills-overview-paid .bills-overview-icon,
+.bills-overview-paid > strong {
+    color: #4F916B !important;
+}
+
+.bills-overview-item > strong {
+    display: block !important;
+    margin-top: 12px !important;
+    font-size: 20px !important;
+    line-height: 1 !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.45px !important;
+    white-space: nowrap !important;
+}
+
+.bills-overview-item > small {
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 4px !important;
+    margin-top: 8px !important;
+    color: #5C534E !important;
+    font-size: 9px !important;
+    font-weight: 600 !important;
+}
+
+.bills-overview-item > small b {
+    color: #251F1D !important;
+    font-weight: 800 !important;
+}
+
+.bills-overdue-notice {
+    min-height: 42px !important;
+    margin-top: 11px !important;
+    border: 1px solid rgba(190, 54, 54, 0.18) !important;
+    border-radius: 15px !important;
+    background: #F9DEDE !important;
+    color: #A93232 !important;
+    padding: 0 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+}
+
+.bills-overview-card > button {
+    width: 100% !important;
+    min-height: 42px !important;
+    margin-top: 12px !important;
+    border: 1.5px solid rgba(92, 83, 78, 0.14) !important;
+    border-radius: 999px !important;
+    background: #FFFFFF !important;
+    color: #251F1D !important;
+    padding: 0 15px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+}
+
+.bills-overview-card > button i {
+    color: #C96E4B !important;
+}
+
+@media (max-width: 360px) {
+    .bills-overview-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* =========================================================
+   In-page Completed Payments panel
+   ========================================================= */
+
+.completed-payments-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 105;
+    overflow: hidden;
+    background:
+        radial-gradient(
+            circle at 20% 8%,
+            rgba(194, 219, 235, 0.18),
+            transparent 27%
+        ),
+        radial-gradient(
+            circle at 84% 23%,
+            rgba(255, 221, 197, 0.25),
+            transparent 28%
+        ),
+        #FFF9F5;
+}
+
+.completed-payments-scroll {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding:
+        calc(env(safe-area-inset-top, 0px) + 26px)
+        22px
+        calc(env(safe-area-inset-bottom, 0px) + 34px);
+}
+
+.completed-payments-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.completed-payments-header {
+    display: grid;
+    grid-template-columns:
+        42px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+}
+
+.completed-payments-header > button {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    background: transparent;
+    color: #C96E4B;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    font-size: 19px;
+}
+
+.completed-payments-header h2 {
+    margin: 0;
+    color: #251F1D;
+    font-size: 21px;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.6px;
+}
+
+.completed-payments-header p {
+    margin: 5px 0 0;
+    color: #5C534E;
+    font-size: 9px;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+.completed-period-button {
+    width: 100%;
+    min-height: 58px;
+    margin-top: 20px;
+    border:
+        1px solid
+        rgba(92, 83, 78, 0.06);
+    border-radius: 22px;
+    background: #FFFFFF;
+    color: #5C534E;
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow:
+        0 10px 24px
+        rgba(92, 83, 78, 0.07);
+}
+
+.completed-summary-card {
+    margin-top: 20px;
+    border-radius: 24px;
+    background: #FFFFFF;
+    padding: 18px;
+    box-shadow:
+        0 14px 32px
+        rgba(92, 83, 78, 0.09);
+}
+
+.completed-summary-card > span {
+    display: block;
+    color: #8A817C;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.completed-summary-card > strong {
+    display: block;
+    margin-top: 7px;
+    color: #4F916B;
+    font-size: 30px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.completed-summary-card > small {
+    display: block;
+    margin-top: 10px;
+    color: #5C534E;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.completed-type-filter {
+    min-height: 48px;
+    margin-top: 15px;
+    border-radius: 999px;
+    background: #FFFFFF;
+    padding: 4px;
+    display: grid;
+    grid-template-columns:
+        repeat(3, 1fr);
+    box-shadow:
+        0 10px 24px
+        rgba(92, 83, 78, 0.07);
+}
+
+.completed-type-filter button {
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: #251F1D;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.completed-type-filter button.active {
+    background: #F7C8B4;
+}
+
+.completed-records-section {
+    margin-top: 25px;
+}
+
+.completed-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.completed-section-heading h3 {
+    margin: 0;
+    color: #251F1D;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+}
+
+.completed-section-heading > span {
+    min-height: 34px;
+    border-radius: 999px;
+    background: #FFFFFF;
+    color: #251F1D;
+    padding: 0 13px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 9px;
+    font-weight: 800;
+    box-shadow:
+        0 8px 20px
+        rgba(92, 83, 78, 0.06);
+}
+
+.completed-payments-list {
+    margin-top: 12px;
+    border-radius: 24px;
+    background: #FFFFFF;
+    overflow: hidden;
+    box-shadow:
+        0 14px 32px
+        rgba(92, 83, 78, 0.09);
+}
+
+.completed-payment-row {
+    min-height: 82px;
+    padding: 12px 14px;
+    border-bottom:
+        1px solid
+        rgba(92, 83, 78, 0.08);
+    display: grid;
+    grid-template-columns:
+        42px
+        minmax(0, 1fr)
+        auto;
+    align-items: center;
+    gap: 10px;
+}
+
+.completed-payment-row:last-child {
+    border-bottom: 0;
+}
+
+.completed-payment-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: var(--payment-soft);
+    color: var(--payment-accent);
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+}
+
+.completed-payment-main {
+    min-width: 0;
+}
+
+.completed-payment-main strong,
+.completed-payment-main span,
+.completed-payment-main small {
+    display: block;
+}
+
+.completed-payment-main strong {
+    color: #251F1D;
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.completed-payment-main span {
+    margin-top: 3px;
+    color: #5C534E;
+    font-size: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.completed-payment-main small {
+    margin-top: 5px;
+    color: #4F916B;
+    font-size: 7.5px;
+    line-height: 1.35;
+    font-weight: 800;
+}
+
+.completed-payment-value {
+    text-align: right;
+}
+
+.completed-payment-value strong {
+    display: block;
+    color: #4F916B;
+    font-size: 13px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.completed-payment-value span {
+    min-height: 22px;
+    margin-top: 5px;
+    border-radius: 999px;
+    background: #EEF6F0;
+    color: #4F916B;
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 7px;
+    font-weight: 800;
+}
+
+.completed-empty-state {
+    min-height: 160px;
+    padding: 24px;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    color: #8A817C;
+    text-align: center;
+}
+
+.completed-empty-state i {
+    color: #4F916B;
+    font-size: 30px;
+}
+
+.completed-empty-state strong {
+    display: block;
+    margin-top: 9px;
+    color: #251F1D;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.completed-empty-state span {
+    display: block;
+    margin-top: 5px;
+    max-width: 250px;
+    font-size: 9px;
+    line-height: 1.45;
+}
+
+@media (max-width: 380px) {
+    .completed-payments-scroll {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+}
+
+/* =========================================================
+   Softer overdue treatment
+   ========================================================= */
+
+/* The separate Upcoming Payments warning banner was removed.
+   Overdue status remains visible through the individual row. */
+.upcoming-overdue-notice,
+.payment-overdue-label {
+    display: none !important;
+}
+
+.payment-row.overdue {
+    position: relative !important;
+    background:
+        linear-gradient(
+            90deg,
+            #FFF2EC 0%,
+            #FFF9F6 72%,
+            #FFFFFF 100%
+        ) !important;
+    box-shadow:
+        inset 4px 0 0 #E9A07B,
+        0 9px 20px
+        rgba(92, 83, 78, 0.045) !important;
+}
+
+.payment-row.overdue .payment-main h3 {
+    color: #342C29 !important;
+}
+
+.payment-row.overdue .payment-main > span {
+    color: #6F625C !important;
+}
+
+.payment-row.overdue .payment-value strong {
+    color: #C96E4B !important;
+}
+
+.payment-row.overdue .payment-due-date {
+    color: #A9684E !important;
+}
+
+.payment-row.overdue .payment-chevron {
+    color: #C98A6C !important;
+}
+
+.payment-row.overdue .payment-icon {
+    outline:
+        1.5px solid
+        rgba(233, 160, 123, 0.28) !important;
+}
+
+.payment-type-chip.overdue {
+    background: #F7D8C8 !important;
+    color: #84513E !important;
+    box-shadow: none !important;
+}
+
+/* =========================================================
+   Bills Overview typography parity with Debt Overview
+   ========================================================= */
+
+.bills-overview-item {
+    border-radius: 20px !important;
+    padding: 14px !important;
+}
+
+.bills-overview-label {
+    font-size: 12px !important;
+}
+
+.bills-overview-icon {
+    width: 27px !important;
+    height: 27px !important;
+    font-size: 13px !important;
+}
+
+.bills-overview-item > strong {
+    margin-top: 12px !important;
+    font-size: 18px !important;
+    letter-spacing: -0.45px !important;
+}
+
+.bills-overview-item > small {
+    margin-top: 9px !important;
+    font-size: 12px !important;
+}
+
+.bills-overview-card > button {
+    font-size: 12px !important;
+}
+
+/* =========================================================
+   Bill type and dependent provider dropdowns
+   ========================================================= */
+
+#addBillDebtPanel .bill-select-control {
+    position: relative !important;
+    width: 100% !important;
+}
+
+#addBillDebtPanel
+.bill-select-control > select {
+    width: 100% !important;
+    min-height: 50px !important;
+    height: 50px !important;
+    padding:
+        0 44px 0 14px !important;
+    border:
+        1px solid
+        rgba(92, 83, 78, 0.08) !important;
+    border-radius: 16px !important;
+    background: #FFFFFF !important;
+    color: #251F1D !important;
+    outline: 0 !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    font-family:
+        "Plus Jakarta Sans",
+        sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+}
+
+#addBillDebtPanel
+.bill-select-control > select:disabled {
+    background: #FAF7F5 !important;
+    color: #A39DA1 !important;
+    cursor: not-allowed !important;
+}
+
+#addBillDebtPanel
+.bill-select-control > i {
+    position: absolute !important;
+    top: 50% !important;
+    right: 16px !important;
+    z-index: 2 !important;
+    color: #8A817C !important;
+    font-size: 13px !important;
+    line-height: 1 !important;
+    pointer-events: none !important;
+    transform:
+        translateY(-50%) !important;
+}
+
+/* Disable the old fieldset-level arrow positioning. */
+#addBillDebtPanel
+.select-fieldset > i {
+    display: none !important;
+}
+
+#addBillDebtPanel
+.bill-select-control > select:invalid {
+    color: #9B928D !important;
+}
+
+#addBillDebtPanel
+.bill-select-control > select option {
+    color: #251F1D !important;
+}
+
+#addBillDebtPanel
+#customBillNameField,
+#addBillDebtPanel
+#customBillProviderField {
+    animation:
+        dependent-field-reveal
+        0.18s ease;
+}
+
+@keyframes dependent-field-reveal {
+    from {
+        opacity: 0;
+        transform:
+            translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            translateY(0);
+    }
+}
+
+/* =========================================================
+   Provider mode transitions
+   ========================================================= */
+
+#addBillDebtPanel
+#customBillProviderField:not([hidden]) {
+    animation:
+        dependent-field-reveal
+        0.18s ease;
+}
+
+#addBillDebtPanel
+#billProviderField[hidden],
+#addBillDebtPanel
+#customBillProviderField[hidden],
+#addBillDebtPanel
+#billNameField[hidden],
+#addBillDebtPanel
+#debtNameField[hidden],
+#addBillDebtPanel
+#debtProviderField[hidden] {
+    display: none !important;
+}

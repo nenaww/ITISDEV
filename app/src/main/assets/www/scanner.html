@@ -170,7 +170,8 @@
                     <div class="mini-receipt-teeth"></div>
 
                     <div class="mini-receipt-logo">
-                        <span>KB</span>
+                        <img id="kabalikatScanningLogo" src="" alt="KABALIKAT logo">
+                        <span id="kabalikatScanningLogoFallback">KB</span>
                     </div>
 
                     <div class="mini-receipt-scribbles">
@@ -227,12 +228,53 @@
         </div>
     </section>
 
+
+
+    <section id="duplicateReceiptModal" class="duplicate-receipt-modal hidden" aria-modal="true" role="dialog" aria-labelledby="duplicateReceiptTitle">
+        <div class="duplicate-receipt-card">
+            <div class="duplicate-x-animation" aria-hidden="true">
+                <svg viewBox="0 0 72 72">
+                    <circle class="duplicate-x-circle" cx="36" cy="36" r="31"></circle>
+                    <path class="duplicate-x-line duplicate-x-line-one" d="M25 25 L47 47"></path>
+                    <path class="duplicate-x-line duplicate-x-line-two" d="M47 25 L25 47"></path>
+                </svg>
+            </div>
+
+            <h2 id="duplicateReceiptTitle">Possible duplicate</h2>
+            <p>This receipt looks similar to one already saved. You can scan again or continue if the match is incorrect.</p>
+
+            <div class="duplicate-receipt-actions">
+                <button id="duplicateScanAgainBtn" class="duplicate-secondary-action" type="button">
+                    Scan Again
+                </button>
+
+                <button id="duplicateContinueBtn" class="duplicate-primary-action" type="button">
+                    Continue Anyway
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section id="scannerSaveSuccessOverlay" class="scanner-save-success-overlay hidden" aria-live="polite">
+        <div class="scanner-save-success-card">
+            <div class="scanner-save-success-check" aria-hidden="true">
+                <svg viewBox="0 0 52 52">
+                    <circle class="success-circle" cx="26" cy="26" r="24"></circle>
+                    <path class="success-check" d="M14 27 L22 35 L38 18"></path>
+                </svg>
+            </div>
+            <strong>Expenses Recorded</strong>
+            <p>Your scanned receipt was added to Expenses.</p>
+        </div>
+    </section>
+
     <div id="toast" class="toast"></div>
 
 </main>
 <script src="p-utils.js"></script>
 <script src="p-save.js"></script>
 <script src="p-mercury.js"></script>
+<script src="p-seveneleven.js"></script>
 <script src="product-matcher.js"></script>
 <script src="p-main.js"></script>
 <script src="scanner.js"></script>
