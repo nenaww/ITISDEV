@@ -1665,3 +1665,32 @@ body[data-page="bills-details"]
         font-size: 14px !important;
     }
 }
+
+
+/* =========================================================
+   v33 — Bills summary typography matches Debt Details
+   ========================================================= */
+
+.detail-summary-heading > span:last-child {
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    font-weight: 800 !important;
+}
+
+.detail-summary-item > strong {
+    font-size: 20px !important;
+    line-height: 1 !important;
+    font-weight: 800 !important;
+}
+
+.detail-summary-item > small {
+    font-size: 10px !important;
+    line-height: 1.4 !important;
+    font-weight: 600 !important;
+}
+
+.detail-bills-overdue {
+    font-size: 10.5px !important;
+    line-height: 1.35 !important;
+    font-weight: 800 !important;
+}
