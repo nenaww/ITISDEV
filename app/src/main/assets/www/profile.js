@@ -8,12 +8,15 @@ const routes = {
     scanner: "scanner.html",
     bills: "bills.html",
     vault: "secure-vault.html",
+    vaultUnlock: "vault-unlock.html",
     login: "login.html"
 };
 
 let profile = null;
 let editing = false;
 let toastTimer = null;
+let profileLanguage =
+    localStorage.getItem("kabalikat_language") || "en";
 
 const el = {};
 
@@ -51,6 +54,11 @@ function collectElements() {
         "accountDetailsButton",
         "secureVaultButton",
         "changePasswordButton",
+        "profileLanguageButton",
+        "profileLanguageValue",
+        "profileLanguageBackdrop",
+        "profileLanguageSheet",
+        "closeProfileLanguageSheet",
         "profileLogoutRowButton",
         "deleteAccountButton",
         "profileSheetBackdrop",
@@ -112,11 +120,6 @@ function collectElements() {
 
 function bindEvents() {
     el.profileBackButton.addEventListener("click", () => {
-        if (history.length > 1) {
-            history.back();
-            return;
-        }
-
         go(routes.home);
     });
 
@@ -129,8 +132,21 @@ function bindEvents() {
     });
 
     el.accountDetailsButton.addEventListener("click", openAccountSheet);
-    el.secureVaultButton.addEventListener("click", openVaultUnlock);
+    el.secureVaultButton.addEventListener("click", () => {
+        go(`${routes.vaultUnlock}?from=profile`);
+    });
     el.changePasswordButton.addEventListener("click", openPasswordSheet);
+    el.profileLanguageButton.addEventListener("click", openLanguageSheet);
+    el.closeProfileLanguageSheet.addEventListener("click", closeLanguageSheet);
+    el.profileLanguageBackdrop.addEventListener("click", closeLanguageSheet);
+
+    document
+        .querySelectorAll("[data-profile-language]")
+        .forEach(button => {
+            button.addEventListener("click", () => {
+                setProfileLanguage(button.dataset.profileLanguage);
+            });
+        });
 
     el.profileLogoutRowButton.addEventListener("click", () => {
         openDialog(
@@ -270,6 +286,7 @@ function renderProfile() {
     el.profileNameInput.value = name;
     el.profileEmailInput.value = profile.email || "";
     el.profilePhoneInput.value = profile.phone || "";
+    renderProfileLanguage();
 
     if (image) {
         el.profileImage.src = image;
@@ -280,6 +297,61 @@ function renderProfile() {
 
     el.profileImage.hidden = true;
     el.profileInitials.hidden = false;
+}
+
+
+function renderProfileLanguage() {
+    const label =
+        profileLanguage === "tl"
+            ? "Tagalog"
+            : "English";
+
+    el.profileLanguageValue.textContent = label;
+
+    document
+        .querySelectorAll("[data-profile-language]")
+        .forEach(button => {
+            button.classList.toggle(
+                "active",
+                button.dataset.profileLanguage === profileLanguage
+            );
+        });
+}
+
+function openLanguageSheet() {
+    renderProfileLanguage();
+    openSheet(
+        el.profileLanguageBackdrop,
+        el.profileLanguageSheet
+    );
+}
+
+function closeLanguageSheet() {
+    closeSheet(
+        el.profileLanguageBackdrop,
+        el.profileLanguageSheet
+    );
+}
+
+function setProfileLanguage(language) {
+    profileLanguage =
+        language === "tl"
+            ? "tl"
+            : "en";
+
+    localStorage.setItem(
+        "kabalikat_language",
+        profileLanguage
+    );
+
+    renderProfileLanguage();
+    closeLanguageSheet();
+
+    showToast(
+        profileLanguage === "tl"
+            ? "Naka-set na sa Tagalog."
+            : "Language set to English."
+    );
 }
 
 function openAccountSheet() {
