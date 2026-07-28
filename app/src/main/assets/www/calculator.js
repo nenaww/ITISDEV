@@ -1,178 +1,150 @@
-const inputs = document.querySelectorAll("input");
+const buttons =
+document.querySelectorAll(".buttons button");
 
 
-const peso = (value)=>{
-
-return "₱" + Math.round(value)
-.toLocaleString("en-PH");
-
-};
+const expression =
+document.getElementById("expression");
 
 
-
-function calculate(){
-
-
-let available =
-
-Number(income.value || 0)
-
-+
-
-Number(otherIncome.value || 0);
+const result =
+document.getElementById("result");
 
 
 
-let spending =
-
-Number(food.value || 0)
-
-+
-
-Number(bills.value || 0)
-
-+
-
-Number(transport.value || 0)
-
-+
-
-Number(rent.value || 0)
-
-+
-
-Number(family.value || 0);
+let current = "";
 
 
 
-let savingsAmount =
-
-Number(savings.value || 0);
 
 
-
-let emergencyAmount =
-
-Number(emergency.value || 0);
+buttons.forEach(button=>{
 
 
+button.addEventListener(
+"click",
+()=>{
 
-let totalUsed =
 
-spending
-
-+
-
-savingsAmount
-
-+
-
-emergencyAmount;
+let value =
+button.textContent;
 
 
 
-let remainingMoney =
+// CLEAR
 
-available - totalUsed;
+if(value === "C"){
 
+current = "";
 
+expression.textContent="";
 
-available.textContent =
-peso(available);
+result.textContent="0";
 
+return;
 
-
-summaryAvailable.textContent =
-peso(available);
-
-
-
-planned.textContent =
-peso(spending);
+}
 
 
 
-saved.textContent =
-peso(
-savingsAmount + emergencyAmount
+
+
+// DELETE
+
+if(value === "⌫"){
+
+current =
+current.slice(0,-1);
+
+expression.textContent =
+current;
+
+return;
+
+}
+
+
+
+
+
+// EQUAL
+
+if(value === "="){
+
+
+try{
+
+
+let formatted =
+current
+.replaceAll("×","*")
+.replaceAll("÷","/")
+.replaceAll("−","-");
+
+
+
+let answer =
+eval(formatted);
+
+
+
+result.textContent =
+answer;
+
+
+
+}
+
+
+catch{
+
+
+result.textContent =
+"Error";
+
+}
+
+
+
+return;
+
+}
+
+
+
+
+
+// PERCENT
+
+if(value === "%"){
+
+
+current += "/100";
+
+expression.textContent =
+current;
+
+return;
+
+}
+
+
+
+
+
+// NORMAL BUTTON
+
+current += value;
+
+
+expression.textContent =
+current;
+
+
+
+}
+
+
 );
 
 
-
-remaining.textContent =
-peso(remainingMoney);
-
-
-
-
-
-if(remainingMoney < 0){
-
-
-message.textContent =
-
-"⚠ Your planned budget exceeds your available money.";
-
-
-message.style.color="#d9822b";
-
-}
-
-
-else if(remainingMoney === 0){
-
-
-message.textContent =
-
-"✅ Your budget is fully planned!";
-
-
-}
-
-
-else{
-
-
-message.textContent =
-
-"Great! You still have money available for savings or other needs.";
-
-
-}
-
-
-
-}
-
-
-
-inputs.forEach(input=>{
-
-input.addEventListener(
-"input",
-calculate
-);
-
 });
-
-
-
-
-reset.onclick = ()=>{
-
-
-inputs.forEach(input=>{
-
-input.value="";
-
-});
-
-
-calculate();
-
-
-};
-
-
-
-calculate();

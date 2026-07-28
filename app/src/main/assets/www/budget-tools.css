@@ -1,58 +1,86 @@
-* {
-    box-sizing: border-box;
+*{
+box-sizing:border-box;
 }
 
 
-body {
+body{
 
-    margin: 0;
+margin:0;
 
-    font-family: "Plus Jakarta Sans", sans-serif;
+font-family:
+"Plus Jakarta Sans",
+sans-serif;
 
-    background: #f2f7f3;
+background:#f2f7f3;
 
-    color: #4a4038;
+color:#4a4038;
+
+}
+
+
+
+.page{
+
+padding:20px;
 
 }
 
 
 
-.page {
 
-    padding: 20px;
+.header{
+
+display:flex;
+
+align-items:center;
+
+gap:15px;
+
+margin-bottom:25px;
 
 }
-
 
 
 
 .header {
 
-    display: flex;
+display:flex;
 
-    align-items: center;
+align-items:center;
 
-    gap: 14px;
+gap:14px;
 
-    margin-bottom: 20px;
+margin-bottom:20px;
 
 }
 
 
 
-.header button {
+.back-button {
 
-    width: 42px;
+width:36px;
 
-    height: 42px;
+height:36px;
 
-    border: none;
+border:none;
 
-    border-radius: 50%;
+background:transparent;
 
-    background: white;
+font-size:38px;
 
-    font-size: 20px;
+font-weight:600;
+
+color:#4a4038;
+
+padding:0;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+line-height:1;
 
 }
 
@@ -60,11 +88,11 @@ body {
 
 .header h1 {
 
-    margin: 0;
+margin:0;
 
-    font-size: 24px;
+font-size:24px;
 
-    font-weight: 800;
+font-weight:800;
 
 }
 
@@ -72,31 +100,11 @@ body {
 
 .header p {
 
-    margin: 5px 0;
+margin:5px 0 0;
 
-    font-size: 13px;
+font-size:13px;
 
-    color: #8b8178;
-
-}
-
-
-
-
-
-.card {
-
-    background: white;
-
-    padding: 20px;
-
-    border-radius: 24px;
-
-    margin-bottom: 16px;
-
-    box-shadow:
-
-    0 8px 18px rgba(0,0,0,.04);
+color:#8b8178;
 
 }
 
@@ -104,101 +112,71 @@ body {
 
 
 
-.section-header h2 {
+.tool-card{
 
-    margin: 0;
+background:white;
 
-    font-size: 19px;
+border-radius:24px;
 
-}
+padding:20px;
 
+display:flex;
 
+align-items:center;
 
-.section-header p {
+gap:15px;
 
-    margin-top: 5px;
+margin-bottom:16px;
 
-    color: #8b8178;
+box-shadow:
 
-    font-size: 13px;
-
-}
-
-
-
-
-h2 {
-
-    font-size: 18px;
-
-    margin-top: 0;
+0 8px 18px rgba(0,0,0,.04);
 
 }
 
 
 
-h3 {
+.tool-card:active{
 
-    font-size: 15px;
+transform:scale(.98);
 
 }
 
 
 
 
-label {
+.icon{
 
-    font-size: 14px;
+width:55px;
 
-    font-weight: 600;
+height:55px;
 
-}
+border-radius:18px;
 
+display:flex;
 
+align-items:center;
 
+justify-content:center;
 
-
-.input-box {
-
-    display:flex;
-
-    align-items:center;
-
-    background:#fff4d8;
-
-    border-radius:16px;
-
-    padding:12px;
-
-    margin:10px 0 16px;
+font-size:28px;
 
 }
 
 
 
-.input-box span {
 
-    color:#ecb08b;
+.planner .icon{
 
-    font-weight:800;
+background:#efeafe;
 
 }
 
 
 
-.input-box input {
+.calculator .icon{
 
-    width:100%;
-
-    border:none;
-
-    outline:none;
-
-    background:none;
-
-    margin-left:10px;
-
-    font-size:18px;
+background:#fff4d8;
 
 }
 
@@ -206,159 +184,42 @@ label {
 
 
 
-.highlight {
+.content{
 
-    background:#efeafe;
-
-    padding:16px;
-
-    border-radius:18px;
-
-    display:flex;
-
-    justify-content:space-between;
+flex:1;
 
 }
 
 
 
+.content h2{
 
+margin:0;
 
-
-
-.budget-item {
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-    margin:14px 0;
+font-size:18px;
 
 }
 
 
 
-.budget-item input {
+.content p{
 
-    width:110px;
+margin:5px 0 0;
 
-    padding:10px;
+font-size:13px;
 
-    border-radius:12px;
+color:#8b8178;
 
-    border:1px solid #ddd;
-
-    text-align:right;
+line-height:1.4;
 
 }
 
 
 
+.tool-card span{
 
+font-size:28px;
 
-.summary-row {
-
-    display:flex;
-
-    justify-content:space-between;
-
-    padding:12px 0;
-
-}
-
-
-
-#plannerMessage {
-
-    font-size:14px;
-
-    font-weight:600;
-
-    color:#d9822b;
-
-}
-
-
-
-
-
-
-
-/* Calculator */
-
-
-.display {
-
-    background:#f8f3ee;
-
-    border-radius:20px;
-
-    padding:20px;
-
-    margin-bottom:16px;
-
-    text-align:right;
-
-}
-
-
-
-.display span {
-
-    display:block;
-
-    min-height:20px;
-
-    color:#8b8178;
-
-}
-
-
-
-.display strong {
-
-    font-size:32px;
-
-}
-
-
-
-
-
-.buttons {
-
-    display:grid;
-
-    grid-template-columns:repeat(4,1fr);
-
-    gap:10px;
-
-}
-
-
-
-.buttons button {
-
-    height:55px;
-
-    border:none;
-
-    border-radius:16px;
-
-    background:#efeafe;
-
-    font-size:18px;
-
-    font-weight:700;
-
-}
-
-
-
-.buttons .equal {
-
-    background:#ecb08b;
+color:#b3aaa0;
 
 }

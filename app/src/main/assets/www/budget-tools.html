@@ -2,10 +2,11 @@
 <html lang="en">
 
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>KABALIKAT Budget Tools</title>
+<title>Budget Tools</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -22,442 +23,90 @@
 
 <header class="header">
 
-<button onclick="history.back()">
-←
+<button class="back-button" onclick="history.back()">
+    ‹
 </button>
 
+
 <div>
-<h1>Budget Tools</h1>
-<p>Plan and calculate your money</p>
+
+<h1>
+Budget Tools
+</h1>
+
+<p>
+Plan and calculate your money
+</p>
+
 </div>
+
 
 </header>
 
 
 
+<section class="tool-card planner"
+onclick="openPlanner()">
 
 
-<!-- =====================
-     BUDGET PLANNER
-===================== -->
+<div class="icon">
+📝
+</div>
 
 
-<section class="card planner-card">
-
-
-<div class="section-header">
+<div class="content">
 
 <h2>
-📝 Budget Planner
+Budget Planner
 </h2>
 
 <p>
-Plan your money for this month
-</p>
-
-</div>
-
-
-
-
-<h3>Available Money</h3>
-
-
-<label>
-Monthly Income
-</label>
-
-
-<div class="input-box">
-
-<span>₱</span>
-
-<input 
-id="income"
-type="number"
-placeholder="Enter amount">
-
-</div>
-
-
-
-<label>
-Other Income (Optional)
-</label>
-
-
-<div class="input-box">
-
-<span>₱</span>
-
-<input 
-id="otherIncome"
-type="number"
-placeholder="0">
-
-</div>
-
-
-
-
-
-<div class="highlight">
-
-<span>
-Available Money
-</span>
-
-<strong id="availableMoney">
-₱0
-</strong>
-
-</div>
-
-
-
-</section>
-
-
-
-
-
-
-
-<section class="card">
-
-
-<h2>
-🏠 Household Needs
-</h2>
-
-
-<div class="budget-item">
-
-<label>
-Food & Groceries
-</label>
-
-<input 
-id="food"
-type="number"
-placeholder="0">
-
-</div>
-
-
-
-<div class="budget-item">
-
-<label>
-Bills & Utilities
-</label>
-
-<input 
-id="bills"
-type="number"
-placeholder="0">
-
-</div>
-
-
-
-
-<div class="budget-item">
-
-<label>
-Transportation
-</label>
-
-<input 
-id="transport"
-type="number"
-placeholder="0">
-
-</div>
-
-
-
-
-<div class="budget-item">
-
-<label>
-Rent
-</label>
-
-<input 
-id="rent"
-type="number"
-placeholder="0">
-
-</div>
-
-
-
-</section>
-
-
-
-
-
-
-
-<section class="card">
-
-
-<h2>
-👨‍👩‍👧 Family Needs
-</h2>
-
-
-<div class="budget-item">
-
-<label>
-Family Allocation
-</label>
-
-<input 
-id="family"
-type="number"
-placeholder="0">
-
-</div>
-
-
-<div class="budget-item">
-
-<label>
-School Needs
-</label>
-
-<input 
-id="school"
-type="number"
-placeholder="0">
-
-</div>
-
-
-
-<div class="budget-item">
-
-<label>
-Allowance
-</label>
-
-<input 
-id="allowance"
-type="number"
-placeholder="0">
-
-</div>
-
-
-
-</section>
-
-
-
-
-
-
-
-
-<section class="card">
-
-
-<h2>
-💰 Future Plans
-</h2>
-
-
-
-<div class="budget-item">
-
-<label>
-Savings
-</label>
-
-<input 
-id="savings"
-type="number"
-placeholder="0">
-
-</div>
-
-
-
-<div class="budget-item">
-
-<label>
-Emergency Fund
-</label>
-
-<input 
-id="emergency"
-type="number"
-placeholder="0">
-
-</div>
-
-
-
-</section>
-
-
-
-
-
-
-
-<section class="card summary">
-
-
-<h2>
-Your Budget Plan
-</h2>
-
-
-
-<div class="summary-row">
-
-<span>
-Available
-</span>
-
-<strong id="summaryAvailable">
-₱0
-</strong>
-
-
-</div>
-
-
-
-
-<div class="summary-row">
-
-<span>
-Planned
-</span>
-
-<strong id="planned">
-₱0
-</strong>
-
-
-</div>
-
-
-
-
-<div class="summary-row">
-
-<span>
-Remaining
-</span>
-
-<strong id="remaining">
-₱0
-</strong>
-
-
-</div>
-
-
-
-<p id="plannerMessage"></p>
-
-
-
-</section>
-
-
-
-
-
-
-
-<!-- =====================
-     CALCULATOR
-===================== -->
-
-
-
-<section class="card calculator">
-
-
-<div class="section-header">
-
-<h2>
-🧮 Calculator
-</h2>
-
-<p>
-Quick money calculations
+Create a plan for your monthly income and expenses.
 </p>
 
 
 </div>
 
 
-
-
-
-<div class="display">
-
-<span id="expression">
+<span>
+›
 </span>
 
 
-<strong id="result">
-0
-</strong>
+</section>
+
+
+
+
+
+<section class="tool-card calculator"
+onclick="openCalculator()">
+
+
+<div class="icon">
+🧮
+</div>
+
+
+<div class="content">
+
+
+<h2>
+Calculator
+</h2>
+
+
+<p>
+Quickly calculate your money decisions.
+</p>
 
 
 </div>
 
 
-
-
-
-<div class="buttons">
-
-
-<button>C</button>
-<button>⌫</button>
-<button>%</button>
-<button>/</button>
-
-
-<button>7</button>
-<button>8</button>
-<button>9</button>
-<button>*</button>
-
-
-<button>4</button>
-<button>5</button>
-<button>6</button>
-<button>-</button>
-
-
-<button>1</button>
-<button>2</button>
-<button>3</button>
-<button>+</button>
-
-
-<button>0</button>
-<button>.</button>
-<button class="equal">
-=
-</button>
-
-
-
-</div>
-
-
+<span>
+›
+</span>
 
 
 </section>

@@ -2,21 +2,23 @@
 <html lang="en">
 
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>KABALIKAT Budget Planner</title>
+<title>Budget Planner</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="calculator.css">
+<link rel="stylesheet" href="budget-planner.css">
 
 </head>
 
 
 <body>
 
-<main class="planner">
+
+<main class="page">
 
 
 <header class="header">
@@ -29,11 +31,11 @@
 <div>
 
 <h1>
-Calculator
+Budget Planner
 </h1>
 
 <p>
-Quickly calculate your money
+Plan your money for this month
 </p>
 
 </div>
@@ -43,24 +45,35 @@ Quickly calculate your money
 
 
 
+
+
+<!-- INCOME -->
+
 <section class="card">
 
-<h2>Available Money</h2>
+
+<h2>
+💰 Available Money
+</h2>
+
 
 
 <label>
 Monthly Income
 </label>
 
+
 <div class="input-box">
 
 <span>₱</span>
 
-<input id="income"
+<input
+id="income"
 type="number"
-placeholder="25000">
+placeholder="Enter amount">
 
 </div>
+
 
 
 
@@ -68,11 +81,13 @@ placeholder="25000">
 Other Income (Optional)
 </label>
 
+
 <div class="input-box">
 
 <span>₱</span>
 
-<input id="otherIncome"
+<input
+id="otherIncome"
 type="number"
 placeholder="0">
 
@@ -80,15 +95,19 @@ placeholder="0">
 
 
 
-<div class="summary-highlight">
+
+<div class="highlight">
+
 
 <span>
 Available Money
 </span>
 
+
 <strong id="available">
 ₱0
 </strong>
+
 
 </div>
 
@@ -99,18 +118,28 @@ Available Money
 
 
 
+
+
+
+<!-- NEEDS -->
+
 <section class="card">
 
-<h2>Household Needs</h2>
+
+<h2>
+🏠 Household Needs
+</h2>
 
 
-<div class="expense-item">
+
+<div class="budget-item">
 
 <label>
 Food & Groceries
 </label>
 
-<input id="food"
+<input 
+id="food"
 type="number"
 placeholder="0">
 
@@ -118,13 +147,15 @@ placeholder="0">
 
 
 
-<div class="expense-item">
+
+<div class="budget-item">
 
 <label>
 Bills & Utilities
 </label>
 
-<input id="bills"
+<input 
+id="bills"
 type="number"
 placeholder="0">
 
@@ -132,13 +163,15 @@ placeholder="0">
 
 
 
-<div class="expense-item">
+
+<div class="budget-item">
 
 <label>
 Transportation
 </label>
 
-<input id="transport"
+<input 
+id="transport"
 type="number"
 placeholder="0">
 
@@ -146,13 +179,15 @@ placeholder="0">
 
 
 
-<div class="expense-item">
+
+<div class="budget-item">
 
 <label>
 Rent
 </label>
 
-<input id="rent"
+<input 
+id="rent"
 type="number"
 placeholder="0">
 
@@ -165,23 +200,67 @@ placeholder="0">
 
 
 
+
+
+
+
+<!-- FAMILY -->
+
 <section class="card">
 
 
-<h2>Family Needs</h2>
+<h2>
+👨‍👩‍👧 Family Needs
+</h2>
 
 
-<div class="expense-item">
+
+
+<div class="budget-item">
 
 <label>
-Children / Family Allocation
+Family Allocation
 </label>
 
-<input id="family"
+<input 
+id="family"
 type="number"
 placeholder="0">
 
 </div>
+
+
+
+
+<div class="budget-item">
+
+<label>
+School Needs
+</label>
+
+<input 
+id="school"
+type="number"
+placeholder="0">
+
+</div>
+
+
+
+
+<div class="budget-item">
+
+<label>
+Allowance
+</label>
+
+<input 
+id="allowance"
+type="number"
+placeholder="0">
+
+</div>
+
 
 
 </section>
@@ -190,20 +269,28 @@ placeholder="0">
 
 
 
+
+
+
+<!-- SAVINGS -->
+
 <section class="card">
 
 
-<h2>Future Plans</h2>
+<h2>
+💰 Future Plans
+</h2>
 
 
 
-<div class="expense-item">
+<div class="budget-item">
 
 <label>
 Savings
 </label>
 
-<input id="savings"
+<input 
+id="savings"
 type="number"
 placeholder="0">
 
@@ -212,13 +299,14 @@ placeholder="0">
 
 
 
-<div class="expense-item">
+<div class="budget-item">
 
 <label>
 Emergency Fund
 </label>
 
-<input id="emergency"
+<input 
+id="emergency"
 type="number"
 placeholder="0">
 
@@ -233,23 +321,30 @@ placeholder="0">
 
 
 
+
+
+<!-- SUMMARY -->
+
 <section class="card summary">
 
 
-<h2>Your Budget Plan</h2>
+<h2>
+Your Budget Plan
+</h2>
 
 
 
 <div class="summary-row">
 
 <span>
-Available Money
+Available
 </span>
 
 <strong id="summaryAvailable">
 ₱0
 </strong>
 
+
 </div>
 
 
@@ -257,26 +352,13 @@ Available Money
 <div class="summary-row">
 
 <span>
-Planned Spending
+Planned
 </span>
 
 <strong id="planned">
 ₱0
 </strong>
 
-</div>
-
-
-
-<div class="summary-row">
-
-<span>
-Savings
-</span>
-
-<strong id="saved">
-₱0
-</strong>
 
 </div>
 
@@ -292,6 +374,7 @@ Remaining
 ₱0
 </strong>
 
+
 </div>
 
 
@@ -300,8 +383,8 @@ Remaining
 <p id="message"></p>
 
 
-
 </section>
+
 
 
 
@@ -318,8 +401,10 @@ Reset Plan
 </main>
 
 
-<script src="calculator.js"></script>
+
+<script src="budget-planner.js"></script>
 
 
 </body>
+
 </html>
