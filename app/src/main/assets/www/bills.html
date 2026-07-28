@@ -74,7 +74,94 @@
             </div>
             <div class="payments-list" id="paymentsList"></div>
         </section>
-        <section class="bills-section bills-overview-section"><div class="bills-section-heading simple-heading"><h2>Bills Overview</h2></div><article aria-label="Bills overview for the selected month" class="bills-overview-card"><div class="bills-overview-grid"><div class="bills-overview-item bills-overview-active"><div class="bills-overview-label"><span aria-hidden="true" class="bills-overview-icon"><i class="bi bi-hourglass-split"></i></span><span>Remaining Bills</span></div><strong id="remainingBillsAmount">₱0</strong><small><b id="remainingBillsCount">0</b><span id="remainingBillsCountLabel">bills</span></small></div><div class="bills-overview-item bills-overview-paid"><div class="bills-overview-label"><span aria-hidden="true" class="bills-overview-icon"><i class="bi bi-check2-circle"></i></span><span>Paid Bills</span></div><strong id="paidBillsAmount">₱0</strong><small><b id="paidBillsCount">0</b><span id="paidBillsCountLabel">bills</span></small></div></div><div class="bills-overdue-notice" hidden="" id="billsOverdueNotice"><i aria-hidden="true" class="bi bi-exclamation-triangle-fill"></i><span id="billsOverdueText">0 overdue bills</span></div><button aria-label="Open complete bills details" id="viewBillsDetails" type="button"><span>View Bills</span><i aria-hidden="true" class="bi bi-chevron-right"></i></button></article></section><section class="bills-section debt-overview-section">
+        <section class="bills-section bills-overview-section">
+            <div class="bills-section-heading simple-heading">
+                <h2>Bills Overview</h2>
+            </div>
+
+            <article
+                aria-label="Bills overview for the selected month"
+                class="debt-overview-card"
+            >
+                <div class="debt-overview-grid">
+                    <div class="debt-overview-item debt-you-owe">
+                        <div class="debt-overview-label">
+                            <span
+                                aria-hidden="true"
+                                class="debt-overview-icon"
+                            >
+                                <i class="bi bi-hourglass-split"></i>
+                            </span>
+
+                            <span>Remaining Bills</span>
+                        </div>
+
+                        <strong id="remainingBillsAmount">₱0</strong>
+
+                        <small>
+                            <b id="remainingBillsCount">0</b>
+                            <span id="remainingBillsCountLabel">
+                                bills remaining
+                            </span>
+                        </small>
+                    </div>
+
+                    <div
+                        aria-hidden="true"
+                        class="debt-overview-divider"
+                    ></div>
+
+                    <div class="debt-overview-item debt-owed-to-you">
+                        <div class="debt-overview-label">
+                            <span
+                                aria-hidden="true"
+                                class="debt-overview-icon"
+                            >
+                                <i class="bi bi-check2-circle"></i>
+                            </span>
+
+                            <span>Paid Bills</span>
+                        </div>
+
+                        <strong id="paidBillsAmount">₱0</strong>
+
+                        <small>
+                            <b id="paidBillsCount">0</b>
+                            <span id="paidBillsCountLabel">
+                                bills paid
+                            </span>
+                        </small>
+                    </div>
+                </div>
+
+                <div
+                    class="debt-overdue-notice"
+                    hidden
+                    id="billsOverdueNotice"
+                >
+                    <i
+                        aria-hidden="true"
+                        class="bi bi-exclamation-triangle-fill"
+                    ></i>
+
+                    <span id="billsOverdueText">
+                        0 overdue bills
+                    </span>
+                </div>
+
+                <button
+                    aria-label="Open complete bills details"
+                    id="viewBillsDetails"
+                    type="button"
+                >
+                    <span>View Bills</span>
+                    <i
+                        aria-hidden="true"
+                        class="bi bi-chevron-right"
+                    ></i>
+                </button>
+            </article>
+        </section><section class="bills-section debt-overview-section">
         <div class="bills-section-heading simple-heading">
             <h2>Debt Overview</h2>
         </div>
@@ -113,7 +200,7 @@
                 <span id="debtOverdueText">0 overdue debts</span>
             </div>
             <button aria-label="Open complete debt details" id="viewDebtDetails" type="button">
-                <span>View Details</span>
+                <span>View Debts</span>
                 <i aria-hidden="true" class="bi bi-chevron-right"></i>
             </button>
         </article>

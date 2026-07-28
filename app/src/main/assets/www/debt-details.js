@@ -16,11 +16,60 @@ let authDb = null;
 let billsDb = null;
 let currentUser = null;
 let currentFamily = null;
+let allDebtEntries = [];
 let debtEntries = [];
 
 let selectedDebtFilter = "all";
 let selectedStatusFilter = "all";
+let selectedDebtCategory = null;
+let selectedDebtPeriod =
+    getRequestedDebtPeriod();
+
 const expandedDebtIds = new Set();
+
+const DEBT_CATEGORY_STYLES = {
+    Loan: {
+        icon: "bi-bank",
+        soft: "#FFF1E8",
+        accent: "#C96E4B"
+    },
+
+    "Credit Card": {
+        icon: "bi-credit-card",
+        soft: "#FCEAF2",
+        accent: "#B35A82"
+    },
+
+    Personal: {
+        icon: "bi-person",
+        soft: "#EEEAF8",
+        accent: "#6E618E"
+    },
+
+    Education: {
+        icon: "bi-book",
+        soft: "#FFF5D8",
+        accent: "#A77E20"
+    },
+
+    Health: {
+        icon: "bi-heart-pulse",
+        soft: "#EEF6F0",
+        accent: "#5C8F6C"
+    },
+
+    Housing: {
+        icon: "bi-house-door",
+        soft: "#EAF3F8",
+        accent: "#4F7F99"
+    },
+
+    Other: {
+        icon: "bi-three-dots",
+        soft: "#EEEAF8",
+        accent: "#6E618E"
+    }
+};
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -44,6 +93,7 @@ async function initializeDebtDetailsPage() {
             );
 
         await loadDebtEntries();
+        populateDebtMonthPicker();
         renderDebtDetailsPage();
     } catch (error) {
         console.error(
@@ -62,7 +112,11 @@ function bindDebtDetailsEvents() {
         .getElementById("backToBills")
         ?.addEventListener(
             "click",
-            () => navigateTo("bills.html")
+            () => navigateTo(
+                `bills.html?month=${encodeURIComponent(
+                    selectedDebtPeriod
+                )}`
+            )
         );
 
     document
@@ -76,7 +130,11 @@ function bindDebtDetailsEvents() {
                     selectedDebtFilter =
                         button.dataset.debtFilter;
 
+                    selectedDebtCategory =
+                        null;
+
                     renderDebtFilter();
+                    renderDebtCategories();
                     renderDebtRecords();
                 }
             );
@@ -94,11 +152,75 @@ function bindDebtDetailsEvents() {
                         button.dataset
                             .debtStatusFilter;
 
+                    selectedDebtCategory =
+                        null;
+
                     renderDebtStatusFilter();
+                    renderDebtCategories();
                     renderDebtRecords();
                 }
             );
         });
+
+    document
+        .getElementById(
+            "debtMonthButton"
+        )
+        ?.addEventListener(
+            "click",
+            openDebtMonthPicker
+        );
+
+    document
+        .getElementById(
+            "debtMonthBackdrop"
+        )
+        ?.addEventListener(
+            "click",
+            closeDebtMonthPicker
+        );
+
+    document
+        .getElementById(
+            "closeDebtMonthPicker"
+        )
+        ?.addEventListener(
+            "click",
+            closeDebtMonthPicker
+        );
+
+    document
+        .getElementById(
+            "cancelDebtMonthPicker"
+        )
+        ?.addEventListener(
+            "click",
+            closeDebtMonthPicker
+        );
+
+    document
+        .getElementById(
+            "applyDebtMonthPicker"
+        )
+        ?.addEventListener(
+            "click",
+            applyDebtMonthPicker
+        );
+
+    document
+        .getElementById(
+            "clearDebtCategory"
+        )
+        ?.addEventListener(
+            "click",
+            () => {
+                selectedDebtCategory =
+                    null;
+
+                renderDebtCategories();
+                renderDebtRecords();
+            }
+        );
 
     document
         .getElementById(
@@ -312,7 +434,7 @@ async function loadDebtEntries() {
             currentFamily.familyCode
         );
 
-    debtEntries =
+    allDebtEntries =
         entries
             .filter(entry => {
                 return (
@@ -340,10 +462,32 @@ async function loadDebtEntries() {
                     )
                 );
             });
+
+    filterDebtEntriesByPeriod();
+}
+
+function filterDebtEntriesByPeriod() {
+    debtEntries =
+        allDebtEntries.filter(
+            entry =>
+                String(
+                    entry.dueDate || ""
+                ).startsWith(
+                    selectedDebtPeriod
+                )
+        );
 }
 
 function renderDebtDetailsPage() {
+    setText(
+        "debtMonthLabel",
+        formatDebtPeriod(
+            selectedDebtPeriod
+        )
+    );
+
     renderDebtSummary();
+    renderDebtCategories();
     renderDebtFilter();
     renderDebtStatusFilter();
     renderDebtRecords();
@@ -436,6 +580,428 @@ function renderDebtSummary() {
     );
 }
 
+function getDebtCategoryTotals() {
+    const totals =
+        new Map();
+
+    debtEntries.forEach(entry => {
+        const category =
+            String(
+                entry.category ||
+                "Other"
+            );
+
+        totals.set(
+            category,
+            (
+                totals.get(
+                    category
+                ) ||
+                0
+            ) +
+            Number(
+                entry.amount ||
+                0
+            )
+        );
+    });
+
+    return [
+        ...totals.entries()
+    ]
+        .filter(
+            ([, amount]) =>
+                amount > 0
+        )
+        .sort(
+            (first, second) =>
+                second[1] -
+                first[1]
+        );
+}
+
+function renderDebtCategories() {
+    const grid =
+        document.getElementById(
+            "debtCategoryGrid"
+        );
+
+    if (!grid) {
+        return;
+    }
+
+    const totals =
+        getDebtCategoryTotals();
+
+    setText(
+        "debtCategoryCount",
+        totals.length === 1
+            ? "1 category"
+            : `${totals.length} categories`
+    );
+
+    const active =
+        document.getElementById(
+            "debtCategoryActive"
+        );
+
+    if (active) {
+        active.hidden =
+            !selectedDebtCategory;
+    }
+
+    setText(
+        "debtCategoryActiveText",
+        selectedDebtCategory
+            ? `Showing ${selectedDebtCategory} debts`
+            : "Category"
+    );
+
+    if (!totals.length) {
+        grid.innerHTML = `
+            <div class="debt-category-empty">
+                No debt categories are used in this month.
+            </div>
+        `;
+
+        return;
+    }
+
+    grid.innerHTML =
+        totals
+            .map(
+                ([category, amount]) => {
+                    const style =
+                        DEBT_CATEGORY_STYLES[
+                            category
+                        ] ||
+                        DEBT_CATEGORY_STYLES
+                            .Other;
+
+                    return `
+                        <button
+                            class="debt-category-card ${
+                                selectedDebtCategory ===
+                                category
+                                    ? "active"
+                                    : ""
+                            }"
+                            type="button"
+                            data-debt-category="${escapeHtml(
+                                category
+                            )}"
+                            style="
+                                --category-soft:${escapeHtml(
+                                    style.soft
+                                )};
+                                --category-accent:${escapeHtml(
+                                    style.accent
+                                )};
+                            "
+                        >
+                            <span class="debt-category-icon">
+                                <i class="bi ${escapeHtml(
+                                    style.icon
+                                )}"></i>
+                            </span>
+
+                            <span class="debt-category-copy">
+                                <strong>
+                                    ${escapeHtml(
+                                        category
+                                    )}
+                                </strong>
+
+                                <span>
+                                    ${peso(
+                                        amount
+                                    )}
+                                </span>
+                            </span>
+                        </button>
+                    `;
+                }
+            )
+            .join("");
+
+    grid
+        .querySelectorAll(
+            "[data-debt-category]"
+        )
+        .forEach(button => {
+            button.addEventListener(
+                "click",
+                () => {
+                    selectedDebtCategory =
+                        selectedDebtCategory ===
+                        button.dataset
+                            .debtCategory
+                            ? null
+                            : button.dataset
+                                .debtCategory;
+
+                    renderDebtCategories();
+                    renderDebtRecords();
+                }
+            );
+        });
+}
+
+function getRequestedDebtPeriod() {
+    const requested =
+        new URLSearchParams(
+            window.location.search
+        ).get(
+            "month"
+        );
+
+    if (
+        /^\d{4}-\d{2}$/.test(
+            requested ||
+            ""
+        )
+    ) {
+        return requested;
+    }
+
+    const now =
+        new Date();
+
+    return (
+        `${now.getFullYear()}-` +
+        `${String(
+            now.getMonth() + 1
+        ).padStart(
+            2,
+            "0"
+        )}`
+    );
+}
+
+function formatDebtPeriod(value) {
+    const [year, month] =
+        String(
+            value ||
+            ""
+        )
+            .split("-")
+            .map(Number);
+
+    return new Date(
+        year,
+        month - 1,
+        1
+    ).toLocaleDateString(
+        "en-PH",
+        {
+            month: "long",
+            year: "numeric"
+        }
+    );
+}
+
+function populateDebtMonthPicker() {
+    const monthSelect =
+        document.getElementById(
+            "debtMonthSelect"
+        );
+
+    const yearSelect =
+        document.getElementById(
+            "debtYearSelect"
+        );
+
+    if (
+        !monthSelect ||
+        !yearSelect
+    ) {
+        return;
+    }
+
+    const months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+    ];
+
+    monthSelect.innerHTML =
+        months
+            .map(
+                (month, index) =>
+                    `<option value="${index}">${month}</option>`
+            )
+            .join("");
+
+    const selectedYear =
+        Number(
+            selectedDebtPeriod
+                .slice(
+                    0,
+                    4
+                )
+        );
+
+    const years =
+        allDebtEntries
+            .map(
+                entry =>
+                    parseLocalDate(
+                        entry.dueDate
+                    )
+                        .getFullYear()
+            )
+            .filter(
+                year =>
+                    Number.isFinite(
+                        year
+                    )
+            );
+
+    const currentYear =
+        new Date()
+            .getFullYear();
+
+    const minimum =
+        Math.min(
+            currentYear,
+            selectedYear,
+            ...years
+        ) - 3;
+
+    const maximum =
+        Math.max(
+            currentYear,
+            selectedYear,
+            ...years
+        ) + 3;
+
+    yearSelect.innerHTML =
+        "";
+
+    for (
+        let year = minimum;
+        year <= maximum;
+        year += 1
+    ) {
+        yearSelect
+            .insertAdjacentHTML(
+                "beforeend",
+                `<option value="${year}">${year}</option>`
+            );
+    }
+}
+
+function openDebtMonthPicker() {
+    const [year, month] =
+        selectedDebtPeriod
+            .split("-")
+            .map(Number);
+
+    const monthSelect =
+        document.getElementById(
+            "debtMonthSelect"
+        );
+
+    const yearSelect =
+        document.getElementById(
+            "debtYearSelect"
+        );
+
+    if (
+        monthSelect &&
+        yearSelect
+    ) {
+        monthSelect.value =
+            String(
+                month - 1
+            );
+
+        yearSelect.value =
+            String(
+                year
+            );
+    }
+
+    const picker =
+        document.getElementById(
+            "debtMonthPicker"
+        );
+
+    if (picker) {
+        picker.hidden =
+            false;
+    }
+}
+
+function closeDebtMonthPicker() {
+    const picker =
+        document.getElementById(
+            "debtMonthPicker"
+        );
+
+    if (picker) {
+        picker.hidden =
+            true;
+    }
+}
+
+function applyDebtMonthPicker() {
+    const month =
+        Number(
+            document.getElementById(
+                "debtMonthSelect"
+            )?.value
+        );
+
+    const year =
+        Number(
+            document.getElementById(
+                "debtYearSelect"
+            )?.value
+        );
+
+    selectedDebtPeriod =
+        `${year}-` +
+        `${String(
+            month + 1
+        ).padStart(
+            2,
+            "0"
+        )}`;
+
+    const url =
+        new URL(
+            window.location.href
+        );
+
+    url.searchParams.set(
+        "month",
+        selectedDebtPeriod
+    );
+
+    window.history.replaceState(
+        null,
+        "",
+        url
+    );
+
+    selectedDebtCategory =
+        null;
+
+    filterDebtEntriesByPeriod();
+    closeDebtMonthPicker();
+    renderDebtDetailsPage();
+}
+
 function renderDebtFilter() {
     document
         .querySelectorAll(
@@ -481,7 +1047,18 @@ function getFilteredDebtEntries() {
             direction ===
                 selectedDebtFilter;
 
-        if (!matchesDirection) {
+        const matchesCategory =
+            !selectedDebtCategory ||
+            String(
+                entry.category ||
+                "Other"
+            ) ===
+                selectedDebtCategory;
+
+        if (
+            !matchesDirection ||
+            !matchesCategory
+        ) {
             return false;
         }
 

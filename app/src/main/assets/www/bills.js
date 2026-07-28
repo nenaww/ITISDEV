@@ -404,6 +404,7 @@ async function initializeBillsPage() {
 
         renderAll();
         updateCalendarConnectionNote();
+        handleBillsPageRoute();
     } catch (error) {
         console.error(
             "Bills page initialization failed:",
@@ -2575,6 +2576,47 @@ function formatCompletedPeriod(value) {
 /* =========================================================
    In-app bills calendar
    ========================================================= */
+
+
+function handleBillsPageRoute() {
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const requestedView =
+        String(
+            params.get("view") || ""
+        ).toLowerCase();
+
+    if (
+        requestedView !== "calendar" &&
+        requestedView !== "payment-calendar"
+    ) {
+        return;
+    }
+
+    window.requestAnimationFrame(
+        () => {
+            openBillsCalendar();
+
+            const cleanUrl =
+                new URL(
+                    window.location.href
+                );
+
+            cleanUrl.searchParams.delete(
+                "view"
+            );
+
+            window.history.replaceState(
+                {},
+                "",
+                cleanUrl
+            );
+        }
+    );
+}
 
 function openBillsCalendar() {
     const panel =
