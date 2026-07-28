@@ -32,7 +32,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         user = await KabalikatAuth.getCurrentUser();
 
         if (!user || !consumeTicket(user)) {
-            window.location.replace("profile.html");
+            window.location.replace("vault-unlock.html");
             return;
         }
 
@@ -70,7 +70,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         setupAutoLock();
     } catch (error) {
         console.error(error);
-        window.location.replace("profile.html");
+        window.location.replace("vault-unlock.html");
     }
 });
 
@@ -216,7 +216,7 @@ function collectElements() {
 
 function bindEvents() {
     el.vaultBackButton.addEventListener("click", () => {
-        window.location.href = "profile.html";
+        window.location.href = "home.html";
     });
 
     el.vaultAddButton.addEventListener("click", openAddSheet);
@@ -1866,7 +1866,7 @@ function setupAutoLock() {
     const reset = () => {
         window.clearTimeout(idleTimer);
         idleTimer = window.setTimeout(() => {
-            window.location.replace("profile.html");
+            window.location.replace("vault-unlock.html");
         }, IDLE_LIMIT);
     };
 

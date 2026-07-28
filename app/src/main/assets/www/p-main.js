@@ -31,6 +31,20 @@ function parseKabalikatReceipt(rawText, receiptImage = "", options = {}) {
         };
     }
 
+    if (
+        store.id === "unknown" &&
+        window.SevenElevenParser &&
+        typeof window.SevenElevenParser.looksLike === "function" &&
+        window.SevenElevenParser.looksLike(rawText)
+    ) {
+        store = window.KABALIKAT_STORES.find(item => item.id === "seveneleven") || {
+            id: "seveneleven",
+            name: "7-Eleven",
+            logo: "images/711.png",
+            keywords: []
+        };
+    }
+
     let items = [];
 
     if (store.id === "savemore" && window.SavemoreParser) {
@@ -53,7 +67,8 @@ function parseKabalikatReceipt(rawText, receiptImage = "", options = {}) {
 
     if (
         window.KabalikatProductMatcher &&
-        typeof window.KabalikatProductMatcher.matchItems === "function"
+        typeof window.KabalikatProductMatcher.matchItems === "function" &&
+        store.id !== "seveneleven"
     ) {
         items = window.KabalikatProductMatcher.matchItems(items, {
             storeId: store.id,

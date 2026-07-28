@@ -717,18 +717,23 @@ async function initializeBillsDetails() {
         );
 
         setPageText(
-            "detailsSummaryLabel",
-            "Bills unavailable"
-        );
-
-        setPageText(
-            "detailsSummaryAmount",
+            "detailsRemainingAmount",
             "₱0"
         );
 
         setPageText(
-            "detailsSummaryCount",
-            "The saved bills could not be loaded."
+            "detailsPaidAmount",
+            "₱0"
+        );
+
+        setPageText(
+            "detailsRemainingCount",
+            "Bills unavailable"
+        );
+
+        setPageText(
+            "detailsPaidCount",
+            "Bills unavailable"
         );
 
         setPageText(
@@ -805,20 +810,6 @@ function bindBillsDetailsEvents() {
                 }
             );
         });
-
-    document
-        .getElementById(
-            "toggleCategories"
-        )
-        ?.addEventListener(
-            "click",
-            () => {
-                showAllCategories =
-                    !showAllCategories;
-
-                renderBillCategories();
-            }
-        );
 
     document
         .getElementById(
@@ -1005,56 +996,76 @@ function renderBillsDetailsSummary() {
             entry => entry.paid
         );
 
-    let summaryBills =
-        bills;
+    const activeAmount =
+        activeBills.reduce(
+            (sum, entry) =>
+                sum +
+                Number(
+                    entry.amount || 0
+                ),
+            0
+        );
 
-    let summaryLabel =
-        "Total Bills";
-
-    if (
-        selectedStatus === "active"
-    ) {
-        summaryBills =
-            activeBills;
-
-        summaryLabel =
-            "Bills Due";
-    } else if (
-        selectedStatus === "paid"
-    ) {
-        summaryBills =
-            paidBills;
-
-        summaryLabel =
-            "Bills Paid";
-    }
-
-    const amount =
-        summaryBills.reduce(
-            (sum, entry) => {
-                return (
-                    sum +
-                    Number(
-                        entry.amount || 0
-                    )
-                );
-            },
+    const paidAmount =
+        paidBills.reduce(
+            (sum, entry) =>
+                sum +
+                Number(
+                    entry.amount || 0
+                ),
             0
         );
 
     setPageText(
-        "detailsSummaryLabel",
-        summaryLabel
+        "detailsRemainingAmount",
+        formatPeso(activeAmount)
     );
 
     setPageText(
-        "detailsSummaryAmount",
-        formatPeso(amount)
+        "detailsPaidAmount",
+        formatPeso(paidAmount)
     );
 
     setPageText(
-        "detailsSummaryCount",
-        `${activeBills.length} remaining · ${paidBills.length} paid`
+        "detailsRemainingCount",
+        activeBills.length === 1
+            ? "1 bill remaining"
+            : `${activeBills.length} bills remaining`
+    );
+
+    setPageText(
+        "detailsPaidCount",
+        paidBills.length === 1
+            ? "1 bill paid"
+            : `${paidBills.length} bills paid`
+    );
+
+    const todayValue =
+        getTodayDateValue();
+
+    const overdueCount =
+        activeBills.filter(
+            entry =>
+                String(
+                    entry.dueDate || ""
+                ) < todayValue
+        ).length;
+
+    const notice =
+        document.getElementById(
+            "detailsBillsOverdueNotice"
+        );
+
+    if (notice) {
+        notice.hidden =
+            overdueCount === 0;
+    }
+
+    setPageText(
+        "detailsBillsOverdueText",
+        overdueCount === 1
+            ? "1 overdue bill needs attention"
+            : `${overdueCount} overdue bills need attention`
     );
 }
 
@@ -1101,35 +1112,18 @@ function renderBillCategories() {
             "categoryGrid"
         );
 
-    const toggle =
-        document.getElementById(
-            "toggleCategories"
-        );
-
-    if (!grid || !toggle) {
+    if (!grid) {
         return;
     }
 
+    /*
+        Always show every category that is actually used
+        by bills in the selected month and status filter.
+    */
     const totals =
         getBillCategoryTotals();
 
-    const visible =
-        showAllCategories
-            ? totals
-            : totals.slice(
-                0,
-                4
-            );
-
-    toggle.hidden =
-        totals.length <= 4;
-
-    toggle.textContent =
-        showAllCategories
-            ? "Show Less"
-            : "View All";
-
-    if (!visible.length) {
+    if (!totals.length) {
         grid.innerHTML = `
             <div class="category-empty">
                 No categories with an amount for this filter.
@@ -1140,7 +1134,7 @@ function renderBillCategories() {
     }
 
     grid.innerHTML =
-        visible
+        totals
             .map(
                 ([category, amount]) => {
                     const style =

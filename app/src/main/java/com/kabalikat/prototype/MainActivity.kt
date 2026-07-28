@@ -324,7 +324,9 @@ class MainActivity : ComponentActivity() {
         }
 
         private fun runReceiptOcrPasses(originalBitmap: android.graphics.Bitmap) {
-            val ocrBitmaps = buildReceiptOcrBitmaps(originalBitmap)
+            val ocrBitmaps = listOf(
+                resizeBitmapForOcr(originalBitmap, 2600)
+            )
             val collectedTexts = mutableListOf<String>()
 
             fun processNext(index: Int) {

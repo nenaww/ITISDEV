@@ -866,3 +866,831 @@ button {
     color: #84513E !important;
     box-shadow: none !important;
 }
+
+/* =========================================================
+   v27 scanner-style back button and readable typography
+   ========================================================= */
+
+.detail-page-back {
+    position: static !important;
+    width: 38px !important;
+    height: 38px !important;
+    border: none !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.88) !important;
+    color: var(--detail-text) !important;
+    display: grid !important;
+    place-items: center !important;
+    padding: 0 !important;
+    font-size: 17px !important;
+    box-shadow: 0 8px 18px rgba(92, 83, 78, 0.08) !important;
+}
+
+body[data-page="bills-details"] {
+    font-size: 13px !important;
+}
+
+.detail-page-header h1 {
+    font-size: 22px !important;
+    line-height: 1.12 !important;
+}
+
+.detail-page-header p {
+    font-size: 11px !important;
+    line-height: 1.45 !important;
+}
+
+.detail-month-button {
+    font-size: 13px !important;
+}
+
+.detail-summary-card span {
+    font-size: 11px !important;
+}
+
+.detail-summary-card strong {
+    font-size: 30px !important;
+}
+
+.detail-summary-card small {
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+}
+
+.detail-segmented-filter button {
+    font-size: 11px !important;
+}
+
+.detail-section-heading h2 {
+    font-size: 18px !important;
+}
+
+.detail-section-heading button,
+.detail-section-heading > span {
+    font-size: 10.5px !important;
+}
+
+.category-copy strong,
+.category-copy span {
+    font-size: 12px !important;
+}
+
+.bill-record-title strong {
+    font-size: 13px !important;
+    line-height: 1.3 !important;
+}
+
+.bill-record-title small {
+    font-size: 10px !important;
+    line-height: 1.35 !important;
+}
+
+.bill-record-amount {
+    font-size: 15px !important;
+}
+
+.bill-tag {
+    font-size: 9px !important;
+}
+
+.expand-prompt {
+    font-size: 9.5px !important;
+}
+
+.bill-information-row i {
+    font-size: 13px !important;
+}
+
+.bill-information-row span {
+    font-size: 9.5px !important;
+}
+
+.bill-information-row strong {
+    font-size: 10px !important;
+}
+
+.bill-record-notes span {
+    font-size: 9.5px !important;
+}
+
+.bill-record-notes p {
+    font-size: 10px !important;
+    line-height: 1.5 !important;
+}
+
+.bill-record-action {
+    font-size: 11px !important;
+}
+
+.empty-bill-records,
+.detail-toast {
+    font-size: 10.5px !important;
+}
+
+@media (max-width: 380px) {
+    .detail-page-header h1 {
+        font-size: 21px !important;
+    }
+
+    .bill-record-title strong {
+        font-size: 12.5px !important;
+    }
+
+    .bill-record-amount {
+        font-size: 14px !important;
+    }
+}
+
+
+/* =========================================================
+   v28 — Bills Details alignment with Bills and Debt Details
+   ========================================================= */
+
+body[data-page="bills-details"] {
+    font-size: 12px;
+}
+
+.detail-page-back {
+    width: 38px !important;
+    height: 38px !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.88) !important;
+    color: var(--detail-text) !important;
+    display: grid !important;
+    place-items: center !important;
+    padding: 0 !important;
+    font-size: 17px !important;
+    box-shadow: 0 8px 18px rgba(92, 83, 78, 0.08) !important;
+}
+
+.detail-page-header h1 {
+    font-size: 22px !important;
+    line-height: 1.1 !important;
+}
+
+.detail-page-header p {
+    font-size: 10.5px !important;
+    line-height: 1.45 !important;
+}
+
+/* Same compact month filter used on the main Bills page. */
+.detail-month-button {
+    width: 100% !important;
+    height: 54px !important;
+    margin-top: 22px !important;
+    border: 1px solid rgba(92, 83, 78, 0.06) !important;
+    border-radius: 19px !important;
+    background: rgba(255, 255, 255, 0.97) !important;
+    color: var(--detail-neutral) !important;
+    padding: 0 17px !important;
+    font-size: 11.5px !important;
+    font-weight: 800 !important;
+    box-shadow: 0 10px 24px rgba(92, 83, 78, 0.065) !important;
+}
+
+.detail-month-button i {
+    font-size: 14px !important;
+}
+
+/* Same white month/year picker style used on Bills. */
+.month-picker {
+    padding:
+        16px
+        16px
+        calc(env(safe-area-inset-bottom, 0px) + 16px);
+    align-items: end;
+    justify-items: center;
+}
+
+.month-picker-sheet {
+    width: min(100%, 430px);
+    border-radius: 28px;
+    background: #FFFFFF;
+    padding: 20px;
+    box-shadow: 0 24px 60px rgba(37, 31, 29, 0.22);
+}
+
+.month-picker-handle {
+    display: none;
+}
+
+.month-picker-sheet header span {
+    color: var(--detail-primary-dark);
+    font-size: 9px;
+}
+
+.month-picker-sheet header h2 {
+    margin-top: 5px;
+    font-size: 16px;
+    line-height: 1.25;
+}
+
+.month-picker-sheet header button {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #FFF1E8;
+    color: var(--detail-primary-dark);
+}
+
+.month-picker-fields {
+    margin-top: 20px;
+}
+
+.month-picker-fields label {
+    gap: 7px;
+    margin-left: 0;
+    color: var(--detail-neutral);
+    font-size: 9px;
+}
+
+.month-picker-fields select {
+    height: 52px;
+    border: 1px solid rgba(92, 83, 78, 0.13);
+    border-radius: 16px;
+    background: #FBF9F8;
+    padding: 0 14px;
+    font-size: 11px;
+}
+
+.month-picker-actions {
+    margin-top: 20px;
+    gap: 11px;
+}
+
+.month-picker-actions button {
+    min-height: 50px;
+    border-radius: 999px;
+    font-size: 11px;
+}
+
+.month-picker-actions button:first-child {
+    border: 1.5px solid var(--detail-primary);
+    background: #FFFFFF;
+    color: var(--detail-primary-dark);
+}
+
+.month-picker-actions button:last-child {
+    background: var(--detail-primary);
+    color: #FFFFFF;
+}
+
+/* Two-part summary, matching the Debt Details structure. */
+.detail-bills-summary {
+    margin-top: 20px;
+    border-radius: 28px;
+    padding: 17px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: var(--detail-shadow);
+}
+
+.detail-summary-grid {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+    gap: 11px;
+}
+
+.detail-summary-item {
+    min-width: 0;
+    min-height: 108px;
+    border-radius: 20px;
+    padding: 13px;
+}
+
+.detail-summary-item.remaining {
+    background: linear-gradient(135deg, #FFF1EC, #FFF8F5);
+}
+
+.detail-summary-item.paid {
+    background: linear-gradient(135deg, #EEF6F0, #F7FBF8);
+}
+
+.detail-summary-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--detail-neutral);
+    font-size: 9.5px;
+    font-weight: 800;
+}
+
+.detail-summary-icon {
+    flex: 0 0 auto;
+    width: 31px;
+    height: 31px;
+    border-radius: 11px;
+    background: #FFFFFF;
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+}
+
+.detail-summary-item.remaining .detail-summary-icon,
+.detail-summary-item.remaining > strong {
+    color: var(--detail-primary-dark);
+}
+
+.detail-summary-item.paid .detail-summary-icon,
+.detail-summary-item.paid > strong {
+    color: var(--detail-green);
+}
+
+.detail-summary-item > strong {
+    display: block;
+    margin-top: 11px;
+    font-size: clamp(18px, 5vw, 21px);
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -0.45px;
+    white-space: nowrap;
+}
+
+.detail-summary-item > small {
+    display: block;
+    margin-top: 8px;
+    color: var(--detail-muted);
+    font-size: 8.5px;
+    line-height: 1.3;
+    font-weight: 600;
+}
+
+.detail-bills-overdue {
+    min-height: 38px;
+    margin-top: 11px;
+    border-radius: 14px;
+    background: #FCECEC;
+    color: #B84747;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 9.5px;
+    font-weight: 800;
+}
+
+.detail-segmented-filter button {
+    font-size: 10.5px !important;
+}
+
+.detail-section-heading h2 {
+    font-size: 18px !important;
+}
+
+.category-copy strong {
+    font-size: 11px !important;
+}
+
+.category-copy span {
+    font-size: 9.5px !important;
+}
+
+.bill-record-title strong {
+    font-size: 12.5px !important;
+}
+
+.bill-record-title small {
+    font-size: 9.5px !important;
+}
+
+.bill-record-amount {
+    font-size: 14.5px !important;
+}
+
+.bill-tag {
+    font-size: 8.5px !important;
+}
+
+.expand-prompt {
+    font-size: 9px !important;
+}
+
+@media (max-width: 360px) {
+    .detail-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .month-picker-fields {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* =========================================================
+   v29 — Bills Details filters, categories, and actions
+   ========================================================= */
+
+/* Match the Add Bills/Debt button. */
+.detail-segmented-filter button.active {
+    background: #F7A186 !important;
+    color: #251F1D !important;
+}
+
+.bill-record-action:not(.completed) {
+    background: #F7A186 !important;
+    color: #251F1D !important;
+}
+
+/* Always-visible categories with equal height. */
+.category-grid {
+    grid-auto-rows: 86px !important;
+    align-items: stretch !important;
+}
+
+.category-card {
+    width: 100% !important;
+    min-height: 86px !important;
+    height: 86px !important;
+    align-self: stretch !important;
+}
+
+.category-copy strong {
+    max-width: 100%;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* Restore the same purple bottom-sheet month/year selector
+   used on the Bills & Debt overview page. */
+.month-picker {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 120 !important;
+    display: grid !important;
+    align-items: end !important;
+    justify-items: stretch !important;
+    padding: 0 !important;
+}
+
+.month-picker-sheet {
+    width: 100% !important;
+    max-width: none !important;
+    border-radius: 30px 30px 0 0 !important;
+    background: #F1EDFF !important;
+    padding:
+        12px
+        24px
+        calc(env(safe-area-inset-bottom, 0px) + 22px) !important;
+    box-shadow:
+        0 -18px 50px
+        rgba(38, 31, 29, 0.18) !important;
+}
+
+.month-picker-handle {
+    display: block !important;
+    width: 46px !important;
+    height: 5px !important;
+    margin: 0 auto 14px !important;
+    border-radius: 999px !important;
+    background: #C9A1C8 !important;
+}
+
+.month-picker-sheet header span {
+    color: #8A6B8D !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+}
+
+.month-picker-sheet header h2 {
+    margin: 4px 0 0 !important;
+    font-size: 18px !important;
+}
+
+.month-picker-sheet header button {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 14px !important;
+    background: rgba(255, 255, 255, 0.76) !important;
+    color: #6F5274 !important;
+}
+
+.month-picker-fields {
+    margin-top: 18px !important;
+    grid-template-columns: 1.25fr 0.75fr !important;
+    gap: 12px !important;
+}
+
+.month-picker-fields label {
+    gap: 8px !important;
+    color: var(--detail-neutral) !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase;
+}
+
+.month-picker-fields select {
+    height: 52px !important;
+    border: 1px solid rgba(111, 82, 116, 0.12) !important;
+    border-radius: 18px !important;
+    background: rgba(255, 255, 255, 0.82) !important;
+    color: var(--detail-text) !important;
+    padding: 0 14px !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+}
+
+.month-picker-actions {
+    margin-top: 22px !important;
+    gap: 12px !important;
+}
+
+.month-picker-actions button {
+    min-height: 48px !important;
+    border-radius: 16px !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+}
+
+.month-picker-actions button:first-child {
+    border: 0 !important;
+    background: rgba(255, 255, 255, 0.82) !important;
+    color: var(--detail-neutral) !important;
+}
+
+.month-picker-actions button:last-child {
+    background: #C9A1C8 !important;
+    color: var(--detail-text) !important;
+}
+
+@media (max-width: 360px) {
+    .month-picker-fields {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+
+/* =========================================================
+   v30 — keep Bills Details calendar closed until requested
+   ========================================================= */
+
+.month-picker[hidden] {
+    display: none !important;
+}
+
+
+/* =========================================================
+   v31 — clearer overdue details + exact Add Bills/Debt color
+   ========================================================= */
+
+/*
+    Keep the overdue summary treatment, but make the expanded
+    View Details area fully white for better readability.
+*/
+.bill-record-card.overdue.expanded
+.bill-record-details {
+    margin-top: 12px !important;
+    padding: 12px !important;
+    border-radius: 18px !important;
+    background: #FFFFFF !important;
+    box-shadow:
+        inset 0 0 0 1px
+        rgba(92, 83, 78, 0.06) !important;
+}
+
+.bill-record-card.overdue.expanded
+.bill-information {
+    background: #FFFFFF !important;
+    box-shadow:
+        inset 0 0 0 1px
+        rgba(92, 83, 78, 0.07) !important;
+}
+
+.bill-record-card.overdue.expanded
+.bill-record-notes {
+    background: #FFFFFF !important;
+}
+
+/*
+    Exact color used by the main + Add Bills/Debt button:
+    #F7A186 with dark text.
+*/
+body[data-page="bills-details"]
+.detail-segmented-filter
+button.active {
+    background: #F7A186 !important;
+    color: #251F1D !important;
+    box-shadow:
+        0 8px 16px
+        rgba(247, 161, 134, 0.24) !important;
+}
+
+body[data-page="bills-details"]
+.bill-record-action:not(.completed) {
+    background: #F7A186 !important;
+    color: #251F1D !important;
+    box-shadow:
+        0 10px 20px
+        rgba(247, 161, 134, 0.22) !important;
+}
+
+
+/* =========================================================
+   v32 — Bills Details parity with Debt Details
+   ========================================================= */
+
+body[data-page="bills-details"] {
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+}
+
+.detail-page-header h1 {
+    font-size: 22px !important;
+    line-height: 1.1 !important;
+}
+
+.detail-page-header p {
+    font-size: 10px !important;
+    line-height: 1.45 !important;
+}
+
+.detail-month-button {
+    font-size: 11.5px !important;
+}
+
+.detail-summary-heading {
+    font-size: 9.5px !important;
+}
+
+.detail-summary-item > strong {
+    font-size: clamp(
+        18px,
+        5vw,
+        21px
+    ) !important;
+}
+
+.detail-summary-item > small {
+    font-size: 8.5px !important;
+    line-height: 1.3 !important;
+}
+
+.detail-segmented-filter button {
+    font-size: 10.5px !important;
+}
+
+.detail-section-heading h2 {
+    font-size: 18px !important;
+}
+
+.detail-section-heading button,
+.detail-section-heading > span {
+    font-size: 10px !important;
+}
+
+.category-copy strong {
+    font-size: 10.5px !important;
+}
+
+.category-copy span {
+    font-size: 9.5px !important;
+}
+
+.bill-record-title strong {
+    font-size: 13px !important;
+    line-height: 1.3 !important;
+}
+
+.bill-record-title small {
+    font-size: 10px !important;
+    line-height: 1.35 !important;
+}
+
+.bill-record-amount {
+    font-size: 15px !important;
+}
+
+.bill-tag {
+    font-size: 9px !important;
+}
+
+.expand-prompt {
+    font-size: 9.5px !important;
+}
+
+.bill-information-row i {
+    font-size: 13px !important;
+}
+
+.bill-information-row span {
+    font-size: 9.5px !important;
+}
+
+.bill-information-row strong {
+    font-size: 10px !important;
+}
+
+.bill-record-notes span {
+    font-size: 9.5px !important;
+}
+
+.bill-record-notes p {
+    font-size: 10px !important;
+    line-height: 1.5 !important;
+}
+
+.bill-record-action {
+    font-size: 11px !important;
+}
+
+/*
+    Exact background used by the main
+    + Add Bills/Debt button.
+*/
+body[data-page="bills-details"]
+.detail-segmented-filter
+button.active {
+    background: #F7C8B4 !important;
+    color: #251F1D !important;
+    box-shadow:
+        0 8px 16px
+        rgba(247, 200, 180, 0.28) !important;
+}
+
+body[data-page="bills-details"]
+.bill-record-action:not(.completed) {
+    background: #F7C8B4 !important;
+    color: #251F1D !important;
+    box-shadow:
+        0 10px 20px
+        rgba(247, 200, 180, 0.25) !important;
+}
+
+/*
+    Past Due records keep their warning border,
+    while Provider, Due date, Category, Frequency,
+    Reminder, and Family visibility use white rows.
+*/
+.bill-record-card.overdue
+.bill-record-details:not([hidden]) {
+    margin-top: 12px !important;
+    padding: 12px !important;
+    border-radius: 18px !important;
+    background: #FFFFFF !important;
+    box-shadow:
+        inset 0 0 0 1px
+        rgba(92, 83, 78, 0.06) !important;
+}
+
+.bill-record-card.overdue
+.bill-information {
+    background: #FFFFFF !important;
+    box-shadow:
+        inset 0 0 0 1px
+        rgba(92, 83, 78, 0.07) !important;
+}
+
+.bill-record-card.overdue
+.bill-information-row {
+    background: #FFFFFF !important;
+}
+
+.bill-record-card.overdue
+.bill-record-notes {
+    background: #FFFFFF !important;
+}
+
+@media (max-width: 370px) {
+    .detail-page-header h1 {
+        font-size: 21px !important;
+    }
+
+    .bill-record-title strong {
+        font-size: 12.5px !important;
+    }
+
+    .bill-record-amount {
+        font-size: 14px !important;
+    }
+}
+
+
+/* =========================================================
+   v33 — Bills summary typography matches Debt Details
+   ========================================================= */
+
+.detail-summary-heading > span:last-child {
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    font-weight: 800 !important;
+}
+
+.detail-summary-item > strong {
+    font-size: 20px !important;
+    line-height: 1 !important;
+    font-weight: 800 !important;
+}
+
+.detail-summary-item > small {
+    font-size: 10px !important;
+    line-height: 1.4 !important;
+    font-weight: 600 !important;
+}
+
+.detail-bills-overdue {
+    font-size: 10.5px !important;
+    line-height: 1.35 !important;
+    font-weight: 800 !important;
+}

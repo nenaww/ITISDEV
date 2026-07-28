@@ -2,7 +2,6 @@ let homeCurrentLanguage = localStorage.getItem("kabalikat_language") || "en";
 let homeCurrentEventIndex = 0;
 let homeCurrentEvents = [];
 let expandedFamilyMemberIndex = -1;
-let homeCalculatorExpression = "0";
 
 const KABALIKAT_PET_KEY = "kabalikat_pet_state_v1";
 const KABALIKAT_PROFILE_KEY = "kabalikat_profile_v1";
@@ -34,7 +33,7 @@ const homeText = {
         quickExpense: "Add Expense",
         quickBills: "Bills",
         quickCalculator: "Calculator",
-        quickMembers: "Member",
+        quickVault: "Secure Vault",
         comingSoon: "This feature will be added next.",
         scanReady: "OCR receipt scanner will be added next.",
         noAmount: "No amount",
@@ -68,7 +67,7 @@ const homeText = {
         quickExpense: "Add Expense",
         quickBills: "Bills",
         quickCalculator: "Calculator",
-        quickMembers: "Member",
+        quickVault: "Secure Vault",
         comingSoon: "Susunod pang idaragdag ang feature na ito.",
         scanReady: "Susunod pang idaragdag ang OCR receipt scanner.",
         noAmount: "Walang amount",
@@ -347,14 +346,15 @@ function bindHomeActions() {
     }
 
     if (calculatorButton) {
-        calculatorButton.addEventListener("click", openHomeCalculator);
+        calculatorButton.addEventListener("click", () => {
+            window.location.href = "calculator.html";
+        });
     }
 
     if (familyViewAllButton) {
         familyViewAllButton.addEventListener("click", () => {
             goToExpenses({
-                section: "household-spending",
-                hash: "household-spending"
+                section: "household-spending"
             });
         });
     }
@@ -397,17 +397,50 @@ function bindHomeActions() {
         });
     }
 
-    ["quickMembers", "debtViewAll", "eventsViewAll"].forEach(id => {
-        const button = document.getElementById(id);
+    const secureVaultButton =
+        document.getElementById(
+            "quickSecureVault"
+        );
 
-        if (button) {
-            button.addEventListener("click", () => {
-                showToast(homeText[homeCurrentLanguage].comingSoon);
-            });
-        }
-    });
+    if (secureVaultButton) {
+        secureVaultButton.addEventListener(
+            "click",
+            () => {
+                window.location.href =
+                    "vault-unlock.html";
+            }
+        );
+    }
 
-    bindHomeCalculator();
+    const debtViewAllButton =
+        document.getElementById(
+            "debtViewAll"
+        );
+
+    if (debtViewAllButton) {
+        debtViewAllButton.addEventListener(
+            "click",
+            () => {
+                window.location.href =
+                    "debt-details.html";
+            }
+        );
+    }
+
+    const eventsViewAllButton =
+        document.getElementById(
+            "eventsViewAll"
+        );
+
+    if (eventsViewAllButton) {
+        eventsViewAllButton.addEventListener(
+            "click",
+            () => {
+                window.location.href =
+                    "bills.html?view=calendar";
+            }
+        );
+    }
 }
 
 function goToExpenses({ view = "", section = "", hash = "", filter = "" } = {}) {
@@ -489,7 +522,7 @@ function renderHomePetIcon() {
 function renderQuickActions() {
     const addButton = document.getElementById("quickAddExpense");
     const calculatorButton = document.getElementById("quickCalculator");
-    const membersButton = document.getElementById("quickMembers");
+    const vaultButton = document.getElementById("quickSecureVault");
 
     if (addButton) {
         addButton.innerHTML = `
@@ -505,10 +538,10 @@ function renderQuickActions() {
         `;
     }
 
-    if (membersButton) {
-        membersButton.innerHTML = `
-            <i class="bi bi-people"></i>
-            <span>${homeText[homeCurrentLanguage].quickMembers || "Member"}</span>
+    if (vaultButton) {
+        vaultButton.innerHTML = `
+            <i class="bi bi-shield-lock"></i>
+            <span>${homeText[homeCurrentLanguage].quickVault || "Secure Vault"}</span>
         `;
     }
 }
@@ -829,134 +862,6 @@ function moveEvent(direction) {
     }
 
     renderEventCarousel();
-}
-
-function bindHomeCalculator() {
-    const closeButton = document.getElementById("closeHomeCalculator");
-    const backdrop = document.getElementById("homeCalculatorBackdrop");
-    const sheet = document.getElementById("homeCalculatorSheet");
-
-    if (closeButton) {
-        closeButton.addEventListener("click", closeHomeCalculator);
-    }
-
-    if (backdrop) {
-        backdrop.addEventListener("click", closeHomeCalculator);
-    }
-
-    if (!sheet) {
-        return;
-    }
-
-    sheet.querySelectorAll("[data-calc-value]").forEach(button => {
-        button.addEventListener("click", () => {
-            appendCalculatorValue(button.dataset.calcValue || "");
-        });
-    });
-
-    sheet.querySelectorAll("[data-calc-action]").forEach(button => {
-        button.addEventListener("click", () => {
-            const action = button.dataset.calcAction;
-
-            if (action === "clear") {
-                homeCalculatorExpression = "0";
-                updateHomeCalculatorDisplay();
-            } else if (action === "backspace") {
-                homeCalculatorExpression = homeCalculatorExpression.length > 1
-                    ? homeCalculatorExpression.slice(0, -1)
-                    : "0";
-                updateHomeCalculatorDisplay();
-            } else if (action === "equals") {
-                calculateHomeExpression();
-            }
-        });
-    });
-}
-
-function openHomeCalculator() {
-    const backdrop = document.getElementById("homeCalculatorBackdrop");
-    const sheet = document.getElementById("homeCalculatorSheet");
-
-    if (!backdrop || !sheet) {
-        return;
-    }
-
-    backdrop.hidden = false;
-    sheet.hidden = false;
-    requestAnimationFrame(() => {
-        backdrop.classList.add("show");
-        sheet.classList.add("show");
-    });
-}
-
-function closeHomeCalculator() {
-    const backdrop = document.getElementById("homeCalculatorBackdrop");
-    const sheet = document.getElementById("homeCalculatorSheet");
-
-    if (!backdrop || !sheet) {
-        return;
-    }
-
-    backdrop.classList.remove("show");
-    sheet.classList.remove("show");
-
-    window.setTimeout(() => {
-        backdrop.hidden = true;
-        sheet.hidden = true;
-    }, 220);
-}
-
-function appendCalculatorValue(value) {
-    const operators = ["+", "-", "*", "/", "%"];
-    const lastCharacter = homeCalculatorExpression.slice(-1);
-
-    if (homeCalculatorExpression === "0" && !operators.includes(value) && value !== ".") {
-        homeCalculatorExpression = value;
-    } else if (operators.includes(value) && operators.includes(lastCharacter)) {
-        homeCalculatorExpression = homeCalculatorExpression.slice(0, -1) + value;
-    } else {
-        homeCalculatorExpression += value;
-    }
-
-    updateHomeCalculatorDisplay();
-}
-
-function calculateHomeExpression() {
-    const safeExpression = homeCalculatorExpression.replace(/%/g, "/100");
-
-    if (!/^[0-9+\-*/.()\s]+$/.test(safeExpression)) {
-        homeCalculatorExpression = "Error";
-        updateHomeCalculatorDisplay();
-        return;
-    }
-
-    try {
-        const result = Function(`"use strict"; return (${safeExpression})`)();
-
-        if (!Number.isFinite(result)) {
-            throw new Error("Invalid result");
-        }
-
-        homeCalculatorExpression = String(
-            Math.round((result + Number.EPSILON) * 1000000) / 1000000
-        );
-    } catch (error) {
-        homeCalculatorExpression = "Error";
-    }
-
-    updateHomeCalculatorDisplay();
-}
-
-function updateHomeCalculatorDisplay() {
-    const display = document.getElementById("homeCalculatorDisplay");
-
-    if (!display) {
-        return;
-    }
-
-    display.textContent = homeCalculatorExpression
-        .replaceAll("*", "×")
-        .replaceAll("/", "÷");
 }
 
 function getTodayHeaderText() {

@@ -10,6 +10,7 @@
 
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="ai/ui/piggy.css">
 </head>
 <body data-page="home">
 
@@ -84,9 +85,9 @@
                 <span>Calculator</span>
             </button>
 
-            <button id="quickMembers" class="quick-action-members" type="button">
-                <i class="bi bi-people"></i>
-                <span>Members</span>
+            <button id="quickSecureVault" class="quick-action-vault" type="button">
+                <i class="bi bi-shield-lock"></i>
+                <span>Secure Vault</span>
             </button>
         </section>
 
@@ -209,55 +210,52 @@
         </button>
     </nav>
 
-
-    <div id="homeCalculatorBackdrop" class="home-calculator-backdrop" hidden></div>
-
-    <section id="homeCalculatorSheet" class="home-calculator-sheet" hidden aria-modal="true" aria-label="Calculator">
-        <div class="home-calculator-handle"></div>
-
-        <div class="home-calculator-heading">
-            <div>
-                <span>Quick tool</span>
-                <h2>Calculator</h2>
-            </div>
-            <button id="closeHomeCalculator" type="button" aria-label="Close calculator">
-                <i class="bi bi-x-lg"></i>
-            </button>
-        </div>
-
-        <div id="homeCalculatorDisplay" class="home-calculator-display" aria-live="polite">0</div>
-
-        <div class="home-calculator-grid">
-            <button class="calculator-command" type="button" data-calc-action="clear">C</button>
-            <button class="calculator-command" type="button" data-calc-action="backspace"><i class="bi bi-backspace"></i></button>
-            <button class="calculator-command" type="button" data-calc-value="%">%</button>
-            <button class="calculator-operator" type="button" data-calc-value="/">÷</button>
-
-            <button type="button" data-calc-value="7">7</button>
-            <button type="button" data-calc-value="8">8</button>
-            <button type="button" data-calc-value="9">9</button>
-            <button class="calculator-operator" type="button" data-calc-value="*">×</button>
-
-            <button type="button" data-calc-value="4">4</button>
-            <button type="button" data-calc-value="5">5</button>
-            <button type="button" data-calc-value="6">6</button>
-            <button class="calculator-operator" type="button" data-calc-value="-">−</button>
-
-            <button type="button" data-calc-value="1">1</button>
-            <button type="button" data-calc-value="2">2</button>
-            <button type="button" data-calc-value="3">3</button>
-            <button class="calculator-operator" type="button" data-calc-value="+">+</button>
-
-            <button class="calculator-zero" type="button" data-calc-value="0">0</button>
-            <button type="button" data-calc-value=".">.</button>
-            <button class="calculator-equals" type="button" data-calc-action="equals">=</button>
-        </div>
-    </section>
-
     <div id="toast" class="toast"></div>
 
 </main>
 
+<!-- Config -->
+<script src="ai/config/ai-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+
+<!-- Models -->
+<script src="ai/models/ChatMessage.js"></script>
+<script src="ai/models/ChatRequest.js"></script>
+<script src="ai/models/ToolCall.js"></script>
+<script src="ai/models/ToolDefinition.js"></script>
+<script src="ai/models/ToolResult.js"></script>
+
+<!-- Tools -->
+<script src="ai/tools/ExpenseTools.js"></script>
+<script src="ai/tools/BudgetTools.js"></script>
+<script src="ai/tools/ReceiptTools.js"></script>
+<script src="ai/tools/ProductTools.js"></script>
+<script src="ai/tools/BillTools.js"></script>
+<script src="ai/tools/DebtTools.js"></script>
+<script src="ai/tools/AnalyticsTools.js"></script>
+
+<!-- Services -->
+<script src="ai/services/PromptBuilder.js"></script>
+<script src="ai/services/ToolRegistry.js"></script>
+<script src="ai/services/ToolExecutor.js"></script>
+<script src="ai/services/RetrievalService.js"></script>
+<script src="ai/services/AIService.js"></script>
+<script src="ai/services/PiggyChatManager.js"></script>
+
+<!-- UI -->
+<script src="ai/ui/MessageBubble.js"></script>
+<script src="ai/ui/ChatView.js"></script>
+<script src="ai/ui/SuggestionChip.js"></script>
+<script src="ai/ui/TypingIndicator.js"></script>
+<script src="ai/ui/PiggyOverlay.js"></script>
+<script src="ai/ui/PiggyButton.js"></script>
+
+<!-- App -->
+<script src="ai/PiggyApp.js"></script>
+<script src="ai/main.js"></script>
+
+<!-- Existing app -->
 <script src="home.js"></script>
 </body>
 </html>

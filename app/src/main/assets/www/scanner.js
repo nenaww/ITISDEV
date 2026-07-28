@@ -396,21 +396,50 @@ async function handleMlKitOcrResult(payload) {
             primarySource: "mlkit"
         });
 
-        parsedReceipt = repairReceiptItemsFromRawProductSequence(parsedReceipt, mlKitText);
+        const storeId = normalizeStoreId(parsedReceipt.store.id);
 
-        if (!parsedReceipt.sequenceRepaired) {
-            parsedReceipt = rescueStandaloneProductCodeRows(parsedReceipt, mlKitText);
+        switch (storeId) {
+
+            case "savemore":
+
+                parsedReceipt =
+                    repairReceiptItemsFromRawProductSequence(
+                        parsedReceipt,
+                        mlKitText
+                    );
+
+                if (!parsedReceipt.sequenceRepaired) {
+
+                    parsedReceipt =
+                        rescueStandaloneProductCodeRows(
+                            parsedReceipt,
+                            mlKitText
+                        );
+                }
+
+                break;
+
+            case "seveneleven":
+
+                /*
+                    7-Eleven parser already produces final rows.
+                    No quantity inference.
+                    No subtotal repair.
+                    No rescue.
+                */
+
+                break;
+
+            default:
+
+                break;
         }
 
-        /*
-            Final database authority pass.
-            This makes sure the UI receives the canonical product name from Supabase,
-            even after parser repair/rescue changed the item list.
-        */
-        parsedReceipt.items = applyFinalDatabaseProductNames(
-            parsedReceipt.items,
-            parsedReceipt
-        );
+        parsedReceipt.items =
+            applyFinalDatabaseProductNames(
+                parsedReceipt.items,
+                parsedReceipt
+            );
 
         if (!isLikelyReceipt(mlKitText, parsedReceipt)) {
             stopMlKitProgressLoop();
@@ -420,8 +449,8 @@ async function handleMlKitOcrResult(payload) {
             return;
         }
 
-        const storeId = normalizeStoreId(getStoreId(parsedReceipt));
-        setScanningStoreTheme(storeId);
+        const themeStoreId = normalizeStoreId(getStoreId(parsedReceipt));
+        setScanningStoreTheme(themeStoreId);
 
         /*
             Build the hidden review state first so the exact same
@@ -478,6 +507,10 @@ function applyFinalDatabaseProductNames(items, receipt) {
     const storeName = getReceiptStoreNameForMatcher(receipt);
 
     return items.map(item => {
+        if (item && item.preserveOcrName === true) {
+            return item;
+        }
+
         const candidates = getFinalMatcherCandidates(item);
 
         let best = null;

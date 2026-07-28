@@ -19,32 +19,45 @@
             </button>
             <div>
                 <h1>Debt Details</h1>
-                <p>
-                    Review what you need to pay and what others need to return.
-                </p>
+                <p>Track what you owe and what others owe you.</p>
             </div>
         </header>
+
+        <button
+            aria-controls="debtMonthPicker"
+            aria-haspopup="dialog"
+            class="debt-month-button"
+            id="debtMonthButton"
+            type="button"
+        >
+            <span id="debtMonthLabel">Month Year</span>
+            <i class="bi bi-calendar3"></i>
+        </button>
+
         <section aria-label="Overall debt summary" class="debt-details-summary">
             <div class="debt-summary-grid">
                 <article class="debt-summary-item payable">
-<span aria-hidden="true" class="debt-summary-icon">
-<i class="bi bi-arrow-up-right"></i>
-</span>
-                    <div>
+                    <div class="debt-summary-heading">
+                        <span aria-hidden="true" class="debt-summary-icon">
+                            <i class="bi bi-arrow-up-right"></i>
+                        </span>
                         <span>You Owe</span>
-                        <strong id="detailsYouOweAmount">₱0</strong>
-                        <small id="detailsYouOweCount">0 active debts</small>
                     </div>
+
+                    <strong id="detailsYouOweAmount">₱0</strong>
+                    <small id="detailsYouOweCount">0 active debts</small>
                 </article>
+
                 <article class="debt-summary-item receivable">
-<span aria-hidden="true" class="debt-summary-icon">
-<i class="bi bi-arrow-down-left"></i>
-</span>
-                    <div>
+                    <div class="debt-summary-heading">
+                        <span aria-hidden="true" class="debt-summary-icon">
+                            <i class="bi bi-arrow-down-left"></i>
+                        </span>
                         <span>Owed to You</span>
-                        <strong id="detailsOwedToYouAmount">₱0</strong>
-                        <small id="detailsOwedToYouCount">0 active debts</small>
                     </div>
+
+                    <strong id="detailsOwedToYouAmount">₱0</strong>
+                    <small id="detailsOwedToYouCount">0 active debts</small>
                 </article>
             </div>
             <div class="debt-details-overdue" hidden="" id="detailsOverdueNotice">
@@ -54,6 +67,7 @@
                 </span>
             </div>
         </section>
+
         <section aria-label="Debt filters" class="debt-details-controls">
             <div aria-label="Filter debts by direction" class="debt-direction-filter" role="group">
                 <button class="active" data-debt-filter="all" type="button">
@@ -103,6 +117,56 @@
         </button>
     </nav>
 </main>
+<div class="debt-month-picker" hidden id="debtMonthPicker">
+    <button
+        aria-label="Close month selector"
+        class="debt-month-picker-backdrop"
+        id="debtMonthBackdrop"
+        type="button"
+    ></button>
+
+    <section
+        aria-labelledby="debtMonthPickerTitle"
+        aria-modal="true"
+        class="debt-month-picker-sheet"
+        role="dialog"
+    >
+        <div class="debt-month-picker-handle"></div>
+
+        <header>
+            <div>
+                <span>Jump to date</span>
+                <h2 id="debtMonthPickerTitle">Select month and year</h2>
+            </div>
+
+            <button
+                aria-label="Close month selector"
+                id="closeDebtMonthPicker"
+                type="button"
+            >
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </header>
+
+        <div class="debt-month-picker-fields">
+            <label>
+                Month
+                <select id="debtMonthSelect"></select>
+            </label>
+
+            <label>
+                Year
+                <select id="debtYearSelect"></select>
+            </label>
+        </div>
+
+        <div class="debt-month-picker-actions">
+            <button id="cancelDebtMonthPicker" type="button">Cancel</button>
+            <button id="applyDebtMonthPicker" type="button">View Month</button>
+        </div>
+    </section>
+</div>
+
 <div aria-live="polite" class="debt-details-toast" id="debtDetailsToast" role="status"></div>
 <script src="debt-details.js"></script>
 </body>
