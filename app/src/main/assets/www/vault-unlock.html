@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+    <title>KABALIKAT - Unlock Secure Vault</title>
+
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+    <link
+            href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="vault-unlock.css?v=20260728-outer-card-fix">
+</head>
+
+<body class="vault-unlock-page">
+<main class="vault-unlock-shell">
+    <header class="vault-unlock-header">
+        <button
+                id="vaultUnlockBackButton"
+                class="vault-unlock-back"
+                type="button"
+                aria-label="Return to Home"
+        >
+            <i class="bi bi-arrow-left"></i>
+        </button>
+
+        <span aria-hidden="true"></span>
+    </header>
+
+    <section class="vault-unlock-content">
+        <div class="vault-unlock-intro">
+            <div class="vault-unlock-symbols" aria-hidden="true">
+                <span class="vault-shield-symbol">
+                    <i class="bi bi-shield-lock-fill"></i>
+                </span>
+
+                <span class="vault-key-symbol">
+                    <i class="bi bi-key-fill"></i>
+                </span>
+            </div>
+
+            <span id="vaultUnlockEyebrow" class="vault-unlock-eyebrow">
+                SECURE VAULT
+            </span>
+
+            <h1 id="vaultUnlockTitle">
+                Enter your password
+            </h1>
+
+            <p id="vaultUnlockSubtitle">
+                Confirm your account password before opening your family's protected files.
+            </p>
+        </div>
+
+        <div class="vault-account-chip">
+            <span id="vaultAccountInitials" class="vault-account-avatar">
+                ED
+            </span>
+
+            <span class="vault-account-copy">
+                <strong id="vaultAccountName">
+                    Family Member
+                </strong>
+
+                <small id="vaultAccountEmail">
+                    Current account
+                </small>
+            </span>
+        </div>
+
+        <form id="vaultUnlockForm" novalidate>
+            <label for="vaultUnlockPassword" id="vaultPasswordLabel">
+                PASSWORD
+            </label>
+
+            <div id="vaultPasswordInputBox" class="vault-password-box">
+                <i class="bi bi-lock"></i>
+
+                <input
+                        id="vaultUnlockPassword"
+                        type="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                >
+
+                <button
+                        id="vaultUnlockPasswordToggle"
+                        type="button"
+                        aria-label="Show password"
+                >
+                    <i class="bi bi-eye"></i>
+                </button>
+            </div>
+
+            <p
+                    id="vaultUnlockError"
+                    class="vault-login-error"
+                    aria-live="polite"
+            ></p>
+
+            <button
+                    id="vaultUnlockSubmit"
+                    class="vault-unlock-submit"
+                    type="submit"
+            >
+                <i class="bi bi-unlock-fill"></i>
+                <span id="vaultUnlockSubmitText">Unlock Vault</span>
+            </button>
+        </form>
+
+        <p class="vault-inactivity-note">
+            <i class="bi bi-clock"></i>
+            <span id="vaultInactivityText">
+                The vault locks again after five minutes of inactivity.
+            </span>
+        </p>
+    </section>
+</main>
+
+<script src="auth-service.js"></script>
+<script src="vault-unlock.js?v=20260728-outer-card-fix"></script>
+</body>
+</html>

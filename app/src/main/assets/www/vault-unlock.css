@@ -1,0 +1,369 @@
+* {
+    box-sizing: border-box;
+}
+
+body.vault-unlock-page {
+    margin: 0;
+    min-height: 100dvh;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    color: #211A17;
+    background:
+        radial-gradient(
+            circle at 13% 8%,
+            rgba(175, 203, 221, 0.28),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 86% 14%,
+            rgba(255, 218, 185, 0.30),
+            transparent 27%
+        ),
+        #FFF9F5;
+}
+
+.vault-unlock-shell {
+    min-height: 100dvh;
+    padding:
+        calc(env(safe-area-inset-top, 0px) + 24px)
+        32px
+        calc(env(safe-area-inset-bottom, 0px) + 30px);
+}
+
+.vault-unlock-header {
+    display: grid;
+    grid-template-columns: 54px minmax(0, 1fr);
+    align-items: center;
+}
+
+.vault-unlock-back {
+    width: 54px;
+    height: 54px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.94);
+    color: #5C534E;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    font-size: 22px;
+    box-shadow: 0 10px 24px rgba(92, 83, 78, 0.08);
+}
+
+.vault-unlock-content {
+    width: 100%;
+    max-width: 460px;
+    margin: 42px auto 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.vault-unlock-intro {
+    text-align: center;
+}
+
+.vault-unlock-symbols {
+    position: relative;
+    width: 146px;
+    height: 146px;
+    margin: 0 auto 20px;
+    border-radius: 46px;
+    background: #F2EAFF;
+    display: grid;
+    place-items: center;
+}
+
+.vault-shield-symbol {
+    color: #9D6CBD;
+    font-size: 68px;
+    line-height: 1;
+}
+
+.vault-key-symbol {
+    position: absolute;
+    right: -9px;
+    bottom: 4px;
+    width: 62px;
+    height: 62px;
+    border: 7px solid #FFFFFF;
+    border-radius: 21px;
+    background: #FFF1E8;
+    color: #E98B5F;
+    display: grid;
+    place-items: center;
+    font-size: 25px;
+    box-shadow: 0 10px 24px rgba(92, 83, 78, 0.08);
+}
+
+.vault-unlock-eyebrow {
+    display: block;
+    color: #9D6CBD;
+    font-size: 12px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: 1.1px;
+}
+
+.vault-unlock-intro h1 {
+    margin: 16px 0 0;
+    color: #211A17;
+    font-size: 33px;
+    line-height: 1.08;
+    font-weight: 800;
+    letter-spacing: -1.1px;
+}
+
+.vault-unlock-intro p {
+    max-width: 400px;
+    margin: 14px auto 0;
+    color: #8A817C;
+    font-size: 15px;
+    line-height: 1.55;
+    font-weight: 600;
+}
+
+.vault-account-chip {
+    min-height: 92px;
+    margin-top: 32px;
+    padding: 14px 18px;
+    border-radius: 30px;
+    background: #F7F1FC;
+    display: grid;
+    grid-template-columns: 60px minmax(0, 1fr);
+    align-items: center;
+    gap: 16px;
+}
+
+.vault-account-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 20px;
+    background: #FFFFFF;
+    color: #9D6CBD;
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.vault-account-copy,
+.vault-account-copy strong,
+.vault-account-copy small {
+    display: block;
+    min-width: 0;
+}
+
+.vault-account-copy strong {
+    color: #211A17;
+    font-size: 15px;
+    line-height: 1.25;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+.vault-account-copy small {
+    margin-top: 5px;
+    color: #8A817C;
+    font-size: 11px;
+    line-height: 1.35;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+#vaultUnlockForm {
+    margin-top: 28px;
+}
+
+#vaultUnlockForm > label {
+    display: block;
+    margin-left: 4px;
+    color: #5C534E;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.vault-password-box {
+    height: 76px;
+    margin-top: 10px;
+    padding: 0 16px 0 22px;
+    border: 1px solid rgba(92, 83, 78, 0.10);
+    border-radius: 27px;
+    background: #FFFFFF;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 10px 24px rgba(92, 83, 78, 0.05);
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.vault-password-box:focus-within {
+    border-color: rgba(157, 108, 189, 0.48);
+    box-shadow: 0 10px 26px rgba(157, 108, 189, 0.10);
+}
+
+.vault-password-box.is-invalid {
+    border-color: rgba(216, 77, 77, 0.55);
+}
+
+.vault-password-box > i {
+    color: #9D6CBD;
+    font-size: 21px;
+}
+
+.vault-password-box input {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #211A17;
+    font: 700 15px "Plus Jakarta Sans", sans-serif;
+}
+
+.vault-password-box input::placeholder {
+    color: #B5ACA7;
+    font-weight: 600;
+}
+
+#vaultUnlockPasswordToggle {
+    width: 54px;
+    height: 54px;
+    flex: 0 0 auto;
+    border: 0;
+    border-radius: 18px;
+    background: #F7F1FC;
+    color: #9D6CBD;
+    display: grid;
+    place-items: center;
+    font-size: 21px;
+}
+
+.vault-login-error {
+    min-height: 18px;
+    margin: 8px 5px 0;
+    color: #D84D4D;
+    font-size: 10px;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+.vault-unlock-submit {
+    width: 100%;
+    height: 72px;
+    margin-top: 12px;
+    border: 0;
+    border-radius: 28px;
+    background: #9D6CBD;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 11px;
+    font: 800 15px "Plus Jakarta Sans", sans-serif;
+    box-shadow: 0 15px 30px rgba(157, 108, 189, 0.22);
+}
+
+.vault-unlock-submit:disabled {
+    opacity: 0.58;
+}
+
+.vault-inactivity-note {
+    margin: 22px 0 0;
+    color: #8A817C;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    text-align: center;
+    font-size: 10px;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+.vault-inactivity-note i {
+    color: #9D6CBD;
+    font-size: 16px;
+}
+
+@media (max-width: 420px) {
+    .vault-unlock-shell {
+        padding-left: 22px;
+        padding-right: 22px;
+    }
+
+    .vault-unlock-content {
+        margin-top: 34px;
+    }
+
+    .vault-unlock-symbols {
+        width: 126px;
+        height: 126px;
+        border-radius: 40px;
+    }
+
+    .vault-shield-symbol {
+        font-size: 60px;
+    }
+
+    .vault-key-symbol {
+        width: 56px;
+        height: 56px;
+        border-radius: 19px;
+        font-size: 22px;
+    }
+
+    .vault-unlock-intro h1 {
+        font-size: 29px;
+    }
+
+    .vault-unlock-intro p {
+        font-size: 13px;
+    }
+
+    .vault-password-box {
+        height: 68px;
+    }
+
+    .vault-unlock-submit {
+        height: 64px;
+    }
+}
+
+
+/* =========================================================
+   Remove the outer Secure Vault login card
+   ========================================================= */
+
+.vault-unlock-content {
+    width: 100% !important;
+    max-width: 460px !important;
+    margin: 42px auto 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.vault-unlock-content::before,
+.vault-unlock-content::after {
+    display: none !important;
+    content: none !important;
+}
+
+@media (max-width: 420px) {
+    .vault-unlock-content {
+        margin-top: 34px !important;
+    }
+}

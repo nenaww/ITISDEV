@@ -23,9 +23,6 @@
                 <h1>
                     Secure Vault
                 </h1>
-                <p>
-                    Protected household files
-                </p>
             </div>
             <button id="vaultAddButton" class="vault-header-button primary" type="button">
                 <i class="bi bi-plus-lg">
@@ -36,57 +33,25 @@
             <i class="bi bi-search" aria-hidden="true"></i>
 
             <label class="vault-visually-hidden" for="vaultSearchInput">
-                Search receipts and documents
+                Search files
             </label>
 
-            <input id="vaultSearchInput" type="search" placeholder="Search receipts and documents" autocomplete="off">
+            <input id="vaultSearchInput" type="search" placeholder="Search files" autocomplete="off">
 
             <button id="clearVaultSearch" type="button" aria-label="Clear search" hidden>
                 <i class="bi bi-x-circle-fill" aria-hidden="true"></i>
             </button>
         </div>
-        <div id="vaultTypeFilters" class="vault-pills">
-            <button class="active" data-vault-type="all" type="button">
-                All
-            </button>
-            <button data-vault-type="receipt" type="button">
-                Receipts
-            </button>
-            <button data-vault-type="warranty" type="button">
-                Warranties
-            </button>
-            <button data-vault-type="document" type="button">
-                Documents
-            </button>
-            <button data-vault-type="favorite" type="button">
-                <i class="bi bi-heart"></i>
-                Favorites
-            </button>
-        </div>
-        <button id="openVaultDateFilter" class="vault-date-filter" type="button">
-            <span class="vault-date-filter-icon">
-                <i class="bi bi-calendar3"></i>
-            </span>
-
-            <span class="vault-date-filter-copy">
-                <small>Jump to date</small>
-                <strong id="vaultDateFilterTitle">All dates</strong>
-                <em id="vaultDateFilterSubtitle">No date filter applied</em>
-            </span>
-
-            <i class="bi bi-chevron-down vault-date-filter-chevron"></i>
-        </button>
-
         <section class="vault-card vault-overview-card">
             <div class="vault-section-head">
                 <div>
-                    <span>FAMILY STORAGE</span>
+
                     <h2>Vault Overview</h2>
                 </div>
             </div>
 
             <div class="vault-summary">
-                <button id="vaultOverviewFiles" class="vault-summary-item active" type="button">
+                <button id="vaultOverviewFiles" class="vault-summary-item" type="button">
                     <span class="vault-summary-icon files">
                         <i class="bi bi-file-earmark-text"></i>
                     </span>
@@ -117,7 +82,7 @@
                 <i class="bi bi-list-ul"></i>
             </button>
 
-            <button id="vaultGridViewButton" class="active" type="button" aria-label="Use grid view">
+            <button id="vaultGridViewButton" type="button" aria-label="Use grid view">
                 <i class="bi bi-grid"></i>
             </button>
         </div>
@@ -125,9 +90,7 @@
         <section class="vault-section">
             <div class="vault-section-head">
                 <div>
-                            <span>
-                                ORGANIZE
-                            </span>
+
                     <h2>
                         Folders
                     </h2>
@@ -142,9 +105,7 @@
         <section class="vault-section">
             <div class="vault-section-head">
                 <div>
-                            <span id="vaultFilesLabel">
-                                FILES
-                            </span>
+
                     <h2 id="vaultFilesHeading">
                         Recent Files
                     </h2>
@@ -180,7 +141,7 @@
         <div class="vault-browser-tools">
             <button id="vaultBrowserSortButton" class="vault-browser-sort" type="button">
                 <span>
-                    <small>Sort by</small>
+                    <small>Sort &amp; filter</small>
                     <strong id="vaultBrowserSortLabel">Date modified</strong>
                 </span>
 
@@ -192,7 +153,7 @@
                     <i class="bi bi-list-ul"></i>
                 </button>
 
-                <button id="vaultBrowserGridViewButton" class="active" type="button" aria-label="Use grid view">
+                <button id="vaultBrowserGridViewButton" type="button" aria-label="Use grid view">
                     <i class="bi bi-grid"></i>
                 </button>
             </div>
@@ -247,67 +208,6 @@
         </button>
     </nav>
 </main>
-<!-- Date Filter Sheet -->
-<div id="vaultDateBackdrop" class="vault-overlay" hidden></div>
-
-<section id="vaultDateSheet" class="vault-sheet vault-date-sheet" hidden>
-    <div class="vault-handle"></div>
-
-    <header>
-        <div>
-            <span>JUMP TO DATE</span>
-            <h2>Select month and year</h2>
-        </div>
-
-        <button id="closeVaultDateSheet" type="button" aria-label="Close date filter">
-            <i class="bi bi-x-lg"></i>
-        </button>
-    </header>
-
-    <div class="vault-date-sheet-grid">
-        <label for="vaultMonthFilter">
-            Month
-            <select id="vaultMonthFilter">
-                <option value="">All months</option>
-                <option value="01">January</option>
-                <option value="02">February</option>
-                <option value="03">March</option>
-                <option value="04">April</option>
-                <option value="05">May</option>
-                <option value="06">June</option>
-                <option value="07">July</option>
-                <option value="08">August</option>
-                <option value="09">September</option>
-                <option value="10">October</option>
-                <option value="11">November</option>
-                <option value="12">December</option>
-            </select>
-        </label>
-
-        <label for="vaultYearFilter">
-            Year
-            <select id="vaultYearFilter">
-                <option value="">All years</option>
-            </select>
-        </label>
-    </div>
-
-    <div id="vaultDateFilterHint" class="vault-date-hint">
-        <i class="bi bi-stars"></i>
-        <span>Choose a month and year to narrow the files shown.</span>
-    </div>
-
-    <div class="vault-date-sheet-actions">
-        <button id="clearVaultDateFilter" class="secondary" type="button">
-            Reset
-        </button>
-
-        <button id="applyVaultDateFilter" class="primary" type="button">
-            Apply Filter
-        </button>
-    </div>
-</section>
-
 <div id="vaultAddBackdrop" class="vault-overlay" hidden>
 </div>
 <section id="vaultAddSheet" class="vault-sheet" hidden>
@@ -387,7 +287,7 @@
 
     <header>
         <div>
-            <span>ORGANIZE</span>
+
             <h2>All Folders</h2>
         </div>
 
@@ -403,7 +303,7 @@
 
         <span class="vault-all-folders-create-copy">
             <strong>New Folder</strong>
-            <small>Create a folder for shared family files</small>
+            <small>Add a new folder</small>
         </span>
 
         <i class="bi bi-chevron-right"></i>
@@ -419,9 +319,7 @@
     </div>
     <header>
         <div>
-                    <span>
-                        ORGANIZE
-                    </span>
+
             <h2 id="vaultFolderSheetTitle">
                 Create Folder
             </h2>
@@ -539,9 +437,7 @@
     </div>
     <header>
         <div>
-                    <span>
-                        ORGANIZE
-                    </span>
+
             <h2>
                 Move to Folder
             </h2>
@@ -632,7 +528,7 @@
 
     <header>
         <div>
-            <span>FOLDER</span>
+
             <h2 id="vaultFolderOptionsTitle">Folder options</h2>
         </div>
 
@@ -661,28 +557,63 @@
 
     <header>
         <div>
-            <span>ARRANGE</span>
-            <h2>Sort by</h2>
+            <h2>Sort &amp; Filter</h2>
         </div>
 
-        <button id="closeVaultSortSheet" type="button" aria-label="Close sort options">
+        <button id="closeVaultSortSheet" type="button" aria-label="Close sort and filter options">
             <i class="bi bi-x-lg"></i>
         </button>
     </header>
 
-    <div class="vault-sort-options">
-        <button type="button" data-vault-sort="date">
-            <i class="bi bi-clock-history"></i>
-            <span>Date modified</span>
-            <i class="bi bi-check-lg"></i>
+    <section class="vault-sort-filter-group">
+        <h3>Sort by</h3>
+
+        <div class="vault-sort-options">
+            <button type="button" data-vault-sort="date">
+                <i class="bi bi-clock-history"></i>
+                <span>Date modified</span>
+                <i class="bi bi-check-lg"></i>
+            </button>
+
+            <button type="button" data-vault-sort="name">
+                <i class="bi bi-sort-alpha-down"></i>
+                <span>Name</span>
+                <i class="bi bi-check-lg"></i>
+            </button>
+
+            <button type="button" data-vault-sort="favorite">
+                <i class="bi bi-heart"></i>
+                <span>Favorites first</span>
+                <i class="bi bi-check-lg"></i>
+            </button>
+        </div>
+    </section>
+
+    <section id="vaultFileTypeFilterGroup" class="vault-sort-filter-group">
+        <h3>File type</h3>
+
+        <div id="vaultTypeFilterOptions" class="vault-filter-chips" role="group" aria-label="Filter by file type">
+            <button type="button" data-vault-file-type="all">All files</button>
+            <button type="button" data-vault-file-type="receipt">Receipts</button>
+            <button type="button" data-vault-file-type="warranty">Warranties</button>
+            <button type="button" data-vault-file-type="document">Documents</button>
+        </div>
+    </section>
+
+    <section id="vaultMemberFilterGroup" class="vault-sort-filter-group">
+        <h3>Family member</h3>
+
+        <button id="vaultMemberFilterButton" class="vault-member-filter-button" type="button">
+            <span>
+                <small>Uploaded by</small>
+                <strong id="vaultMemberFilterLabel">All members</strong>
+            </span>
+
+            <i class="bi bi-chevron-down"></i>
         </button>
 
-        <button type="button" data-vault-sort="name">
-            <i class="bi bi-sort-alpha-down"></i>
-            <span>Name</span>
-            <i class="bi bi-check-lg"></i>
-        </button>
-    </div>
+        <div id="vaultMemberFilterOptions" class="vault-member-filter-options" hidden></div>
+    </section>
 </section>
 
 <div id="vaultToast" class="vault-toast">

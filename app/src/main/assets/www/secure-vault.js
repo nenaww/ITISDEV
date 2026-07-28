@@ -1,6 +1,12 @@
 const VAULT_TICKET_KEY = "kabalikat_vault_unlock_ticket_v3";
 const IDLE_LIMIT = 5 * 60 * 1000;
 
+const VAULT_ORIGIN_KEY =
+    "kabalikat_vault_origin_v1";
+
+const vaultOrigin =
+    getVaultOrigin();
+
 let user = null;
 let actor = null;
 let vault = null;
@@ -9,20 +15,18 @@ let selectedFileId = "";
 let activeFolder = "all";
 let idleTimer = null;
 let toastTimer = null;
-let pendingMonth = "";
-let pendingYear = "";
 let viewMode = localStorage.getItem("kabalikat_vault_view_mode") || "grid";
 let browserMode = "";
 let browserFolderId = "";
 let selectedFolderId = "";
 let browserSort = "date";
+let browserTypeFilter = "all";
+let browserMemberFilter = "";
+
+const DASHBOARD_PREVIEW_LIMIT = 4;
 
 const filters = {
-    type: "all",
-    search: "",
-    month: "",
-    year: "",
-    favoritesOnly: false
+    search: ""
 };
 
 const el = {};
@@ -32,7 +36,9 @@ window.addEventListener("DOMContentLoaded", async () => {
         user = await KabalikatAuth.getCurrentUser();
 
         if (!user || !consumeTicket(user)) {
-            window.location.replace("profile.html");
+            window.location.replace(
+                `vault-unlock.html?from=${encodeURIComponent(vaultOrigin)}`
+            );
             return;
         }
 
@@ -70,15 +76,54 @@ window.addEventListener("DOMContentLoaded", async () => {
         setupAutoLock();
     } catch (error) {
         console.error(error);
-        window.location.replace("profile.html");
+        window.location.replace(
+                `vault-unlock.html?from=${encodeURIComponent(vaultOrigin)}`
+            );
     }
 });
 
-function consumeTicket(currentUser) {
-    const rawTicket = sessionStorage.getItem(VAULT_TICKET_KEY);
-    sessionStorage.removeItem(VAULT_TICKET_KEY);
 
-    if (!rawTicket) return false;
+function getVaultOrigin() {
+    const requestedOrigin =
+        new URLSearchParams(
+            window.location.search
+        ).get("from");
+
+    if (
+        requestedOrigin === "home" ||
+        requestedOrigin === "profile"
+    ) {
+        sessionStorage.setItem(
+            VAULT_ORIGIN_KEY,
+            requestedOrigin
+        );
+
+        return requestedOrigin;
+    }
+
+    const savedOrigin =
+        sessionStorage.getItem(
+            VAULT_ORIGIN_KEY
+        );
+
+    return savedOrigin === "profile"
+        ? "profile"
+        : "home";
+}
+
+function getVaultOriginRoute() {
+    return vaultOrigin === "profile"
+        ? "profile.html"
+        : "home.html";
+}
+
+function consumeTicket(currentUser) {
+    const rawTicket =
+        sessionStorage.getItem(VAULT_TICKET_KEY);
+
+    if (!rawTicket) {
+        return false;
+    }
 
     try {
         const ticket = JSON.parse(rawTicket);
@@ -99,18 +144,6 @@ function collectElements() {
         "vaultAddButton",
         "vaultSearchInput",
         "clearVaultSearch",
-        "vaultTypeFilters",
-        "openVaultDateFilter",
-        "vaultDateFilterTitle",
-        "vaultDateFilterSubtitle",
-        "vaultDateBackdrop",
-        "vaultDateSheet",
-        "closeVaultDateSheet",
-        "vaultMonthFilter",
-        "vaultYearFilter",
-        "vaultDateFilterHint",
-        "clearVaultDateFilter",
-        "applyVaultDateFilter",
         "vaultTotalCount",
         "vaultFolderCount",
         "vaultFavoriteCount",
@@ -141,13 +174,18 @@ function collectElements() {
         "vaultSortBackdrop",
         "vaultSortSheet",
         "closeVaultSortSheet",
+        "vaultFileTypeFilterGroup",
+        "vaultTypeFilterOptions",
+        "vaultMemberFilterGroup",
+        "vaultMemberFilterButton",
+        "vaultMemberFilterLabel",
+        "vaultMemberFilterOptions",
         "vaultAllFoldersBackdrop",
         "vaultAllFoldersSheet",
         "closeVaultAllFoldersSheet",
         "vaultAllFoldersList",
         "vaultCreateFolderButton",
         "vaultFolderGrid",
-        "vaultFilesLabel",
         "vaultFilesHeading",
         "vaultVisibleCount",
         "vaultFileList",
@@ -216,7 +254,8 @@ function collectElements() {
 
 function bindEvents() {
     el.vaultBackButton.addEventListener("click", () => {
-        window.location.href = "profile.html";
+        window.location.href =
+            getVaultOriginRoute();
     });
 
     el.vaultAddButton.addEventListener("click", openAddSheet);
@@ -234,15 +273,6 @@ function bindEvents() {
     el.vaultBrowserMenuButton.addEventListener("click", openTrashSheet);
     el.vaultBrowserAddButton.addEventListener("click", handleBrowserAdd);
     el.vaultBrowserSortButton.addEventListener("click", openSortSheet);
-
-    el.openVaultDateFilter.addEventListener("click", openDateSheet);
-    el.closeVaultDateSheet.addEventListener("click", closeDateSheet);
-    el.applyVaultDateFilter.addEventListener("click", applyDateFilter);
-    el.clearVaultDateFilter.addEventListener("click", resetDateFilter);
-    bindBackdrop(el.vaultDateBackdrop, closeDateSheet);
-
-    el.vaultMonthFilter.addEventListener("change", updatePendingDateHint);
-    el.vaultYearFilter.addEventListener("change", updatePendingDateHint);
 
     el.vaultOverviewFiles.addEventListener("click", () => {
         openBrowserPage("files");
@@ -277,21 +307,6 @@ function bindEvents() {
         renderFiles();
     });
 
-    el.vaultTypeFilters.querySelectorAll("[data-vault-type]").forEach(button => {
-        button.addEventListener("click", () => {
-            const selectedType = button.dataset.vaultType;
-
-            filters.favoritesOnly = selectedType === "favorite";
-            filters.type = filters.favoritesOnly ? "all" : selectedType;
-
-            el.vaultTypeFilters.querySelectorAll("[data-vault-type]").forEach(item => {
-                item.classList.toggle("active", item === button);
-            });
-
-            updateOverviewSelection(filters.favoritesOnly ? "favorites" : "files");
-            renderFiles();
-        });
-    });
 
     bindBackdrop(el.vaultAddBackdrop, closeAddSheet);
     bindBackdrop(el.vaultAllFoldersBackdrop, closeAllFoldersSheet);
@@ -328,13 +343,34 @@ function bindEvents() {
 
     el.deleteSelectedFolderButton.addEventListener("click", deleteSelectedFolder);
 
-    el.vaultSortSheet.querySelectorAll("[data-vault-sort]").forEach(button => {
-        button.addEventListener("click", () => {
-            browserSort = button.dataset.vaultSort;
-            closeSortSheet();
-            renderBrowserPage();
+    el.vaultSortSheet
+        .querySelectorAll("[data-vault-sort]")
+        .forEach(button => {
+            button.addEventListener("click", () => {
+                browserSort =
+                    button.dataset.vaultSort;
+
+                renderSortFilterControls();
+                renderBrowserPage();
+            });
         });
-    });
+
+    el.vaultTypeFilterOptions
+        .querySelectorAll("[data-vault-file-type]")
+        .forEach(button => {
+            button.addEventListener("click", () => {
+                browserTypeFilter =
+                    button.dataset.vaultFileType;
+
+                renderSortFilterControls();
+                renderBrowserPage();
+            });
+        });
+
+    el.vaultMemberFilterButton.addEventListener(
+        "click",
+        toggleMemberFilterOptions
+    );
 
     el.vaultScanReceiptOption.addEventListener("click", () => {
         window.location.href = "scanner.html";
@@ -397,8 +433,6 @@ function bindEvents() {
 
 function renderAll() {
     state = vault.load();
-    renderYears();
-    renderDateFilterDisplay();
     renderViewMode();
     renderSummary();
     renderFolders();
@@ -420,45 +454,16 @@ function renderSummary() {
     el.vaultFavoriteCount.textContent = favorites.length;
 }
 
-function renderYears() {
-    const currentYear = new Date().getFullYear();
-    const years = new Set();
-
-    /*
-     * Always provide a useful year range even when the sample files
-     * only contain dates from one year.
-     */
-    for (let year = currentYear + 1; year >= currentYear - 5; year -= 1) {
-        years.add(String(year));
-    }
-
-    state.files.forEach(file => {
-        const year = String(file.date || "").slice(0, 4);
-
-        if (/^\d{4}$/.test(year)) {
-            years.add(year);
-        }
-    });
-
-    const sortedYears = [...years].sort(
-        (first, second) => Number(second) - Number(first)
-    );
-
-    el.vaultYearFilter.innerHTML = `
-        <option value="">All years</option>
-        ${sortedYears.map(year => `
-            <option value="${year}">${year}</option>
-        `).join("")}
-    `;
-
-    el.vaultYearFilter.value = filters.year;
-}
 
 function setViewMode(mode) {
     viewMode = mode === "list" ? "list" : "grid";
     localStorage.setItem("kabalikat_vault_view_mode", viewMode);
 
-    renderViewMode();
+    const isList = viewMode === "list";
+    el.vaultListViewButton.classList.toggle("active", isList);
+    el.vaultGridViewButton.classList.toggle("active", !isList);
+    el.vaultBrowserListViewButton.classList.toggle("active", isList);
+    el.vaultBrowserGridViewButton.classList.toggle("active", !isList);
     renderFolders();
     renderAllFoldersList();
     renderFiles();
@@ -469,12 +474,28 @@ function setViewMode(mode) {
 }
 
 function renderViewMode() {
-    const isList = viewMode === "list";
+    const isList =
+        viewMode === "list";
 
-    el.vaultListViewButton.classList.toggle("active", isList);
-    el.vaultGridViewButton.classList.toggle("active", !isList);
-    el.vaultBrowserListViewButton.classList.toggle("active", isList);
-    el.vaultBrowserGridViewButton.classList.toggle("active", !isList);
+    el.vaultListViewButton.classList.toggle(
+        "active",
+        isList
+    );
+
+    el.vaultGridViewButton.classList.toggle(
+        "active",
+        !isList
+    );
+
+    el.vaultBrowserListViewButton.classList.toggle(
+        "active",
+        isList
+    );
+
+    el.vaultBrowserGridViewButton.classList.toggle(
+        "active",
+        !isList
+    );
 }
 
 function openBrowserPage(mode, folderId = "") {
@@ -588,16 +609,9 @@ function renderBrowserPage() {
     }
 
     el.vaultBrowserSortLabel.textContent =
-        browserSort === "name" ? "Name" : "Date modified";
+        getSortFilterSummary();
 
-    el.vaultSortSheet
-        .querySelectorAll("[data-vault-sort]")
-        .forEach(button => {
-            button.classList.toggle(
-                "active",
-                button.dataset.vaultSort === browserSort
-            );
-        });
+    renderSortFilterControls();
 
     if (browserMode === "folders") {
         renderBrowserFolders();
@@ -642,9 +656,12 @@ function renderBrowserFiles() {
     let files = getActiveFiles();
 
     if (browserMode === "favorites") {
-        files = files.filter(file => file.favorite === true);
+        files = files.filter(
+            file => file.favorite === true
+        );
     }
 
+    files = applyBrowserFileFilters(files);
     files = sortBrowserFiles(files);
 
     el.vaultBrowserContent.className =
@@ -675,8 +692,14 @@ function renderFolderContentsPage() {
             file => file.folderId === browserFolderId
         );
 
-    childFolders = sortBrowserFolders(childFolders);
-    files = sortBrowserFiles(files);
+    childFolders =
+        sortBrowserFolders(childFolders);
+
+    files =
+        applyBrowserFileFilters(files);
+
+    files =
+        sortBrowserFiles(files);
 
     el.vaultBrowserContent.className =
         `vault-browser-content vault-folder-contents ${viewMode}-view`;
@@ -709,7 +732,7 @@ function renderFolderContentsPage() {
                         ? files.map(renderBrowserFileCard).join("")
                         : `
                             <div class="vault-folder-content-empty">
-                                This folder has no files yet.
+                                No files in this folder.
                             </div>
                         `
                 }
@@ -769,12 +792,139 @@ function renderBrowserFolderCard(folder) {
     `;
 }
 
+
+function getVaultReceiptImageBase(file) {
+    if (file.type !== "receipt") {
+        return "";
+    }
+
+    if (file.receiptImageBaseName) {
+        return String(
+            file.receiptImageBaseName
+        );
+    }
+
+    const title =
+        String(file.title || "")
+            .toLowerCase();
+
+    const receiptImages = [
+        {
+            match: "savemore",
+            file: "savemore1"
+        },
+        {
+            match: "7-eleven",
+            file: "7111"
+        },
+        {
+            match: "7 eleven",
+            file: "7111"
+        },
+        {
+            match: "mercury",
+            file: "mercury1"
+        }
+    ];
+
+    return (
+        receiptImages.find(item =>
+            title.includes(item.match)
+        )?.file ||
+        ""
+    );
+}
+
+function createVaultReceiptImageMarkup(
+    file,
+    className = ""
+) {
+    const baseName =
+        getVaultReceiptImageBase(file);
+
+    if (!baseName) {
+        return "";
+    }
+
+    const classAttribute =
+        className
+            ? ` class="${escapeHtml(className)}"`
+            : "";
+
+    return `
+        <img
+            ${classAttribute}
+            src="images/receipts/${escapeHtml(baseName)}.jpg"
+            data-vault-receipt-base="${escapeHtml(baseName)}"
+            data-vault-receipt-extension-index="0"
+            alt="${escapeHtml(file.title)} receipt"
+            onerror="tryNextVaultReceiptImage(this)"
+        >
+    `;
+}
+
+function tryNextVaultReceiptImage(image) {
+    const baseName =
+        image.dataset.vaultReceiptBase;
+
+    const extensions = [
+        "jpg",
+        "jpeg",
+        "png",
+        "webp",
+        ""
+    ];
+
+    const currentIndex =
+        Number(
+            image.dataset
+                .vaultReceiptExtensionIndex ||
+            0
+        );
+
+    const nextIndex =
+        currentIndex + 1;
+
+    if (
+        !baseName ||
+        nextIndex >= extensions.length
+    ) {
+        image.onerror = null;
+
+        const parent =
+            image.parentElement;
+
+        if (parent) {
+            parent.innerHTML =
+                '<i class="bi bi-receipt-cutoff"></i>';
+        }
+
+        return;
+    }
+
+    image.dataset
+        .vaultReceiptExtensionIndex =
+        String(nextIndex);
+
+    const extension =
+        extensions[nextIndex];
+
+    image.src =
+        extension
+            ? `images/receipts/${baseName}.${extension}`
+            : `images/receipts/${baseName}`;
+}
+
 function renderBrowserFileCard(file) {
+    const receiptImage =
+        createVaultReceiptImageMarkup(file);
+
     const preview =
         file.dataUrl &&
         file.mimeType?.startsWith("image/")
             ? `<img src="${file.dataUrl}" alt="">`
-            : `<i class="bi ${getFileIcon(file.type)}"></i>`;
+            : receiptImage ||
+                `<i class="bi ${getFileIcon(file.type)}"></i>`;
 
     return `
         <article class="vault-browser-file-card">
@@ -792,17 +942,31 @@ function renderBrowserFileCard(file) {
 
                     <small>
                         ${formatDate(file.date)}
-                        •
+                        |
                         ${escapeHtml(file.uploadedByName)}
                     </small>
 
                     <em>
                         ${capitalize(file.type)}
-                        •
-                        ${getFileSizeLabel(file)}
+                        ${
+                            getFileSizeLabel(file)
+                                ? ` | ${getFileSizeLabel(file)}`
+                                : ""
+                        }
                     </em>
                 </span>
             </button>
+
+            ${
+                file.favorite
+                    ? `
+                        <i
+                            class="bi bi-heart-fill vault-browser-favorite-indicator"
+                            aria-label="Favorite"
+                        ></i>
+                    `
+                    : ""
+            }
 
             <button
                 type="button"
@@ -943,7 +1107,11 @@ function bindBrowserFileActions() {
 
 function sortBrowserFolders(folders) {
     return [...folders].sort((first, second) => {
-        if (browserSort === "name") {
+        if (
+            browserSort === "name" ||
+            browserSort === "member" ||
+            browserSort === "favorite"
+        ) {
             return String(first.name).localeCompare(
                 String(second.name)
             );
@@ -958,6 +1126,36 @@ function sortBrowserFolders(folders) {
 function sortBrowserFiles(files) {
     return [...files].sort((first, second) => {
         if (browserSort === "name") {
+            return String(first.title).localeCompare(
+                String(second.title)
+            );
+        }
+
+        if (browserSort === "favorite") {
+            const favoriteDifference =
+                Number(Boolean(second.favorite)) -
+                Number(Boolean(first.favorite));
+
+            if (favoriteDifference !== 0) {
+                return favoriteDifference;
+            }
+
+            return String(second.date).localeCompare(
+                String(first.date)
+            );
+        }
+
+        if (browserSort === "member") {
+            const memberDifference =
+                String(first.uploadedByName || "")
+                    .localeCompare(
+                        String(second.uploadedByName || "")
+                    );
+
+            if (memberDifference !== 0) {
+                return memberDifference;
+            }
+
             return String(first.title).localeCompare(
                 String(second.title)
             );
@@ -1068,7 +1266,261 @@ function renderBrowserBreadcrumb() {
 }
 
 function openSortSheet() {
-    openSheet(el.vaultSortBackdrop, el.vaultSortSheet);
+    renderSortFilterControls();
+
+    openSheet(
+        el.vaultSortBackdrop,
+        el.vaultSortSheet
+    );
+}
+
+function renderSortFilterControls() {
+    const isFolderOverview =
+        browserMode === "folders";
+
+    el.vaultFileTypeFilterGroup.hidden =
+        isFolderOverview;
+
+    el.vaultMemberFilterGroup.hidden =
+        isFolderOverview;
+
+    el.vaultSortSheet
+        .querySelectorAll("[data-vault-sort]")
+        .forEach(button => {
+            const sortValue =
+                button.dataset.vaultSort;
+
+            button.hidden =
+                isFolderOverview &&
+                sortValue === "favorite";
+
+            button.classList.toggle(
+                "active",
+                sortValue === browserSort
+            );
+        });
+
+    el.vaultTypeFilterOptions
+        .querySelectorAll("[data-vault-file-type]")
+        .forEach(button => {
+            button.classList.toggle(
+                "active",
+                button.dataset.vaultFileType ===
+                    browserTypeFilter
+            );
+        });
+
+    renderMemberFilterOptions();
+
+    const selectedMember =
+        getVaultMembers().find(
+            member =>
+                member.id ===
+                browserMemberFilter
+        );
+
+    el.vaultMemberFilterLabel.textContent =
+        selectedMember
+            ? selectedMember.name
+            : "All members";
+}
+
+function toggleMemberFilterOptions() {
+    const willOpen =
+        el.vaultMemberFilterOptions.hidden;
+
+    el.vaultMemberFilterOptions.hidden =
+        !willOpen;
+
+    el.vaultMemberFilterButton.classList.toggle(
+        "open",
+        willOpen
+    );
+}
+
+function renderMemberFilterOptions() {
+    const members =
+        getVaultMembers();
+
+    el.vaultMemberFilterOptions.innerHTML = `
+        <button
+            type="button"
+            data-vault-member=""
+            class="${browserMemberFilter ? "" : "active"}"
+        >
+            <span class="vault-member-filter-avatar">
+                <i class="bi bi-people"></i>
+            </span>
+
+            <span>
+                <strong>All members</strong>
+            </span>
+
+            <i class="bi bi-check-lg"></i>
+        </button>
+
+        ${members.map(member => `
+            <button
+                type="button"
+                data-vault-member="${escapeHtml(member.id)}"
+                class="${browserMemberFilter === member.id ? "active" : ""}"
+            >
+                <span class="vault-member-filter-avatar">
+                    ${escapeHtml(getMemberInitials(member.name))}
+                </span>
+
+                <span>
+                    <strong>${escapeHtml(member.name)}</strong>
+                </span>
+
+                <i class="bi bi-check-lg"></i>
+            </button>
+        `).join("")}
+    `;
+
+    el.vaultMemberFilterOptions
+        .querySelectorAll("[data-vault-member]")
+        .forEach(button => {
+            button.addEventListener(
+                "click",
+                () => {
+                    browserMemberFilter =
+                        button.dataset.vaultMember;
+
+                    el.vaultMemberFilterOptions.hidden =
+                        true;
+
+                    el.vaultMemberFilterButton.classList.remove(
+                        "open"
+                    );
+
+                    renderSortFilterControls();
+                    renderBrowserPage();
+                }
+            );
+        });
+}
+
+function getVaultMembers() {
+    const members =
+        new Map();
+
+    getActiveFiles().forEach(file => {
+        const name =
+            String(
+                file.uploadedByName ||
+                "Family Member"
+            ).trim();
+
+        const id =
+            String(
+                file.uploadedById ||
+                name
+            );
+
+        if (!members.has(id)) {
+            members.set(
+                id,
+                {
+                    id,
+                    name
+                }
+            );
+        }
+    });
+
+    return [...members.values()].sort(
+        (first, second) =>
+            first.name.localeCompare(
+                second.name
+            )
+    );
+}
+
+function applyBrowserFileFilters(files) {
+    return files
+        .filter(
+            file =>
+                browserTypeFilter === "all" ||
+                file.type === browserTypeFilter
+        )
+        .filter(
+            file =>
+                !browserMemberFilter ||
+                String(
+                    file.uploadedById ||
+                    file.uploadedByName
+                ) === browserMemberFilter
+        );
+}
+
+function getSortFilterSummary() {
+    const sortLabels = {
+        date: "Date modified",
+        name: "Name",
+        favorite: "Favorites first"
+    };
+
+    const typeLabels = {
+        receipt: "Receipts",
+        warranty: "Warranties",
+        document: "Documents"
+    };
+
+    const summary = [
+        sortLabels[browserSort] ||
+            sortLabels.date
+    ];
+
+    if (
+        browserMode !== "folders" &&
+        browserTypeFilter !== "all"
+    ) {
+        summary.push(
+            typeLabels[browserTypeFilter]
+        );
+    }
+
+    if (
+        browserMode !== "folders" &&
+        browserMemberFilter
+    ) {
+        const member =
+            getVaultMembers().find(
+                item =>
+                    item.id ===
+                    browserMemberFilter
+            );
+
+        if (member) {
+            summary.push(member.name);
+        }
+    }
+
+    return summary.join(" | ");
+}
+
+function getMemberInitials(name) {
+    const parts =
+        String(name || "")
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean);
+
+    if (!parts.length) {
+        return "FM";
+    }
+
+    if (parts.length === 1) {
+        return parts[0]
+            .slice(0, 2)
+            .toUpperCase();
+    }
+
+    return (
+        parts[0][0] +
+        parts[parts.length - 1][0]
+    ).toUpperCase();
 }
 
 function closeSortSheet() {
@@ -1077,11 +1529,13 @@ function closeSortSheet() {
 
 function renderFolders() {
     const files = getActiveFiles();
-    const folders = [
-        { id: "all", name: "All Files" },
-        ...getChildFolders("")
-    ];
-    const previewFolders = folders.slice(0, 4);
+    const folders = getChildFolders("");
+
+    const previewFolders =
+        folders.slice(
+            0,
+            DASHBOARD_PREVIEW_LIMIT
+        );
 
     el.vaultFolderGrid.className = `vault-folder-grid ${viewMode}-view`;
 
@@ -1116,10 +1570,7 @@ function renderFolders() {
 
 function renderAllFoldersList() {
     const files = getActiveFiles();
-    const folders = [
-        { id: "all", name: "All Files" },
-        ...getChildFolders("")
-    ];
+    const folders = getChildFolders("");
 
     el.vaultAllFoldersList.className = `vault-all-folders-list ${viewMode}-view`;
 
@@ -1181,13 +1632,15 @@ function bindFolderSelection(container, closeAfterSelection = false) {
 
 function getVisibleFiles() {
     return getActiveFiles()
-        .filter(file => !filters.favoritesOnly || file.favorite === true)
-        .filter(file => filters.type === "all" || file.type === filters.type)
-        .filter(file => activeFolder === "all" || file.folderId === activeFolder)
-        .filter(file => !filters.month || String(file.date).slice(5, 7) === filters.month)
-        .filter(file => !filters.year || String(file.date).slice(0, 4) === filters.year)
+        .filter(
+            file =>
+                activeFolder === "all" ||
+                file.folderId === activeFolder
+        )
         .filter(file => {
-            if (!filters.search) return true;
+            if (!filters.search) {
+                return true;
+            }
 
             const searchable = [
                 file.title,
@@ -1195,26 +1648,37 @@ function getVisibleFiles() {
                 file.uploadedByName,
                 file.linkedExpense,
                 getFolderName(file.folderId)
-            ].join(" ").toLowerCase();
+            ]
+                .join(" ")
+                .toLowerCase();
 
-            return searchable.includes(filters.search);
+            return searchable.includes(
+                filters.search
+            );
         })
-        .sort((first, second) => String(second.date).localeCompare(String(first.date)));
+        .sort(
+            (first, second) =>
+                String(second.date)
+                    .localeCompare(
+                        String(first.date)
+                    )
+        );
 }
 
 function renderFiles() {
     const files = getVisibleFiles();
 
-    el.vaultVisibleCount.textContent = `${files.length} ${files.length === 1 ? "item" : "items"}`;
-    el.vaultFilesLabel.textContent = filters.favoritesOnly
-        ? "FAVORITES"
-        : activeFolder === "all"
-            ? "FILES"
-            : "FOLDER";
+    const previewFiles =
+        files.slice(
+            0,
+            DASHBOARD_PREVIEW_LIMIT
+        );
 
-    el.vaultFilesHeading.textContent = filters.favoritesOnly
-        ? "Favorite Files"
-        : activeFolder === "all"
+    el.vaultVisibleCount.textContent =
+        `${files.length} ${files.length === 1 ? "item" : "items"}`;
+
+    el.vaultFilesHeading.textContent =
+        activeFolder === "all"
             ? "Recent Files"
             : getFolderName(activeFolder);
 
@@ -1225,10 +1689,16 @@ function renderFiles() {
         return;
     }
 
-    el.vaultFileList.innerHTML = files.map(file => {
-        const iconMarkup = file.dataUrl && file.mimeType?.startsWith("image/")
-            ? `<img src="${file.dataUrl}" alt="">`
-            : `<i class="bi ${getFileIcon(file.type)}"></i>`;
+    el.vaultFileList.innerHTML = previewFiles.map(file => {
+        const receiptImage =
+            createVaultReceiptImageMarkup(file);
+
+        const iconMarkup =
+            file.dataUrl &&
+            file.mimeType?.startsWith("image/")
+                ? `<img src="${file.dataUrl}" alt="">`
+                : receiptImage ||
+                    `<i class="bi ${getFileIcon(file.type)}"></i>`;
 
         return `
             <article class="vault-file-row">
@@ -1239,8 +1709,8 @@ function renderFiles() {
 
                     <span class="vault-file-copy">
                         <strong>${escapeHtml(file.title)}</strong>
-                        <span>${file.amount > 0 ? `${peso(file.amount)} • ` : ""}${capitalize(file.type)}</span>
-                        <small>${formatDate(file.date)} • ${escapeHtml(file.uploadedByName)}</small>
+                        <span>${file.amount > 0 ? `${peso(file.amount)} | ` : ""}${capitalize(file.type)}</span>
+                        <small>${formatDate(file.date)} | ${escapeHtml(file.uploadedByName)}</small>
                     </span>
                 </button>
 
@@ -1322,99 +1792,12 @@ function renderTrash() {
     });
 }
 
-function openDateSheet() {
-    pendingMonth = filters.month;
-    pendingYear = filters.year;
 
-    el.vaultMonthFilter.value = pendingMonth;
-    el.vaultYearFilter.value = pendingYear;
 
-    updatePendingDateHint();
-    openSheet(el.vaultDateBackdrop, el.vaultDateSheet);
-}
 
-function closeDateSheet() {
-    closeSheet(el.vaultDateBackdrop, el.vaultDateSheet);
-}
 
-function updatePendingDateHint() {
-    pendingMonth = el.vaultMonthFilter.value;
-    pendingYear = el.vaultYearFilter.value;
 
-    const monthName = getMonthName(pendingMonth);
-    let message = "Choose a month and year to narrow the files shown.";
 
-    if (pendingMonth && pendingYear) {
-        message = `You will see files uploaded in ${monthName} ${pendingYear}.`;
-    } else if (pendingYear) {
-        message = `You will see files from all months in ${pendingYear}.`;
-    } else if (pendingMonth) {
-        message = `You will see files uploaded in ${monthName}, from any year.`;
-    }
-
-    el.vaultDateFilterHint.querySelector("span").textContent = message;
-    el.applyVaultDateFilter.textContent = pendingMonth ? "View Month" : "View Year";
-}
-
-function applyDateFilter() {
-    filters.month = pendingMonth;
-    filters.year = pendingYear;
-
-    closeDateSheet();
-    renderDateFilterDisplay();
-    renderFiles();
-}
-
-function resetDateFilter() {
-    filters.month = "";
-    filters.year = "";
-    pendingMonth = "";
-    pendingYear = "";
-
-    el.vaultMonthFilter.value = "";
-    el.vaultYearFilter.value = "";
-
-    closeDateSheet();
-    renderDateFilterDisplay();
-    renderFiles();
-}
-
-function renderDateFilterDisplay() {
-    const monthName = getMonthName(filters.month);
-
-    if (filters.month && filters.year) {
-        el.vaultDateFilterTitle.textContent = `${monthName} ${filters.year}`;
-        el.vaultDateFilterSubtitle.textContent = "Showing one month";
-        return;
-    }
-
-    if (filters.year) {
-        el.vaultDateFilterTitle.textContent = filters.year;
-        el.vaultDateFilterSubtitle.textContent = "All months";
-        return;
-    }
-
-    if (filters.month) {
-        el.vaultDateFilterTitle.textContent = monthName;
-        el.vaultDateFilterSubtitle.textContent = "All years";
-        return;
-    }
-
-    el.vaultDateFilterTitle.textContent = "All dates";
-    el.vaultDateFilterSubtitle.textContent = "No date filter applied";
-}
-
-function showAllFiles() {
-    filters.favoritesOnly = false;
-    filters.type = "all";
-    activeFolder = "all";
-
-    setActiveTypePill("all");
-    updateOverviewSelection("files");
-    renderFolders();
-    renderFiles();
-    scrollToFiles();
-}
 
 function focusFolders() {
     updateOverviewSelection("folders");
@@ -1425,28 +1808,12 @@ function focusFolders() {
     });
 }
 
-function showFavorites() {
-    filters.favoritesOnly = true;
-    filters.type = "all";
-    activeFolder = "all";
 
-    setActiveTypePill("favorite");
-    updateOverviewSelection("favorites");
-    renderFolders();
-    renderFiles();
-    scrollToFiles();
-}
 
-function setActiveTypePill(type) {
-    el.vaultTypeFilters.querySelectorAll("[data-vault-type]").forEach(button => {
-        button.classList.toggle("active", button.dataset.vaultType === type);
-    });
-}
-
-function updateOverviewSelection(activeItem) {
-    el.vaultOverviewFiles.classList.toggle("active", activeItem === "files");
-    el.vaultOverviewFolders.classList.toggle("active", activeItem === "folders");
-    el.vaultOverviewFavorites.classList.toggle("active", activeItem === "favorites");
+function updateOverviewSelection() {
+    el.vaultOverviewFiles.classList.remove("active");
+    el.vaultOverviewFolders.classList.remove("active");
+    el.vaultOverviewFavorites.classList.remove("active");
 }
 
 function scrollToFiles() {
@@ -1456,14 +1823,6 @@ function scrollToFiles() {
     });
 }
 
-function getMonthName(monthValue) {
-    if (!monthValue) return "";
-
-    const monthIndex = Number(monthValue) - 1;
-    return new Date(2026, monthIndex, 1).toLocaleDateString("en-PH", {
-        month: "long"
-    });
-}
 
 function openOptions(fileId) {
     selectedFileId = fileId;
@@ -1473,7 +1832,7 @@ function openOptions(fileId) {
     const manageable = canManage(file);
 
     el.vaultOptionsFileName.textContent = file.title;
-    el.vaultOptionsFileMeta.textContent = `${capitalize(file.type)} • ${formatDate(file.date)}`;
+    el.vaultOptionsFileMeta.textContent = `${capitalize(file.type)} | ${formatDate(file.date)}`;
     el.vaultRenameOption.hidden = !manageable;
     el.vaultMoveOption.hidden = !manageable;
     el.vaultTrashOption.hidden = !manageable;
@@ -1547,11 +1906,26 @@ function openPreview(fileId) {
 
     el.vaultPreviewTitle.textContent = file.title;
     el.vaultViewerFileName.textContent = file.title;
-    el.vaultViewerFileMeta.textContent = `${capitalize(file.type)} • ${getFileSizeLabel(file)}`;
+    const fileSizeLabel =
+        getFileSizeLabel(file);
 
-    const visual = file.dataUrl && file.mimeType?.startsWith("image/")
-        ? `<img class="vault-viewer-image" src="${file.dataUrl}" alt="${escapeHtml(file.title)}">`
-        : createDocumentPreview(file);
+    el.vaultViewerFileMeta.textContent =
+        fileSizeLabel
+            ? `${capitalize(file.type)} | ${fileSizeLabel}`
+            : capitalize(file.type);
+
+    const receiptImage =
+        createVaultReceiptImageMarkup(
+            file,
+            "vault-viewer-image"
+        );
+
+    const visual =
+        file.dataUrl &&
+        file.mimeType?.startsWith("image/")
+            ? `<img class="vault-viewer-image" src="${file.dataUrl}" alt="${escapeHtml(file.title)}">`
+            : receiptImage ||
+                createDocumentPreview(file);
 
     el.vaultPreviewVisual.innerHTML = visual;
 
@@ -1676,7 +2050,7 @@ async function shareSelectedFile() {
 
 function getFileSizeLabel(file) {
     if (!file.dataUrl) {
-        return "Stored file";
+        return "";
     }
 
     const approximateBytes = Math.max(
@@ -1856,9 +2230,17 @@ function performAction(callback, successMessage) {
     try {
         callback();
         renderAll();
+
+        if (browserMode) {
+            renderBrowserPage();
+        }
+
         showToast(successMessage);
     } catch (error) {
-        showToast(error.message || "Action could not be completed.");
+        showToast(
+            error.message ||
+            "Action could not be completed."
+        );
     }
 }
 
@@ -1866,7 +2248,10 @@ function setupAutoLock() {
     const reset = () => {
         window.clearTimeout(idleTimer);
         idleTimer = window.setTimeout(() => {
-            window.location.replace("profile.html");
+            sessionStorage.removeItem(VAULT_TICKET_KEY);
+            window.location.replace(
+                `vault-unlock.html?from=${encodeURIComponent(vaultOrigin)}`
+            );
         }, IDLE_LIMIT);
     };
 

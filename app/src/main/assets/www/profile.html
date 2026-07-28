@@ -66,7 +66,7 @@
 
                 <span class="profile-option-copy">
                     <strong>Account Details</strong>
-                    <small>Name, email and phone number</small>
+                    <small>View or update your personal details</small>
                 </span>
 
                 <i class="bi bi-chevron-right profile-option-arrow" aria-hidden="true"></i>
@@ -74,12 +74,12 @@
 
             <button id="secureVaultButton" class="profile-option-row" type="button">
                 <span class="profile-option-icon profile-icon-yellow">
-                    <i class="bi bi-safe"></i>
+                    <i class="bi bi-shield-lock"></i>
                 </span>
 
                 <span class="profile-option-copy">
                     <strong>Secure Vault</strong>
-                    <small>Protected files and receipts</small>
+                    <small>Open saved receipts and documents</small>
                 </span>
 
                 <i class="bi bi-chevron-right profile-option-arrow" aria-hidden="true"></i>
@@ -92,12 +92,31 @@
 
                 <span class="profile-option-copy">
                     <strong>Change Password</strong>
-                    <small>Manage your password</small>
+                    <small>Update your account password</small>
                 </span>
 
                 <i class="bi bi-chevron-right profile-option-arrow" aria-hidden="true"></i>
             </button>
 
+            <button id="profileLanguageButton" class="profile-option-row" type="button">
+                <span class="profile-option-icon profile-icon-green">
+                    <i class="bi bi-translate"></i>
+                </span>
+
+                <span class="profile-option-copy">
+                    <strong>Language</strong>
+                    <small id="profileLanguageValue">English</small>
+                </span>
+
+                <i class="bi bi-chevron-right profile-option-arrow" aria-hidden="true"></i>
+            </button>
+
+        </section>
+
+        <section
+                class="profile-action-card profile-account-actions-card"
+                aria-label="Account actions"
+        >
             <button
                     id="profileLogoutRowButton"
                     class="profile-option-row profile-logout-row"
@@ -109,10 +128,8 @@
 
                 <span class="profile-option-copy">
                     <strong>Log Out</strong>
-                    <small>Sign out of your account</small>
+                    <small>Sign out on this device</small>
                 </span>
-
-                <i class="bi bi-chevron-right profile-option-arrow" aria-hidden="true"></i>
             </button>
 
             <button
@@ -126,7 +143,7 @@
 
                 <span class="profile-option-copy">
                     <strong>Delete Account</strong>
-                    <small>Permanently remove your account</small>
+                    <small>Delete your account and saved access</small>
                 </span>
             </button>
         </section>
@@ -255,16 +272,15 @@
         </button>
     </div>
 
-    <div class="profile-vault-unlock-intro">
+    <div class="profile-vault-unlock-intro profile-vault-unlock-intro-compact">
         <span class="profile-vault-unlock-icon">
             <i class="bi bi-shield-lock"></i>
         </span>
 
-        <h3>Protected Family Storage</h3>
-
-        <p>
-            Enter your KABALIKAT account password to access your family’s shared vault.
-        </p>
+        <div>
+            <h3>Secure Vault</h3>
+            <p>Enter your account password to continue.</p>
+        </div>
     </div>
 
     <div class="profile-form-field">
@@ -291,15 +307,6 @@
         </div>
 
         <p id="vaultPasswordError" class="profile-error-text" aria-live="polite"></p>
-    </div>
-
-    <div class="profile-family-vault-note">
-        <i class="bi bi-people"></i>
-
-        <p>
-            <strong>One family, one vault.</strong>
-            Authorized members use their own account passwords to access the same household storage.
-        </p>
     </div>
 
     <button id="unlockVaultButton" class="profile-main-button" type="button">
@@ -493,6 +500,55 @@
                 type="button"
         >
             Done
+        </button>
+    </div>
+</section>
+
+
+<!-- Language Setting -->
+<div id="profileLanguageBackdrop" class="profile-overlay" hidden></div>
+
+<section
+        id="profileLanguageSheet"
+        class="profile-bottom-sheet profile-language-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="profileLanguageTitle"
+        hidden
+>
+    <div class="profile-sheet-handle"></div>
+
+    <div class="profile-sheet-header">
+        <div>
+            <span>LANGUAGE</span>
+            <h2 id="profileLanguageTitle">Choose language</h2>
+        </div>
+
+        <button
+                id="closeProfileLanguageSheet"
+                class="profile-sheet-close"
+                type="button"
+                aria-label="Close language settings"
+        >
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <div class="profile-language-options" role="radiogroup" aria-label="Application language">
+        <button type="button" data-profile-language="en">
+            <span>
+                <strong>English</strong>
+                <small>Show app labels in English</small>
+            </span>
+            <i class="bi bi-check-lg"></i>
+        </button>
+
+        <button type="button" data-profile-language="tl">
+            <span>
+                <strong>Tagalog</strong>
+                <small>Ipakita ang app labels sa Tagalog</small>
+            </span>
+            <i class="bi bi-check-lg"></i>
         </button>
     </div>
 </section>

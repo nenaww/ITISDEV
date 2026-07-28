@@ -27,17 +27,43 @@
             <span id="detailsMonthLabel">Month Year</span>
             <i class="bi bi-calendar3"></i>
         </button>
-        <section aria-label="Bills summary" class="detail-summary-card">
-            <span id="detailsSummaryLabel">Total Bills</span>
-            <strong id="detailsSummaryAmount">₱0</strong>
-            <small id="detailsSummaryCount">0 remaining · 0 paid</small>
+        <section aria-label="Bills summary" class="detail-bills-summary">
+            <div class="detail-summary-grid">
+                <article class="detail-summary-item remaining">
+                    <div class="detail-summary-heading">
+                        <span class="detail-summary-icon" aria-hidden="true">
+                            <i class="bi bi-hourglass-split"></i>
+                        </span>
+                        <span>Remaining Bills</span>
+                    </div>
+
+                    <strong id="detailsRemainingAmount">₱0</strong>
+                    <small id="detailsRemainingCount">0 bills remaining</small>
+                </article>
+
+                <article class="detail-summary-item paid">
+                    <div class="detail-summary-heading">
+                        <span class="detail-summary-icon" aria-hidden="true">
+                            <i class="bi bi-check2-circle"></i>
+                        </span>
+                        <span>Paid Bills</span>
+                    </div>
+
+                    <strong id="detailsPaidAmount">₱0</strong>
+                    <small id="detailsPaidCount">0 bills paid</small>
+                </article>
+            </div>
+
+            <div id="detailsBillsOverdueNotice" class="detail-bills-overdue" hidden>
+                <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+                <span id="detailsBillsOverdueText">0 overdue bills need attention</span>
+            </div>
         </section>
         <section aria-label="Filter bills by status" class="detail-segmented-filter" role="group">
             <button class="active" data-status-filter="all" type="button">All</button><button data-status-filter="active" type="button">Active</button><button data-status-filter="paid" type="button">Paid</button></section>
         <section class="detail-section">
             <div class="detail-section-heading">
                 <h2>Category Breakdown</h2>
-                <button id="toggleCategories" type="button">View All</button>
             </div>
             <div class="category-grid" id="categoryGrid"></div>
         </section>

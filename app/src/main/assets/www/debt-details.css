@@ -1229,3 +1229,660 @@ body[data-page="debt-details"] button {
         font-size: 9px !important;
     }
 }
+/* =========================================================
+   v27 scanner-style back button and readable typography
+   ========================================================= */
+
+.debt-back-button {
+    position: static !important;
+    width: 38px !important;
+    height: 38px !important;
+    border: none !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.88) !important;
+    color: var(--debt-text) !important;
+    display: grid !important;
+    place-items: center !important;
+    padding: 0 !important;
+    font-size: 17px !important;
+    box-shadow: 0 8px 18px rgba(92, 83, 78, 0.08) !important;
+}
+
+body[data-page="debt-details"] {
+    font-size: 13px !important;
+}
+
+.debt-details-header h1 {
+    font-size: 22px !important;
+    line-height: 1.12 !important;
+}
+
+.debt-details-header p {
+    font-size: 11px !important;
+    line-height: 1.45 !important;
+}
+
+.debt-summary-item div > span {
+    font-size: 11px !important;
+}
+
+.debt-summary-item strong {
+    font-size: 20px !important;
+}
+
+.debt-summary-item small {
+    font-size: 10px !important;
+    line-height: 1.4 !important;
+}
+
+.debt-details-overdue {
+    font-size: 10.5px !important;
+}
+
+.debt-direction-filter button,
+.debt-status-button-filter button {
+    font-size: 10.5px !important;
+}
+
+.debt-records-heading > div > span {
+    font-size: 10px !important;
+}
+
+.debt-records-heading h2 {
+    font-size: 18px !important;
+}
+
+.debt-record-count {
+    font-size: 10px !important;
+}
+
+.debt-record-title strong {
+    font-size: 13px !important;
+    line-height: 1.3 !important;
+}
+
+.debt-record-title small {
+    font-size: 10px !important;
+    line-height: 1.35 !important;
+}
+
+.debt-record-amount {
+    font-size: 15px !important;
+}
+
+.debt-record-tag {
+    font-size: 9px !important;
+}
+
+.debt-record-expand-prompt {
+    font-size: 9.5px !important;
+}
+
+.debt-record-expand-prompt i {
+    font-size: 11px !important;
+}
+
+.debt-information-row > i {
+    font-size: 13px !important;
+}
+
+.debt-information-row span {
+    font-size: 9.5px !important;
+}
+
+.debt-information-row strong {
+    font-size: 10px !important;
+}
+
+.debt-record-notes span {
+    font-size: 9.5px !important;
+}
+
+.debt-record-notes p {
+    font-size: 10px !important;
+    line-height: 1.5 !important;
+}
+
+.debt-record-actions button {
+    font-size: 11px !important;
+}
+
+.debt-record-empty strong {
+    font-size: 13px !important;
+}
+
+.debt-record-empty span,
+.debt-details-toast {
+    font-size: 10.5px !important;
+}
+
+@media (max-width: 370px) {
+    .debt-details-header h1 {
+        font-size: 21px !important;
+    }
+
+    .debt-direction-filter button,
+    .debt-status-button-filter button {
+        font-size: 10px !important;
+    }
+
+    .debt-record-title strong {
+        font-size: 12.5px !important;
+    }
+
+    .debt-record-amount {
+        font-size: 14px !important;
+    }
+}
+
+
+/* =========================================================
+   v28 — fixed Debt Details summary and one-line description
+   ========================================================= */
+
+.debt-back-button {
+    width: 38px !important;
+    height: 38px !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.88) !important;
+    color: var(--debt-text) !important;
+    display: grid !important;
+    place-items: center !important;
+    padding: 0 !important;
+    font-size: 17px !important;
+    box-shadow: 0 8px 18px rgba(92, 83, 78, 0.08) !important;
+}
+
+.debt-details-header h1 {
+    font-size: 22px !important;
+}
+
+.debt-details-header p {
+    max-width: 100%;
+    margin-top: 6px;
+    font-size: 10px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.debt-details-summary {
+    padding: 17px;
+}
+
+.debt-summary-grid {
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+    gap: 11px;
+}
+
+.debt-summary-item {
+    min-width: 0;
+    min-height: 108px;
+    padding: 13px;
+    display: block;
+}
+
+.debt-summary-heading {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--debt-neutral);
+    font-size: 9.5px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.debt-summary-heading > span:last-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.debt-summary-item > strong {
+    display: block;
+    margin-top: 11px;
+    font-size: clamp(18px, 5vw, 21px);
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -0.45px;
+    white-space: nowrap;
+}
+
+.debt-summary-item.payable > strong {
+    color: var(--debt-primary-dark);
+}
+
+.debt-summary-item.receivable > strong {
+    color: var(--debt-green);
+}
+
+.debt-summary-item > small {
+    display: block;
+    margin-top: 8px;
+    color: var(--debt-muted);
+    font-size: 8.5px;
+    line-height: 1.3;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Keep the short debt/provider description on one line. */
+.debt-record-title small {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+@media (max-width: 360px) {
+    .debt-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .debt-summary-item {
+        min-height: 96px;
+    }
+}
+
+
+/* =========================================================
+   v29 — Debt Details icons, month filter, categories, actions
+   ========================================================= */
+
+.debt-summary-icon {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 12px !important;
+    font-size: 17px !important;
+}
+
+.debt-summary-item.payable .debt-summary-icon {
+    color: #C96E4B !important;
+}
+
+.debt-summary-item.receivable .debt-summary-icon {
+    color: #4F916B !important;
+}
+
+/* Match the Add Bills/Debt button. */
+.debt-direction-filter button.active,
+.debt-status-button-filter button.active {
+    background: #F7A186 !important;
+    color: #251F1D !important;
+    box-shadow: 0 8px 16px rgba(247, 161, 134, 0.24) !important;
+}
+
+.debt-record-actions button:not(.completed),
+.debt-record-card.receivable
+.debt-record-actions button:not(.completed) {
+    background: #F7A186 !important;
+    color: #251F1D !important;
+}
+
+/* Month filter. */
+.debt-month-button {
+    width: 100%;
+    height: 54px;
+    margin-top: 22px;
+    border: 1px solid rgba(92, 83, 78, 0.06);
+    border-radius: 19px;
+    background: rgba(255, 255, 255, 0.97);
+    color: var(--debt-neutral);
+    padding: 0 17px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11.5px;
+    font-weight: 800;
+    box-shadow: 0 10px 24px rgba(92, 83, 78, 0.065);
+}
+
+.debt-month-button i {
+    font-size: 14px;
+}
+
+/* Used-category breakdown. */
+.debt-category-section {
+    margin-top: 24px;
+}
+
+.debt-category-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.debt-category-heading h2 {
+    margin: 0;
+    color: var(--debt-text);
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+}
+
+.debt-category-heading > span {
+    min-height: 29px;
+    border-radius: 999px;
+    background: var(--debt-blue-soft);
+    color: #4F7F99;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 8.5px;
+    font-weight: 800;
+}
+
+.debt-category-grid {
+    margin-top: 12px;
+    border-radius: 24px;
+    background: #FFFFFF;
+    padding: 14px;
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 86px;
+    gap: 10px;
+    box-shadow: var(--debt-soft-shadow);
+}
+
+.debt-category-card {
+    width: 100%;
+    min-width: 0;
+    min-height: 86px;
+    height: 86px;
+    border: 1.5px solid transparent;
+    border-radius: 18px;
+    background: var(--category-soft);
+    padding: 12px;
+    display: grid;
+    grid-template-columns:
+        34px minmax(0, 1fr);
+    align-items: center;
+    gap: 9px;
+    color: var(--debt-text);
+    text-align: left;
+}
+
+.debt-category-card.active {
+    border-color: #8A817C;
+}
+
+.debt-category-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--category-accent);
+    display: grid;
+    place-items: center;
+    font-size: 15px;
+}
+
+.debt-category-copy {
+    min-width: 0;
+}
+
+.debt-category-copy strong,
+.debt-category-copy span {
+    display: block;
+}
+
+.debt-category-copy strong {
+    color: var(--debt-text);
+    font-size: 10.5px;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.debt-category-copy span {
+    margin-top: 4px;
+    color: var(--debt-text);
+    font-size: 9.5px;
+    font-weight: 800;
+}
+
+.debt-category-empty {
+    grid-column: 1 / -1;
+    min-height: 100px;
+    display: grid;
+    place-items: center;
+    color: var(--debt-muted);
+    text-align: center;
+    font-size: 9px;
+}
+
+.debt-category-active {
+    min-height: 38px;
+    margin-top: 11px;
+    border-radius: 14px;
+    background: #EAF3F8;
+    color: #4F7F99;
+    padding: 0 11px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.debt-category-active button {
+    border: 0;
+    border-radius: 999px;
+    background: #FFFFFF;
+    color: #4F7F99;
+    padding: 6px 10px;
+    font-size: 8px;
+    font-weight: 800;
+}
+
+/* Purple month/year sheet matching the Bills overview. */
+.debt-month-picker {
+    position: fixed;
+    inset: 0;
+    z-index: 150;
+    display: grid;
+    align-items: end;
+}
+
+.debt-month-picker-backdrop {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    background: rgba(34, 29, 27, 0.34);
+    backdrop-filter: blur(3px);
+}
+
+.debt-month-picker-sheet {
+    position: relative;
+    width: 100%;
+    border-radius: 30px 30px 0 0;
+    background: #F1EDFF;
+    padding:
+        12px
+        24px
+        calc(env(safe-area-inset-bottom, 0px) + 22px);
+    box-shadow: 0 -18px 50px rgba(38, 31, 29, 0.18);
+}
+
+.debt-month-picker-handle {
+    width: 46px;
+    height: 5px;
+    margin: 0 auto 14px;
+    border-radius: 999px;
+    background: #C9A1C8;
+}
+
+.debt-month-picker-sheet header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.debt-month-picker-sheet header span {
+    color: #8A6B8D;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.debt-month-picker-sheet header h2 {
+    margin: 4px 0 0;
+    color: var(--debt-text);
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.debt-month-picker-sheet header button {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.76);
+    color: #6F5274;
+}
+
+.debt-month-picker-fields {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: 1.25fr 0.75fr;
+    gap: 12px;
+}
+
+.debt-month-picker-fields label {
+    display: grid;
+    gap: 8px;
+    color: var(--debt-neutral);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.debt-month-picker-fields select {
+    height: 52px;
+    border: 1px solid rgba(111, 82, 116, 0.12);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--debt-text);
+    padding: 0 14px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.debt-month-picker-actions {
+    margin-top: 22px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.debt-month-picker-actions button {
+    min-height: 48px;
+    border: 0;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.debt-month-picker-actions button:first-child {
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--debt-neutral);
+}
+
+.debt-month-picker-actions button:last-child {
+    background: #C9A1C8;
+    color: var(--debt-text);
+}
+
+@media (max-width: 360px) {
+    .debt-category-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .debt-month-picker-fields {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* =========================================================
+   v32 — Debt Details cleanup
+   ========================================================= */
+
+/*
+    Exact background used by the main
+    + Add Bills/Debt button.
+*/
+.debt-direction-filter button.active,
+.debt-status-button-filter button.active {
+    background: #F7C8B4 !important;
+    color: #251F1D !important;
+    box-shadow:
+        0 8px 16px
+        rgba(247, 200, 180, 0.28) !important;
+}
+
+.debt-record-actions button:not(.completed),
+.debt-record-card.receivable
+.debt-record-actions button:not(.completed) {
+    background: #F7C8B4 !important;
+    color: #251F1D !important;
+    box-shadow:
+        0 10px 20px
+        rgba(247, 200, 180, 0.25) !important;
+}
+
+/*
+    Keep the icon and label centered on one row.
+*/
+.debt-summary-heading {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 9px !important;
+    min-height: 36px !important;
+}
+
+.debt-summary-icon {
+    flex: 0 0 36px !important;
+    width: 36px !important;
+    height: 36px !important;
+    margin: 0 !important;
+    border-radius: 12px !important;
+    background: #FFFFFF !important;
+    display: grid !important;
+    place-items: center !important;
+    font-size: 17px !important;
+    line-height: 1 !important;
+}
+
+.debt-summary-icon i {
+    display: block !important;
+    line-height: 1 !important;
+    transform: none !important;
+}
+
+.debt-summary-heading > span:last-child {
+    display: block !important;
+    min-width: 0 !important;
+    color: var(--debt-neutral) !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    font-weight: 800 !important;
+}
+
+/*
+    Category Breakdown was removed from the page.
+    Hide any stale cached markup defensively.
+*/
+.debt-category-section {
+    display: none !important;
+}
