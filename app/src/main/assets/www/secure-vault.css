@@ -3005,3 +3005,505 @@ body[data-page="secure-vault"] {
     display: block;
     text-align: left;
 }
+
+/* =========================================================
+   Cross-page consistency revisions
+   ========================================================= */
+
+.vault-date-filter {
+    width: 100%;
+    min-height: 58px;
+    margin-top: 18px;
+    padding: 0 18px;
+    border: 1px solid rgba(92, 83, 78, 0.06);
+    border-radius: 22px;
+    background: #FFFFFF;
+    color: #5C534E;
+    box-shadow: 0 10px 24px rgba(92, 83, 78, 0.07);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    text-align: left;
+}
+
+.vault-date-filter strong {
+    color: #5C534E;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.vault-date-filter > i {
+    color: #5C534E;
+    font-size: 16px;
+}
+
+.vault-date-hint,
+.vault-date-filter-icon,
+.vault-date-filter-copy,
+.vault-date-filter-chevron {
+    display: none !important;
+}
+
+.vault-empty,
+.vault-folder-content-empty,
+.vault-browser-section-empty {
+    width: 100%;
+    min-height: 120px;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    text-align: center;
+    grid-column: 1 / -1;
+}
+
+.vault-browser-tools {
+    margin-top: 30px;
+}
+
+.vault-view-toggle-main {
+    margin-top: 14px;
+}
+
+.vault-header-button.primary,
+.vault-browser-add-button,
+.vault-primary-button,
+.vault-date-sheet-actions .primary {
+    background: #E98B5F;
+    color: #FFFFFF;
+    box-shadow: 0 16px 30px rgba(233, 139, 95, 0.24);
+}
+
+.vault-file-icon img,
+.vault-browser-file-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.vault-browser-file-preview.receipt,
+.vault-file-icon.receipt {
+    overflow: hidden;
+}
+
+.vault-sort-options {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+
+/* =========================================================
+   Practical copy cleanup
+   ========================================================= */
+
+.vault-header p,
+.vault-section-head > div > span:empty,
+.vault-sheet header > div > span:empty {
+    display: none;
+}
+
+.vault-section-head > div,
+.vault-sheet header > div {
+    min-width: 0;
+}
+
+.vault-empty,
+.vault-folder-content-empty,
+.vault-browser-section-empty {
+    line-height: 1.4;
+}
+
+/* =========================================================
+   Consistent Secure Vault overview colors
+   ========================================================= */
+
+.vault-summary-item,
+.vault-summary-item:nth-child(2),
+.vault-summary-item:nth-child(3) {
+    background: #F8F4FF;
+    border-color: rgba(107, 92, 165, 0.08);
+}
+
+.vault-summary .vault-summary-icon.files,
+.vault-summary .vault-summary-icon.folders,
+.vault-summary .vault-summary-icon.favorites {
+    background: #ECE5FF;
+    color: #6B5CA5;
+}
+
+.vault-summary-item strong {
+    color: #211A17;
+}
+
+.vault-summary-item small {
+    color: #817872;
+}
+
+.vault-summary-item.active {
+    background: #F1EBFF;
+    border-color: rgba(107, 92, 165, 0.28);
+}
+
+
+/* =========================================================
+   Final Vault Overview color correction
+   ========================================================= */
+
+/* Each card keeps its original color family. */
+.vault-summary-item,
+.vault-summary-item:nth-child(1) {
+    background: #F7F3FF;
+    border-color: rgba(107, 92, 165, 0.10);
+}
+
+.vault-summary-item:nth-child(2) {
+    background: #FFF8E8;
+    border-color: rgba(215, 152, 31, 0.12);
+}
+
+.vault-summary-item:nth-child(3) {
+    background: #FFF1F4;
+    border-color: rgba(223, 93, 117, 0.11);
+}
+
+/* Restore the original icon backgrounds and icon colors. */
+.vault-summary .vault-summary-icon.files {
+    background: #ECE5FF;
+    color: #6B5CA5;
+}
+
+.vault-summary .vault-summary-icon.folders {
+    background: #FFF1D6;
+    color: #D7981F;
+}
+
+.vault-summary .vault-summary-icon.favorites {
+    background: #FFECEF;
+    color: #DF5D75;
+}
+
+.vault-summary-item.active:nth-child(1) {
+    background: #F1EBFF;
+    border-color: rgba(107, 92, 165, 0.30);
+}
+
+.vault-summary-item.active:nth-child(2) {
+    background: #FFF4D9;
+    border-color: rgba(215, 152, 31, 0.30);
+}
+
+.vault-summary-item.active:nth-child(3) {
+    background: #FFE8ED;
+    border-color: rgba(223, 93, 117, 0.28);
+}
+
+/* =========================================================
+   Combined Sort & Filter sheet
+   ========================================================= */
+
+.vault-sort-sheet {
+    max-height: min(86dvh, 760px);
+}
+
+.vault-sort-filter-group {
+    margin-top: 20px;
+}
+
+.vault-sort-filter-group > h3 {
+    margin: 0 0 10px;
+    color: var(--neutral-dark, #211A17);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.vault-filter-chips {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+}
+
+.vault-filter-chips::-webkit-scrollbar {
+    display: none;
+}
+
+.vault-filter-chips button {
+    min-height: 38px;
+    border: 1px solid rgba(92, 83, 78, 0.08);
+    border-radius: 999px;
+    background: #FFFFFF;
+    color: var(--neutral, #5C534E);
+    padding: 0 14px;
+    white-space: nowrap;
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.vault-filter-chips button.active {
+    border-color: transparent;
+    background: #F1EDFF;
+    color: #6B5CA5;
+}
+
+.vault-member-filter-button {
+    width: 100%;
+    min-height: 58px;
+    border: 1px solid rgba(92, 83, 78, 0.08);
+    border-radius: 18px;
+    background: #FFFFFF;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--neutral-dark, #211A17);
+    text-align: left;
+}
+
+.vault-member-filter-button small,
+.vault-member-filter-button strong {
+    display: block;
+}
+
+.vault-member-filter-button small {
+    color: var(--muted, #817872);
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.vault-member-filter-button strong {
+    margin-top: 4px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.vault-member-filter-button > i {
+    color: var(--muted, #817872);
+    font-size: 12px;
+    transition: transform 0.18s ease;
+}
+
+.vault-member-filter-button.open > i {
+    transform: rotate(180deg);
+}
+
+.vault-member-filter-options {
+    margin-top: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(92, 83, 78, 0.08);
+    border-radius: 18px;
+    background: #FFFFFF;
+}
+
+.vault-member-filter-options[hidden] {
+    display: none !important;
+}
+
+.vault-member-filter-options button {
+    width: 100%;
+    min-height: 58px;
+    border: 0;
+    border-bottom: 1px solid rgba(92, 83, 78, 0.08);
+    background: transparent;
+    padding: 9px 13px;
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr) 20px;
+    align-items: center;
+    gap: 11px;
+    color: var(--neutral-dark, #211A17);
+    text-align: left;
+}
+
+.vault-member-filter-options button:last-child {
+    border-bottom: 0;
+}
+
+.vault-member-filter-options button.active {
+    background: #F8F4FF;
+}
+
+.vault-member-filter-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 13px;
+    background: #F1EDFF;
+    color: #6B5CA5;
+    display: grid;
+    place-items: center;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.vault-member-filter-options strong {
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.vault-member-filter-options button > i:last-child {
+    color: #6B5CA5;
+    opacity: 0;
+}
+
+.vault-member-filter-options button.active > i:last-child {
+    opacity: 1;
+}
+
+/* Keep the combined control compact on the browser page. */
+.vault-browser-sort {
+    min-width: 0;
+    max-width: calc(100% - 84px);
+}
+
+.vault-browser-sort > span {
+    min-width: 0;
+}
+
+.vault-browser-sort strong {
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   Dedicated-page favorite indicator and practical previews
+   ========================================================= */
+
+.vault-browser-favorite-indicator {
+    position: absolute;
+    top: 14px;
+    right: 43px;
+    z-index: 3;
+    color: #DF5D75;
+    font-size: 13px;
+    line-height: 1;
+    pointer-events: none;
+}
+
+/* Keep the heart aligned with the compact file-card menu. */
+.vault-browser-files.grid-view
+    .vault-browser-favorite-indicator {
+    top: 14px;
+    right: 42px;
+}
+
+.vault-browser-files.list-view
+    .vault-browser-favorite-indicator {
+    top: 50%;
+    right: 44px;
+    transform: translateY(-50%);
+}
+
+/*
+ * Dashboard previews remain intentionally limited:
+ * - Grid view: four items
+ * - List view: five items
+ * The View all actions continue to show the full collection.
+ */
+
+
+/* =========================================================
+   Grid-view favorite badge
+   ========================================================= */
+
+/*
+ * In grid view, place Favorites as a small badge over the upper-left
+ * corner of the preview. This keeps it visible without competing with
+ * the three-dot menu on the right.
+ */
+.vault-browser-files.grid-view
+    .vault-browser-favorite-indicator {
+    top: 17px;
+    left: 17px;
+    right: auto;
+    width: 27px;
+    height: 27px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.94);
+    color: #DF5D75;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    line-height: 1;
+    box-shadow: 0 5px 12px rgba(92, 83, 78, 0.10);
+    z-index: 4;
+}
+
+/* Keep the options button visually separate on the upper-right. */
+.vault-browser-files.grid-view
+    .vault-browser-file-menu {
+    z-index: 4;
+}
+
+/* List view keeps the compact heart beside the options button. */
+.vault-browser-files.list-view
+    .vault-browser-favorite-indicator {
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   Recent Files grid favorite badge correction
+   ========================================================= */
+
+/*
+ * Recent Files uses .vault-file-list.grid-view, not
+ * .vault-browser-files.grid-view. Make every dashboard grid card
+ * the positioning reference for its heart and menu controls.
+ */
+.vault-file-list.grid-view .vault-file-row {
+    position: relative;
+}
+
+/*
+ * Let the heart and menu position themselves against the card instead
+ * of keeping them inside one top-right action group.
+ */
+.vault-file-list.grid-view .vault-file-row-actions {
+    position: static;
+}
+
+/* Favorite badge: upper-left of the preview image. */
+.vault-file-list.grid-view .vault-favorite-indicator {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    right: auto;
+    width: 27px;
+    height: 27px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.94);
+    color: #DF5D75;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    line-height: 1;
+    box-shadow: 0 5px 12px rgba(92, 83, 78, 0.10);
+    z-index: 6;
+    pointer-events: none;
+}
+
+/* File options remain separated on the upper-right. */
+.vault-file-list.grid-view .vault-file-menu-button {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 6;
+}
+
+/* Preserve the original compact indicator in list view. */
+.vault-file-list.list-view .vault-favorite-indicator {
+    position: static;
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}

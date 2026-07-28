@@ -5451,3 +5451,28 @@ body[data-page="bills"] {
         height: 1px !important;
     }
 }
+
+
+/* =========================================================
+   Consistent Bills and Debt overdue warnings
+   ========================================================= */
+
+.debt-overdue-notice > i {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 14px;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    line-height: 1;
+}
+
+#billsOverdueNotice,
+#debtOverdueNotice {
+    min-height: 36px;
+    padding: 0 12px;
+    gap: 8px;
+    font-size: 9px;
+    line-height: 1.25;
+    font-weight: 800;
+}

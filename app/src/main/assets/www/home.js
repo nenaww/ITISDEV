@@ -407,7 +407,7 @@ function bindHomeActions() {
             "click",
             () => {
                 window.location.href =
-                    "vault-unlock.html";
+                    "vault-unlock.html?from=home";
             }
         );
     }

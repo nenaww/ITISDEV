@@ -7,7 +7,7 @@ window.KabalikatVault = {
     const key = VAULT_PREFIX + code.replace(/[^A-Z0-9_-]/g, "-");
 
     const initial = () => ({
-      version: 3,
+      version: 5,
       familyCode: code,
       folders: [
         { id: "folder-groceries", name: "Groceries", parentId: "", createdAt: new Date().toISOString() },
@@ -15,19 +15,115 @@ window.KabalikatVault = {
         { id: "folder-warranties", name: "Warranties", parentId: "", createdAt: new Date().toISOString() }
       ],
       files: [
-        { id: "file-1", title: "Puregold Receipt", type: "receipt", merchant: "Puregold", amount: 1250, date: "2026-07-24", uploadedById: "sample-head", uploadedByName: "Elena", folderId: "folder-groceries", mimeType: "image/jpeg", dataUrl: "", linkedExpense: "Groceries", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), trashedAt: "" },
+        ...getPrototypeReceiptFiles(),
         { id: "file-2", title: "Electric Fan Warranty", type: "warranty", merchant: "Abenson", amount: 2399, date: "2026-07-20", uploadedById: "sample-head", uploadedByName: "Elena", folderId: "folder-warranties", mimeType: "application/pdf", dataUrl: "", linkedExpense: "Electric Fan", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), trashedAt: "" },
         { id: "file-3", title: "Maynilad Billing Statement", type: "document", merchant: "Maynilad", amount: 1034, date: "2026-07-18", uploadedById: "sample-member-2", uploadedByName: "Marco", folderId: "folder-bills", mimeType: "application/pdf", dataUrl: "", linkedExpense: "", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), trashedAt: "" }
       ]
     });
 
+    function getPrototypeReceiptFiles() {
+      const now = new Date().toISOString();
+
+      return [
+        {
+          id: "prototype-receipt-savemore1",
+          title: "Savemore Receipt",
+          type: "receipt",
+          merchant: "Savemore",
+          amount: 78.34,
+          date: "2026-07-23",
+          uploadedById: "sample-head",
+          uploadedByName: "Elena",
+          folderId: "folder-groceries",
+          mimeType: "image/jpeg",
+          dataUrl: "",
+          receiptImageBaseName: "savemore1",
+          linkedExpense: "Whole Wheat Bread",
+          createdAt: now,
+          updatedAt: now,
+          trashedAt: ""
+        },
+        {
+          id: "prototype-receipt-7111",
+          title: "7-Eleven Receipt",
+          type: "receipt",
+          merchant: "7-Eleven",
+          amount: 28,
+          date: "2026-07-21",
+          uploadedById: "sample-member-2",
+          uploadedByName: "Marco",
+          folderId: "folder-groceries",
+          mimeType: "image/jpeg",
+          dataUrl: "",
+          receiptImageBaseName: "7111",
+          linkedExpense: "Coca-Cola No Sugar",
+          createdAt: now,
+          updatedAt: now,
+          trashedAt: ""
+        },
+        {
+          id: "prototype-receipt-mercury1",
+          title: "Mercury Drug Receipt",
+          type: "receipt",
+          merchant: "Mercury Drug",
+          amount: 3855,
+          date: "2026-07-20",
+          uploadedById: "sample-head",
+          uploadedByName: "Elena",
+          folderId: "folder-groceries",
+          mimeType: "image/jpeg",
+          dataUrl: "",
+          receiptImageBaseName: "mercury1",
+          linkedExpense: "Lexapro FCT 10mg",
+          createdAt: now,
+          updatedAt: now,
+          trashedAt: ""
+        }
+      ];
+    }
+
+    function migratePrototypeReceipts(state) {
+      if (Number(state.version || 0) >= 5) {
+        return state;
+      }
+
+      state.files = state.files.filter(file => {
+        const isOldPuregoldPrototype =
+          file.id === "file-1" &&
+          file.title === "Puregold Receipt" &&
+          !file.dataUrl;
+
+        return !isOldPuregoldPrototype;
+      });
+
+      getPrototypeReceiptFiles().forEach(receipt => {
+        const exists = state.files.some(file =>
+          file.id === receipt.id
+        );
+
+        if (!exists) {
+          state.files.unshift(receipt);
+        }
+      });
+
+      state.version = 5;
+      return state;
+    }
+
     function load() {
       try {
         const saved = localStorage.getItem(key);
-        if (!saved) { const state = initial(); save(state); return state; }
+
+        if (!saved) {
+          const state = initial();
+          save(state);
+          return state;
+        }
+
         const parsed = JSON.parse(saved);
-        return {
-          version: 4,
+
+        const state = {
+          version: Number(parsed.version || 4),
           familyCode: code,
           folders: Array.isArray(parsed.folders)
             ? parsed.folders.map(folder => ({
@@ -35,9 +131,25 @@ window.KabalikatVault = {
                 parentId: folder.parentId || ""
               }))
             : [],
-          files: Array.isArray(parsed.files) ? parsed.files : []
+          files: Array.isArray(parsed.files)
+            ? parsed.files
+            : []
         };
-      } catch { return initial(); }
+
+        const migrated =
+          migratePrototypeReceipts(state);
+
+        if (
+          Number(parsed.version || 0) !==
+          Number(migrated.version || 0)
+        ) {
+          save(migrated);
+        }
+
+        return migrated;
+      } catch {
+        return initial();
+      }
     }
     function save(state) { localStorage.setItem(key, JSON.stringify(state)); return state; }
     function mutate(callback) { const state = load(); callback(state); return save(state); }

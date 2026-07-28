@@ -19,16 +19,16 @@
             </button>
             <div>
                 <h1>Debt Details</h1>
-                <p>Track what you owe and what others owe you.</p>
+
             </div>
         </header>
 
         <button
-            aria-controls="debtMonthPicker"
-            aria-haspopup="dialog"
-            class="debt-month-button"
-            id="debtMonthButton"
-            type="button"
+                aria-controls="debtMonthPicker"
+                aria-haspopup="dialog"
+                class="debt-month-button"
+                id="debtMonthButton"
+                type="button"
         >
             <span id="debtMonthLabel">Month Year</span>
             <i class="bi bi-calendar3"></i>
@@ -61,7 +61,7 @@
                 </article>
             </div>
             <div class="debt-details-overdue" hidden="" id="detailsOverdueNotice">
-                <i aria-hidden="true" class="bi bi-exclamation-circle-fill"></i>
+                <i aria-hidden="true" class="bi bi-exclamation-triangle-fill"></i>
                 <span id="detailsOverdueText">
                     0 overdue debts need attention
                 </span>
@@ -119,17 +119,17 @@
 </main>
 <div class="debt-month-picker" hidden id="debtMonthPicker">
     <button
-        aria-label="Close month selector"
-        class="debt-month-picker-backdrop"
-        id="debtMonthBackdrop"
-        type="button"
+            aria-label="Close month selector"
+            class="debt-month-picker-backdrop"
+            id="debtMonthBackdrop"
+            type="button"
     ></button>
 
     <section
-        aria-labelledby="debtMonthPickerTitle"
-        aria-modal="true"
-        class="debt-month-picker-sheet"
-        role="dialog"
+            aria-labelledby="debtMonthPickerTitle"
+            aria-modal="true"
+            class="debt-month-picker-sheet"
+            role="dialog"
     >
         <div class="debt-month-picker-handle"></div>
 
@@ -140,9 +140,9 @@
             </div>
 
             <button
-                aria-label="Close month selector"
-                id="closeDebtMonthPicker"
-                type="button"
+                    aria-label="Close month selector"
+                    id="closeDebtMonthPicker"
+                    type="button"
             >
                 <i class="bi bi-x-lg"></i>
             </button>
