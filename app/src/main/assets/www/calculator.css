@@ -1,0 +1,23 @@
+*{box-sizing:border-box}
+body{margin:0;font-family:'Plus Jakarta Sans',sans-serif;background:#f2f7f3;color:#4a4038}
+.page{padding:20px}
+header{display:flex;gap:14px;align-items:center;margin-bottom:20px}
+header button{width:42px;height:42px;border:0;border-radius:50%;background:white}
+h1{font-size:24px;margin:0;font-weight:800}
+header p{margin:4px 0;color:#8b8178;font-size:13px}
+.card{background:white;border-radius:24px;padding:20px;margin-bottom:16px;box-shadow:0 8px 18px #0000000a}
+h2{font-size:18px}
+label{font-size:14px;font-weight:600;display:block;margin:12px 0 8px}
+.input{display:flex;align-items:center;background:#fff4d8;border-radius:16px;padding:12px}
+.input span{color:#ecb08b;font-weight:800}
+.input input{border:0;background:none;outline:none;width:100%;font-size:18px;margin-left:10px}
+.total{margin-top:16px;background:#efeafe;border-radius:18px;padding:16px;display:flex;justify-content:space-between}
+.title{display:flex;justify-content:space-between}
+.category{padding:15px;border-radius:18px;margin:12px 0;display:flex;justify-content:space-between;align-items:center}
+.category input{width:55px;padding:8px;border-radius:10px;border:1px solid #ddd;text-align:center}
+.peach{background:#fff1e8}.purple{background:#efeafe}.blue{background:#eaf3f8}.yellow{background:#fff4d8}
+.row{display:flex;justify-content:space-between;padding:12px 0}
+.buttons{display:flex;gap:10px}.buttons button,#reset{border:0;border-radius:16px;padding:14px;font-weight:700}
+.buttons button{flex:1;background:#efeafe}
+#reset{width:100%;background:#ecb08b}
+#warning{color:#d9822b;font-size:14px}
