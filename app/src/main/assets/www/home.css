@@ -1495,3 +1495,102 @@ body[data-page="home"] {
         font-size: 23px;
     }
 }
+
+/* =========================================================
+   Reports button
+   ========================================================= */
+
+.home-reports-section {
+    margin-top: 14px;
+}
+
+.home-reports-button {
+    position: relative;
+
+    width: 100%;
+    min-height: 96px;
+
+    border: none;
+    border-radius: 24px;
+
+    background: #E6F2E9;
+
+    box-shadow: var(--soft-shadow);
+
+    display: grid;
+    grid-template-columns: 42px 1fr 55px;
+    align-items: center;
+
+    gap: 12px;
+    padding: 12px 18px;
+
+    font-family: inherit;
+    text-align: left;
+
+    cursor: pointer;
+
+    overflow: hidden;
+}
+
+
+.home-reports-button:active {
+    transform: scale(0.97);
+}
+
+
+/* Match quick action icon size */
+.home-reports-icon {
+    display: grid;
+    place-items: center;
+
+    width: 42px;
+    height: 42px;
+
+    background: transparent;
+
+    color: #6C9278;
+
+    font-size: 26px;
+}
+
+
+/* Match quick action text */
+.home-reports-copy strong {
+    display: block;
+
+    color: var(--neutral);
+
+    font-size: 12px;
+    font-weight: 800;
+
+    line-height: 1.2;
+}
+
+
+.home-reports-copy small {
+    display: block;
+
+    margin-top: 5px;
+
+    color: var(--muted);
+
+    font-size: 10px;
+    font-weight: 700;
+
+    line-height: 1.2;
+}
+
+
+/* Reduce decorative chart */
+.home-reports-decoration {
+    display: grid;
+    place-items: center;
+
+     color: #8FAE9A;
+
+    font-size: 42px;
+
+    opacity: 0.16;
+
+    transform: translateX(4px);
+}
