@@ -2668,12 +2668,6 @@ document.getElementById(
 "increaseMemberCount"
 );
 
-const memberStepperLimit =
-document.getElementById(
-"memberStepperLimit"
-);
-
-
 decreaseMemberCountButton
 ?.addEventListener(
 "click",
@@ -2712,9 +2706,6 @@ increaseMemberCountButton
 "click",
 ()=>{
 
-const maximum =
-getSplitMemberMaximum();
-
 const current =
 Math.max(
 Number(
@@ -2726,10 +2717,7 @@ splitMemberInput.value ||
 
 splitMemberInput.value =
 String(
-Math.min(
-current + 1,
-maximum
-)
+current + 1
 );
 
 syncSplitMemberStepper();
@@ -2738,16 +2726,6 @@ updateBudgetImpact();
 
 }
 );
-
-
-function getSplitMemberMaximum(){
-
-return Math.max(
-getPlannerMembers().length + 1,
-2
-);
-
-}
 
 
 function syncSplitMemberStepper(){
@@ -2763,19 +2741,13 @@ return;
 const minimum =
 2;
 
-const maximum =
-getSplitMemberMaximum();
-
 const current =
-Math.min(
 Math.max(
 Number(
 splitMemberInput.value ||
 minimum
 ),
 minimum
-),
-maximum
 );
 
 splitMemberInput.value =
@@ -2785,14 +2757,7 @@ decreaseMemberCountButton.disabled =
 current <= minimum;
 
 increaseMemberCountButton.disabled =
-current >= maximum;
-
-memberStepperLimit.textContent =
-maximum === 1
-?
-"1 household member"
-:
-`Up to ${maximum} household members`;
+false;
 
 }
 
@@ -2803,15 +2768,6 @@ maximum === 1
 
 let plannerMembers =
 [];
-
-let plannerAutomaticValues =
-{
-bills:0,
-debt:0,
-savings:0,
-seasonalPlans:0
-};
-
 
 function escapePlannerHtml(
 value
@@ -3292,10 +3248,10 @@ availableForMembers -
 memberAllocationTotal;
 
 let status =
-"Funds Remaining";
+"Extra Funds Available";
 
 let statusClass =
-"funds-remaining";
+"extra-funds";
 
 
 if(
@@ -3336,23 +3292,9 @@ statusClass =
 "balanced";
 
 }
-else if(
-memberAllocationTotal <= 0 &&
-availableForMembers > 0
-){
-
-status =
-"Ready to Assign";
-
-statusClass =
-"ready-to-assign";
-
-}
-
-
 return {
 month:
-getCurrentMonthKey(),
+getSelectedPlannerMonthKey(),
 monthlyBudget,
 additionalIncome,
 totalAvailable,
@@ -3437,13 +3379,6 @@ snapshot.headAllocation
 );
 
 setPlannerText(
-"plannerResultForMembers",
-formatMoney(
-snapshot.availableForMembers
-)
-);
-
-setPlannerText(
 "plannerResultMembers",
 formatMoney(
 snapshot.memberAllocationTotal
@@ -3510,11 +3445,53 @@ document.getElementById(
 "applyPlanButton"
 );
 
+const applyPlanHint =
+document.getElementById(
+"applyPlanHint"
+);
+
+const isCurrentMonth =
+snapshot.month ===
+getCurrentPlannerMonthKey();
+
+const hasValidPlan =
+snapshot.totalAvailable > 0 &&
+snapshot.headAllocation <=
+snapshot.totalAvailable &&
+snapshot.unassignedBalance >= 0;
+
 applyButton.disabled =
-snapshot.totalAvailable <= 0 ||
-snapshot.headAllocation >
-snapshot.totalAvailable ||
-snapshot.unassignedBalance < 0;
+!isCurrentMonth ||
+!hasValidPlan;
+
+applyButton.title =
+isCurrentMonth
+?
+"Apply the current month's household plan."
+:
+"Apply Plan is available for the current month only.";
+
+if(
+applyPlanHint
+){
+
+applyPlanHint.textContent =
+isCurrentMonth
+?
+"Complete the plan to apply it for the current month."
+:
+`Apply Plan is only available for ${
+getPlannerMonthLabel(
+getCurrentPlannerMonthKey()
+)
+}.`;
+
+applyPlanHint.classList.toggle(
+"current-month",
+isCurrentMonth
+);
+
+}
 
 return snapshot;
 
@@ -3584,7 +3561,10 @@ saveBudgetPlanner(
 }
 
 
-function getSavedPlannerMonth(){
+function getSavedPlannerMonth(
+monthKey =
+getSelectedPlannerMonthKey()
+){
 
 const stored =
 readStoredJson(
@@ -3595,7 +3575,7 @@ months:{}
 );
 
 return stored?.months?.[
-getCurrentMonthKey()
+monthKey
 ] ||
 null;
 
@@ -4052,9 +4032,6 @@ plannerAutomaticValues
 debtInput:
 plannerAutomaticValues
 .debt,
-savingsInput:
-plannerAutomaticValues
-.savings,
 seasonalInput:
 plannerAutomaticValues
 .seasonalPlans
@@ -4069,6 +4046,14 @@ mapping
 const input =
 document.getElementById(id);
 
+if(
+!input
+){
+
+return;
+
+}
+
 input.value =
 value > 0
 ?
@@ -4082,10 +4067,173 @@ String(value)
 }
 
 
-function getPlannerMonthLabel(){
+const PLANNER_MONTH_OPTIONS = [
+{
+value:"01",
+label:"January"
+},
+{
+value:"02",
+label:"February"
+},
+{
+value:"03",
+label:"March"
+},
+{
+value:"04",
+label:"April"
+},
+{
+value:"05",
+label:"May"
+},
+{
+value:"06",
+label:"June"
+},
+{
+value:"07",
+label:"July"
+},
+{
+value:"08",
+label:"August"
+},
+{
+value:"09",
+label:"September"
+},
+{
+value:"10",
+label:"October"
+},
+{
+value:"11",
+label:"November"
+},
+{
+value:"12",
+label:"December"
+}
+];
 
-return new Date()
-.toLocaleDateString(
+
+function getCurrentPlannerDate(){
+
+const today =
+new Date();
+
+return new Date(
+today.getFullYear(),
+today.getMonth(),
+1
+);
+
+}
+
+
+function getCurrentPlannerMonthKey(){
+
+const currentDate =
+getCurrentPlannerDate();
+
+return `${currentDate.getFullYear()}-${String(
+currentDate.getMonth() + 1
+).padStart(
+2,
+"0"
+)}`;
+
+}
+
+
+function getPlannerFutureYears(
+count =
+5
+){
+
+const firstSelectableDate =
+getCurrentPlannerDate();
+
+const firstYear =
+firstSelectableDate.getFullYear();
+
+return Array.from(
+{
+length:count
+},
+(_,index)=>
+firstYear + index
+);
+
+}
+
+
+function getSelectedPlannerMonthKey(){
+
+const monthSelect =
+document.getElementById(
+"plannerMonthSelect"
+);
+
+const yearSelect =
+document.getElementById(
+"plannerYearSelect"
+);
+
+const firstSelectableDate =
+getCurrentPlannerDate();
+
+const fallbackYear =
+String(
+firstSelectableDate.getFullYear()
+);
+
+const fallbackMonth =
+String(
+firstSelectableDate.getMonth() + 1
+)
+.padStart(
+2,
+"0"
+);
+
+return `${
+yearSelect?.value ||
+fallbackYear
+}-${
+monthSelect?.value ||
+fallbackMonth
+}`;
+
+}
+
+
+function getPlannerMonthLabel(
+monthKey =
+getSelectedPlannerMonthKey()
+){
+
+const [
+year,
+month
+] =
+String(monthKey)
+.split("-")
+.map(Number);
+
+const date =
+new Date(
+year,
+Math.max(
+month - 1,
+0
+),
+1
+);
+
+return date.toLocaleDateString(
 "en-PH",
 {
 month:"long",
@@ -4096,15 +4244,214 @@ year:"numeric"
 }
 
 
-async function initializeBudgetPlanner(){
+function populatePlannerYearOptions(
+preferredYear =
+""
+){
 
-plannerMembers =
-getPlannerMembers();
-
-setPlannerText(
-"plannerMonthLabel",
-getPlannerMonthLabel()
+const yearSelect =
+document.getElementById(
+"plannerYearSelect"
 );
+
+if(
+!yearSelect
+){
+
+return;
+
+}
+
+const years =
+getPlannerFutureYears(5);
+
+yearSelect.innerHTML =
+years
+.map(
+year=>`
+<option value="${year}">
+${year}
+</option>
+`
+)
+.join("");
+
+const normalizedPreferred =
+Number(
+preferredYear
+);
+
+yearSelect.value =
+years.includes(
+normalizedPreferred
+)
+?
+String(
+normalizedPreferred
+)
+:
+String(
+years[0]
+);
+
+}
+
+
+function populatePlannerMonthOptions(
+preferredMonth =
+""
+){
+
+const monthSelect =
+document.getElementById(
+"plannerMonthSelect"
+);
+
+const yearSelect =
+document.getElementById(
+"plannerYearSelect"
+);
+
+if(
+!monthSelect ||
+!yearSelect
+){
+
+return;
+
+}
+
+const firstSelectableDate =
+getCurrentPlannerDate();
+
+const selectedYear =
+Number(
+yearSelect.value ||
+firstSelectableDate.getFullYear()
+);
+
+const firstSelectableYear =
+firstSelectableDate.getFullYear();
+
+const firstSelectableMonth =
+firstSelectableDate.getMonth() + 1;
+
+const availableMonths =
+PLANNER_MONTH_OPTIONS
+.filter(
+month=>{
+
+if(
+selectedYear >
+firstSelectableYear
+){
+
+return true;
+
+}
+
+return Number(
+month.value
+) >=
+firstSelectableMonth;
+
+}
+);
+
+monthSelect.innerHTML =
+availableMonths
+.map(
+month=>`
+<option value="${month.value}">
+${month.label}
+</option>
+`
+)
+.join("");
+
+const normalizedPreferred =
+String(
+preferredMonth ||
+""
+)
+.padStart(
+2,
+"0"
+);
+
+monthSelect.value =
+availableMonths.some(
+month=>
+month.value ===
+normalizedPreferred
+)
+?
+normalizedPreferred
+:
+availableMonths[0].value;
+
+}
+
+
+function populatePlannerDateOptions(){
+
+const stored =
+readStoredJson(
+BUDGET_PLANNER_STORAGE_KEY,
+{
+selectedMonth:""
+}
+);
+
+const storedMonthKey =
+String(
+stored?.selectedMonth ||
+""
+);
+
+const [
+storedYear,
+storedMonth
+] =
+storedMonthKey
+.split("-");
+
+populatePlannerYearOptions(
+storedYear
+);
+
+populatePlannerMonthOptions(
+storedMonth
+);
+
+}
+
+
+function clearBudgetPlannerFields(){
+
+document
+.querySelectorAll(
+[
+"#incomeInput",
+"#additionalInput",
+"[data-planner-category]"
+].join(",")
+)
+.forEach(
+input=>{
+
+input.value =
+"";
+
+}
+);
+
+renderPlannerMemberAllocations();
+
+}
+
+
+function loadSelectedPlannerMonth(){
 
 const savedPlan =
 getSavedPlannerMonth();
@@ -4120,29 +4467,210 @@ savedPlan
 }
 else{
 
-renderPlannerMemberAllocations();
-
-document.getElementById(
-"incomeInput"
-).value =
-householdBudget.total > 0
-?
-String(
-householdBudget.total
-)
-:
-"";
-
-plannerAutomaticValues =
-await loadAutomaticPlannerValues();
-
-populateAutomaticPlannerFields();
+clearBudgetPlannerFields();
 
 }
 
+calculatePlanner();
+
+}
+
+
+function updatePlannerDateTrigger(){
+
+setPlannerText(
+"plannerMonthDisplay",
+getPlannerMonthLabel()
+);
+
+}
+
+
+function setPlannerDateDropdownOpen(
+isOpen
+){
+
+const trigger =
+document.getElementById(
+"plannerDateTrigger"
+);
+
+const panel =
+document.getElementById(
+"plannerDateDropdown"
+);
+
+if(
+!trigger ||
+!panel
+){
+
+return;
+
+}
+
+panel.hidden =
+!isOpen;
+
+trigger.setAttribute(
+"aria-expanded",
+String(
+isOpen
+)
+);
+
+trigger.classList.toggle(
+"open",
+isOpen
+);
+
+}
+
+
+function togglePlannerDateDropdown(){
+
+const trigger =
+document.getElementById(
+"plannerDateTrigger"
+);
+
+if(
+!trigger
+){
+
+return;
+
+}
+
+setPlannerDateDropdownOpen(
+trigger.getAttribute(
+"aria-expanded"
+) !==
+"true"
+);
+
+}
+
+
+function handlePlannerMonthChange(){
+
+updatePlannerDateTrigger();
+
+loadSelectedPlannerMonth();
+
+setPlannerDateDropdownOpen(
+false
+);
+
+}
+
+
+function handlePlannerYearChange(){
+
+populatePlannerMonthOptions();
+
+updatePlannerDateTrigger();
+
+loadSelectedPlannerMonth();
+
+}
+
+
+function initializeBudgetPlanner(){
+
+plannerMembers =
+getPlannerMembers();
+
+populatePlannerDateOptions();
+
+updatePlannerDateTrigger();
+
+loadSelectedPlannerMonth();
+
 bindPlannerInputs();
 
-calculatePlanner();
+const trigger =
+document.getElementById(
+"plannerDateTrigger"
+);
+
+const dropdown =
+document.getElementById(
+"plannerDateDropdown"
+);
+
+const monthSelect =
+document.getElementById(
+"plannerMonthSelect"
+);
+
+const yearSelect =
+document.getElementById(
+"plannerYearSelect"
+);
+
+trigger
+?.addEventListener(
+"click",
+event=>{
+
+event.stopPropagation();
+
+togglePlannerDateDropdown();
+
+}
+);
+
+dropdown
+?.addEventListener(
+"click",
+event=>{
+
+event.stopPropagation();
+
+}
+);
+
+monthSelect
+?.addEventListener(
+"change",
+handlePlannerMonthChange
+);
+
+yearSelect
+?.addEventListener(
+"change",
+handlePlannerYearChange
+);
+
+document.addEventListener(
+"click",
+()=>{
+
+setPlannerDateDropdownOpen(
+false
+);
+
+}
+);
+
+document.addEventListener(
+"keydown",
+event=>{
+
+if(
+event.key ===
+"Escape"
+){
+
+setPlannerDateDropdownOpen(
+false
+);
+
+}
+
+}
+);
 
 syncSplitMemberStepper();
 
@@ -4155,6 +4683,25 @@ mode
 
 const snapshot =
 calculatePlanner();
+
+if(
+mode ===
+"applied" &&
+snapshot.month !==
+getCurrentPlannerMonthKey()
+){
+
+showCalculatorToast(
+`Apply Plan is only available for ${
+getPlannerMonthLabel(
+getCurrentPlannerMonthKey()
+)
+}.`
+);
+
+return;
+
+}
 
 if(
 snapshot.totalAvailable <= 0
@@ -4280,45 +4827,14 @@ showCalculatorToast(
 }
 
 
-async function resetBudgetPlanner(){
+function resetBudgetPlanner(){
 
-document
-.querySelectorAll(
-[
-"#incomeInput",
-"#additionalInput",
-"[data-planner-category]",
-"[data-planner-member-id]"
-].join(",")
-)
-.forEach(
-input=>{
-
-input.value =
-"";
-
-}
-);
-
-document.getElementById(
-"incomeInput"
-).value =
-householdBudget.total > 0
-?
-String(
-householdBudget.total
-)
-:
-"";
-
-plannerAutomaticValues =
-await loadAutomaticPlannerValues();
-
-populateAutomaticPlannerFields();
+clearBudgetPlannerFields();
 
 calculatePlanner();
 
 }
+
 
 setBudgetToolView("calculator");
 populateSavingsDestinationOptions();

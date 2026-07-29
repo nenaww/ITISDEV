@@ -2896,3 +2896,539 @@ button {
             3;
     }
 }
+
+
+/* =========================================================
+   v48 — future month selector and planner section order
+   ========================================================= */
+
+/* Split has no maximum member count. */
+#memberStepperLimit {
+    display: none !important;
+}
+
+/* Planner header and combined month/year select. */
+.household-allocation-card .planner-header {
+    display: grid !important;
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(138px, 42%) !important;
+    align-items: start !important;
+    gap: 14px !important;
+}
+
+.planner-month-field {
+    min-width: 0;
+    display: block;
+}
+
+.planner-month-field > span {
+    display: block;
+    margin: 0 0 6px;
+    color: #8A817C;
+    font-size: 9px;
+    line-height: 1.2;
+    font-weight: 800;
+}
+
+.planner-month-select-control {
+    position: relative;
+    min-height: 42px;
+    border:
+        1px solid
+        rgba(79, 127, 153, 0.14);
+    border-radius: 14px;
+    background: #EAF3F8;
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        18px;
+    align-items: center;
+    gap: 7px;
+    padding: 0 11px;
+    color: #4F7F99;
+}
+
+.planner-month-select-control select {
+    min-width: 0;
+    width: 100%;
+    height: 42px;
+    border: 0;
+    outline: 0;
+    appearance: none;
+    background: transparent;
+    color: #251F1D;
+    padding: 0;
+    font-size: 10.5px;
+    line-height: 1;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.planner-month-select-control i {
+    justify-self: end;
+    color: #4F7F99;
+    font-size: 12px;
+    pointer-events: none;
+}
+
+/* Personal allocation comes before member distribution. */
+.head-category-allocation-card {
+    margin-top: 0;
+}
+
+.head-category-row,
+.head-category-row.manual-category-row {
+    grid-template-columns:
+        40px
+        minmax(0, 1fr)
+        104px !important;
+}
+
+.planner-member-card .planner-subsection-heading {
+    margin-top: 0;
+}
+
+.auto-editable-badge,
+.planner-auto-note,
+.planner-role-label {
+    display: none !important;
+}
+
+@media (max-width: 390px) {
+    .household-allocation-card .planner-header {
+        grid-template-columns: 1fr !important;
+    }
+
+    .planner-month-field {
+        width: 100%;
+    }
+
+    .head-category-row,
+    .head-category-row.manual-category-row {
+        grid-template-columns:
+            38px
+            minmax(0, 1fr) !important;
+    }
+
+    .head-category-input {
+        grid-column:
+            1 / -1 !important;
+    }
+}
+
+
+/* =========================================================
+   v49 — separate future month/year selects and category parity
+   ========================================================= */
+
+/* Month and year are separate controls but remain one field. */
+.household-allocation-card .planner-header {
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(190px, 46%) !important;
+}
+
+.planner-date-field {
+    min-width: 0;
+}
+
+.planner-date-label {
+    display: block;
+    margin: 0 0 7px;
+    color: #8A817C;
+    font-size: 9px;
+    line-height: 1.2;
+    font-weight: 800;
+}
+
+.planner-date-selects {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1.25fr)
+        minmax(76px, 0.75fr);
+    gap: 8px;
+}
+
+.planner-date-select-group {
+    min-width: 0;
+}
+
+.planner-date-select-group > small {
+    display: block;
+    margin: 0 0 5px;
+    color: #8A817C;
+    font-size: 8px;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.planner-date-select-control {
+    position: relative;
+    min-height: 42px;
+    border:
+        1px solid
+        rgba(79, 127, 153, 0.14);
+    border-radius: 14px;
+    background: #EAF3F8;
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        16px;
+    align-items: center;
+    gap: 6px;
+    padding: 0 10px;
+}
+
+.planner-date-select-control select {
+    min-width: 0;
+    width: 100%;
+    height: 42px;
+    border: 0;
+    outline: 0;
+    appearance: none;
+    background: transparent;
+    color: #251F1D;
+    padding: 0;
+    font-size: 10.5px;
+    line-height: 1;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.planner-date-select-control i {
+    justify-self: end;
+    color: #4F7F99;
+    font-size: 11px;
+    pointer-events: none;
+}
+
+/* Match the description spacing used by Household Allocation. */
+.head-category-allocation-card .allocation-card-heading {
+    margin-bottom: 0;
+}
+
+.head-category-allocation-card
+.allocation-card-heading h2 {
+    margin: 0;
+}
+
+.head-category-allocation-card
+.allocation-description {
+    margin: 5px 0 0 !important;
+}
+
+.head-category-allocation-list {
+    margin-top: 15px;
+}
+
+/* Existing Expenses category colors. */
+.head-category-icon.food {
+    background: #F0E0F2;
+    color: #B164AE;
+}
+
+.head-category-icon.utilities {
+    background: #FAF0C6;
+    color: #AA8024;
+}
+
+.head-category-icon.transportation {
+    background: #E0EEF4;
+    color: #50849F;
+}
+
+.head-category-icon.health {
+    background: #E5F1E8;
+    color: #5C8F6C;
+}
+
+.head-category-icon.education {
+    background: #FBE5D8;
+    color: #C96E4B;
+}
+
+.head-category-icon.rent {
+    background: #F6E1EC;
+    color: #B35A82;
+}
+
+.head-category-icon.debt {
+    background: #E0F0EC;
+    color: #4F8B78;
+}
+
+.head-category-icon.other {
+    background: #EBE6F5;
+    color: #6E618E;
+}
+
+.head-category-icon.savings {
+    background: #EEF6F0;
+    color: #5C8F6C;
+}
+
+.head-category-icon.seasonal {
+    background: #FFF1E8;
+    color: #C96E4B;
+}
+
+/* Available member money uses a clearer warm available-funds color. */
+#availableForMembersChip {
+    background: #FFF5D8 !important;
+    color: #A77E20 !important;
+}
+
+#availableForMembersChip.negative {
+    background: #FBE5D8 !important;
+    color: #C4513F !important;
+}
+
+/* Apply Plan is the positive final planner action. */
+#applyPlanButton {
+    border-color: transparent !important;
+    background: #8FAE9A !important;
+    color: #FFFFFF !important;
+    box-shadow:
+        0 9px 18px
+        rgba(108, 146, 120, 0.20) !important;
+}
+
+#applyPlanButton:disabled {
+    background: #C9D8CD !important;
+    color: rgba(255, 255, 255, 0.90) !important;
+    box-shadow: none !important;
+}
+
+@media (max-width: 390px) {
+    .household-allocation-card .planner-header {
+        grid-template-columns: 1fr !important;
+    }
+
+    .planner-date-selects {
+        grid-template-columns:
+            minmax(0, 1fr)
+            minmax(84px, 0.72fr);
+    }
+}
+
+
+/* =========================================================
+   v50 — combined month field, extra-funds status, result layout
+   ========================================================= */
+
+/* Revert to one compact Planning Month control. */
+.household-allocation-card .planner-header {
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(144px, 42%) !important;
+}
+
+.planner-combined-date-dropdown {
+    position: relative;
+    min-width: 0;
+}
+
+.planner-date-trigger {
+    width: 100%;
+    min-height: 42px;
+    border:
+        1px solid
+        rgba(79, 127, 153, 0.14);
+    border-radius: 14px;
+    outline: 0;
+    background: #EAF3F8;
+    color: #251F1D;
+    padding: 0 11px;
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        16px;
+    align-items: center;
+    gap: 7px;
+    text-align: left;
+    font-size: 10.5px;
+    line-height: 1;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.planner-date-trigger i {
+    justify-self: end;
+    color: #4F7F99;
+    font-size: 11px;
+    transition:
+        transform 0.18s ease;
+}
+
+.planner-date-trigger.open i {
+    transform: rotate(180deg);
+}
+
+.planner-date-dropdown-panel {
+    position: absolute;
+    z-index: 35;
+    top: calc(100% + 7px);
+    right: 0;
+    width: min(230px, 76vw);
+    border:
+        1px solid
+        rgba(84, 69, 61, 0.10);
+    border-radius: 17px;
+    background: #FFFFFF;
+    box-shadow:
+        0 14px 30px
+        rgba(84, 69, 61, 0.16);
+    padding: 11px;
+    display: grid;
+    grid-template-columns:
+        minmax(82px, 0.82fr)
+        minmax(0, 1.18fr);
+    gap: 8px;
+}
+
+.planner-date-dropdown-panel[hidden] {
+    display: none !important;
+}
+
+.planner-date-option-group {
+    min-width: 0;
+}
+
+.planner-date-option-group > small {
+    display: block;
+    margin: 0 0 5px;
+    color: #8A817C;
+    font-size: 8px;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+/* Savings is now represented by the final unassigned balance. */
+.head-category-icon.savings {
+    display: none;
+}
+
+/* Results: two rows of two metrics, then one full-width status panel. */
+.planner-result-grid {
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr)) !important;
+}
+
+.planner-result-grid .planner-status-result-wide {
+    grid-column: 1 / -1;
+    min-height: 76px;
+    background: #F4EFEC !important;
+}
+
+.planner-result-grid div:nth-child(1) {
+    background: #FFF5D8;
+}
+
+.planner-result-grid div:nth-child(2) {
+    background: #FFF1E8;
+}
+
+.planner-result-grid div:nth-child(3) {
+    background: #F1EDFF;
+}
+
+.planner-result-grid div:nth-child(4) {
+    background: #EEF6F0;
+}
+
+#planStatus.extra-funds {
+    color: #4F7F99;
+}
+
+@media (max-width: 390px) {
+    .household-allocation-card .planner-header {
+        grid-template-columns: 1fr !important;
+    }
+
+    .planner-date-dropdown-panel {
+        left: 0;
+        right: auto;
+        width: min(250px, 100%);
+    }
+}
+
+
+/* =========================================================
+   v51 — fix collapsed Planning Month trigger
+   ========================================================= */
+
+/*
+   The general .planner-header button rule was forcing this
+   control into a 38px square. These more-specific rules keep
+   the existing opened dropdown layout while restoring the
+   full-width closed field.
+*/
+.household-allocation-card
+.planner-header
+.planner-date-trigger {
+    flex: none !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    border:
+        1px solid
+        rgba(79, 127, 153, 0.14) !important;
+    border-radius: 14px !important;
+    padding: 0 11px !important;
+    display: grid !important;
+    grid-template-columns:
+        minmax(0, 1fr)
+        16px !important;
+    place-items: initial !important;
+    align-items: center !important;
+    justify-content: initial !important;
+    gap: 7px !important;
+    text-align: left !important;
+}
+
+.household-allocation-card
+.planner-date-field {
+    width: 100%;
+    min-width: 0;
+    justify-self: stretch;
+}
+
+.household-allocation-card
+.planner-date-trigger
+#plannerMonthDisplay {
+    min-width: 0;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.household-allocation-card
+.planner-date-trigger i {
+    justify-self: end;
+}
+
+
+/* =========================================================
+   v52 — Apply Plan is current-month only
+   ========================================================= */
+
+.apply-plan-hint {
+    margin: 8px 2px 0;
+    color: #A06E58;
+    font-size: 9px;
+    line-height: 1.45;
+    font-weight: 700;
+    text-align: right;
+}
+
+.apply-plan-hint.current-month {
+    color: #6E8E78;
+}
+
+#applyPlanButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.78;
+}
