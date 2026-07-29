@@ -41,6 +41,60 @@ window.history.back();
 
 
 // ===============================
+// BUDGET TOOL SWITCH
+// ===============================
+
+const budgetToolButtons =
+document.querySelectorAll(
+"[data-budget-view]"
+);
+
+const budgetToolPanels =
+document.querySelectorAll(
+"[data-budget-panel]"
+);
+
+budgetToolButtons.forEach(button=>{
+
+button.addEventListener("click",()=>{
+setBudgetToolView(
+button.dataset.budgetView
+);
+});
+
+});
+
+function setBudgetToolView(view){
+
+const selectedView =
+view === "planner"
+? "planner"
+: "calculator";
+
+budgetToolButtons.forEach(button=>{
+const active =
+button.dataset.budgetView === selectedView;
+
+button.classList.toggle("active",active);
+button.setAttribute(
+"aria-selected",
+String(active)
+);
+});
+
+budgetToolPanels.forEach(panel=>{
+const active =
+panel.dataset.budgetPanel === selectedView;
+
+panel.hidden = !active;
+panel.classList.toggle("active",active);
+});
+
+window.scrollTo({top:0,behavior:"smooth"});
+}
+
+
+// ===============================
 // TEMP HOUSEHOLD DATA
 // Replace with database later
 // ===============================
@@ -174,6 +228,7 @@ button.addEventListener(
 
 
 let value =
+button.dataset.key ||
 button.textContent.trim();
 
 
@@ -563,19 +618,22 @@ break;
 // ===============================
 
 
-document
-.getElementById("moreButton")
-.addEventListener(
-"click",
-()=>{
+const moreButton =
+document.getElementById("moreButton");
 
+const moreFunctions =
+document.getElementById("moreFunctions");
 
-document
-.getElementById("moreFunctions")
-.classList
-.toggle("hidden");
+moreButton.addEventListener("click",()=>{
+const willOpen =
+moreFunctions.classList.contains("hidden");
 
-
+moreFunctions.classList.toggle("hidden");
+moreButton.classList.toggle("open",willOpen);
+moreButton.setAttribute(
+"aria-expanded",
+String(willOpen)
+);
 });
 
 
@@ -591,19 +649,24 @@ document
 // ===============================
 
 
-document
-.getElementById("categoryButton")
-.addEventListener(
-"click",
-()=>{
+const categoryButton =
+document.getElementById("categoryButton");
 
+const categoryMenu =
+document.getElementById("categoryMenu");
 
-document
-.getElementById("categoryMenu")
-.classList
-.toggle("hidden");
+categoryButton.addEventListener("click",event=>{
+event.stopPropagation();
 
+const willOpen =
+categoryMenu.classList.contains("hidden");
 
+categoryMenu.classList.toggle("hidden");
+categoryButton.classList.toggle("open",willOpen);
+categoryButton.setAttribute(
+"aria-expanded",
+String(willOpen)
+);
 });
 
 
@@ -633,12 +696,21 @@ selectedCategory;
 
 
 
+categoryMenu.classList.add("hidden");
+categoryButton.classList.remove("open");
+categoryButton.setAttribute(
+"aria-expanded",
+"false"
+);
+
 document
-.getElementById("categoryMenu")
-.classList
-.add("hidden");
-
-
+.querySelectorAll("#categoryMenu button")
+.forEach(option=>{
+option.classList.toggle(
+"selected",
+option === button
+);
+});
 
 updateBudgetImpact();
 
@@ -654,6 +726,30 @@ updateBudgetImpact();
 
 
 
+
+
+document.addEventListener("click",event=>{
+if(
+!categoryButton.contains(event.target) &&
+!categoryMenu.contains(event.target)
+){
+categoryMenu.classList.add("hidden");
+categoryButton.classList.remove("open");
+categoryButton.setAttribute("aria-expanded","false");
+}
+});
+
+document.addEventListener("keydown",event=>{
+if(event.key !== "Escape") return;
+
+categoryMenu.classList.add("hidden");
+categoryButton.classList.remove("open");
+categoryButton.setAttribute("aria-expanded","false");
+
+moreFunctions.classList.add("hidden");
+moreButton.classList.remove("open");
+moreButton.setAttribute("aria-expanded","false");
+});
 
 
 // ===============================
@@ -846,19 +942,22 @@ status.textContent =
 // ===============================
 
 
-document
-.getElementById("plannerToggle")
-.addEventListener(
-"click",
-()=>{
+const plannerToggle =
+document.getElementById("plannerToggle");
 
+const advancedPlanner =
+document.getElementById("advancedPlanner");
 
-document
-.getElementById("advancedPlanner")
-.classList
-.toggle("hidden");
+plannerToggle.addEventListener("click",()=>{
+const willOpen =
+advancedPlanner.classList.contains("hidden");
 
-
+advancedPlanner.classList.toggle("hidden");
+plannerToggle.classList.toggle("open",willOpen);
+plannerToggle.setAttribute(
+"aria-expanded",
+String(willOpen)
+);
 });
 
 
@@ -1191,6 +1290,9 @@ resetCalculator();
 
 });
 
-
+setBudgetToolView("calculator");
+updateMode();
+updateBudgetImpact();
+calculatePlanner();
 
 });
