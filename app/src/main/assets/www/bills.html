@@ -31,7 +31,11 @@
             </label>
             <select aria-hidden="true" hidden="" id="periodValueSelect" tabindex="-1"></select>
         </div>
-    </div></section><h2 class="bills-overview-title">Monthly Overview</h2>
+    </div></section>
+        <div class="bills-section-heading bills-overview-heading">
+            <h2 class="bills-overview-title">Monthly Overview</h2>
+            <button aria-label="Open bills and debt calendar" id="openBillsCalendar" type="button">View Calendar</button>
+        </div>
         <section aria-label="Monthly bills summary" class="bills-summary-card">
             <div class="summary-top-row">
                 <div class="summary-amount-block">
@@ -43,9 +47,6 @@
                         <span>Paid</span>
                         <strong id="paidCountText">0 of 0</strong>
                         <i aria-hidden="true" class="bi bi-chevron-right"></i></button>
-                    <button aria-label="Open bills and debt calendar" class="summary-calendar-icon" id="openBillsCalendar" type="button">
-                        <i aria-hidden="true" class="bi bi-calendar3"></i>
-                    </button>
                     <div class="summary-progress-track">
                         <div class="summary-progress-fill" id="paidProgressFill"></div>
                     </div>
