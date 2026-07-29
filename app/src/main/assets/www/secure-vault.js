@@ -19,9 +19,9 @@ let viewMode = localStorage.getItem("kabalikat_vault_view_mode") || "grid";
 let browserMode = "";
 let browserFolderId = "";
 let selectedFolderId = "";
-let browserSort = "date";
-let browserTypeFilter = "all";
-let browserMemberFilter = "";
+let browserSortRules = new Set(["date"]);
+let browserTypeFilters = new Set();
+let browserMemberFilters = new Set();
 
 const DASHBOARD_PREVIEW_LIMIT = 4;
 
@@ -170,6 +170,9 @@ function collectElements() {
         "vaultFolderOptionsTitle",
         "closeVaultFolderOptionsSheet",
         "openSelectedFolderButton",
+        "starSelectedFolderButton",
+        "starSelectedFolderIcon",
+        "starSelectedFolderText",
         "deleteSelectedFolderButton",
         "vaultSortBackdrop",
         "vaultSortSheet",
@@ -341,14 +344,49 @@ function bindEvents() {
         }, 220);
     });
 
-    el.deleteSelectedFolderButton.addEventListener("click", deleteSelectedFolder);
+    el.starSelectedFolderButton.addEventListener(
+        "click",
+        toggleSelectedFolderStar
+    );
+
+    el.deleteSelectedFolderButton.addEventListener(
+        "click",
+        deleteSelectedFolder
+    );
 
     el.vaultSortSheet
         .querySelectorAll("[data-vault-sort]")
         .forEach(button => {
             button.addEventListener("click", () => {
-                browserSort =
+                if (button.disabled) {
+                    return;
+                }
+
+                const sortRule =
                     button.dataset.vaultSort;
+
+                if (
+                    browserSortRules.has(
+                        sortRule
+                    )
+                ) {
+                    /*
+                        Always retain at least one sort rule.
+                        This prevents an undefined ordering.
+                    */
+                    if (
+                        browserSortRules.size >
+                        1
+                    ) {
+                        browserSortRules.delete(
+                            sortRule
+                        );
+                    }
+                } else {
+                    browserSortRules.add(
+                        sortRule
+                    );
+                }
 
                 renderSortFilterControls();
                 renderBrowserPage();
@@ -359,8 +397,18 @@ function bindEvents() {
         .querySelectorAll("[data-vault-file-type]")
         .forEach(button => {
             button.addEventListener("click", () => {
-                browserTypeFilter =
+                const type =
                     button.dataset.vaultFileType;
+
+                if (type === "all") {
+                    browserTypeFilters.clear();
+                } else if (
+                    browserTypeFilters.has(type)
+                ) {
+                    browserTypeFilters.delete(type);
+                } else {
+                    browserTypeFilters.add(type);
+                }
 
                 renderSortFilterControls();
                 renderBrowserPage();
@@ -780,6 +828,17 @@ function renderBrowserFolderCard(folder) {
                 </span>
             </button>
 
+            ${
+                folder.starred
+                    ? `
+                        <i
+                            class="bi bi-star-fill vault-folder-star-indicator"
+                            aria-label="Starred folder"
+                        ></i>
+                    `
+                    : ""
+            }
+
             <button
                 class="vault-browser-folder-menu"
                 type="button"
@@ -1013,7 +1072,23 @@ function openFolderOptions(folderId) {
     }
 
     selectedFolderId = folder.id;
-    el.vaultFolderOptionsTitle.textContent = folder.name;
+    el.vaultFolderOptionsTitle.textContent =
+        folder.name;
+
+    el.starSelectedFolderText.textContent =
+        folder.starred
+            ? "Remove Star"
+            : "Star Folder";
+
+    el.starSelectedFolderIcon.className =
+        folder.starred
+            ? "bi bi-star-fill"
+            : "bi bi-star";
+
+    el.starSelectedFolderButton.classList.toggle(
+        "starred",
+        folder.starred === true
+    );
 
     openSheet(
         el.vaultFolderOptionsBackdrop,
@@ -1026,6 +1101,49 @@ function closeFolderOptionsSheet() {
         el.vaultFolderOptionsBackdrop,
         el.vaultFolderOptionsSheet
     );
+}
+
+function toggleSelectedFolderStar() {
+    const folder =
+        getFolderById(
+            selectedFolderId
+        );
+
+    if (!folder) {
+        closeFolderOptionsSheet();
+        return;
+    }
+
+    const willStar =
+        folder.starred !== true;
+
+    try {
+        vault.toggleFolderStar(
+            folder.id,
+            actor
+        );
+
+        closeFolderOptionsSheet();
+        selectedFolderId = "";
+        state = vault.load();
+
+        renderAll();
+
+        if (browserMode) {
+            renderBrowserPage();
+        }
+
+        showToast(
+            willStar
+                ? "Folder starred."
+                : "Star removed."
+        );
+    } catch (error) {
+        showToast(
+            error.message ||
+            "The folder could not be updated."
+        );
+    }
 }
 
 function deleteSelectedFolder() {
@@ -1105,66 +1223,244 @@ function bindBrowserFileActions() {
         });
 }
 
+function getActiveBrowserSortRules(
+    folderOnly = false
+) {
+    const rules =
+        [...browserSortRules]
+            .filter(rule => {
+                if (folderOnly) {
+                    return (
+                        rule !==
+                        "favorite"
+                    );
+                }
+
+                return (
+                    rule !==
+                    "starred"
+                );
+            });
+
+    return rules.length
+        ? rules
+        : ["date"];
+}
+
+function getBrowserModifiedValue(item) {
+    const value =
+        item.updatedAt ||
+        item.date ||
+        item.createdAt ||
+        "";
+
+    const parsed =
+        new Date(value)
+            .getTime();
+
+    return Number.isFinite(parsed)
+        ? parsed
+        : 0;
+}
+
+function compareBrowserNames(
+    first,
+    second,
+    folderOnly = false
+) {
+    const firstName =
+        folderOnly
+            ? first.name
+            : first.title;
+
+    const secondName =
+        folderOnly
+            ? second.name
+            : second.title;
+
+    return String(
+        firstName ||
+        ""
+    ).localeCompare(
+        String(
+            secondName ||
+            ""
+        ),
+        undefined,
+        {
+            sensitivity: "base",
+            numeric: true
+        }
+    );
+}
+
 function sortBrowserFolders(folders) {
-    return [...folders].sort((first, second) => {
-        if (
-            browserSort === "name" ||
-            browserSort === "member" ||
-            browserSort === "favorite"
-        ) {
-            return String(first.name).localeCompare(
-                String(second.name)
+    const rules =
+        getActiveBrowserSortRules(
+            true
+        );
+
+    return [...folders].sort(
+        (first, second) => {
+            if (
+                rules.includes(
+                    "starred"
+                )
+            ) {
+                const starredDifference =
+                    Number(
+                        Boolean(
+                            second.starred
+                        )
+                    ) -
+                    Number(
+                        Boolean(
+                            first.starred
+                        )
+                    );
+
+                if (
+                    starredDifference !==
+                    0
+                ) {
+                    return starredDifference;
+                }
+            }
+
+            for (
+                const rule of rules
+            ) {
+                if (
+                    rule ===
+                    "starred"
+                ) {
+                    continue;
+                }
+                if (rule === "date") {
+                    const difference =
+                        getBrowserModifiedValue(
+                            second
+                        ) -
+                        getBrowserModifiedValue(
+                            first
+                        );
+
+                    if (difference !== 0) {
+                        return difference;
+                    }
+                }
+
+                if (rule === "name") {
+                    const difference =
+                        compareBrowserNames(
+                            first,
+                            second,
+                            true
+                        );
+
+                    if (difference !== 0) {
+                        return difference;
+                    }
+                }
+            }
+
+            return compareBrowserNames(
+                first,
+                second,
+                true
             );
         }
-
-        return String(second.createdAt || "").localeCompare(
-            String(first.createdAt || "")
-        );
-    });
+    );
 }
 
 function sortBrowserFiles(files) {
-    return [...files].sort((first, second) => {
-        if (browserSort === "name") {
-            return String(first.title).localeCompare(
-                String(second.title)
-            );
-        }
+    const rules =
+        getActiveBrowserSortRules();
 
-        if (browserSort === "favorite") {
-            const favoriteDifference =
-                Number(Boolean(second.favorite)) -
-                Number(Boolean(first.favorite));
-
-            if (favoriteDifference !== 0) {
-                return favoriteDifference;
-            }
-
-            return String(second.date).localeCompare(
-                String(first.date)
-            );
-        }
-
-        if (browserSort === "member") {
-            const memberDifference =
-                String(first.uploadedByName || "")
-                    .localeCompare(
-                        String(second.uploadedByName || "")
+    return [...files].sort(
+        (first, second) => {
+            /*
+                Favorites first is treated as a grouping rule.
+                The selected Date and Name rules are then used
+                within the favorite and non-favorite groups.
+            */
+            if (
+                rules.includes(
+                    "favorite"
+                )
+            ) {
+                const difference =
+                    Number(
+                        Boolean(
+                            second.favorite
+                        )
+                    ) -
+                    Number(
+                        Boolean(
+                            first.favorite
+                        )
                     );
 
-            if (memberDifference !== 0) {
-                return memberDifference;
+                if (difference !== 0) {
+                    return difference;
+                }
             }
 
-            return String(first.title).localeCompare(
-                String(second.title)
+            for (
+                const rule of rules
+            ) {
+                if (
+                    rule ===
+                    "favorite"
+                ) {
+                    continue;
+                }
+
+                if (rule === "date") {
+                    const difference =
+                        getBrowserModifiedValue(
+                            second
+                        ) -
+                        getBrowserModifiedValue(
+                            first
+                        );
+
+                    if (difference !== 0) {
+                        return difference;
+                    }
+                }
+
+                if (rule === "name") {
+                    const difference =
+                        compareBrowserNames(
+                            first,
+                            second
+                        );
+
+                    if (difference !== 0) {
+                        return difference;
+                    }
+                }
+            }
+
+            const dateDifference =
+                getBrowserModifiedValue(
+                    second
+                ) -
+                getBrowserModifiedValue(
+                    first
+                );
+
+            if (dateDifference !== 0) {
+                return dateDifference;
+            }
+
+            return compareBrowserNames(
+                first,
+                second
             );
         }
-
-        return String(second.date).localeCompare(
-            String(first.date)
-        );
-    });
+    );
 }
 
 function getFolderById(folderId) {
@@ -1284,45 +1580,91 @@ function renderSortFilterControls() {
     el.vaultMemberFilterGroup.hidden =
         isFolderOverview;
 
+    const activeSortRules =
+        new Set(
+            getActiveBrowserSortRules(
+                isFolderOverview
+            )
+        );
+
     el.vaultSortSheet
         .querySelectorAll("[data-vault-sort]")
         .forEach(button => {
             const sortValue =
                 button.dataset.vaultSort;
 
-            button.hidden =
-                isFolderOverview &&
-                sortValue === "favorite";
+            const isContextDisabled =
+                isFolderOverview
+                    ? sortValue ===
+                        "favorite"
+                    : sortValue ===
+                        "starred";
+
+            button.hidden = false;
+            button.disabled =
+                isContextDisabled;
+            button.setAttribute(
+                "aria-disabled",
+                String(isContextDisabled)
+            );
+
+            if (isContextDisabled) {
+                button.classList.remove(
+                    "active"
+                );
+            }
 
             button.classList.toggle(
-                "active",
-                sortValue === browserSort
+                "vault-sort-disabled",
+                isContextDisabled
             );
+            button.classList.toggle(
+                "active",
+                !isContextDisabled &&
+                    activeSortRules.has(
+                        sortValue
+                    )
+            );
+
+            button.title =
+                isContextDisabled
+                    ? sortValue ===
+                        "favorite"
+                        ? "Favorites apply to files only."
+                        : "Starred applies to folders only."
+                    : "";
         });
 
     el.vaultTypeFilterOptions
         .querySelectorAll("[data-vault-file-type]")
         .forEach(button => {
+            const type =
+                button.dataset.vaultFileType;
+
             button.classList.toggle(
                 "active",
-                button.dataset.vaultFileType ===
-                    browserTypeFilter
+                type === "all"
+                    ? browserTypeFilters.size === 0
+                    : browserTypeFilters.has(type)
             );
         });
 
     renderMemberFilterOptions();
 
-    const selectedMember =
-        getVaultMembers().find(
+    const selectedMembers =
+        getVaultMembers().filter(
             member =>
-                member.id ===
-                browserMemberFilter
+                browserMemberFilters.has(
+                    member.id
+                )
         );
 
     el.vaultMemberFilterLabel.textContent =
-        selectedMember
-            ? selectedMember.name
-            : "All members";
+        selectedMembers.length === 0
+            ? "All members"
+            : selectedMembers.length === 1
+                ? selectedMembers[0].name
+                : `${selectedMembers.length} members`;
 }
 
 function toggleMemberFilterOptions() {
@@ -1346,7 +1688,15 @@ function renderMemberFilterOptions() {
         <button
             type="button"
             data-vault-member=""
-            class="${browserMemberFilter ? "" : "active"}"
+            class="${
+                browserMemberFilters.size === 0
+                    ? "active"
+                    : ""
+            }"
+            style="
+                --member-filter-soft:#F1EDFF;
+                --member-filter-accent:#6B5CA5;
+            "
         >
             <span class="vault-member-filter-avatar">
                 <i class="bi bi-people"></i>
@@ -1359,23 +1709,54 @@ function renderMemberFilterOptions() {
             <i class="bi bi-check-lg"></i>
         </button>
 
-        ${members.map(member => `
-            <button
-                type="button"
-                data-vault-member="${escapeHtml(member.id)}"
-                class="${browserMemberFilter === member.id ? "active" : ""}"
-            >
-                <span class="vault-member-filter-avatar">
-                    ${escapeHtml(getMemberInitials(member.name))}
-                </span>
+        ${members.map((member, index) => {
+            const palette = [
+                {
+                    soft: "#F0E0F2",
+                    accent: "#B164AE"
+                },
+                {
+                    soft: "#FAF0C6",
+                    accent: "#AA8024"
+                },
+                {
+                    soft: "#E0EEF4",
+                    accent: "#50849F"
+                },
+                {
+                    soft: "#E5F1E8",
+                    accent: "#5C8F6C"
+                }
+            ][index % 4];
 
-                <span>
-                    <strong>${escapeHtml(member.name)}</strong>
-                </span>
+            return `
+                <button
+                    type="button"
+                    data-vault-member="${escapeHtml(member.id)}"
+                    class="${
+                        browserMemberFilters.has(
+                            member.id
+                        )
+                            ? "active"
+                            : ""
+                    }"
+                    style="
+                        --member-filter-soft:${palette.soft};
+                        --member-filter-accent:${palette.accent};
+                    "
+                >
+                    <span class="vault-member-filter-avatar">
+                        ${escapeHtml(getMemberInitials(member.name))}
+                    </span>
 
-                <i class="bi bi-check-lg"></i>
-            </button>
-        `).join("")}
+                    <span>
+                        <strong>${escapeHtml(member.name)}</strong>
+                    </span>
+
+                    <i class="bi bi-check-lg"></i>
+                </button>
+            `;
+        }).join("")}
     `;
 
     el.vaultMemberFilterOptions
@@ -1384,15 +1765,24 @@ function renderMemberFilterOptions() {
             button.addEventListener(
                 "click",
                 () => {
-                    browserMemberFilter =
+                    const memberId =
                         button.dataset.vaultMember;
 
-                    el.vaultMemberFilterOptions.hidden =
-                        true;
-
-                    el.vaultMemberFilterButton.classList.remove(
-                        "open"
-                    );
+                    if (!memberId) {
+                        browserMemberFilters.clear();
+                    } else if (
+                        browserMemberFilters.has(
+                            memberId
+                        )
+                    ) {
+                        browserMemberFilters.delete(
+                            memberId
+                        );
+                    } else {
+                        browserMemberFilters.add(
+                            memberId
+                        );
+                    }
 
                     renderSortFilterControls();
                     renderBrowserPage();
@@ -1441,16 +1831,20 @@ function applyBrowserFileFilters(files) {
     return files
         .filter(
             file =>
-                browserTypeFilter === "all" ||
-                file.type === browserTypeFilter
+                browserTypeFilters.size === 0 ||
+                browserTypeFilters.has(
+                    file.type
+                )
         )
         .filter(
             file =>
-                !browserMemberFilter ||
-                String(
-                    file.uploadedById ||
-                    file.uploadedByName
-                ) === browserMemberFilter
+                browserMemberFilters.size === 0 ||
+                browserMemberFilters.has(
+                    String(
+                        file.uploadedById ||
+                        file.uploadedByName
+                    )
+                )
         );
 }
 
@@ -1458,7 +1852,8 @@ function getSortFilterSummary() {
     const sortLabels = {
         date: "Date modified",
         name: "Name",
-        favorite: "Favorites first"
+        favorite: "Favorites first",
+        starred: "Starred first"
     };
 
     const typeLabels = {
@@ -1467,37 +1862,62 @@ function getSortFilterSummary() {
         document: "Documents"
     };
 
+    const sortRules =
+        getActiveBrowserSortRules(
+            browserMode ===
+            "folders"
+        );
+
     const summary = [
-        sortLabels[browserSort] ||
-            sortLabels.date
+        sortRules
+            .map(
+                rule =>
+                    sortLabels[rule]
+            )
+            .filter(Boolean)
+            .join(" + ")
     ];
 
     if (
         browserMode !== "folders" &&
-        browserTypeFilter !== "all"
+        browserTypeFilters.size
     ) {
+        const labels =
+            [...browserTypeFilters]
+                .map(type =>
+                    typeLabels[type] ||
+                    capitalize(type)
+                );
+
         summary.push(
-            typeLabels[browserTypeFilter]
+            labels.length === 1
+                ? labels[0]
+                : `${labels.length} file types`
         );
     }
 
     if (
         browserMode !== "folders" &&
-        browserMemberFilter
+        browserMemberFilters.size
     ) {
-        const member =
-            getVaultMembers().find(
-                item =>
-                    item.id ===
-                    browserMemberFilter
+        const members =
+            getVaultMembers().filter(
+                member =>
+                    browserMemberFilters.has(
+                        member.id
+                    )
             );
 
-        if (member) {
-            summary.push(member.name);
-        }
+        summary.push(
+            members.length === 1
+                ? members[0].name
+                : `${members.length} members`
+        );
     }
 
-    return summary.join(" | ");
+    return summary
+        .filter(Boolean)
+        .join(" | ");
 }
 
 function getMemberInitials(name) {
@@ -1529,8 +1949,45 @@ function closeSortSheet() {
 
 function renderFolders() {
     const files = getActiveFiles();
-    const folders = getChildFolders("");
 
+    const folders =
+        getChildFolders("")
+            .sort(
+                (first, second) => {
+                    const starredDifference =
+                        Number(
+                            Boolean(
+                                second.starred
+                            )
+                        ) -
+                        Number(
+                            Boolean(
+                                first.starred
+                            )
+                        );
+
+                    if (
+                        starredDifference !==
+                        0
+                    ) {
+                        return starredDifference;
+                    }
+
+                    return (
+                        getBrowserModifiedValue(
+                            second
+                        ) -
+                        getBrowserModifiedValue(
+                            first
+                        )
+                    );
+                }
+            );
+
+    /*
+        The Secure Vault overview always shows
+        no more than four root folders.
+    */
     const previewFolders =
         folders.slice(
             0,
@@ -1559,6 +2016,17 @@ function renderFolders() {
                     <strong>${escapeHtml(folder.name)}</strong>
                     <small>${count} ${count === 1 ? "item" : "items"}</small>
                 </span>
+
+                ${
+                    folder.starred
+                        ? `
+                            <i
+                                class="bi bi-star-fill vault-folder-card-star"
+                                aria-label="Starred folder"
+                            ></i>
+                        `
+                        : ""
+                }
 
                 <i class="bi bi-chevron-right vault-folder-card-chevron"></i>
             </button>
@@ -1595,7 +2063,20 @@ function renderAllFoldersList() {
                     <small>${count} ${count === 1 ? "item" : "items"}</small>
                 </span>
 
-                <i class="bi bi-chevron-right"></i>
+                <span class="vault-all-folders-row-end">
+                    ${
+                        folder.starred
+                            ? `
+                                <i
+                                    class="bi bi-star-fill vault-all-folder-star"
+                                    aria-label="Starred folder"
+                                ></i>
+                            `
+                            : ""
+                    }
+
+                    <i class="bi bi-chevron-right"></i>
+                </span>
             </button>
         `;
     }).join("");
@@ -1701,7 +2182,7 @@ function renderFiles() {
                     `<i class="bi ${getFileIcon(file.type)}"></i>`;
 
         return `
-            <article class="vault-file-row">
+            <article class="vault-file-row vault-trash-row">
                 <button class="vault-file-preview-button" type="button" data-preview-file="${escapeHtml(file.id)}">
                     <span class="vault-file-icon ${escapeHtml(file.type)}">
                         ${iconMarkup}
@@ -1735,69 +2216,156 @@ function renderFiles() {
 }
 
 function renderTrash() {
-    const files = state.files.filter(file => file.trashedAt);
-    el.emptyVaultTrashButton.hidden = !isHead();
-    el.emptyVaultTrashButton.disabled = files.length === 0;
+    const files =
+        state.files.filter(
+            file => file.trashedAt
+        );
+
+    el.emptyVaultTrashButton.hidden =
+        !isHead();
+
+    el.emptyVaultTrashButton.disabled =
+        files.length === 0;
 
     if (!files.length) {
-        el.vaultTrashList.innerHTML = '<div class="vault-empty">Trash is empty.</div>';
+        el.vaultTrashList.innerHTML =
+            '<div class="vault-empty">Trash is empty.</div>';
+
         return;
     }
 
-    el.vaultTrashList.innerHTML = files.map(file => `
-        <article class="vault-file-row">
-            <span class="vault-file-icon ${escapeHtml(file.type)}">
-                <i class="bi ${getFileIcon(file.type)}"></i>
-            </span>
+    el.vaultTrashList.innerHTML =
+        files.map(file => `
+            <article class="vault-file-row">
+                <span class="vault-file-icon ${escapeHtml(file.type)}">
+                    <i class="bi ${getFileIcon(file.type)}"></i>
+                </span>
 
-            <div class="vault-file-copy">
-                <strong>${escapeHtml(file.title)}</strong>
-                <small>Deleted ${formatDateTime(file.trashedAt)}</small>
-            </div>
+                <div class="vault-file-copy">
+                    <strong>${escapeHtml(file.title)}</strong>
+                    <small>
+                        Deleted ${formatDateTime(file.trashedAt)}
+                    </small>
+                </div>
 
-            <div class="vault-trash-actions">
-                ${canManage(file) ? `
-                    <button type="button" data-restore-file="${escapeHtml(file.id)}">
-                        <i class="bi bi-arrow-counterclockwise"></i>
-                    </button>
-                ` : ""}
+                <div class="vault-trash-actions">
+                    ${
+                        canManage(file)
+                            ? `
+                                <button
+                                    class="vault-trash-restore"
+                                    type="button"
+                                    data-restore-file="${escapeHtml(file.id)}"
+                                    aria-label="Restore ${escapeHtml(file.title)}"
+                                    title="Restore file"
+                                >
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
+                            `
+                            : ""
+                    }
 
-                ${isHead() ? `
-                    <button type="button" data-delete-file="${escapeHtml(file.id)}">
-                        <i class="bi bi-trash3"></i>
-                    </button>
-                ` : ""}
-            </div>
-        </article>
-    `).join("");
+                    ${
+                        isHead()
+                            ? `
+                                <button
+                                    class="vault-trash-delete"
+                                    type="button"
+                                    data-delete-file="${escapeHtml(file.id)}"
+                                    aria-label="Permanently delete ${escapeHtml(file.title)}"
+                                    title="Delete permanently"
+                                >
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            `
+                            : ""
+                    }
+                </div>
+            </article>
+        `).join("");
 
-    el.vaultTrashList.querySelectorAll("[data-restore-file]").forEach(button => {
-        button.addEventListener("click", () => {
-            performAction(
-                () => vault.restoreFile(button.dataset.restoreFile, actor),
-                "File restored."
+    el.vaultTrashList
+        .querySelectorAll(
+            "[data-restore-file]"
+        )
+        .forEach(button => {
+            button.addEventListener(
+                "click",
+                () => {
+                    const file =
+                        state.files.find(
+                            item =>
+                                item.id ===
+                                button.dataset
+                                    .restoreFile
+                        );
+
+                    const fileName =
+                        file?.title ||
+                        "this file";
+
+                    if (
+                        !window.confirm(
+                            `Restore "${fileName}" from Trash?`
+                        )
+                    ) {
+                        return;
+                    }
+
+                    performAction(
+                        () =>
+                            vault.restoreFile(
+                                button.dataset
+                                    .restoreFile,
+                                actor
+                            ),
+                        "File restored."
+                    );
+                }
             );
         });
-    });
 
-    el.vaultTrashList.querySelectorAll("[data-delete-file]").forEach(button => {
-        button.addEventListener("click", () => {
-            if (!window.confirm("Permanently delete this file?")) return;
+    el.vaultTrashList
+        .querySelectorAll(
+            "[data-delete-file]"
+        )
+        .forEach(button => {
+            button.addEventListener(
+                "click",
+                () => {
+                    const file =
+                        state.files.find(
+                            item =>
+                                item.id ===
+                                button.dataset
+                                    .deleteFile
+                        );
 
-            performAction(
-                () => vault.deleteFile(button.dataset.deleteFile, actor),
-                "File permanently deleted."
+                    const fileName =
+                        file?.title ||
+                        "this file";
+
+                    if (
+                        !window.confirm(
+                            `Permanently delete "${fileName}"? This cannot be undone.`
+                        )
+                    ) {
+                        return;
+                    }
+
+                    performAction(
+                        () =>
+                            vault.deleteFile(
+                                button.dataset
+                                    .deleteFile,
+                                actor
+                            ),
+                        "File permanently deleted."
+                    );
+                }
             );
         });
-    });
 }
-
-
-
-
-
-
-
 
 function focusFolders() {
     updateOverviewSelection("folders");
@@ -2164,8 +2732,27 @@ function saveRename() {
 }
 
 function moveSelectedFileToTrash() {
+    const file =
+        getSelectedFile();
+
+    if (!file) {
+        return;
+    }
+
+    if (
+        !window.confirm(
+            `Move "${file.title}" to Trash?`
+        )
+    ) {
+        return;
+    }
+
     performAction(
-        () => vault.moveToTrash(selectedFileId, actor),
+        () =>
+            vault.moveToTrash(
+                selectedFileId,
+                actor
+            ),
         "File moved to Trash."
     );
 
