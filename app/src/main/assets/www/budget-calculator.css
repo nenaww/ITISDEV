@@ -30,9 +30,9 @@ body{
 
 
 
-/* ==========================
+/* =====================
 HEADER
-========================== */
+===================== */
 
 
 .budget-header{
@@ -51,21 +51,21 @@ HEADER
 
 .back-button{
 
-    width:40px;
+    width:42px;
 
-    height:40px;
+    height:42px;
 
     border:none;
 
     border-radius:50%;
 
-    background:#ffffff;
+    background:white;
 
     display:flex;
 
-    align-items:center;
-
     justify-content:center;
+
+    align-items:center;
 
     font-size:20px;
 
@@ -92,7 +92,7 @@ HEADER
 
 .budget-header p{
 
-    margin:4px 0;
+    margin:5px 0 0;
 
     font-size:13px;
 
@@ -106,11 +106,9 @@ HEADER
 
 
 
-
-
-/* ==========================
+/* =====================
 CARDS
-========================== */
+===================== */
 
 
 .card{
@@ -133,7 +131,7 @@ CARDS
 
 .card h2{
 
-    margin:0 0 15px;
+    margin:0 0 14px;
 
     font-size:18px;
 
@@ -149,9 +147,9 @@ CARDS
 
 
 
-/* ==========================
+/* =====================
 OVERVIEW
-========================== */
+===================== */
 
 
 .overview-grid{
@@ -174,9 +172,9 @@ OVERVIEW
 
     display:flex;
 
-    align-items:center;
-
     gap:10px;
+
+    align-items:center;
 
 }
 
@@ -220,7 +218,6 @@ OVERVIEW
 
 
 
-
 .peach{
 
     background:#fff4e9;
@@ -235,7 +232,6 @@ OVERVIEW
     color:#ec8b45;
 
 }
-
 
 
 
@@ -256,8 +252,6 @@ OVERVIEW
 
 
 
-
-
 .green{
 
     background:#f2f7f3;
@@ -269,10 +263,9 @@ OVERVIEW
 
     background:#d9efd9;
 
-    color:#4b9c68;
+    color:#4d9b68;
 
 }
-
 
 
 
@@ -285,7 +278,7 @@ OVERVIEW
 
 .blue i{
 
-    background:#d7ebfa;
+    background:#d8ebf7;
 
     color:#5796d5;
 
@@ -299,9 +292,9 @@ OVERVIEW
 
 
 
-/* ==========================
-FUNCTION BUTTONS
-========================== */
+/* =====================
+FUNCTIONS
+===================== */
 
 
 .function-row{
@@ -312,29 +305,27 @@ FUNCTION BUTTONS
 
     overflow-x:auto;
 
-    margin-bottom:10px;
-
 }
 
 
 
 .function{
 
+    flex-shrink:0;
+
+    padding:10px 16px;
+
     border:none;
 
-    flex-shrink:0;
+    border-radius:16px;
 
     background:#f7f4ef;
 
     color:#6d625a;
 
-    padding:10px 16px;
-
-    border-radius:16px;
+    font-weight:700;
 
     font-size:12px;
-
-    font-weight:700;
 
 }
 
@@ -344,7 +335,7 @@ FUNCTION BUTTONS
 
     background:#ecb08b;
 
-    color:#ffffff;
+    color:white;
 
 }
 
@@ -356,7 +347,7 @@ FUNCTION BUTTONS
 
     gap:8px;
 
-    margin-bottom:12px;
+    margin-top:10px;
 
 }
 
@@ -375,22 +366,23 @@ FUNCTION BUTTONS
 
 
 
-/* ==========================
-AMOUNT DISPLAY
-========================== */
+
+/* =====================
+AMOUNT
+===================== */
 
 
 .amount-display{
 
-    background:#fff4d8;
+    margin-top:14px;
 
-    padding:20px;
+    background:#fff4d8;
 
     border-radius:22px;
 
-    text-align:center;
+    padding:20px;
 
-    margin-top:10px;
+    text-align:center;
 
 }
 
@@ -408,7 +400,7 @@ AMOUNT DISPLAY
 
 .amount-display h1{
 
-    margin:8px 0 18px;
+    margin:10px 0 18px;
 
     font-size:42px;
 
@@ -419,36 +411,25 @@ AMOUNT DISPLAY
 
 
 
-
-
-
 .category-button{
 
     width:100%;
 
-    padding:13px;
-
-    background:#ffffff;
-
     border:none;
+
+    background:white;
 
     border-radius:16px;
 
+    padding:13px;
+
     display:flex;
+
+    justify-content:space-between;
 
     align-items:center;
 
-    gap:10px;
-
-    font-size:14px;
-
-}
-
-
-
-.category-button i:last-child{
-
-    margin-left:auto;
+    font-weight:600;
 
 }
 
@@ -460,9 +441,9 @@ AMOUNT DISPLAY
 
 
 
-/* ==========================
+/* =====================
 CATEGORY MENU
-========================== */
+===================== */
 
 
 .category-menu{
@@ -483,13 +464,11 @@ CATEGORY MENU
 
     border:none;
 
-    background:#efeafe;
-
     border-radius:15px;
 
     padding:10px;
 
-    font-size:12px;
+    background:#efeafe;
 
 }
 
@@ -500,9 +479,10 @@ CATEGORY MENU
 
 
 
-/* ==========================
+
+/* =====================
 EXTRA INPUTS
-========================== */
+===================== */
 
 
 .extra-inputs{
@@ -555,9 +535,9 @@ EXTRA INPUTS
 
 
 
-/* ==========================
+/* =====================
 KEYPAD
-========================== */
+===================== */
 
 
 .keypad{
@@ -582,17 +562,11 @@ KEYPAD
 
     border-radius:18px;
 
-    background:#ffffff;
+    background:white;
 
     font-size:20px;
 
     font-weight:700;
-
-    color:#4a4038;
-
-    box-shadow:
-
-    0 3px 10px rgba(0,0,0,.05);
 
 }
 
@@ -630,9 +604,9 @@ KEYPAD
 
 
 
-/* ==========================
+/* =====================
 IMPACT
-========================== */
+===================== */
 
 
 .impact-grid{
@@ -651,9 +625,9 @@ IMPACT
 
     background:#f8f7f4;
 
-    padding:14px;
-
     border-radius:16px;
+
+    padding:14px;
 
 }
 
@@ -661,11 +635,11 @@ IMPACT
 
 .impact-grid span{
 
-    display:block;
-
     font-size:11px;
 
     color:#8b8178;
+
+    display:block;
 
 }
 
@@ -685,9 +659,9 @@ IMPACT
 
 
 
-/* ==========================
+/* =====================
 PLANNER
-========================== */
+===================== */
 
 
 .planner-header{
@@ -718,17 +692,15 @@ PLANNER
 
     border:none;
 
-    background:#efeafe;
-
-    border-radius:50%;
-
     width:35px;
 
     height:35px;
 
+    border-radius:50%;
+
+    background:#efeafe;
+
 }
-
-
 
 
 
@@ -742,7 +714,7 @@ PLANNER
 
     padding:12px 0;
 
-    border-bottom:1px solid #f1ede8;
+    border-bottom:1px solid #eee7df;
 
 }
 
@@ -760,8 +732,6 @@ PLANNER
 
     width:110px;
 
-    text-align:right;
-
     border:none;
 
     background:#f8f7f4;
@@ -769,6 +739,8 @@ PLANNER
     border-radius:12px;
 
     padding:10px;
+
+    text-align:right;
 
 }
 
@@ -780,9 +752,9 @@ PLANNER
 
 
 
-/* ==========================
+/* =====================
 RESULTS
-========================== */
+===================== */
 
 
 .result-grid{
@@ -813,9 +785,9 @@ RESULTS
 
     display:block;
 
-    color:#8b8178;
-
     font-size:11px;
+
+    color:#8b8178;
 
 }
 
@@ -829,31 +801,159 @@ RESULTS
 
 
 
+.plan-status{
 
+    margin-top:12px;
 
+    background:#f2f7f3;
 
+    padding:12px;
 
-
-/* ==========================
-ALLOCATION
-========================== */
-
-
-.allocation-list div{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    padding:12px 0;
-
-    border-bottom:1px solid #f0ece6;
+    border-radius:15px;
 
 }
 
 
 
-.allocation-list span{
+
+
+
+
+
+
+/* =====================
+CATEGORY ALLOCATION FIX
+===================== */
+
+
+.allocation-description{
+
+    font-size:13px;
+
+    color:#8b8178;
+
+    margin-top:-5px;
+
+    margin-bottom:15px;
+
+}
+
+
+
+.allocation-list{
+
+    width:100%;
+
+}
+
+
+
+.allocation-item{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:14px 0;
+
+    border-bottom:1px solid #eee7df;
+
+}
+
+
+
+.allocation-item div{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:4px;
+
+}
+
+
+
+.allocation-item div strong{
+
+    font-size:14px;
+
+}
+
+
+
+.allocation-item span{
+
+    font-size:12px;
+
+    color:#8b8178;
+
+}
+
+
+
+.allocation-item > strong{
+
+    font-size:15px;
+
+}
+
+
+
+
+
+
+.allocation-summary{
+
+    margin-top:14px;
+
+    padding-top:12px;
+
+    border-top:1px solid #eee7df;
+
+}
+
+
+
+.allocation-summary div{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-bottom:8px;
+
+}
+
+
+
+.allocation-summary span{
+
+    color:#8b8178;
+
+    font-size:13px;
+
+}
+
+
+
+.adjust-button{
+
+    width:100%;
+
+    margin-top:14px;
+
+    border:none;
+
+    border-radius:16px;
+
+    padding:13px;
+
+    background:#efeafe;
+
+    color:#8060d8;
 
     font-weight:700;
 
@@ -866,9 +966,10 @@ ALLOCATION
 
 
 
-/* ==========================
+
+/* =====================
 BOTTOM ACTIONS
-========================== */
+===================== */
 
 
 .bottom-actions{
@@ -876,6 +977,8 @@ BOTTOM ACTIONS
     display:flex;
 
     gap:10px;
+
+    margin-top:10px;
 
 }
 
@@ -885,7 +988,7 @@ BOTTOM ACTIONS
 
     flex:1;
 
-    padding:13px;
+    height:48px;
 
     border-radius:16px;
 

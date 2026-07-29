@@ -1,19 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
 
 
-// ======================================
+// ===============================
 // TEMP HOUSEHOLD DATA
-// Replace with Supabase later
-// ======================================
+// Replace with database later
+// ===============================
 
 let householdBudget = {
 
     total: 25000,
-
     spent: 8000,
-
     remaining: 17000,
-
     daysLeft: 15
 
 };
@@ -22,42 +19,19 @@ let householdBudget = {
 
 
 
-// ======================================
-// STATE
-// ======================================
+// ===============================
+// CALCULATOR STATE
+// ===============================
 
 let currentInput = "";
 
-let previousValue = null;
+let firstValue = null;
 
-let operator = null;
+let currentOperator = null;
 
 let selectedMode = "spend";
 
-let selectedCategory = "Grocery";
-
-
-
-
-
-
-
-// ======================================
-// ELEMENTS
-// ======================================
-
-
-const amountDisplay =
-document.getElementById("amountValue");
-
-
-const amountLabel =
-document.getElementById("amountLabel");
-
-
-
-const categoryName =
-document.getElementById("categoryName");
+let selectedCategory = "None";
 
 
 
@@ -67,41 +41,23 @@ document.getElementById("categoryName");
 
 
 
-// ======================================
-// INITIAL BUDGET DISPLAY
-// ======================================
+// ===============================
+// INITIAL LOAD
+// ===============================
+
+document.getElementById("totalBudget").textContent =
+formatMoney(householdBudget.total);
 
 
-document.getElementById(
-"totalBudget"
-).textContent =
-formatMoney(
-householdBudget.total
-);
+document.getElementById("spentAmount").textContent =
+formatMoney(householdBudget.spent);
 
 
-
-document.getElementById(
-"spentAmount"
-).textContent =
-formatMoney(
-householdBudget.spent
-);
+document.getElementById("remainingAmount").textContent =
+formatMoney(householdBudget.remaining);
 
 
-
-document.getElementById(
-"remainingAmount"
-).textContent =
-formatMoney(
-householdBudget.remaining
-);
-
-
-
-document.getElementById(
-"daysRemaining"
-).textContent =
+document.getElementById("daysRemaining").textContent =
 householdBudget.daysLeft;
 
 
@@ -110,16 +66,13 @@ householdBudget.daysLeft;
 
 
 
-// ======================================
-// FORMAT MONEY
-// ======================================
 
 
 function formatMoney(value){
 
-return "₱" +
-Number(value)
-.toLocaleString("en-PH");
+    return "₱" +
+    Number(value)
+    .toLocaleString("en-PH");
 
 }
 
@@ -129,9 +82,46 @@ Number(value)
 
 
 
-// ======================================
-// CALCULATOR KEYPAD
-// ======================================
+
+
+// ===============================
+// CALCULATOR DISPLAY
+// ===============================
+
+
+const amountDisplay =
+document.getElementById("amountValue");
+
+
+
+function updateDisplay(){
+
+    if(currentInput === ""){
+
+        amountDisplay.textContent =
+        "₱0";
+
+        return;
+
+    }
+
+
+    amountDisplay.textContent =
+    formatMoney(currentInput);
+
+}
+
+
+
+
+
+
+
+
+
+// ===============================
+// KEYPAD
+// ===============================
 
 
 document
@@ -150,14 +140,25 @@ button.textContent.trim();
 
 
 
+if(value === "C"){
 
-// CLEAR
+    resetCalculator();
 
-if(value==="C"){
+    return;
 
-resetCalculator();
+}
 
-return;
+
+
+
+if(value === "⌫"){
+
+    currentInput =
+    currentInput.slice(0,-1);
+
+    updateDisplay();
+
+    return;
 
 }
 
@@ -165,95 +166,56 @@ return;
 
 
 
+if(value === "="){
 
-// DELETE
+    calculate();
 
-if(value==="⌫"){
-
-currentInput =
-currentInput.slice(0,-1);
-
-updateDisplay();
-
-return;
+    return;
 
 }
 
 
 
 
-
-
-
-// EQUAL
-
-if(value==="="){
-
-calculateExpression();
-
-return;
-
-}
-
-
-
-
-
-
-
-// OPERATOR
 
 if(
 ["+","−","×","÷"]
 .includes(value)
 ){
 
-setOperator(value);
+    setOperator(value);
 
-return;
-
-}
-
-
-
-
-
-
-
-// PERCENT
-
-if(value==="%"){
-
-currentInput =
-String(
-Number(currentInput || 0)
-/100
-);
-
-
-updateDisplay();
-
-return;
+    return;
 
 }
 
 
 
 
+if(value === "%"){
+
+    currentInput =
+    String(
+    Number(currentInput || 0) / 100
+    );
+
+    updateDisplay();
+
+    return;
+
+}
 
 
 
-// NUMBER
+
 
 currentInput += value;
 
-
 updateDisplay();
 
 
-}
 
-);
+});
 
 
 });
@@ -266,76 +228,27 @@ updateDisplay();
 
 
 
-
-function updateDisplay(){
-
-
-if(currentInput===""){
-
-amountDisplay.textContent="₱0";
-
-return;
-
-}
+// ===============================
+// OPERATIONS
+// ===============================
 
 
-amountDisplay.textContent =
-formatMoney(currentInput);
+function setOperator(operator){
 
 
-}
-
-
-
-
-
-
-
-
-function resetCalculator(){
-
-
-currentInput="";
-
-previousValue=null;
-
-operator=null;
-
-
-amountDisplay.textContent="₱0";
-
-
-}
-
-
-
-
-
-
-
-
-// ======================================
-// MATH OPERATIONS
-// ======================================
-
-
-function setOperator(op){
-
-
-if(currentInput==="")
+if(currentInput === "")
 return;
 
 
-
-previousValue =
+firstValue =
 Number(currentInput);
 
 
+currentOperator =
+operator;
 
-operator = op;
 
-
-currentInput="";
+currentInput = "";
 
 
 
@@ -344,13 +257,16 @@ currentInput="";
 
 
 
-function calculateExpression(){
+
+
+
+function calculate(){
 
 
 if(
-previousValue===null ||
-operator===null ||
-currentInput===""
+firstValue === null ||
+currentOperator === null ||
+currentInput === ""
 ){
 
 updateBudgetImpact();
@@ -361,7 +277,7 @@ return;
 
 
 
-let second =
+let secondValue =
 Number(currentInput);
 
 
@@ -370,13 +286,13 @@ let result;
 
 
 
-switch(operator){
+switch(currentOperator){
 
 
 case "+":
 
 result =
-previousValue + second;
+firstValue + secondValue;
 
 break;
 
@@ -385,7 +301,7 @@ break;
 case "−":
 
 result =
-previousValue - second;
+firstValue - secondValue;
 
 break;
 
@@ -394,7 +310,7 @@ break;
 case "×":
 
 result =
-previousValue * second;
+firstValue * secondValue;
 
 break;
 
@@ -403,7 +319,7 @@ break;
 case "÷":
 
 result =
-previousValue / second;
+firstValue / secondValue;
 
 break;
 
@@ -417,15 +333,13 @@ currentInput =
 String(result);
 
 
+firstValue = null;
 
-previousValue=null;
-
-operator=null;
+currentOperator = null;
 
 
 
 updateDisplay();
-
 
 updateBudgetImpact();
 
@@ -439,10 +353,32 @@ updateBudgetImpact();
 
 
 
+function resetCalculator(){
 
-// ======================================
-// MODE BUTTONS
-// ======================================
+currentInput="";
+
+firstValue=null;
+
+currentOperator=null;
+
+
+amountDisplay.textContent =
+"₱0";
+
+
+}
+
+
+
+
+
+
+
+
+
+// ===============================
+// FUNCTION MODES
+// ===============================
 
 
 document
@@ -456,21 +392,13 @@ button.addEventListener(
 
 
 document
-.querySelectorAll(
-".function"
-)
+.querySelectorAll(".function")
 .forEach(btn=>
-btn.classList.remove(
-"active"
-)
+btn.classList.remove("active")
 );
 
 
-
-button.classList.add(
-"active"
-);
-
+button.classList.add("active");
 
 
 selectedMode =
@@ -481,10 +409,7 @@ button.dataset.function;
 updateMode();
 
 
-
-}
-
-);
+});
 
 
 });
@@ -496,8 +421,14 @@ updateMode();
 
 
 
-
 function updateMode(){
+
+
+const label =
+document.getElementById(
+"amountLabel"
+);
+
 
 
 const extra =
@@ -510,85 +441,67 @@ document.getElementById(
 switch(selectedMode){
 
 
-
 case "spend":
 
-amountLabel.textContent =
+label.textContent =
 "Amount to Spend";
 
-extra.classList.add(
-"hidden"
-);
+extra.classList.add("hidden");
 
 break;
-
 
 
 
 case "save":
 
-amountLabel.textContent =
+label.textContent =
 "Amount to Save";
 
-extra.classList.add(
-"hidden"
-);
+extra.classList.add("hidden");
 
 break;
-
 
 
 
 case "split":
 
-amountLabel.textContent =
+label.textContent =
 "Amount to Split";
 
-extra.classList.remove(
-"hidden"
-);
+extra.classList.remove("hidden");
 
 break;
-
 
 
 
 case "daily":
 
-amountLabel.textContent =
-"Daily Spending";
+label.textContent =
+"Amount Per Day";
 
-extra.classList.remove(
-"hidden"
-);
+extra.classList.remove("hidden");
 
 break;
-
 
 
 
 case "member":
 
-amountLabel.textContent =
+label.textContent =
 "Amount Per Member";
 
-extra.classList.remove(
-"hidden"
-);
+extra.classList.remove("hidden");
 
 break;
-
 
 
 
 case "percent":
 
-amountLabel.textContent =
+label.textContent =
 "Budget Percentage";
 
-extra.classList.add(
-"hidden"
-);
+extra.classList.add("hidden");
 
 break;
 
@@ -596,7 +509,6 @@ break;
 }
 
 
-
 }
 
 
@@ -607,28 +519,22 @@ break;
 
 
 
-// ======================================
+// ===============================
 // MORE BUTTON
-// ======================================
+// ===============================
 
 
 document
-.getElementById(
-"moreButton"
-)
+.getElementById("moreButton")
 .addEventListener(
 "click",
 ()=>{
 
 
 document
-.getElementById(
-"moreFunctions"
-)
+.getElementById("moreFunctions")
 .classList
-.toggle(
-"hidden"
-);
+.toggle("hidden");
 
 
 });
@@ -641,28 +547,22 @@ document
 
 
 
-// ======================================
+// ===============================
 // CATEGORY DROPDOWN
-// ======================================
+// ===============================
 
 
 document
-.getElementById(
-"categoryButton"
-)
+.getElementById("categoryButton")
 .addEventListener(
 "click",
 ()=>{
 
 
 document
-.getElementById(
-"categoryMenu"
-)
+.getElementById("categoryMenu")
 .classList
-.toggle(
-"hidden"
-);
+.toggle("hidden");
 
 
 });
@@ -673,9 +573,7 @@ document
 
 
 document
-.querySelectorAll(
-"#categoryMenu button"
-)
+.querySelectorAll("#categoryMenu button")
 .forEach(button=>{
 
 
@@ -689,19 +587,17 @@ button.dataset.category;
 
 
 
-categoryName.textContent =
+document
+.getElementById("categoryName")
+.textContent =
 selectedCategory;
 
 
 
 document
-.getElementById(
-"categoryMenu"
-)
+.getElementById("categoryMenu")
 .classList
-.add(
-"hidden"
-);
+.add("hidden");
 
 
 
@@ -721,9 +617,9 @@ updateBudgetImpact();
 
 
 
-// ======================================
+// ===============================
 // BUDGET IMPACT
-// ======================================
+// ===============================
 
 
 function updateBudgetImpact(){
@@ -746,9 +642,7 @@ switch(selectedMode){
 case "spend":
 
 result =
-householdBudget.remaining
--
-amount;
+householdBudget.remaining - amount;
 
 break;
 
@@ -757,12 +651,9 @@ break;
 case "save":
 
 result =
-householdBudget.remaining
--
-amount;
+householdBudget.remaining - amount;
 
 break;
-
 
 
 
@@ -771,12 +662,9 @@ case "split":
 
 let members =
 Number(
-document.getElementById(
-"memberInput"
-).value
-||1
+document.getElementById("memberInput").value
+|| 1
 );
-
 
 
 result =
@@ -788,16 +676,13 @@ break;
 
 
 
-
 case "daily":
 
 
 let days =
 Number(
-document.getElementById(
-"daysInput"
-).value
-||1
+document.getElementById("daysInput").value
+|| 1
 );
 
 
@@ -810,16 +695,13 @@ break;
 
 
 
-
 case "member":
 
 
 let people =
 Number(
-document.getElementById(
-"memberInput"
-).value
-||1
+document.getElementById("memberInput").value
+|| 1
 );
 
 
@@ -836,14 +718,10 @@ case "percent":
 
 
 result =
-(amount /
-householdBudget.total)
-*
-100;
+(amount / householdBudget.total) * 100;
 
 
 break;
-
 
 
 }
@@ -854,64 +732,41 @@ break;
 
 
 document
-.getElementById(
-"impactBudget"
-)
-.textContent =
-selectedMode==="percent"
-
-?
-
-result.toFixed(1)+"%"
-
-:
-
-formatMoney(
-Math.max(result,0)
-);
-
-
-
-
-
-document
-.getElementById(
-"impactCategory"
-)
+.getElementById("impactCategory")
 .textContent =
 selectedCategory;
 
 
 
+document
+.getElementById("impactBudget")
+.textContent =
+selectedMode === "percent"
+?
+result.toFixed(1)+"%"
+:
+formatMoney(Math.max(result,0));
 
 
-let used =
-(amount /
-householdBudget.total)
-*
-100;
 
+
+
+let percent =
+(amount / householdBudget.total) * 100;
 
 
 
 document
-.getElementById(
-"impactPercent"
-)
+.getElementById("impactPercent")
 .textContent =
-used.toFixed(1)+"%";
-
-
+percent.toFixed(1)+"%";
 
 
 
 
 
 let status =
-document
-.getElementById(
-"impactStatus"
-);
+document.getElementById("impactStatus");
 
 
 
@@ -922,16 +777,12 @@ status.textContent =
 
 }
 
-
-
-else if(used > 70){
+else if(percent > 70){
 
 status.textContent =
 "Be Careful";
 
 }
-
-
 
 else{
 
@@ -941,7 +792,6 @@ status.textContent =
 }
 
 
-
 }
 
 
@@ -952,56 +802,22 @@ status.textContent =
 
 
 
-// ======================================
-// EXTRA INPUT LISTENERS
-// ======================================
-
-
-document
-.querySelectorAll(
-"#memberInput,#daysInput"
-)
-.forEach(input=>{
-
-
-input.addEventListener(
-"input",
-updateBudgetImpact
-);
-
-
-});
-
-
-
-
-
-
-
-
-
-// ======================================
+// ===============================
 // PLANNER
-// ======================================
+// ===============================
 
 
 document
-.getElementById(
-"plannerToggle"
-)
+.getElementById("plannerToggle")
 .addEventListener(
 "click",
 ()=>{
 
 
 document
-.getElementById(
-"advancedPlanner"
-)
+.getElementById("advancedPlanner")
 .classList
-.toggle(
-"hidden"
-);
+.toggle("hidden");
 
 
 });
@@ -1012,10 +828,9 @@ document
 
 
 
+
 document
-.querySelectorAll(
-".planner-input input"
-)
+.querySelectorAll(".planner-input input")
 .forEach(input=>{
 
 
@@ -1034,60 +849,48 @@ calculatePlanner
 
 
 
+
 function calculatePlanner(){
 
 
 let income =
 Number(
-document.getElementById(
-"incomeInput"
-).value ||0
+document.getElementById("incomeInput").value || 0
 );
 
 
 
 let bills =
 Number(
-document.getElementById(
-"billsInput"
-).value ||0
+document.getElementById("billsInput").value || 0
 );
 
 
 
 let savings =
 Number(
-document.getElementById(
-"savingsInput"
-).value ||0
+document.getElementById("savingsInput").value || 0
 );
-
 
 
 
 let additional =
 Number(
-document.getElementById(
-"additionalInput"
-).value ||0
+document.getElementById("additionalInput").value || 0
 );
 
 
 
 let debt =
 Number(
-document.getElementById(
-"debtInput"
-).value ||0
+document.getElementById("debtInput").value || 0
 );
 
 
 
 let seasonal =
 Number(
-document.getElementById(
-"seasonalInput"
-).value ||0
+document.getElementById("seasonalInput").value || 0
 );
 
 
@@ -1095,71 +898,55 @@ document.getElementById(
 
 
 let available =
-income
-+
-additional;
+income + additional;
 
 
 
 let afterBills =
-available
--
-bills
--
-debt;
+available - bills - debt;
 
 
 
 let afterSavings =
-afterBills
--
-savings;
+afterBills - savings;
 
 
 
-let final =
-afterSavings
--
-seasonal;
+let finalMoney =
+afterSavings - seasonal;
 
 
 
 
 
 
-document
-.getElementById(
-"afterBills"
-)
+
+document.getElementById("afterBills")
+.textContent =
+formatMoney(afterBills);
+
+
+
+document.getElementById("afterSavings")
+.textContent =
+formatMoney(afterSavings);
+
+
+
+document.getElementById("dailyLimit")
 .textContent =
 formatMoney(
-afterBills
-);
-
-
-
-
-document
-.getElementById(
-"afterSavings"
+finalMoney / householdBudget.daysLeft
 )
++
+"/day";
+
+
+
+document.getElementById("perMember")
 .textContent =
 formatMoney(
-afterSavings
-);
-
-
-
-
-
-document
-.getElementById(
-"dailyLimit"
-)
-.textContent =
-formatMoney(
-final /
-householdBudget.daysLeft
+finalMoney / 4
 );
 
 
@@ -1168,21 +955,18 @@ householdBudget.daysLeft
 
 
 let status =
-document
-.getElementById(
-"planStatus"
-);
+document.getElementById("planStatus");
 
 
 
-if(final < 0){
+if(finalMoney < 0){
 
 status.textContent =
 "Over Budget";
 
 }
 
-else if(final < 3000){
+else if(finalMoney < 3000){
 
 status.textContent =
 "Tight";
@@ -1198,9 +982,175 @@ status.textContent =
 
 
 
+
+
+
+updateAllocation(
+income,
+savings,
+seasonal
+);
+
+
+
 }
 
 
+
+
+
+
+
+
+
+// ===============================
+// ALLOCATION PREVIEW
+// ===============================
+
+
+function updateAllocation(
+income,
+savings,
+seasonal
+){
+
+
+
+let food =
+income * .30;
+
+
+
+let transport =
+income * .10;
+
+
+
+let utilities =
+income * .10;
+
+
+
+let health =
+income * .05;
+
+
+
+let other =
+income * .10;
+
+
+
+
+
+document.getElementById("foodAllocation")
+.textContent =
+formatMoney(food);
+
+
+
+document.getElementById("transportAllocation")
+.textContent =
+formatMoney(transport);
+
+
+
+document.getElementById("utilitiesAllocation")
+.textContent =
+formatMoney(utilities);
+
+
+
+document.getElementById("healthAllocation")
+.textContent =
+formatMoney(health);
+
+
+
+document.getElementById("savingsAllocation")
+.textContent =
+formatMoney(savings);
+
+
+
+document.getElementById("seasonalAllocation")
+.textContent =
+formatMoney(seasonal);
+
+
+
+document.getElementById("otherAllocation")
+.textContent =
+formatMoney(other);
+
+
+
+
+
+let total =
+
+food +
+transport +
+utilities +
+health +
+savings +
+seasonal +
+other;
+
+
+
+document.getElementById("totalAllocated")
+.textContent =
+formatMoney(total);
+
+
+
+document.getElementById("unallocatedBalance")
+.textContent =
+formatMoney(
+income-total
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// ===============================
+// RESET
+// ===============================
+
+
+document
+.getElementById("resetButton")
+.addEventListener(
+"click",
+()=>{
+
+
+document
+.querySelectorAll(
+".planner-input input"
+)
+.forEach(input=>{
+
+input.value="";
+
+});
+
+
+
+resetCalculator();
+
+
+});
 
 
 
