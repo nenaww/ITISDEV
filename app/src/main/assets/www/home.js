@@ -34,6 +34,8 @@ const homeText = {
         quickBills: "Bills",
         quickCalculator: "Calculator",
         quickVault: "Secure Vault",
+        reports: "Reports",
+        reportsSubtitle: "View insights and summaries",
         comingSoon: "This feature will be added next.",
         scanReady: "OCR receipt scanner will be added next.",
         noAmount: "No amount",
@@ -68,6 +70,8 @@ const homeText = {
         quickBills: "Bills",
         quickCalculator: "Calculator",
         quickVault: "Secure Vault",
+        reports: "Reports",
+        reportsSubtitle: "Tingnan ang insights at summaries",
         comingSoon: "Susunod pang idaragdag ang feature na ito.",
         scanReady: "Susunod pang idaragdag ang OCR receipt scanner.",
         noAmount: "Walang amount",
@@ -294,6 +298,10 @@ function renderHomeDashboard() {
 
     setText("homeBudgetViewButton", homeText[homeCurrentLanguage].view);
 
+    setText("homeReportsTitle", homeText[homeCurrentLanguage].reports);
+
+    setText("homeReportsSubtitle", homeText[homeCurrentLanguage].reportsSubtitle);
+
     const usedPercent = Math.min((sampleDashboard.totalSpent / sampleDashboard.monthlyBudget) * 100, 100);
     const progress = document.getElementById("homeBudgetFill");
 
@@ -318,6 +326,7 @@ function bindHomeActions() {
     const scanButton = document.getElementById("navScan");
     const addExpenseButton = document.getElementById("quickAddExpense");
     const calculatorButton = document.getElementById("quickCalculator");
+    const reportsButton = document.getElementById("homeReportsButton");
     const familyViewAllButton = document.getElementById("familySpendingViewAll");
     const savingsButton = document.getElementById("navSavings");
 
@@ -347,7 +356,15 @@ function bindHomeActions() {
 
     if (calculatorButton) {
         calculatorButton.addEventListener("click", () => {
-            window.location.href = "calculator.html";
+            window.location.href =
+                "budget-calculator.html?from=home";
+        });
+    }
+
+    if (reportsButton) {
+        reportsButton.addEventListener("click", () => {
+            window.location.href =
+                "reports.html";
         });
     }
 
