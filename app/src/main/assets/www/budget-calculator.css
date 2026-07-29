@@ -1,0 +1,1013 @@
+*{
+    box-sizing:border-box;
+}
+
+
+body{
+
+    margin:0;
+
+    font-family:
+    "Plus Jakarta Sans",
+    sans-serif;
+
+    background:#f2f7f3;
+
+    color:#4a4038;
+
+}
+
+
+.budget-page{
+
+    padding:20px;
+
+    padding-bottom:40px;
+
+}
+
+
+
+
+
+/* =====================
+HEADER
+===================== */
+
+
+.budget-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    margin-bottom:20px;
+
+}
+
+
+
+.back-button{
+
+    width:42px;
+
+    height:42px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:white;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:20px;
+
+    color:#4a4038;
+
+    box-shadow:
+    0 5px 12px rgba(0,0,0,.05);
+
+}
+
+
+
+.budget-header h1{
+
+    margin:0;
+
+    font-size:24px;
+
+    font-weight:800;
+
+}
+
+
+
+.budget-header p{
+
+    margin:5px 0 0;
+
+    font-size:13px;
+
+    color:#8b8178;
+
+}
+
+
+
+
+
+
+
+/* =====================
+CARDS
+===================== */
+
+
+.card{
+
+    background:#ffffff;
+
+    border-radius:24px;
+
+    padding:18px;
+
+    margin-bottom:16px;
+
+    box-shadow:
+
+    0 8px 20px rgba(0,0,0,.04);
+
+}
+
+
+
+.card h2{
+
+    margin:0 0 14px;
+
+    font-size:18px;
+
+    font-weight:800;
+
+}
+
+
+
+
+
+
+
+
+
+/* =====================
+OVERVIEW
+===================== */
+
+
+.overview-grid{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:10px;
+
+}
+
+
+
+.overview-box{
+
+    padding:12px;
+
+    border-radius:18px;
+
+    display:flex;
+
+    gap:10px;
+
+    align-items:center;
+
+}
+
+
+
+.overview-box i{
+
+    width:34px;
+
+    height:34px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+
+
+.overview-box span{
+
+    display:block;
+
+    font-size:11px;
+
+    color:#8b8178;
+
+}
+
+
+
+.overview-box strong{
+
+    font-size:15px;
+
+}
+
+
+
+.peach{
+
+    background:#fff4e9;
+
+}
+
+
+.peach i{
+
+    background:#ffd9bd;
+
+    color:#ec8b45;
+
+}
+
+
+
+.lavender{
+
+    background:#efeafe;
+
+}
+
+
+.lavender i{
+
+    background:#ddd2ff;
+
+    color:#8060d8;
+
+}
+
+
+
+.green{
+
+    background:#f2f7f3;
+
+}
+
+
+.green i{
+
+    background:#d9efd9;
+
+    color:#4d9b68;
+
+}
+
+
+
+.blue{
+
+    background:#eaf3f8;
+
+}
+
+
+.blue i{
+
+    background:#d8ebf7;
+
+    color:#5796d5;
+
+}
+
+
+
+
+
+
+
+
+
+/* =====================
+FUNCTIONS
+===================== */
+
+
+.function-row{
+
+    display:flex;
+
+    gap:8px;
+
+    overflow-x:auto;
+
+}
+
+
+
+.function{
+
+    flex-shrink:0;
+
+    padding:10px 16px;
+
+    border:none;
+
+    border-radius:16px;
+
+    background:#f7f4ef;
+
+    color:#6d625a;
+
+    font-weight:700;
+
+    font-size:12px;
+
+}
+
+
+
+.function.active{
+
+    background:#ecb08b;
+
+    color:white;
+
+}
+
+
+
+.more-functions{
+
+    display:flex;
+
+    gap:8px;
+
+    margin-top:10px;
+
+}
+
+
+
+.hidden{
+
+    display:none!important;
+
+}
+
+
+
+
+
+
+
+
+
+/* =====================
+AMOUNT
+===================== */
+
+
+.amount-display{
+
+    margin-top:14px;
+
+    background:#fff4d8;
+
+    border-radius:22px;
+
+    padding:20px;
+
+    text-align:center;
+
+}
+
+
+
+.amount-display span{
+
+    color:#8b8178;
+
+    font-size:13px;
+
+}
+
+
+
+.amount-display h1{
+
+    margin:10px 0 18px;
+
+    font-size:42px;
+
+    font-weight:800;
+
+}
+
+
+
+
+.category-button{
+
+    width:100%;
+
+    border:none;
+
+    background:white;
+
+    border-radius:16px;
+
+    padding:13px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    font-weight:600;
+
+}
+
+
+
+
+
+
+
+
+
+/* =====================
+CATEGORY MENU
+===================== */
+
+
+.category-menu{
+
+    margin-top:12px;
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:8px;
+
+}
+
+
+
+.category-menu button{
+
+    border:none;
+
+    border-radius:15px;
+
+    padding:10px;
+
+    background:#efeafe;
+
+}
+
+
+
+
+
+
+
+
+
+/* =====================
+EXTRA INPUTS
+===================== */
+
+
+.extra-inputs{
+
+    display:flex;
+
+    gap:10px;
+
+    margin:12px 0;
+
+}
+
+
+
+.extra-inputs div{
+
+    flex:1;
+
+}
+
+
+
+.extra-inputs label{
+
+    font-size:12px;
+
+    color:#8b8178;
+
+}
+
+
+
+.extra-inputs input{
+
+    width:100%;
+
+    padding:10px;
+
+    border-radius:14px;
+
+    border:1px solid #ddd;
+
+}
+
+
+
+
+
+
+
+
+
+/* =====================
+KEYPAD
+===================== */
+
+
+.keypad{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:10px;
+
+    margin-top:15px;
+
+}
+
+
+
+.keypad button{
+
+    height:56px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:white;
+
+    font-size:20px;
+
+    font-weight:700;
+
+}
+
+
+
+.keypad .control{
+
+    background:#efeafe;
+
+}
+
+
+
+.keypad .operator{
+
+    background:#eaf3f8;
+
+}
+
+
+
+.keypad .equals{
+
+    background:#ecb08b;
+
+    color:white;
+
+}
+
+
+
+
+
+
+
+
+
+/* =====================
+IMPACT
+===================== */
+
+
+.impact-grid{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:10px;
+
+}
+
+
+
+.impact-grid div{
+
+    background:#f8f7f4;
+
+    border-radius:16px;
+
+    padding:14px;
+
+}
+
+
+
+.impact-grid span{
+
+    font-size:11px;
+
+    color:#8b8178;
+
+    display:block;
+
+}
+
+
+
+.impact-grid strong{
+
+    font-size:15px;
+
+}
+
+
+
+
+
+
+
+
+
+/* =====================
+PLANNER
+===================== */
+
+
+.planner-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+
+
+.planner-header p{
+
+    margin:5px 0;
+
+    color:#8b8178;
+
+    font-size:12px;
+
+}
+
+
+
+.planner-header button{
+
+    border:none;
+
+    width:35px;
+
+    height:35px;
+
+    border-radius:50%;
+
+    background:#efeafe;
+
+}
+
+
+
+.planner-input{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:12px 0;
+
+    border-bottom:1px solid #eee7df;
+
+}
+
+
+
+.planner-input label{
+
+    font-size:13px;
+
+}
+
+
+
+.planner-input input{
+
+    width:110px;
+
+    border:none;
+
+    background:#f8f7f4;
+
+    border-radius:12px;
+
+    padding:10px;
+
+    text-align:right;
+
+}
+
+
+
+
+
+
+
+
+
+/* =====================
+RESULTS
+===================== */
+
+
+.result-grid{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:10px;
+
+}
+
+
+
+.result-grid div{
+
+    background:#f2f7f3;
+
+    border-radius:16px;
+
+    padding:14px;
+
+}
+
+
+
+.result-grid span{
+
+    display:block;
+
+    font-size:11px;
+
+    color:#8b8178;
+
+}
+
+
+
+.result-grid strong{
+
+    font-size:15px;
+
+}
+
+
+
+.plan-status{
+
+    margin-top:12px;
+
+    background:#f2f7f3;
+
+    padding:12px;
+
+    border-radius:15px;
+
+}
+
+
+
+
+
+
+
+
+
+/* =====================
+CATEGORY ALLOCATION FIX
+===================== */
+
+
+.allocation-description{
+
+    font-size:13px;
+
+    color:#8b8178;
+
+    margin-top:-5px;
+
+    margin-bottom:15px;
+
+}
+
+
+
+.allocation-list{
+
+    width:100%;
+
+}
+
+
+
+.allocation-item{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:14px 0;
+
+    border-bottom:1px solid #eee7df;
+
+}
+
+
+
+.allocation-item div{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:4px;
+
+}
+
+
+
+.allocation-item div strong{
+
+    font-size:14px;
+
+}
+
+
+
+.allocation-item span{
+
+    font-size:12px;
+
+    color:#8b8178;
+
+}
+
+
+
+.allocation-item > strong{
+
+    font-size:15px;
+
+}
+
+
+
+
+
+
+.allocation-summary{
+
+    margin-top:14px;
+
+    padding-top:12px;
+
+    border-top:1px solid #eee7df;
+
+}
+
+
+
+.allocation-summary div{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    margin-bottom:8px;
+
+}
+
+
+
+.allocation-summary span{
+
+    color:#8b8178;
+
+    font-size:13px;
+
+}
+
+
+
+.adjust-button{
+
+    width:100%;
+
+    margin-top:14px;
+
+    border:none;
+
+    border-radius:16px;
+
+    padding:13px;
+
+    background:#efeafe;
+
+    color:#8060d8;
+
+    font-weight:700;
+
+}
+
+
+
+
+
+
+
+
+
+/* =====================
+BOTTOM ACTIONS
+===================== */
+
+
+.bottom-actions{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-top:10px;
+
+}
+
+
+
+.bottom-actions button{
+
+    flex:1;
+
+    height:48px;
+
+    border-radius:16px;
+
+    border:1px solid #ecb08b;
+
+    background:white;
+
+    color:#d9824d;
+
+    font-weight:700;
+
+}
+
+
+
+.bottom-actions .apply{
+
+    background:#ecb08b;
+
+    color:white;
+
+}

@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>KABALIKAT Budget Calculator</title>
+
+
+<link 
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+rel="stylesheet">
+
+
+<link 
+href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+rel="stylesheet">
+
+
+<link rel="stylesheet" href="budget-calculator.css">
+
+</head>
+
+
+<body>
+
+
+<main class="budget-page">
+
+
+
+<!-- HEADER -->
+
+<header class="budget-header">
+
+
+<button class="back-button">
+<i class="bi bi-chevron-left"></i>
+</button>
+
+
+
+<div>
+
+<h1>
+Budget Calculator
+</h1>
+
+
+<p>
+Make smarter household decisions
+</p>
+
+
+</div>
+
+
+</header>
+
+
+
+
+
+
+
+<!-- =====================
+BUDGET OVERVIEW
+===================== -->
+
+
+<section class="card">
+
+
+<h2>
+Budget Overview
+</h2>
+
+
+<div class="overview-grid">
+
+
+
+<div class="overview-box peach">
+
+<i class="bi bi-wallet2"></i>
+
+<div>
+
+<span>
+Total Budget
+</span>
+
+
+<strong id="totalBudget">
+₱25,000
+</strong>
+
+
+</div>
+
+</div>
+
+
+
+
+
+<div class="overview-box lavender">
+
+
+<i class="bi bi-receipt"></i>
+
+
+<div>
+
+<span>
+Spent
+</span>
+
+
+<strong id="spentAmount">
+₱8,000
+</strong>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="overview-box green">
+
+
+<i class="bi bi-wallet"></i>
+
+
+<div>
+
+
+<span>
+Remaining
+</span>
+
+
+<strong id="remainingAmount">
+₱17,000
+</strong>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="overview-box blue">
+
+
+<i class="bi bi-calendar3"></i>
+
+
+<div>
+
+
+<span>
+Days Left
+</span>
+
+
+<strong id="daysRemaining">
+15
+</strong>
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+<!-- =====================
+DECISION CALCULATOR
+===================== -->
+
+
+<section class="card decision-card">
+
+
+<h2>
+Budget Decision Calculator
+</h2>
+
+
+
+
+
+<div class="function-row">
+
+
+<button
+class="function active"
+data-function="spend">
+
+Spend
+
+</button>
+
+
+
+<button
+class="function"
+data-function="save">
+
+Save
+
+</button>
+
+
+
+<button
+class="function"
+data-function="split">
+
+Split
+
+</button>
+
+
+
+<button
+id="moreButton"
+class="function">
+
+More
+<i class="bi bi-chevron-down"></i>
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+<div
+id="moreFunctions"
+class="more-functions hidden">
+
+
+<button
+class="function"
+data-function="daily">
+
+Per Day
+
+</button>
+
+
+<button
+class="function"
+data-function="member">
+
+Per Member
+
+</button>
+
+
+<button
+class="function"
+data-function="percent">
+
+% Budget
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- AMOUNT DISPLAY -->
+
+
+<div class="amount-display">
+
+
+<span id="amountLabel">
+
+Amount to Spend
+
+</span>
+
+
+<h1 id="amountValue">
+
+₱0
+
+</h1>
+
+
+
+
+
+<button
+id="categoryButton"
+class="category-button">
+
+
+<span id="categoryName">
+
+What are you planning?
+
+</span>
+
+
+
+<i class="bi bi-chevron-down"></i>
+
+
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- CATEGORY DROPDOWN -->
+
+
+<div
+id="categoryMenu"
+class="category-menu hidden">
+
+
+<button data-category="Food">
+
+🍚 Food
+
+</button>
+
+
+<button data-category="Grocery">
+
+🛒 Grocery
+
+</button>
+
+
+<button data-category="Utilities">
+
+💡 Utilities
+
+</button>
+
+
+<button data-category="Transportation">
+
+🚗 Transportation
+
+</button>
+
+
+<button data-category="Health">
+
+💊 Health
+
+</button>
+
+
+<button data-category="School">
+
+📚 School
+
+</button>
+
+
+<button data-category="Rent">
+
+🏠 Rent
+
+</button>
+
+
+<button data-category="Savings">
+
+💰 Savings
+
+</button>
+
+
+<button data-category="Seasonal Plans">
+
+🎉 Seasonal Plans
+
+</button>
+
+
+<button data-category="Debt">
+
+💳 Debt
+
+</button>
+
+
+<button data-category="Other">
+
+➕ Other
+
+</button>
+
+
+
+</div>
+
+<!-- =====================
+EXTRA INPUTS
+===================== -->
+
+<div
+id="extraInputs"
+class="extra-inputs hidden">
+
+
+<div>
+
+<label>
+Number of Members
+</label>
+
+
+<input
+id="memberInput"
+type="number"
+placeholder="0">
+
+
+</div>
+
+
+
+
+<div>
+
+<label>
+Days Remaining
+</label>
+
+
+<input
+id="daysInput"
+type="number"
+placeholder="0">
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- =====================
+STANDARD CALCULATOR KEYPAD
+===================== -->
+
+
+<div class="keypad">
+
+
+<button class="control">
+C
+</button>
+
+
+<button class="control">
+⌫
+</button>
+
+
+<button class="control">
+%
+</button>
+
+
+<button class="operator">
+÷
+</button>
+
+
+
+
+
+<button>
+7
+</button>
+
+
+<button>
+8
+</button>
+
+
+<button>
+9
+</button>
+
+
+<button class="operator">
+×
+</button>
+
+
+
+
+
+<button>
+4
+</button>
+
+
+<button>
+5
+</button>
+
+
+<button>
+6
+</button>
+
+
+<button class="operator">
+−
+</button>
+
+
+
+
+
+<button>
+1
+</button>
+
+
+<button>
+2
+</button>
+
+
+<button>
+3
+</button>
+
+
+<button class="operator">
++
+</button>
+
+
+
+
+
+<button>
+00
+</button>
+
+
+<button>
+0
+</button>
+
+
+<button>
+.
+</button>
+
+
+<button class="equals">
+=
+</button>
+
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- =====================
+BUDGET IMPACT
+===================== -->
+
+
+<section class="card">
+
+
+<h2>
+Budget Impact
+</h2>
+
+
+
+<div class="impact-grid">
+
+
+
+<div>
+
+<span>
+Remaining Budget
+</span>
+
+
+<strong id="impactBudget">
+₱17,000
+</strong>
+
+
+</div>
+
+
+
+
+
+<div>
+
+<span>
+Planning For
+</span>
+
+
+<strong id="impactCategory">
+None
+</strong>
+
+
+</div>
+
+
+
+
+
+<div>
+
+<span>
+Budget Affected
+</span>
+
+
+<strong id="impactPercent">
+0%
+</strong>
+
+
+</div>
+
+
+
+
+
+<div>
+
+<span>
+Status
+</span>
+
+
+<strong id="impactStatus">
+Safe
+</strong>
+
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- =====================
+BUDGET PLANNER
+===================== -->
+
+
+<section class="card planner-card">
+
+
+
+<div class="planner-header">
+
+
+<div>
+
+
+<h2>
+Budget Planner
+</h2>
+
+
+<p>
+Plan your household allocation
+</p>
+
+
+</div>
+
+
+
+
+<button id="plannerToggle">
+
+<i class="bi bi-chevron-down"></i>
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div id="plannerBody">
+
+
+
+
+
+<div class="planner-input">
+
+
+<label>
+Monthly Income / Budget
+</label>
+
+
+<input
+id="incomeInput"
+type="number"
+placeholder="0">
+
+
+</div>
+
+
+
+
+
+
+<div class="planner-input">
+
+
+<label>
+Fixed Bills
+</label>
+
+
+<input
+id="billsInput"
+type="number"
+placeholder="0">
+
+
+</div>
+
+
+
+
+
+
+<div class="planner-input">
+
+
+<label>
+Target Savings
+</label>
+
+
+<input
+id="savingsInput"
+type="number"
+placeholder="0">
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div
+id="advancedPlanner"
+class="hidden">
+
+
+
+
+
+
+<div class="planner-input">
+
+
+<label>
+Additional / Seasonal Income
+</label>
+
+
+<input
+id="additionalInput"
+type="number"
+placeholder="0">
+
+
+</div>
+
+
+
+
+
+
+<div class="planner-input">
+
+
+<label>
+Debt Payments
+</label>
+
+
+<input
+id="debtInput"
+type="number"
+placeholder="0">
+
+
+</div>
+
+
+
+
+
+
+<div class="planner-input">
+
+
+<label>
+Seasonal / Special Expenses
+</label>
+
+
+<input
+id="seasonalInput"
+type="number"
+placeholder="0">
+
+
+</div>
+
+
+
+
+
+<div class="planner-input">
+
+
+<label>
+Planned Purchase
+</label>
+
+
+<input
+id="purchaseInput"
+type="number"
+placeholder="0">
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- =====================
+AUTO CALCULATION RESULTS
+===================== -->
+
+
+<section class="card">
+
+
+<h2>
+Auto-Calculation Results
+</h2>
+
+
+
+<div class="result-grid">
+
+
+
+<div>
+
+<span>
+After Fixed Obligations
+</span>
+
+
+<strong id="afterBills">
+₱0
+</strong>
+
+
+</div>
+
+
+
+
+
+<div>
+
+<span>
+After Savings
+</span>
+
+
+<strong id="afterSavings">
+₱0
+</strong>
+
+
+</div>
+
+
+
+
+
+<div>
+
+<span>
+Daily Spending Limit
+</span>
+
+
+<strong id="dailyLimit">
+₱0/day
+</strong>
+
+
+</div>
+
+
+
+
+
+<div>
+
+<span>
+Per Household Member
+</span>
+
+
+<strong id="perMember">
+₱0
+</strong>
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+<div class="plan-status">
+
+
+Overall Plan Status:
+
+<strong id="planStatus">
+Balanced
+</strong>
+
+
+</div>
+
+
+
+</section>
+
+
+<!-- =====================
+CATEGORY ALLOCATION
+===================== -->
+
+
+<section class="card allocation-card">
+
+
+<h2>
+Category Allocation
+</h2>
+
+
+
+<p class="allocation-description">
+See how your budget is distributed across household needs.
+</p>
+
+
+
+
+
+<div class="allocation-list">
+
+
+
+<div class="allocation-item">
+
+<div>
+
+<strong>
+Food
+</strong>
+
+<span>
+Daily meals and groceries
+</span>
+
+</div>
+
+
+<strong id="foodAllocation">
+₱0
+</strong>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="allocation-item">
+
+<div>
+
+<strong>
+Transportation
+</strong>
+
+<span>
+Travel and commuting
+</span>
+
+</div>
+
+
+<strong id="transportAllocation">
+₱0
+</strong>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="allocation-item">
+
+<div>
+
+<strong>
+Utilities
+</strong>
+
+<span>
+Bills and household services
+</span>
+
+</div>
+
+
+<strong id="utilitiesAllocation">
+₱0
+</strong>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="allocation-item">
+
+<div>
+
+<strong>
+Health
+</strong>
+
+<span>
+Medicine and healthcare
+</span>
+
+</div>
+
+
+<strong id="healthAllocation">
+₱0
+</strong>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="allocation-item">
+
+<div>
+
+<strong>
+Savings
+</strong>
+
+<span>
+Future household goals
+</span>
+
+</div>
+
+
+<strong id="savingsAllocation">
+₱0
+</strong>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="allocation-item">
+
+<div>
+
+<strong>
+Seasonal Plans
+</strong>
+
+<span>
+Events and special expenses
+</span>
+
+</div>
+
+
+<strong id="seasonalAllocation">
+₱0
+</strong>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="allocation-item">
+
+<div>
+
+<strong>
+Other Expenses
+</strong>
+
+<span>
+Flexible spending
+</span>
+
+</div>
+
+
+<strong id="otherAllocation">
+₱0
+</strong>
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="allocation-summary">
+
+
+<div>
+
+<span>
+Total Allocated
+</span>
+
+
+<strong id="totalAllocated">
+₱0
+</strong>
+
+
+</div>
+
+
+
+
+<div>
+
+<span>
+Unallocated Balance
+</span>
+
+
+<strong id="unallocatedBalance">
+₱0
+</strong>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+<button class="adjust-button">
+
+Adjust Categories
+
+</button>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- =====================
+ACTIONS
+===================== -->
+
+
+<div class="bottom-actions">
+
+
+<button id="resetButton">
+
+Reset
+
+</button>
+
+
+
+<button id="saveDraftButton">
+
+Save Draft
+
+</button>
+
+
+
+
+<button 
+id="applyPlanButton"
+class="apply">
+
+
+Apply Plan
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+</main>
+
+
+
+
+
+<script src="budget-calculator.js"></script>
+
+
+</body>
+
+</html>
