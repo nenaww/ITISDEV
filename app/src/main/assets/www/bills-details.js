@@ -813,22 +813,6 @@ function bindBillsDetailsEvents() {
 
     document
         .getElementById(
-            "clearCategoryFilter"
-        )
-        ?.addEventListener(
-            "click",
-            () => {
-                selectedCategory =
-                    null;
-
-                renderBillCategories();
-                renderActiveCategoryNotice();
-                renderBillRecords();
-            }
-        );
-
-    document
-        .getElementById(
             "detailsMonthButton"
         )
         ?.addEventListener(
@@ -1537,6 +1521,20 @@ async function toggleStoredBillStatus(id) {
         );
 
     if (!entry) {
+        return;
+    }
+
+    /*
+        Confirmation is required only when completing
+        an unpaid bill. Marking a completed bill as
+        unpaid keeps its existing direct behavior.
+    */
+    if (
+        !entry.paid &&
+        !window.confirm(
+            `Mark "${entry.name || "this bill"}" as paid?`
+        )
+    ) {
         return;
     }
 

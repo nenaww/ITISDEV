@@ -3507,3 +3507,559 @@ body[data-page="secure-vault"] {
     background: transparent;
     box-shadow: none;
 }
+
+/* =========================================================
+   v34 — Secure Vault typography matched to Expenses
+   Only font sizing is changed here; layout is untouched.
+   ========================================================= */
+
+body[data-page="secure-vault"] {
+    font-size: 14px;
+}
+
+.vault-header h1 {
+    font-size: 23px;
+    line-height: 1.05;
+}
+
+.vault-header p {
+    font-size: 11px;
+}
+
+.vault-family-banner h2,
+.vault-family-banner-copy h2 {
+    font-size: 14px;
+}
+
+.vault-family-banner p {
+    font-size: 11px;
+}
+
+.vault-search input {
+    font-size: 12px;
+}
+
+.vault-pills button,
+.vault-section-head button,
+.vault-section-head .vault-text-button,
+.vault-files-head-actions .vault-text-button {
+    font-size: 10px;
+}
+
+.vault-section-head span {
+    font-size: 10px;
+}
+
+.vault-section-head h2 {
+    font-size: 17px;
+    line-height: 1.2;
+}
+
+.vault-section-head > strong,
+.vault-files-head-actions > strong {
+    font-size: 11px;
+}
+
+.vault-summary-item strong {
+    font-size: 19px;
+}
+
+.vault-summary-item small,
+.vault-summary span {
+    font-size: 10px;
+}
+
+.vault-folder-card strong,
+.vault-folder-card-copy strong,
+.vault-all-folders-row-copy strong {
+    font-size: 13px;
+}
+
+.vault-folder-card span,
+.vault-folder-card-copy small,
+.vault-all-folders-row-copy small {
+    font-size: 10px;
+}
+
+.vault-file-copy strong,
+.vault-browser-file-copy strong {
+    font-size: 13px;
+}
+
+.vault-file-copy span,
+.vault-file-copy small,
+.vault-browser-file-copy small,
+.vault-browser-file-copy em {
+    font-size: 10px;
+}
+
+.vault-empty {
+    font-size: 11px;
+}
+
+.vault-bottom-nav span {
+    font-size: 10px;
+}
+
+.vault-sheet header span {
+    font-size: 10px;
+}
+
+.vault-sheet header h2 {
+    font-size: 19px;
+}
+
+.vault-actions strong {
+    font-size: 12px;
+}
+
+.vault-actions small {
+    font-size: 10px;
+}
+
+.vault-field,
+.vault-date-grid label {
+    font-size: 11px;
+}
+
+.vault-field input,
+.vault-date-grid select,
+.vault-date-sheet-grid select {
+    font-size: 12px;
+}
+
+.vault-primary-button,
+.vault-danger-button,
+.vault-date-sheet-actions button {
+    font-size: 13px;
+}
+
+.vault-preview-meta div {
+    font-size: 11px;
+}
+
+.vault-toast {
+    font-size: 13px;
+}
+
+.vault-date-filter-copy small {
+    font-size: 10px;
+}
+
+.vault-date-filter-copy strong {
+    font-size: 14px;
+}
+
+.vault-date-filter-copy em {
+    font-size: 10px;
+}
+
+.vault-date-sheet-grid label {
+    font-size: 11px;
+}
+
+.vault-date-hint {
+    font-size: 11px;
+}
+
+.vault-view-toolbar small {
+    font-size: 9px;
+}
+
+.vault-view-toolbar strong {
+    font-size: 12px;
+}
+
+.vault-viewer-header h2 {
+    font-size: 17px;
+}
+
+.vault-viewer-info h3 {
+    font-size: 16px;
+}
+
+.vault-viewer-info p,
+.vault-viewer-details,
+.vault-viewer-actions span {
+    font-size: 11px;
+}
+
+.vault-browser-header h1 {
+    font-size: 17px;
+}
+
+.vault-browser-sort small {
+    font-size: 9px;
+}
+
+.vault-browser-sort strong {
+    font-size: 12px;
+}
+
+.vault-sort-filter-group h3 {
+    font-size: 13px;
+}
+
+.vault-sort-options span,
+.vault-filter-chips button,
+.vault-member-filter-button small,
+.vault-member-filter-button strong,
+.vault-member-filter-options strong {
+    font-size: 11px;
+}
+
+/* =========================================================
+   v34 — multi-filter color treatment
+   ========================================================= */
+
+.vault-filter-chips button[data-vault-file-type="all"] {
+    --filter-soft: #F1EDFF;
+    --filter-accent: #6B5CA5;
+}
+
+.vault-filter-chips button[data-vault-file-type="receipt"] {
+    --filter-soft: #F0E0F2;
+    --filter-accent: #B164AE;
+}
+
+.vault-filter-chips button[data-vault-file-type="warranty"] {
+    --filter-soft: #FFF5D8;
+    --filter-accent: #B48A28;
+}
+
+.vault-filter-chips button[data-vault-file-type="document"] {
+    --filter-soft: #EAF3F8;
+    --filter-accent: #4F7F99;
+}
+
+.vault-filter-chips button.active {
+    background: var(--filter-soft) !important;
+    color: var(--filter-accent) !important;
+    border-color: color-mix(
+        in srgb,
+        var(--filter-accent) 24%,
+        transparent
+    ) !important;
+}
+
+.vault-member-filter-options button {
+    border-left: 4px solid transparent;
+}
+
+.vault-member-filter-options button.active {
+    background: var(--member-filter-soft) !important;
+    color: var(--member-filter-accent) !important;
+    border-left-color: var(--member-filter-accent) !important;
+}
+
+.vault-member-filter-options button.active
+.vault-member-filter-avatar {
+    background: #FFFFFF !important;
+    color: var(--member-filter-accent) !important;
+}
+
+.vault-member-filter-options button.active
+> i:last-child {
+    color: var(--member-filter-accent) !important;
+}
+
+
+/* =========================================================
+   v35 — larger browser and Sort & Filter typography
+   Layout dimensions and behavior remain unchanged.
+   ========================================================= */
+
+.vault-browser-header h1 {
+    font-size: 20px !important;
+}
+
+.vault-browser-sort small {
+    font-size: 11px !important;
+}
+
+.vault-browser-sort strong {
+    font-size: 14px !important;
+    line-height: 1.25 !important;
+}
+
+.vault-browser-breadcrumb button {
+    font-size: 11px !important;
+}
+
+.vault-browser-folder-copy strong {
+    font-size: 14px !important;
+}
+
+.vault-browser-folder-copy small {
+    font-size: 11px !important;
+}
+
+.vault-browser-file-copy strong {
+    font-size: 14px !important;
+}
+
+.vault-browser-file-copy small,
+.vault-browser-file-copy em {
+    font-size: 11px !important;
+}
+
+.vault-folder-content-heading h2 {
+    font-size: 18px !important;
+}
+
+.vault-folder-content-heading span {
+    font-size: 11px !important;
+}
+
+.vault-folder-content-empty,
+.vault-browser-section-empty {
+    font-size: 12px !important;
+}
+
+.vault-sort-sheet > header h2 {
+    font-size: 21px !important;
+}
+
+.vault-sort-filter-group > h3,
+.vault-sort-filter-group h3 {
+    font-size: 14px !important;
+}
+
+.vault-sort-options span {
+    font-size: 13px !important;
+}
+
+.vault-filter-chips button {
+    font-size: 12px !important;
+}
+
+.vault-member-filter-button small {
+    font-size: 10px !important;
+}
+
+.vault-member-filter-button strong {
+    font-size: 13px !important;
+}
+
+.vault-member-filter-options strong {
+    font-size: 12px !important;
+}
+
+/* =========================================================
+   v35 — multi-select Sort by colors
+   ========================================================= */
+
+.vault-sort-options button[data-vault-sort="date"] {
+    --sort-soft: #EAF3F8;
+    --sort-accent: #4F7F99;
+}
+
+.vault-sort-options button[data-vault-sort="name"] {
+    --sort-soft: #F1EDFF;
+    --sort-accent: #6B5CA5;
+}
+
+.vault-sort-options button[data-vault-sort="favorite"] {
+    --sort-soft: #FFECEF;
+    --sort-accent: #C4516A;
+}
+
+.vault-sort-options button.active {
+    background: var(--sort-soft) !important;
+    color: var(--sort-accent) !important;
+}
+
+.vault-sort-options button.active > i:first-child,
+.vault-sort-options button.active > i:last-child {
+    color: var(--sort-accent) !important;
+}
+
+/* =========================================================
+   v35 — requested Secure Vault action colors
+   ========================================================= */
+
+/* Same peach used by the current Add Expense button. */
+#vaultAddButton,
+#vaultBrowserAddButton {
+    background: #F7C8B4 !important;
+    color: #251F1D !important;
+    box-shadow:
+        0 14px 28px
+        rgba(247, 200, 180, 0.30) !important;
+}
+
+/* Dedicated browser Trash control. */
+#vaultBrowserMenuButton {
+    background: #FCE8E8 !important;
+    color: #C74747 !important;
+    box-shadow:
+        0 9px 20px
+        rgba(199, 71, 71, 0.14) !important;
+}
+
+/* Add-to-Vault actions use distinct KABALIKAT pastel colors. */
+#vaultScanReceiptOption > i {
+    background: #F1EDFF !important;
+    color: #6B5CA5 !important;
+}
+
+#vaultUploadReceiptOption > i {
+    background: #FFF1E8 !important;
+    color: #C96E4B !important;
+}
+
+#vaultUploadDocumentOption > i {
+    background: #EAF3F8 !important;
+    color: #4F7F99 !important;
+}
+
+#vaultNewFolderOption > i {
+    background: #FFF5D8 !important;
+    color: #B48A28 !important;
+}
+
+
+/* =========================================================
+   v36 — Trash action clarity and confirmation UI
+   ========================================================= */
+
+.vault-trash-actions {
+    gap: 8px !important;
+}
+
+.vault-trash-actions button {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 12px !important;
+    display: grid !important;
+    place-items: center !important;
+    font-size: 16px !important;
+}
+
+.vault-trash-actions .vault-trash-restore {
+    background: #E5F1E8 !important;
+    color: #4F8B64 !important;
+    box-shadow:
+        0 7px 16px
+        rgba(79, 139, 100, 0.14) !important;
+}
+
+.vault-trash-actions .vault-trash-delete {
+    background: #FCE8E8 !important;
+    color: #C74747 !important;
+    box-shadow:
+        0 7px 16px
+        rgba(199, 71, 71, 0.14) !important;
+}
+
+/* =========================================================
+   v36 — consistent folder-name typography
+   ========================================================= */
+
+.vault-folder-card-copy strong,
+.vault-folder-card strong,
+.vault-all-folders-row-copy strong,
+.vault-browser-folder-copy strong {
+    font-size: 13px !important;
+    line-height: 1.25 !important;
+}
+
+/* =========================================================
+   v36 — starred folder visuals
+   ========================================================= */
+
+.vault-folder-card {
+    position: relative;
+}
+
+.vault-folder-card-star {
+    position: absolute;
+    top: 13px;
+    right: 13px;
+    color: #D7981F;
+    font-size: 14px;
+}
+
+.vault-browser-folder-card {
+    position: relative;
+}
+
+.vault-folder-star-indicator {
+    position: absolute;
+    top: 14px;
+    right: 48px;
+    color: #D7981F;
+    font-size: 14px;
+    z-index: 2;
+}
+
+.vault-all-folders-row-end {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.vault-all-folder-star {
+    color: #D7981F !important;
+    font-size: 14px !important;
+}
+
+#starSelectedFolderButton.starred {
+    background: #FFF8E8 !important;
+    color: #A67818 !important;
+}
+
+#starSelectedFolderButton.starred i {
+    color: #D7981F !important;
+}
+
+/* Folder-only Sort by option. */
+.vault-sort-options button[data-vault-sort="starred"] {
+    --sort-soft: #FFF5D8;
+    --sort-accent: #A67818;
+}
+
+
+/* =========================================================
+   v37 — Trash action placement and contextual sort buttons
+   ========================================================= */
+
+.vault-trash-row {
+    grid-template-columns: 50px minmax(0, 1fr) auto !important;
+    align-items: center !important;
+}
+
+.vault-trash-row .vault-file-copy {
+    min-width: 0;
+    padding-right: 4px;
+}
+
+.vault-trash-actions {
+    justify-self: end !important;
+    align-self: center !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex-shrink: 0 !important;
+    margin-left: 2px;
+}
+
+.vault-trash-actions button {
+    flex: 0 0 38px !important;
+    width: 38px !important;
+    height: 38px !important;
+}
+
+.vault-sort-options button:disabled,
+.vault-sort-options button.vault-sort-disabled {
+    opacity: 0.46;
+    cursor: not-allowed;
+    filter: saturate(0.7);
+    box-shadow: none !important;
+}
+
+.vault-sort-options button:disabled .bi-check-lg,
+.vault-sort-options button.vault-sort-disabled .bi-check-lg {
+    opacity: 0;
+}
