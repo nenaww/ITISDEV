@@ -4,287 +4,285 @@ AI Service
 Gemini REST API
 ==========================================================
 */
+
 class AIService {
 
     constructor() {
 
-        this.endpoint =
-            `https://generativelanguage.googleapis.com/v1beta/models/${AI_CONFIG.MODEL}:generateContent?key=${AI_CONFIG.API_KEY}`;
+        this.apiKey = AI_CONFIG.API_KEY;
+        this.model = AI_CONFIG.MODEL;
 
+        this.endpoint =
+            `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent?key=${this.apiKey}`;
     }
+
+
+    /*
+    ======================================================
+    SEND INITIAL MESSAGE
+    ======================================================
+    */
 
     async sendMessage(messages, tools = []) {
 
-        const systemMessage = messages.find(
-            message => message.role === "system"
-        );
+        const systemMessage =
+            messages.find(m => m.role === "system");
 
-        const conversation = messages.filter(
-            message => message.role !== "system"
-        );
+        const conversation =
+            messages.filter(m => m.role !== "system");
 
-        const body = {
-
-            contents: conversation.map(message => ({
-
-                role:
-                    message.role === "assistant"
-                        ? "model"
-                        : "user",
-
-                parts: [
-
-                    {
-
-                        text: message.content
-
-                    }
-
-                ]
-
-            }))
-
-        };
-
-        if (systemMessage) {
-
-            body.systemInstruction = {
-
-                parts: [
-
-                    {
-
-                        text: systemMessage.content
-
-                    }
-
-                ]
-
-            };
-
-        }
-
-        if (tools.length > 0) {
-
-            body.tools = [
-
-                {
-
-                    functionDeclarations:
-
-                        tools.map(tool => tool.toJSON())
-
-                }
-
-            ];
-
-        }
-
-        const response = await fetch(
-
-            this.endpoint,
-
-            {
-
-                method: "POST",
-
-                headers: {
-
-                    "Content-Type":
-
-                        "application/json"
-
-                },
-
-                body:
-
-                    JSON.stringify(body)
-
-            }
-
-        );
-
-        if (!response.ok) {
-
-            const error = await response.json();
-
-            throw new Error(
-
-                error.error?.message ??
-
-                "Gemini request failed."
-
+        const contents =
+            conversation.map(m =>
+                this.messageToGemini(m)
             );
 
+        return await this.generate(
+            contents,
+            systemMessage?.content,
+            tools
+        );
+    }
+
+
+    /*
+    ======================================================
+    GENERATE
+    ======================================================
+    */
+
+    async generate(
+        contents,
+        systemInstruction = null,
+        tools = []
+    ) {
+
+        const body = {
+            contents
+        };
+
+        if (systemInstruction) {
+
+            body.systemInstruction = {
+                parts: [
+                    {
+                        text: systemInstruction
+                    }
+                ]
+            };
         }
 
-        return await response.json();
+        if (tools?.length > 0) {
 
+            body.tools = [
+                {
+                    functionDeclarations:
+                        tools.map(tool =>
+                            tool.toJSON()
+                        )
+                }
+            ];
+        }
+
+        return await this.request(body);
     }
+
+
+    /*
+    ======================================================
+    CONVERT CHAT HISTORY
+    ======================================================
+    */
+
+    messageToGemini(message) {
+
+        return {
+
+            role:
+                message.role === "assistant"
+                    ? "model"
+                    : "user",
+
+            parts: [
+                {
+                    text: String(
+                        message.content ?? ""
+                    )
+                }
+            ]
+        };
+    }
+
+
+    /*
+    ======================================================
+    EXTRACT TEXT
+    ======================================================
+    */
 
     extractText(response) {
 
-        const candidate =
-            response.candidates?.[0];
-
-        if (!candidate)
-            return "";
-
         const parts =
-            candidate.content?.parts ?? [];
+            response
+                ?.candidates
+                ?.[0]
+                ?.content
+                ?.parts ?? [];
 
         return parts
-            .filter(part => part.text)
+            .filter(part =>
+                typeof part.text === "string"
+            )
             .map(part => part.text)
-            .join("");
-
+            .join("\n")
+            .trim();
     }
+
+
+    /*
+    ======================================================
+    EXTRACT TOOL CALLS
+    ======================================================
+    */
 
     extractToolCalls(response) {
 
-        const candidate =
-            response.candidates?.[0];
-
-        if (!candidate)
-            return [];
-
         const parts =
-            candidate.content?.parts ?? [];
+            response
+                ?.candidates
+                ?.[0]
+                ?.content
+                ?.parts ?? [];
 
         return parts
-            .filter(part => part.functionCall)
+            .filter(part =>
+                part.functionCall
+            )
             .map(part => ({
 
                 name:
                     part.functionCall.name,
 
-                arguments:
-                    part.functionCall.args ?? {}
+                args:
+                    part.functionCall.args ?? {},
+
+                /*
+                Preserve ID when Gemini supplies one.
+                */
+                id:
+                    part.functionCall.id ?? null
 
             }));
-
     }
 
-    async continueConversation(messages, previousResponse, toolResults) {
 
-        const systemMessage = messages.find(
-            message => message.role === "system"
-        );
+    /*
+    ======================================================
+    BUILD FUNCTION RESPONSES
+    ======================================================
+    */
 
-        const conversation = messages.filter(
-            message => message.role !== "system"
-        );
+    buildFunctionResponses(
+        toolCalls,
+        toolOutputs
+    ) {
 
-        const contents = [
+        return toolOutputs.map(
+            (result, index) => {
 
-            ...conversation.map(message => ({
+                const call =
+                    toolCalls[index];
 
-                role:
-                    message.role === "assistant"
-                        ? "model"
-                        : "user",
+                const functionResponse = {
 
-                parts: [
+                    name:
+                        result.name ??
+                        call?.name,
 
-                    {
-
-                        text: message.content
-
+                    response: {
+                        result:
+                            result.output
                     }
+                };
 
-                ]
 
-            })),
+                /*
+                Match Gemini's function call ID
+                when one exists.
+                */
 
-            // Preserve Gemini's previous functionCall
-            {
-                role: "model",
-                parts:
-                    previousResponse.candidates?.[0]?.content?.parts
-                        ?.filter(part => part.functionCall) || []
-            },
+                if (call?.id) {
 
-            {
+                    functionResponse.id =
+                        call.id;
+                }
 
-                role: "user",
 
-                parts: toolResults.map(result => ({
-
-                    functionResponse: {
-                        name: result.name,
-                        response: {
-                            result: result.output
-                        }
-                    }
-
-                }))
-
+                return {
+                    functionResponse
+                };
             }
-
-        ].filter(Boolean);
-
-        const body = {
-
-            contents
-
-        };
-
-        if (systemMessage) {
-
-            body.systemInstruction = {
-
-                parts: [
-
-                    {
-
-                        text: systemMessage.content
-
-                    }
-
-                ]
-
-            };
-
-        }
-
-        const response = await fetch(
-
-            this.endpoint,
-
-            {
-
-                method: "POST",
-
-                headers: {
-
-                    "Content-Type": "application/json"
-
-                },
-
-                body: JSON.stringify(body)
-
-            }
-
         );
+    }
 
-        if (!response.ok) {
 
-            const error = await response.json();
+    /*
+    ======================================================
+    HTTP REQUEST
+    ======================================================
+    */
 
-            throw new Error(
+    async request(body) {
 
-                error.error?.message ??
+        const response =
+            await fetch(
+                this.endpoint,
+                {
+                    method: "POST",
 
-                "Gemini request failed."
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
+                    body:
+                        JSON.stringify(body)
+                }
             );
 
+
+        let data;
+
+        try {
+
+            data =
+                await response.json();
+
+        }
+        catch {
+
+            throw new Error(
+                "Piggy received an invalid response from Gemini."
+            );
         }
 
-        return await response.json();
 
+        if (!response.ok || data?.error) {
+
+            console.error(
+                "Gemini API error:",
+                data
+            );
+
+            throw new Error(
+                data?.error?.message ||
+                `Gemini request failed (${response.status}).`
+            );
+        }
+
+
+        return data;
     }
-
 }
+
 
 window.AIService = AIService;
