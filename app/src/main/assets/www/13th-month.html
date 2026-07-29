@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>13th Month Pay</title>
+
+<link rel="stylesheet" href="13th-month.css">
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+
+<header class="header">
+
+
+<button onclick="history.back()">
+
+<i class="bi bi-arrow-left"></i>
+
+</button>
+
+
+
+<div>
+
+<h1>
+13th Month Pay
+</h1>
+
+
+<p>
+Plan your year-end bonus wisely.
+</p>
+
+
+</div>
+
+
+</header>
+
+
+
+
+
+
+
+<!-- STATUS SELECT -->
+
+
+<section class="card">
+
+
+<h3>
+Have you received your 13th month pay?
+</h3>
+
+
+
+<div class="toggle">
+
+
+<button
+id="receivedBtn"
+onclick="setReceived(true)">
+
+<i class="bi bi-check-circle"></i>
+
+Received
+
+</button>
+
+
+
+<button
+id="notReceivedBtn"
+onclick="setReceived(false)">
+
+<i class="bi bi-clock"></i>
+
+Not Yet
+
+</button>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- HERO -->
+
+
+<section 
+id="summaryCard"
+class="hero hidden">
+
+
+<div class="gift-icon">
+
+<i class="bi bi-gift"></i>
+
+</div>
+
+
+
+<p>
+Your 13th Month Pay
+</p>
+
+
+
+<h1 id="displayAmount">
+
+₱18,000
+
+</h1>
+
+
+
+<span class="badge">
+
+Received
+
+</span>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+
+<!-- NOT RECEIVED STATE -->
+
+
+<section 
+id="notReceivedCard"
+class="card hidden">
+
+
+<div class="empty-icon">
+
+<i class="bi bi-gift"></i>
+
+</div>
+
+
+
+<h3>
+Not received yet
+</h3>
+
+
+<p>
+
+Your 13th month pay will appear
+here once received.
+
+</p>
+
+
+<div class="year-card">
+
+Year-end Pay Preparation
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- RECEIVED DETAILS -->
+
+
+<section
+id="allocationArea"
+class="hidden">
+
+
+
+
+
+
+<section class="card">
+
+
+<h3>
+Amount Received
+</h3>
+
+
+<div class="input-box">
+
+
+<span>
+₱
+</span>
+
+
+<input
+id="amountInput"
+type="number"
+value="18000"
+oninput="calculate()">
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+<section class="card">
+
+
+<h3>
+Your Allocation
+</h3>
+
+
+
+
+<div class="allocation-card savings">
+
+
+<i class="bi bi-piggy-bank"></i>
+
+
+<div>
+
+<span>
+Savings
+</span>
+
+<input
+id="savingInput"
+value="8000"
+type="number"
+oninput="calculate()">
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<div class="allocation-card goals">
+
+
+<i class="bi bi-bullseye"></i>
+
+
+<div>
+
+<span>
+Goals
+</span>
+
+
+<input
+id="goalInput"
+value="5000"
+type="number"
+oninput="calculate()">
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="allocation-card expense">
+
+
+<i class="bi bi-cart"></i>
+
+
+<div>
+
+<span>
+Expenses
+</span>
+
+
+<input
+id="expenseInput"
+value="5000"
+type="number"
+oninput="calculate()">
+
+</div>
+
+
+</div>
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<section class="status-card">
+
+
+<h3>
+Allocation Status
+</h3>
+
+
+
+<div class="status-row">
+
+
+<span>
+Allocated
+</span>
+
+
+<strong id="allocated">
+
+₱18,000
+
+</strong>
+
+
+</div>
+
+
+
+
+<div class="status-row">
+
+
+<span>
+Remaining
+</span>
+
+
+<strong id="remaining">
+
+₱0
+
+</strong>
+
+
+</div>
+
+
+
+
+<div
+id="statusBadge"
+class="status-badge">
+
+Balanced
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<button
+class="confirm-btn"
+onclick="confirmAllocation()">
+
+Review Allocation
+
+</button>
+
+
+
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+</div>
+
+
+
+<script src="13th-month.js"></script>
+
+
+</body>
+
+</html>

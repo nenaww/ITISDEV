@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Budget Allocation</title>
+
+<link rel="stylesheet" href="budget-allocation.css">
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+<header class="header">
+
+
+<button onclick="history.back()">
+
+<i class="bi bi-arrow-left"></i>
+
+</button>
+
+
+<div>
+
+<h1>
+Budget Allocation
+</h1>
+
+<p>
+Plan where your money goes.
+</p>
+
+</div>
+
+
+</header>
+
+
+
+
+
+
+<!-- INCOME HERO -->
+
+
+<section class="hero">
+
+
+<p>
+Monthly Income
+</p>
+
+
+<h1 id="incomeDisplay">
+₱25,000
+</h1>
+
+
+
+<div class="available">
+
+
+<span>
+Available Funds
+</span>
+
+
+<strong id="availableDisplay">
+₱25,000
+</strong>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+<h2>
+Where will your money go?
+</h2>
+
+
+
+
+
+<!-- CATEGORIES -->
+
+
+<section class="allocation-card">
+
+
+<div class="section-header">
+
+
+<div class="icon purple">
+
+<i class="bi bi-cart"></i>
+
+</div>
+
+
+<div>
+
+<h3>
+Categories
+</h3>
+
+<p>
+Daily household expenses
+</p>
+
+</div>
+
+
+<button onclick="addItem('category')">
+
++
+
+</button>
+
+
+</div>
+
+
+
+<div id="categoryList">
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- SEASONAL -->
+
+
+<section class="allocation-card">
+
+
+<div class="section-header">
+
+
+<div class="icon yellow">
+
+<i class="bi bi-calendar-event"></i>
+
+</div>
+
+
+<div>
+
+<h3>
+Seasonal Plans
+</h3>
+
+
+<p>
+Prepare future expenses
+</p>
+
+
+</div>
+
+
+<button onclick="addItem('seasonal')">
+
++
+
+</button>
+
+
+</div>
+
+
+
+<div id="seasonalList">
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- SAVINGS -->
+
+
+<section class="allocation-card">
+
+
+<div class="section-header">
+
+
+<div class="icon green">
+
+<i class="bi bi-piggy-bank"></i>
+
+</div>
+
+
+<div>
+
+<h3>
+Savings
+</h3>
+
+
+<p>
+Money set aside
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="allocation-row">
+
+
+<span>
+Savings Contribution
+</span>
+
+
+<input
+id="savingsInput"
+type="number"
+value="3000"
+oninput="calculate()">
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- BILLS -->
+
+
+<section class="allocation-card">
+
+
+<div class="section-header">
+
+
+<div class="icon blue">
+
+<i class="bi bi-receipt"></i>
+
+</div>
+
+
+<div>
+
+<h3>
+Bills & Debt
+</h3>
+
+
+<p>
+Required payments
+</p>
+
+
+</div>
+
+
+<button onclick="addItem('bill')">
+
++
+
+</button>
+
+
+</div>
+
+
+
+<div id="billList">
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- STATUS -->
+
+
+<section class="status-card">
+
+
+<h3>
+Budget Status
+</h3>
+
+
+
+<div class="status-row">
+
+<span>
+Total Allocated
+</span>
+
+<strong id="allocated">
+₱0
+</strong>
+
+
+</div>
+
+
+
+<div class="status-row">
+
+<span>
+Remaining Funds
+</span>
+
+<strong id="remaining">
+₱0
+</strong>
+
+
+</div>
+
+
+
+
+
+<div id="statusBadge">
+
+Extra Funds Available
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+<button class="save-btn"
+onclick="saveBudget()">
+
+Save Budget Plan
+
+</button>
+
+
+
+
+</div>
+
+
+
+<script src="budget-allocation.js"></script>
+
+
+</body>
+
+</html>

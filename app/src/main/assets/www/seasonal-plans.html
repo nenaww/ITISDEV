@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Seasonal Plans</title>
+
+<link rel="stylesheet" href="seasonal-plans.css">
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+
+<header class="header">
+
+
+<button onclick="history.back()">
+
+<i class="bi bi-arrow-left"></i>
+
+</button>
+
+
+<div>
+
+<h1>
+Seasonal Plans
+</h1>
+
+
+<p>
+Prepare for upcoming expenses.
+</p>
+
+
+</div>
+
+
+<button 
+class="add-btn"
+onclick="openAddModal()">
+
+<i class="bi bi-plus"></i>
+
+</button>
+
+
+</header>
+
+
+
+
+
+
+
+<!-- SUMMARY -->
+
+
+<section class="hero-card">
+
+
+<div class="hero-icon">
+
+<i class="bi bi-calendar-heart"></i>
+
+</div>
+
+
+<div>
+
+<p>
+Active Seasonal Savings
+</p>
+
+
+<h1 id="totalSaved">
+₱5,050
+</h1>
+
+
+<span>
+Across active plans
+</span>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+<h2>
+Active Plans
+</h2>
+
+
+
+
+
+<div id="plans-container">
+
+</div>
+
+
+
+
+
+
+
+
+<h2>
+Upcoming Plans
+</h2>
+
+
+
+
+<section class="card upcoming">
+
+
+<div>
+
+
+<i class="bi bi-airplane"></i>
+
+
+<div>
+
+<strong>
+Family Vacation
+</strong>
+
+
+<p>
+Starts January 2027
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+<!-- ADD MODAL -->
+
+
+<div id="modal"
+class="modal hidden">
+
+
+<div class="modal-box">
+
+
+<h3>
+Create Seasonal Plan
+</h3>
+
+
+
+
+<label>
+Plan Name
+</label>
+
+
+<input 
+id="planName"
+placeholder="Example: Christmas Fund">
+
+
+
+
+
+<label>
+Category
+</label>
+
+
+<select id="category">
+
+<option>
+Holiday
+</option>
+
+<option>
+Education
+</option>
+
+<option>
+Vacation
+</option>
+
+<option>
+Event
+</option>
+
+<option>
+Custom
+</option>
+
+</select>
+
+
+
+
+
+
+<label>
+Target Amount
+</label>
+
+
+<input
+id="target"
+type="number"
+placeholder="0">
+
+
+
+
+
+
+<label>
+Current Saved
+</label>
+
+
+<input
+id="saved"
+type="number"
+placeholder="0">
+
+
+
+
+
+
+<label>
+Monthly Contribution
+</label>
+
+
+<input
+id="monthly"
+type="number"
+placeholder="0">
+
+
+
+
+
+<button onclick="createPlan()">
+
+Create Plan
+
+</button>
+
+
+
+<button 
+class="cancel"
+onclick="closeModal()">
+
+Cancel
+
+</button>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+<script src="seasonal-plans.js"></script>
+
+
+</body>
+
+</html>
