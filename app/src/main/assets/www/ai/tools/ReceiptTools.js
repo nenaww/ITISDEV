@@ -2,17 +2,13 @@ class ReceiptTools {
 
     static supabase = window.supabaseClient;
 
-    /**
-     * Gets receipts using optional filters.
-     *
-     * filters:
-     * {
-     *    limit,
-     *    store,
-     *    fromDate,
-     *    toDate
-     * }
-     */
+
+    /*
+    ======================================================
+    GET RECEIPTS
+    ======================================================
+    */
+
     static async getReceipts(filters = {}) {
 
         let query = ReceiptTools.supabase
@@ -21,6 +17,7 @@ class ReceiptTools {
             .order("receipt_date", {
                 ascending: false
             });
+
 
         if (filters.store) {
 
@@ -31,6 +28,7 @@ class ReceiptTools {
 
         }
 
+
         if (filters.fromDate) {
 
             query = query.gte(
@@ -39,6 +37,7 @@ class ReceiptTools {
             );
 
         }
+
 
         if (filters.toDate) {
 
@@ -49,27 +48,216 @@ class ReceiptTools {
 
         }
 
+
         if (filters.limit) {
 
-            query = query.limit(filters.limit);
+            query = query.limit(
+                filters.limit
+            );
 
         }
 
-        const { data, error } = await query;
 
-        if (error)
+        const { data, error } =
+            await query;
+
+
+        if (error) {
             throw error;
+        }
 
-        return data;
+
+        return data ?? [];
 
     }
 
-    /**
-     * Returns every item inside one receipt.
-     */
-    static async getReceiptItems(receiptId) {
 
-        const { data, error } = await ReceiptTools.supabase
+    /*
+    ======================================================
+    GET RECEIPT ITEMS
+    ======================================================
+
+    Supports:
+
+    getReceiptItems("receipt-uuid")
+
+    OR
+
+    getReceiptItems()
+
+    If no receipt ID is supplied, Piggy automatically
+    uses the most recent receipt.
+    ======================================================
+    */
+
+    static async getReceiptItems(receiptId = null) {
+
+        /*
+        --------------------------------------------------
+        Normalize arguments
+        --------------------------------------------------
+
+        This also protects us if something accidentally
+        passes:
+
+        { receiptId: "uuid" }
+
+        instead of:
+
+        "uuid"
+        --------------------------------------------------
+        */
+
+        if (
+            receiptId &&
+            typeof receiptId === "object"
+        ) {
+
+            receiptId =
+                receiptId.receiptId ??
+                receiptId.id ??
+                null;
+
+        }
+
+
+        /*
+        --------------------------------------------------
+        No ID supplied?
+        Find latest receipt automatically.
+        --------------------------------------------------
+        */
+
+        if (!receiptId) {
+
+            const {
+                data: latestReceipt,
+                error: receiptError
+            } = await ReceiptTools.supabase
+
+                .from("receipts")
+
+                .select(`
+                    id,
+                    receipt_date,
+                    store_name_raw,
+                    total
+                `)
+
+                .order(
+                    "receipt_date",
+                    {
+                        ascending: false
+                    }
+                )
+
+                .limit(1)
+
+                .maybeSingle();
+
+
+            if (receiptError) {
+                throw receiptError;
+            }
+
+
+            /*
+            No receipts exist.
+            */
+
+            if (!latestReceipt) {
+
+                return {
+                    receipt: null,
+                    items: []
+                };
+
+            }
+
+
+            receiptId =
+                latestReceipt.id;
+
+        }
+
+
+        /*
+        --------------------------------------------------
+        Validate ID
+        --------------------------------------------------
+        */
+
+        if (
+            typeof receiptId !== "string" ||
+            !receiptId.trim()
+        ) {
+
+            throw new Error(
+                "A valid receipt ID is required."
+            );
+
+        }
+
+
+        /*
+        --------------------------------------------------
+        Get receipt information
+        --------------------------------------------------
+        */
+
+        const {
+            data: receipt,
+            error: receiptError
+        } = await ReceiptTools.supabase
+
+            .from("receipts")
+
+            .select(`
+                id,
+                receipt_date,
+                store_name_raw,
+                total
+            `)
+
+            .eq(
+                "id",
+                receiptId
+            )
+
+            .maybeSingle();
+
+
+        if (receiptError) {
+            throw receiptError;
+        }
+
+
+        /*
+        --------------------------------------------------
+        Receipt doesn't exist
+        --------------------------------------------------
+        */
+
+        if (!receipt) {
+
+            return {
+                receipt: null,
+                items: []
+            };
+
+        }
+
+
+        /*
+        --------------------------------------------------
+        Get receipt items
+        --------------------------------------------------
+        */
+
+        const {
+            data: items,
+            error: itemsError
+        } = await ReceiptTools.supabase
 
             .from("receipt_items")
 
@@ -84,78 +272,121 @@ class ReceiptTools {
             )
 
             .order(
-                "id"
+                "id",
+                {
+                    ascending: true
+                }
             );
 
-        if (error)
-            throw error;
 
-        return data;
+        if (itemsError) {
+            throw itemsError;
+        }
 
-    }
 
-    /**
-     * Searches OCR text.
-     */
-    static async searchReceipts(keyword) {
+        /*
+        --------------------------------------------------
+        Return receipt + items together
+        --------------------------------------------------
 
-        const { data, error } = await ReceiptTools.supabase
-
-            .from("receipts")
-
-            .select("*")
-
-            .ilike(
-                "raw_ocr_text",
-                `%${keyword}%`
-            );
-
-        if (error)
-            throw error;
-
-        return data;
-
-    }
-
-    /**
-     * Creates a quick summary from receipts.
-     */
-    static summarizeReceipts(receipts) {
-
-        const totalSpent = receipts.reduce(
-
-            (sum, receipt) =>
-
-                sum + Number(receipt.total || 0),
-
-            0
-
-        );
+        This gives Piggy everything needed to make a
+        useful response with ONE tool call.
+        --------------------------------------------------
+        */
 
         return {
 
-            receiptCount: receipts.length,
+            receipt,
 
-            totalSpent,
-
-            averageReceipt:
-
-                receipts.length === 0
-
-                    ? 0
-
-                    : totalSpent / receipts.length
+            items: items ?? []
 
         };
 
     }
 
-    /**
-     * Basic receipt statistics.
-     */
-    static getReceiptStatistics(receipts) {
 
-        if (receipts.length === 0) {
+    /*
+    ======================================================
+    SEARCH RECEIPTS
+    ======================================================
+    */
+
+    static async searchReceipts(keyword) {
+
+        const { data, error } =
+            await ReceiptTools.supabase
+
+                .from("receipts")
+
+                .select("*")
+
+                .ilike(
+                    "raw_ocr_text",
+                    `%${keyword}%`
+                );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        return data ?? [];
+
+    }
+
+
+    /*
+    ======================================================
+    SUMMARIZE RECEIPTS
+    ======================================================
+    */
+
+    static summarizeReceipts(receipts = []) {
+
+        const totalSpent =
+            receipts.reduce(
+
+                (sum, receipt) =>
+                    sum +
+                    Number(
+                        receipt.total || 0
+                    ),
+
+                0
+
+            );
+
+
+        return {
+
+            receiptCount:
+                receipts.length,
+
+            totalSpent,
+
+            averageReceipt:
+                receipts.length === 0
+                    ? 0
+                    : totalSpent /
+                      receipts.length
+
+        };
+
+    }
+
+
+    /*
+    ======================================================
+    RECEIPT STATISTICS
+    ======================================================
+    */
+
+    static getReceiptStatistics(receipts = []) {
+
+        if (
+            receipts.length === 0
+        ) {
 
             return {
 
@@ -169,56 +400,87 @@ class ReceiptTools {
 
         }
 
+
         return {
 
-            totalReceipts: receipts.length,
+            totalReceipts:
+                receipts.length,
 
             firstReceipt:
-
-                receipts[receipts.length - 1],
+                receipts[
+                    receipts.length - 1
+                ],
 
             latestReceipt:
-
                 receipts[0]
 
         };
 
     }
 
-    /**
-     * Returns the user's most recent receipts.
-     *
-     * args:
-     * {
-     *     limit: 5
-     * }
-     */
-    static async getRecentReceipts({ limit = 5 } = {}) {
 
-        const { data, error } = await ReceiptTools.supabase
+    /*
+    ======================================================
+    GET RECENT RECEIPTS
+    ======================================================
+    */
 
-            .from("receipts")
+    static async getRecentReceipts(
+        { limit = 5 } = {}
+    ) {
 
-            .select(`
-                id,
-                receipt_date,
-                store_name_raw,
-                total
-            `)
+        /*
+        Safety in case limit somehow arrives incorrectly.
+        */
 
-            .order("receipt_date", {
-                ascending: false
-            })
+        const safeLimit =
+            Number.isFinite(
+                Number(limit)
+            )
+                ? Math.max(
+                    1,
+                    Math.min(
+                        Number(limit),
+                        20
+                    )
+                )
+                : 5;
 
-            .limit(limit);
 
-        if (error)
+        const { data, error } =
+            await ReceiptTools.supabase
+
+                .from("receipts")
+
+                .select(`
+                    id,
+                    receipt_date,
+                    store_name_raw,
+                    total
+                `)
+
+                .order(
+                    "receipt_date",
+                    {
+                        ascending: false
+                    }
+                )
+
+                .limit(
+                    safeLimit
+                );
+
+
+        if (error) {
             throw error;
+        }
 
-        return data;
+
+        return data ?? [];
 
     }
 
 }
+
 
 window.ReceiptTools = ReceiptTools;
