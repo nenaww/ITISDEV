@@ -347,7 +347,8 @@ function bindHomeActions() {
 
     if (calculatorButton) {
         calculatorButton.addEventListener("click", () => {
-            window.location.href = "calculator.html";
+            window.location.href =
+                "budget-calculator.html?from=home";
         });
     }
 

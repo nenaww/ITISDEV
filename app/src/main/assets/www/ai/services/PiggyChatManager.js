@@ -97,9 +97,16 @@ class PiggyChatManager {
                     toolOutputs
                 );
 
-            const finalText =
+            console.log("FIRST RESPONSE:");
+            console.log(JSON.stringify(response, null, 2));
 
+            console.log("FINAL RESPONSE:");
+            console.log(JSON.stringify(finalResponse, null, 2));
+
+            const finalText =
                 this.ai.extractText(finalResponse);
+
+            console.log("FINAL TEXT:", finalText);
 
             this.history.push({
 

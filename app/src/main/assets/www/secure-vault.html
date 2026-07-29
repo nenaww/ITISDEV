@@ -543,6 +543,13 @@
             <span><strong>Open Folder</strong></span>
         </button>
 
+        <button id="starSelectedFolderButton" type="button">
+            <i id="starSelectedFolderIcon" class="bi bi-star"></i>
+            <span>
+                <strong id="starSelectedFolderText">Star Folder</strong>
+            </span>
+        </button>
+
         <button id="deleteSelectedFolderButton" class="danger" type="button">
             <i class="bi bi-trash3"></i>
             <span><strong>Delete Folder</strong></span>
@@ -584,6 +591,12 @@
             <button type="button" data-vault-sort="favorite">
                 <i class="bi bi-heart"></i>
                 <span>Favorites first</span>
+                <i class="bi bi-check-lg"></i>
+            </button>
+
+            <button type="button" data-vault-sort="starred" hidden>
+                <i class="bi bi-star"></i>
+                <span>Starred first</span>
                 <i class="bi bi-check-lg"></i>
             </button>
         </div>

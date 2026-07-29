@@ -7,149 +7,46 @@ window.KabalikatVault = {
     const key = VAULT_PREFIX + code.replace(/[^A-Z0-9_-]/g, "-");
 
     const initial = () => ({
-      version: 5,
+      version: 3,
       familyCode: code,
       folders: [
-        { id: "folder-groceries", name: "Groceries", parentId: "", createdAt: new Date().toISOString() },
-        { id: "folder-bills", name: "Household Bills", parentId: "", createdAt: new Date().toISOString() },
-        { id: "folder-warranties", name: "Warranties", parentId: "", createdAt: new Date().toISOString() }
+        { id: "folder-groceries", name: "Groceries", parentId: "", starred: false, createdAt: new Date().toISOString() },
+        { id: "folder-bills", name: "Household Bills", parentId: "", starred: false, createdAt: new Date().toISOString() },
+        { id: "folder-warranties", name: "Warranties", parentId: "", starred: false, createdAt: new Date().toISOString() }
       ],
       files: [
-        ...getPrototypeReceiptFiles(),
+        { id: "file-1", title: "Puregold Receipt", type: "receipt", merchant: "Puregold", amount: 1250, date: "2026-07-24", uploadedById: "sample-head", uploadedByName: "Elena", folderId: "folder-groceries", mimeType: "image/jpeg", dataUrl: "", linkedExpense: "Groceries", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), trashedAt: "" },
         { id: "file-2", title: "Electric Fan Warranty", type: "warranty", merchant: "Abenson", amount: 2399, date: "2026-07-20", uploadedById: "sample-head", uploadedByName: "Elena", folderId: "folder-warranties", mimeType: "application/pdf", dataUrl: "", linkedExpense: "Electric Fan", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), trashedAt: "" },
-        { id: "file-3", title: "Maynilad Billing Statement", type: "document", merchant: "Maynilad", amount: 1034, date: "2026-07-18", uploadedById: "sample-member-2", uploadedByName: "Marco", folderId: "folder-bills", mimeType: "application/pdf", dataUrl: "", linkedExpense: "", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), trashedAt: "" }
+        { id: "file-3", title: "Maynilad Billing", type: "document", merchant: "Maynilad", amount: 1034, date: "2026-07-18", uploadedById: "sample-member-2", uploadedByName: "Marco", folderId: "folder-bills", mimeType: "application/pdf", dataUrl: "", linkedExpense: "", createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), trashedAt: "" }
       ]
     });
-
-    function getPrototypeReceiptFiles() {
-      const now = new Date().toISOString();
-
-      return [
-        {
-          id: "prototype-receipt-savemore1",
-          title: "Savemore Receipt",
-          type: "receipt",
-          merchant: "Savemore",
-          amount: 78.34,
-          date: "2026-07-23",
-          uploadedById: "sample-head",
-          uploadedByName: "Elena",
-          folderId: "folder-groceries",
-          mimeType: "image/jpeg",
-          dataUrl: "",
-          receiptImageBaseName: "savemore1",
-          linkedExpense: "Whole Wheat Bread",
-          createdAt: now,
-          updatedAt: now,
-          trashedAt: ""
-        },
-        {
-          id: "prototype-receipt-7111",
-          title: "7-Eleven Receipt",
-          type: "receipt",
-          merchant: "7-Eleven",
-          amount: 28,
-          date: "2026-07-21",
-          uploadedById: "sample-member-2",
-          uploadedByName: "Marco",
-          folderId: "folder-groceries",
-          mimeType: "image/jpeg",
-          dataUrl: "",
-          receiptImageBaseName: "7111",
-          linkedExpense: "Coca-Cola No Sugar",
-          createdAt: now,
-          updatedAt: now,
-          trashedAt: ""
-        },
-        {
-          id: "prototype-receipt-mercury1",
-          title: "Mercury Drug Receipt",
-          type: "receipt",
-          merchant: "Mercury Drug",
-          amount: 3855,
-          date: "2026-07-20",
-          uploadedById: "sample-head",
-          uploadedByName: "Elena",
-          folderId: "folder-groceries",
-          mimeType: "image/jpeg",
-          dataUrl: "",
-          receiptImageBaseName: "mercury1",
-          linkedExpense: "Lexapro FCT 10mg",
-          createdAt: now,
-          updatedAt: now,
-          trashedAt: ""
-        }
-      ];
-    }
-
-    function migratePrototypeReceipts(state) {
-      if (Number(state.version || 0) >= 5) {
-        return state;
-      }
-
-      state.files = state.files.filter(file => {
-        const isOldPuregoldPrototype =
-          file.id === "file-1" &&
-          file.title === "Puregold Receipt" &&
-          !file.dataUrl;
-
-        return !isOldPuregoldPrototype;
-      });
-
-      getPrototypeReceiptFiles().forEach(receipt => {
-        const exists = state.files.some(file =>
-          file.id === receipt.id
-        );
-
-        if (!exists) {
-          state.files.unshift(receipt);
-        }
-      });
-
-      state.version = 5;
-      return state;
-    }
 
     function load() {
       try {
         const saved = localStorage.getItem(key);
-
-        if (!saved) {
-          const state = initial();
-          save(state);
-          return state;
-        }
-
+        if (!saved) { const state = initial(); save(state); return state; }
         const parsed = JSON.parse(saved);
-
-        const state = {
-          version: Number(parsed.version || 4),
+        return {
+          version: 4,
           familyCode: code,
           folders: Array.isArray(parsed.folders)
             ? parsed.folders.map(folder => ({
                 ...folder,
-                parentId: folder.parentId || ""
+                parentId: folder.parentId || "",
+                starred: folder.starred === true
               }))
             : [],
           files: Array.isArray(parsed.files)
-            ? parsed.files
+            ? parsed.files.map(file => ({
+                ...file,
+                title:
+                  file.title === "Maynilad Billing Statement"
+                    ? "Maynilad Billing"
+                    : file.title
+              }))
             : []
         };
-
-        const migrated =
-          migratePrototypeReceipts(state);
-
-        if (
-          Number(parsed.version || 0) !==
-          Number(migrated.version || 0)
-        ) {
-          save(migrated);
-        }
-
-        return migrated;
-      } catch {
-        return initial();
-      }
+      } catch { return initial(); }
     }
     function save(state) { localStorage.setItem(key, JSON.stringify(state)); return state; }
     function mutate(callback) { const state = load(); callback(state); return save(state); }
@@ -191,18 +88,53 @@ window.KabalikatVault = {
             throw new Error("A folder with this name already exists here.");
           }
 
+          const now =
+            new Date().toISOString();
+
           created = {
             id: id("folder"),
             name: clean,
             parentId: normalizedParentId,
             createdById: actor.id,
-            createdAt: new Date().toISOString()
+            starred: false,
+            createdAt: now,
+            updatedAt: now
           };
 
           state.folders.push(created);
         });
 
         return created;
+      },
+      toggleFolderStar(folderId, actor) {
+        actorOk(actor);
+
+        const targetId =
+          String(folderId || "").trim();
+
+        let starred = false;
+
+        mutate(state => {
+          const folder =
+            state.folders.find(
+              item => item.id === targetId
+            );
+
+          if (!folder) {
+            throw new Error("Folder not found.");
+          }
+
+          folder.starred =
+            folder.starred !== true;
+
+          folder.updatedAt =
+            new Date().toISOString();
+
+          starred =
+            folder.starred;
+        });
+
+        return starred;
       },
       deleteFolder(folderId, actor) {
         actorOk(actor);
@@ -286,7 +218,32 @@ window.KabalikatVault = {
       },
       restoreFile(fileId, actor) {
         actorOk(actor);
-        mutate(state => { const file = findFile(state,fileId); if (!canManage(file,actor)) throw new Error("You cannot restore this file."); file.trashedAt = ""; });
+
+        mutate(state => {
+          const file =
+            findFile(state, fileId);
+
+          if (!canManage(file, actor)) {
+            throw new Error(
+              "You cannot restore this file."
+            );
+          }
+
+          if (
+            file.folderId &&
+            !state.folders.some(
+              folder =>
+                folder.id ===
+                file.folderId
+            )
+          ) {
+            file.folderId = "";
+          }
+
+          file.trashedAt = "";
+          file.updatedAt =
+            new Date().toISOString();
+        });
       },
       deleteFile(fileId, actor) {
         actorOk(actor); if (!isHead(actor)) throw new Error("Only the Household Head can permanently delete files.");
