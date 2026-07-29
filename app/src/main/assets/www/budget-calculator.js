@@ -1,5 +1,44 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+const budgetCalculatorBackButton =
+document.getElementById(
+"budgetCalculatorBackButton"
+);
+
+if(budgetCalculatorBackButton){
+
+budgetCalculatorBackButton
+.addEventListener(
+"click",
+()=>{
+
+const parameters =
+new URLSearchParams(
+window.location.search
+);
+
+const source =
+parameters.get("from");
+
+if(
+source === "home" ||
+window.history.length <= 1
+){
+
+window.location.href =
+"home.html";
+
+return;
+
+}
+
+window.history.back();
+
+}
+);
+
+}
+
 
 // ===============================
 // TEMP HOUSEHOLD DATA
