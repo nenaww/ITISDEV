@@ -1513,7 +1513,7 @@ body[data-page="home"] {
     border: none;
     border-radius: 24px;
 
-    background: #EEF6F0;
+    background: #E6F2E9;
 
     box-shadow: var(--soft-shadow);
 
@@ -1586,7 +1586,7 @@ body[data-page="home"] {
     display: grid;
     place-items: center;
 
-    color: #6C9278;
+     color: #8FAE9A;
 
     font-size: 42px;
 
