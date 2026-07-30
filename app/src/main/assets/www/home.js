@@ -378,10 +378,7 @@ function bindHomeActions() {
 
     if (savingsButton) {
         savingsButton.addEventListener("click", () => {
-            goToExpenses({
-                section: "budget-overview",
-                hash: "budget-overview"
-            });
+            window.location.href = "savings.html";
         });
     }
 

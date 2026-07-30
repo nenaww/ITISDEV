@@ -757,15 +757,7 @@ function bindEvents() {
     const savingsButton = document.getElementById('navSavings');
     if (savingsButton) {
         savingsButton.addEventListener('click', () => {
-            const target = document.getElementById('budget-overview');
-            const scrollArea = document.querySelector('.expenses-scroll-area');
-
-            if (target && scrollArea) {
-                scrollArea.scrollTo({
-                    top: Math.max(target.offsetTop - 18, 0),
-                    behavior: 'smooth'
-                });
-            }
+            window.location.href = 'savings.html';
         });
     }
 
