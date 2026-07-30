@@ -7,7 +7,7 @@ AI Configuration
 
 const AI_CONFIG = {
 
-    API_KEY: "AQ.Ab8RN6LVEPb32-iqFLB9LGkV7gVc3H3dLpRqSE_FS4eO3VfQYg",
+    API_KEY: "AQ.Ab8RN6JIall5ll8VKaAASXGes2IoZyRBr8CNHoClRGy7VnzA0", /* ADD Q AT THE END */
 
     MODEL: "gemini-3.5-flash-lite"
 
