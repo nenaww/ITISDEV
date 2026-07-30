@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>KABALIKAT Reports</title>
+
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+            rel="stylesheet"
+    >
+
+    <link
+            href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="reports.css">
+</head>
+
+<body data-page="reports">
+
+<main class="reports-page">
+
+    <div class="reports-scroll-area">
+
+        <header class="reports-header">
+
+            <button
+                    id="reportsBackButton"
+                    class="reports-back-button"
+                    type="button"
+                    aria-label="Return to the previous page"
+            >
+                <i class="bi bi-arrow-left"></i>
+            </button>
+
+            <div class="reports-header-copy">
+                <span>Financial overview</span>
+                <h1>Reports</h1>
+            </div>
+
+            <div class="reports-header-icon" aria-hidden="true">
+                <i class="bi bi-bar-chart-line"></i>
+            </div>
+
+        </header>
+
+
+        <section class="reports-controls-card">
+
+            <div class="reports-period-control">
+
+                <span class="reports-control-label">
+                    Report type
+                </span>
+
+                <div
+                        class="reports-period-toggle"
+                        role="group"
+                        aria-label="Select monthly or weekly report"
+                >
+
+                    <button
+                            id="reportsMonthlyButton"
+                            class="active"
+                            type="button"
+                            data-period="monthly"
+                            aria-pressed="true"
+                    >
+                        Monthly
+                    </button>
+
+                    <button
+                            id="reportsWeeklyButton"
+                            type="button"
+                            data-period="weekly"
+                            aria-pressed="false"
+                    >
+                        Weekly
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="reports-control-field">
+
+                <span
+                        id="reportsDateFieldLabel"
+                        class="reports-control-label"
+                >
+                    Report month
+                </span>
+
+                <button
+                        id="reportsDateButton"
+                        class="reports-date-picker"
+                        type="button"
+                        aria-haspopup="dialog"
+                        aria-controls="reportsDateModal"
+                >
+
+                    <strong id="reportsDateDisplay">
+                        July 2026
+                    </strong>
+
+                    <i
+                            class="bi bi-calendar3"
+                            aria-hidden="true"
+                    ></i>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <section class="reports-focus-section">
+
+            <span class="reports-control-label">
+                Report focus
+            </span>
+
+            <div
+                    id="reportsFocusDropdown"
+                    class="reports-focus-dropdown"
+            >
+
+                <button
+                        id="reportsFocusButton"
+                        class="reports-focus-button"
+                        type="button"
+                        aria-haspopup="menu"
+                        aria-expanded="false"
+                        aria-controls="reportsFocusMenu"
+                >
+
+                    <span class="reports-focus-button-main">
+
+                        <span
+                                id="reportsFocusButtonIcon"
+                                class="reports-focus-icon reports-focus-icon-budget"
+                                aria-hidden="true"
+                        >
+                            <i class="bi bi-clipboard-data"></i>
+                        </span>
+
+                        <span class="reports-focus-button-copy">
+
+                            <small>Selected report</small>
+
+                            <strong id="reportsFocusLabel">
+                                Budget Performance
+                            </strong>
+
+                        </span>
+
+                    </span>
+
+                    <i
+                            class="bi bi-chevron-down reports-focus-chevron"
+                            aria-hidden="true"
+                    ></i>
+
+                </button>
+
+
+                <div
+                        id="reportsFocusMenu"
+                        class="reports-focus-menu"
+                        role="menu"
+                        hidden
+                >
+
+                    <button
+                            class="reports-focus-option selected"
+                            type="button"
+                            role="menuitemradio"
+                            aria-checked="true"
+                            data-focus="budget"
+                    >
+
+                        <span
+                                class="reports-focus-option-icon reports-focus-icon-budget"
+                                aria-hidden="true"
+                        >
+                            <i class="bi bi-clipboard-data"></i>
+                        </span>
+
+                        <span class="reports-focus-option-label">
+                            Budget Performance
+                        </span>
+
+                        <span
+                                class="reports-focus-option-check"
+                                aria-hidden="true"
+                        >
+                            <i class="bi bi-check-circle-fill"></i>
+                        </span>
+
+                    </button>
+
+
+                    <button
+                            class="reports-focus-option"
+                            type="button"
+                            role="menuitemradio"
+                            aria-checked="false"
+                            data-focus="expense"
+                    >
+
+                        <span
+                                class="reports-focus-option-icon reports-focus-icon-expense"
+                                aria-hidden="true"
+                        >
+                            <i class="bi bi-pie-chart"></i>
+                        </span>
+
+                        <span class="reports-focus-option-label">
+                            Expense Breakdown
+                        </span>
+
+                        <span
+                                class="reports-focus-option-check"
+                                aria-hidden="true"
+                        >
+                            <i class="bi bi-check-circle-fill"></i>
+                        </span>
+
+                    </button>
+
+
+                    <button
+                            class="reports-focus-option"
+                            type="button"
+                            role="menuitemradio"
+                            aria-checked="false"
+                            data-focus="family"
+                    >
+
+                        <span
+                                class="reports-focus-option-icon reports-focus-icon-family"
+                                aria-hidden="true"
+                        >
+                            <i class="bi bi-people"></i>
+                        </span>
+
+                        <span class="reports-focus-option-label">
+                            Family Progress
+                        </span>
+
+                        <span
+                                class="reports-focus-option-check"
+                                aria-hidden="true"
+                        >
+                            <i class="bi bi-check-circle-fill"></i>
+                        </span>
+
+                    </button>
+
+
+                    <button
+                            class="reports-focus-option"
+                            type="button"
+                            role="menuitemradio"
+                            aria-checked="false"
+                            data-focus="goals"
+                    >
+
+                        <span
+                                class="reports-focus-option-icon reports-focus-icon-goals"
+                                aria-hidden="true"
+                        >
+                            <i class="bi bi-bullseye"></i>
+                        </span>
+
+                        <span class="reports-focus-option-label">
+                            Goals and Obligations
+                        </span>
+
+                        <span
+                                class="reports-focus-option-check"
+                                aria-hidden="true"
+                        >
+                            <i class="bi bi-check-circle-fill"></i>
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section
+                class="reports-status-card reports-filter-section"
+                data-section-types="budget"
+        >
+
+            <div class="reports-status-header">
+
+                <div>
+
+                    <span id="reportsPeriodLabel">
+                        July 2026 Monthly Report
+                    </span>
+
+                    <h2 id="reportsStatusTitle">
+                        On Track
+                    </h2>
+
+                    <p id="reportsStatusDescription">
+                        Your spending is within the planned family budget.
+                    </p>
+
+                </div>
+
+                <div
+                        id="reportsStatusIcon"
+                        class="reports-status-icon"
+                        aria-hidden="true"
+                >
+                    <i class="bi bi-shield-check"></i>
+                </div>
+
+            </div>
+
+
+            <div class="reports-budget-values">
+
+                <div>
+                    <span>Budget</span>
+
+                    <strong id="reportsBudgetAmount">
+                        ₱25,000
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Spent</span>
+
+                    <strong id="reportsSpentAmount">
+                        ₱5,750
+                    </strong>
+                </div>
+
+            </div>
+
+
+            <div class="reports-budget-track">
+
+                <div
+                        id="reportsBudgetFill"
+                        class="reports-budget-fill"
+                ></div>
+
+            </div>
+
+
+            <div class="reports-budget-footer">
+
+                <span id="reportsBudgetPercent">
+                    23% used
+                </span>
+
+                <strong id="reportsRemainingText">
+                    ₱19,250 remaining
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <section
+                class="reports-content-card reports-filter-section"
+                data-section-types="budget"
+        >
+
+            <div class="reports-card-heading">
+
+                <div class="reports-card-heading-icon reports-icon-green">
+                    <i class="bi bi-bar-chart"></i>
+                </div>
+
+                <div>
+                    <span>Budget comparison</span>
+                    <h2>Budget Performance</h2>
+                </div>
+
+            </div>
+
+
+            <div class="reports-chart-stats reports-chart-stats-four">
+
+                <article class="reports-chart-stat">
+
+                    <span>Allocated</span>
+
+                    <strong id="reportsBudgetChartAllocated">
+                        ₱25,000
+                    </strong>
+
+                </article>
+
+                <article class="reports-chart-stat">
+
+                    <span>Spent</span>
+
+                    <strong id="reportsBudgetChartSpent">
+                        ₱5,750
+                    </strong>
+
+                </article>
+
+                <article class="reports-chart-stat">
+
+                    <span id="reportsBudgetChartBalanceLabel">Remaining</span>
+
+                    <strong id="reportsBudgetChartRemaining">
+                        ₱19,250
+                    </strong>
+
+                </article>
+
+                <article class="reports-chart-stat">
+
+                    <span>Budget used</span>
+
+                    <strong id="reportsBudgetChartPercentage">
+                        23%
+                    </strong>
+
+                </article>
+
+            </div>
+
+
+            <div class="reports-chart-frame reports-chart-frame-budget">
+
+                <canvas
+                        id="reportsBudgetChart"
+                        aria-label="Budget performance chart"
+                        role="img"
+                >
+                    Budget performance chart.
+                </canvas>
+
+            </div>
+
+            <p class="reports-chart-caption">
+                Compares the allocated budget with the amount spent and remaining.
+            </p>
+
+        </section>
+
+
+        <section
+                class="reports-summary-grid reports-filter-section"
+                data-section-types="budget"
+        >
+
+            <article class="reports-summary-card reports-summary-green">
+
+                <div class="reports-summary-icon">
+                    <i class="bi bi-wallet2"></i>
+                </div>
+
+                <span id="reportsRemainingSummaryLabel">Remaining</span>
+
+                <strong id="reportsRemainingAmount">
+                    ₱19,250
+                </strong>
+
+                <small id="reportsRemainingSummaryNote">Available budget</small>
+
+            </article>
+
+
+            <article class="reports-summary-card reports-summary-lavender">
+
+                <div class="reports-summary-icon">
+                    <i class="bi bi-piggy-bank"></i>
+                </div>
+
+                <span>Savings Added</span>
+
+                <strong id="reportsSavingsAmount">
+                    ₱2,300
+                </strong>
+
+                <small>This period</small>
+
+            </article>
+
+        </section>
+
+
+        <section
+                class="reports-content-card reports-filter-section"
+                data-section-types="expense"
+        >
+
+            <div class="reports-card-heading">
+
+                <div class="reports-card-heading-icon reports-icon-lavender">
+                    <i class="bi bi-bar-chart"></i>
+                </div>
+
+                <div>
+                    <span>Category comparison</span>
+                    <h2>Expense Breakdown</h2>
+                </div>
+
+            </div>
+
+
+            <div class="reports-chart-stats">
+
+                <article class="reports-chart-stat">
+
+                    <span>Total spent</span>
+
+                    <strong id="reportsExpenseChartTotal">
+                        ₱5,750
+                    </strong>
+
+                </article>
+
+                <article class="reports-chart-stat">
+
+                    <span>Top category</span>
+
+                    <strong id="reportsExpenseChartTopCategory">
+                        Food
+                    </strong>
+
+                </article>
+
+                <article class="reports-chart-stat">
+
+                    <span>Top share</span>
+
+                    <strong id="reportsExpenseChartTopShare">
+                        56%
+                    </strong>
+
+                </article>
+
+            </div>
+
+
+            <div class="reports-chart-frame reports-chart-frame-expense">
+
+                <canvas
+                        id="reportsExpenseChart"
+                        aria-label="Expense category chart"
+                        role="img"
+                >
+                    Expense chart showing values for each category.
+                </canvas>
+
+            </div>
+
+
+            <div
+                    id="reportsCategoryList"
+                    class="reports-category-list"
+            >
+                <!-- Generated by reports.js -->
+            </div>
+
+        </section>
+
+
+        <section
+                class="reports-content-card reports-filter-section"
+                data-section-types="expense"
+        >
+
+            <div class="reports-card-heading">
+
+                <div class="reports-card-heading-icon reports-icon-yellow">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+
+                <div>
+                    <span>Based on the expense chart</span>
+                    <h2>Expense Interpretation</h2>
+                </div>
+
+            </div>
+
+            <div
+                    id="reportsExpenseInterpretationList"
+                    class="reports-interpretation-list"
+            >
+                <!-- Generated by reports.js -->
+            </div>
+
+        </section>
+
+
+        <section
+                class="reports-content-card reports-filter-section"
+                data-section-types="family"
+        >
+
+            <div class="reports-card-heading">
+
+                <div class="reports-card-heading-icon reports-icon-green">
+                    <i class="bi bi-people"></i>
+                </div>
+
+                <div>
+                    <span>Individual household spending</span>
+                    <h2>Family Member Expenses</h2>
+                </div>
+
+            </div>
+
+
+            <div class="reports-chart-stats">
+
+                <article class="reports-chart-stat">
+
+                    <span>Family budget</span>
+
+                    <strong id="reportsFamilyBudgetAmount">
+                        ₱25,000
+                    </strong>
+
+                </article>
+
+                <article class="reports-chart-stat">
+
+                    <span>Family spending</span>
+
+                    <strong id="reportsFamilyTotalSpent">
+                        ₱5,750
+                    </strong>
+
+                </article>
+
+                <article class="reports-chart-stat">
+
+                    <span id="reportsFamilyBalanceLabel">Budget remaining</span>
+
+                    <strong id="reportsFamilyBudgetRemaining">
+                        ₱19,250
+                    </strong>
+
+                </article>
+
+            </div>
+
+
+            <div class="reports-chart-frame reports-chart-frame-family">
+
+                <canvas
+                        id="reportsFamilyChart"
+                        aria-label="Family member expense chart"
+                        role="img"
+                >
+                    Family member expenses compared with the total family budget.
+                </canvas>
+
+            </div>
+
+            <p class="reports-chart-caption">
+                Each member's spending is compared with the total budget allocated to the household.
+            </p>
+
+
+            <div
+                    id="reportsMemberExpenseList"
+                    class="reports-member-expense-list"
+            >
+                <!-- Generated by reports.js -->
+            </div>
+
+        </section>
+
+
+        <section
+                class="reports-content-card reports-filter-section"
+                data-section-types="family"
+        >
+
+            <div class="reports-card-heading">
+
+                <div class="reports-card-heading-icon reports-icon-blue">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+
+                <div>
+                    <span>Household financial activity</span>
+                    <h2>Family Progress Summary</h2>
+                </div>
+
+            </div>
+
+
+            <div class="reports-progress-list">
+
+                <div class="reports-progress-item">
+
+                    <span class="reports-progress-item-icon reports-icon-green">
+                        <i class="bi bi-piggy-bank"></i>
+                    </span>
+
+                    <div class="reports-progress-item-copy">
+                        <strong>Savings added</strong>
+                        <span>Amount saved during this period</span>
+                    </div>
+
+                    <b id="reportsFamilySavingsAmount">
+                        ₱2,300
+                    </b>
+
+                </div>
+
+
+                <div class="reports-progress-item">
+
+                    <span class="reports-progress-item-icon reports-icon-yellow">
+                        <i class="bi bi-receipt-cutoff"></i>
+                    </span>
+
+                    <div class="reports-progress-item-copy">
+                        <strong>Bills paid</strong>
+                        <span>Completed household payments</span>
+                    </div>
+
+                    <b id="reportsFamilyBillsAmount">
+                        ₱1,420
+                    </b>
+
+                </div>
+
+
+                <div class="reports-progress-item">
+
+                    <span class="reports-progress-item-icon reports-icon-blue">
+                        <i class="bi bi-check2-circle"></i>
+                    </span>
+
+                    <div class="reports-progress-item-copy">
+                        <strong>Debt paid</strong>
+                        <span>Debt payments made this period</span>
+                    </div>
+
+                    <b id="reportsFamilyDebtPaidAmount">
+                        ₱1,000
+                    </b>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section
+                class="reports-content-card reports-filter-section"
+                data-section-types="goals"
+        >
+
+            <div class="reports-card-heading">
+
+                <div class="reports-card-heading-icon reports-icon-blue">
+                    <i class="bi bi-bullseye"></i>
+                </div>
+
+                <div>
+                    <span>Savings and payment values</span>
+                    <h2>Goals and Obligations</h2>
+                </div>
+
+            </div>
+
+
+            <div class="reports-chart-stats reports-chart-stats-four">
+
+                <article class="reports-chart-stat">
+
+                    <span>Savings target</span>
+
+                    <strong id="reportsSavingsGoalAmount">
+                        ₱5,000
+                    </strong>
+
+                </article>
+
+                <article class="reports-chart-stat">
+
+                    <span>Amount saved</span>
+
+                    <strong id="reportsSavingsProgressAmount">
+                        ₱2,300
+                    </strong>
+
+                </article>
+
+                <article class="reports-chart-stat">
+
+                    <span>Goal progress</span>
+
+                    <strong id="reportsSavingsProgressPercent">
+                        46%
+                    </strong>
+
+                </article>
+
+                <article class="reports-chart-stat">
+
+                    <span>Debt balance</span>
+
+                    <strong id="reportsGoalsDebtBalance">
+                        ₱3,250
+                    </strong>
+
+                </article>
+
+            </div>
+
+
+            <div class="reports-chart-frame reports-chart-frame-goals">
+
+                <canvas
+                        id="reportsGoalsChart"
+                        aria-label="Goals and obligations chart"
+                        role="img"
+                >
+                    Goals and obligations chart with financial values.
+                </canvas>
+
+            </div>
+
+
+            <div class="reports-obligation-list">
+
+                <div class="reports-obligation-item">
+
+                    <div class="reports-obligation-icon reports-icon-yellow">
+                        <i class="bi bi-lightning-charge"></i>
+                    </div>
+
+                    <div>
+                        <strong>Bills paid</strong>
+                        <span>Recorded during this period</span>
+                    </div>
+
+                    <b id="reportsObligationBills">
+                        ₱1,420
+                    </b>
+
+                </div>
+
+
+                <div class="reports-obligation-item">
+
+                    <div class="reports-obligation-icon reports-icon-green">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+
+                    <div>
+                        <strong>Debt paid</strong>
+                        <span>Payment made during this period</span>
+                    </div>
+
+                    <b id="reportsDebtPaidAmount">
+                        ₱1,000
+                    </b>
+
+                </div>
+
+
+                <div class="reports-obligation-item">
+
+                    <div class="reports-obligation-icon reports-icon-blue">
+                        <i class="bi bi-arrow-down-left-circle"></i>
+                    </div>
+
+                    <div>
+                        <strong>Owed to you</strong>
+                        <span>Money expected to be collected</span>
+                    </div>
+
+                    <b id="reportsOwedAmount">
+                        ₱1,600
+                    </b>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section
+                class="reports-content-card reports-interpretation-card reports-filter-section"
+                data-section-types="family goals"
+        >
+
+            <div class="reports-card-heading">
+
+                <div class="reports-card-heading-icon reports-icon-green">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+
+                <div>
+                    <span id="reportsInterpretationEyebrow">
+                        Based on the family chart
+                    </span>
+
+                    <h2 id="reportsInterpretationHeading">
+                        Family Spending Interpretation
+                    </h2>
+                </div>
+
+            </div>
+
+            <div
+                    id="reportsInterpretationList"
+                    class="reports-interpretation-list"
+            >
+                <!-- Generated by reports.js -->
+            </div>
+
+        </section>
+
+    </div>
+
+</main>
+
+
+<div
+        id="reportsDateModal"
+        class="reports-date-modal"
+        aria-hidden="true"
+>
+
+    <button
+            id="reportsDateBackdrop"
+            class="reports-date-backdrop"
+            type="button"
+            aria-label="Close date filter"
+    ></button>
+
+
+    <section
+            class="reports-date-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="reportsDateModalTitle"
+    >
+
+        <div
+                class="reports-date-sheet-handle"
+                aria-hidden="true"
+        ></div>
+
+
+        <div class="reports-date-sheet-header">
+
+            <div>
+
+                <span>Jump to date</span>
+
+                <h2 id="reportsDateModalTitle">
+                    Select month and year
+                </h2>
+
+            </div>
+
+            <button
+                    id="reportsDateCloseButton"
+                    class="reports-date-close-button"
+                    type="button"
+                    aria-label="Close date filter"
+            >
+                <i class="bi bi-x-lg"></i>
+            </button>
+
+        </div>
+
+
+        <div class="reports-date-fields">
+
+            <label class="reports-date-select-field">
+
+                <span>Month</span>
+
+                <span class="reports-date-select-wrapper">
+
+                    <select
+                            id="reportsPickerMonthSelect"
+                            aria-label="Select month"
+                    ></select>
+
+                    <i class="bi bi-chevron-down"></i>
+
+                </span>
+
+            </label>
+
+
+            <label class="reports-date-select-field">
+
+                <span>Year</span>
+
+                <span class="reports-date-select-wrapper">
+
+                    <select
+                            id="reportsPickerYearSelect"
+                            aria-label="Select year"
+                    ></select>
+
+                    <i class="bi bi-chevron-down"></i>
+
+                </span>
+
+            </label>
+
+        </div>
+
+
+        <div
+                id="reportsWeekCalendarSection"
+                class="reports-week-calendar-section"
+                hidden
+        >
+
+            <div class="reports-week-calendar-heading">
+
+                <strong>Select a week</strong>
+
+                <span>
+                    Tap any date in the week you want to view.
+                </span>
+
+            </div>
+
+
+            <div class="reports-week-calendar">
+
+                <div
+                        class="reports-weekday-row"
+                        aria-hidden="true"
+                >
+                    <span>Mon</span>
+                    <span>Tue</span>
+                    <span>Wed</span>
+                    <span>Thu</span>
+                    <span>Fri</span>
+                    <span>Sat</span>
+                    <span>Sun</span>
+                </div>
+
+                <div
+                        id="reportsWeekCalendarGrid"
+                        class="reports-week-calendar-grid"
+                        role="grid"
+                        aria-label="Select a report week"
+                ></div>
+
+            </div>
+
+            <p
+                    id="reportsSelectedWeekPreview"
+                    class="reports-selected-week-preview"
+                    aria-live="polite"
+            ></p>
+
+        </div>
+
+
+        <div class="reports-date-sheet-actions">
+
+            <button
+                    id="reportsDateCancelButton"
+                    class="reports-date-cancel-button"
+                    type="button"
+            >
+                Cancel
+            </button>
+
+            <button
+                    id="reportsDateApplyButton"
+                    class="reports-date-apply-button"
+                    type="button"
+            >
+                View Month
+            </button>
+
+        </div>
+
+    </section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="reports.js"></script>
+
+</body>
+</html>

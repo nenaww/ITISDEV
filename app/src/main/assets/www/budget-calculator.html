@@ -101,28 +101,6 @@ Save
 Split
 
 </button>
-<button aria-controls="moreFunctions" aria-expanded="false" class="function" id="moreButton" type="button">
-
-More
-<i class="bi bi-chevron-down"></i>
-</button>
-</div>
-<div class="more-functions hidden" id="moreFunctions">
-<button class="function" data-function="daily" type="button">
-
-Per Day
-
-</button>
-<button class="function" data-function="member" type="button">
-
-Per Member
-
-</button>
-<button class="function" data-function="percent" type="button">
-
-% Budget
-
-</button>
 </div>
 <!-- AMOUNT DISPLAY -->
 <div class="amount-display">
@@ -131,49 +109,43 @@ Per Member
 Amount to Spend
 
 </span>
+<p class="calculation-expression" id="calculationExpression">0</p>
 <h1 id="amountValue">
 
 ₱0
 
 </h1>
-<button aria-controls="categoryMenu" aria-expanded="false" class="category-button" id="categoryButton" type="button">
-<span id="categoryName">
-
-What are you planning?
-
-</span>
-<i class="bi bi-chevron-down"></i>
-</button>
-</div>
-<!-- CATEGORY DROPDOWN -->
-<div class="category-menu hidden" id="categoryMenu">
-<button data-category="Food" type="button"><i class="bi bi-basket"></i><span>Food</span></button>
-<button data-category="Grocery" type="button"><i class="bi bi-cart3"></i><span>Grocery</span></button>
-<button data-category="Utilities" type="button"><i class="bi bi-lightning-charge"></i><span>Utilities</span></button>
-<button data-category="Transportation" type="button"><i class="bi bi-bus-front"></i><span>Transportation</span></button>
-<button data-category="Health" type="button"><i class="bi bi-heart-pulse"></i><span>Health</span></button>
-<button data-category="School" type="button"><i class="bi bi-book"></i><span>School</span></button>
-<button data-category="Rent" type="button"><i class="bi bi-house-door"></i><span>Rent</span></button>
-<button data-category="Savings" type="button"><i class="bi bi-piggy-bank"></i><span>Savings</span></button>
-<button data-category="Seasonal Plans" type="button"><i class="bi bi-calendar-event"></i><span>Seasonal Plans</span></button>
-<button data-category="Debt" type="button"><i class="bi bi-credit-card"></i><span>Debt</span></button>
-<button data-category="Other" type="button"><i class="bi bi-three-dots"></i><span>Other</span></button>
-</div>
+<div class="category-select-shell" id="categorySelectShell" style="--selected-soft:#F4EFEC;--selected-accent:#5C534E;">
+<span aria-hidden="true" class="category-select-icon" id="categorySelectIcon"><i class="bi bi-list-check"></i></span>
+<label class="category-select-label" for="categorySelect">What are you planning?</label>
+<select aria-label="What are you planning?" id="categorySelect">
+<option disabled="" selected="" value="">What are you planning?</option>
+<option value="Food">Food</option><option value="Grocery">Grocery</option><option value="Utilities">Utilities</option><option value="Transportation">Transportation</option><option value="Health">Health</option><option value="School">School</option><option value="Rent">Rent</option><option value="Savings">Savings</option><option value="Seasonal Plans">Seasonal Plans</option><option value="Debt">Debt</option><option value="Other">Other</option>
+</select><i aria-hidden="true" class="bi bi-chevron-down category-select-chevron"></i></div></div>
+<section aria-labelledby="seasonalPlanPickerTitle" class="seasonal-plan-picker" hidden="" id="seasonalPlanPicker"><div class="seasonal-plan-picker-heading"><div><span>Seasonal Plans</span><h3 id="seasonalPlanPickerTitle">Choose a plan</h3></div><small>From Expenses</small></div><div class="calculator-seasonal-plan-list" id="seasonalPlanList"></div></section>
 <!-- =====================
 EXTRA INPUTS
 ===================== -->
 <div class="extra-inputs hidden" id="extraInputs">
-<div>
-<label>
-Number of Members
-</label>
-<input id="memberInput" placeholder="0" type="number"/>
+<div id="memberInputField">
+<label for="memberInput">
+        Number of Members
+    </label>
+<div aria-label="Choose number of members" class="member-count-stepper" role="group">
+<button aria-label="Decrease number of members" class="member-stepper-button decrease" id="decreaseMemberCount" type="button">
+<i class="bi bi-dash-lg"></i>
+</button>
+<input aria-label="Number of members" id="memberInput" inputmode="numeric" min="2" readonly="" step="1" type="number" value="2"/>
+<button aria-label="Increase number of members" class="member-stepper-button increase" id="increaseMemberCount" type="button">
+<i class="bi bi-plus-lg"></i>
+</button>
 </div>
-<div>
+</div>
+<div id="daysInputField">
 <label>
 Days Remaining
 </label>
-<input id="daysInput" placeholder="0" type="number"/>
+<input id="daysInput" min="1" placeholder="0" step="1" type="number"/>
 </div>
 </div>
 <!-- =====================
@@ -233,317 +205,362 @@ C
 <button data-key="." type="button">
 .
 </button>
-<button aria-label="Equals" class="equals" data-key="=" type="button"><i class="bi bi-equals"></i></button>
+<button aria-label="Enter" class="equals" data-key="=" type="button">Enter</button>
 </div>
 </section><section class="card">
 <h2>
 Budget Impact
 </h2>
-<div class="impact-grid">
-<div>
-<span>
-Remaining Budget
-</span>
-<strong id="impactBudget">
-₱17,000
-</strong>
+<div class="impact-grid"><div><span>Remaining Budget</span><strong id="impactBudget">₱17,000</strong></div><div><span>Planning For</span><strong id="impactCategory">None</strong></div><div><span>Budget Affected</span><strong id="impactPercent">0%</strong></div><div><span>Status</span><strong id="impactStatus">Safe</strong></div></div></section>
+<section class="card decision-apply-card mode-spend" id="decisionApplyCard">
+<h2 class="decision-apply-title" id="decisionApplyTitle">
+        Apply Expense
+    </h2>
+<div class="decision-apply-grid">
+<label class="decision-impact-field expense-name-field" id="decisionNameField">
+<span>Expense name</span>
+<input autocomplete="off" id="decisionTitleInput" maxlength="60" placeholder="Example: KFC" type="text"/>
+</label>
+<div class="decision-impact-field paid-by-field">
+<span>Paid by</span>
+<strong id="decisionCurrentUser">Current user</strong>
 </div>
-<div>
-<span>
-Planning For
-</span>
-<strong id="impactCategory">
-None
-</strong>
-</div>
-<div>
-<span>
-Budget Affected
-</span>
-<strong id="impactPercent">
-0%
-</strong>
-</div>
-<div>
-<span>
-Status
-</span>
-<strong id="impactStatus">
-Safe
-</strong>
+<label class="decision-impact-field savings-destination-field" hidden="" id="saveDestinationField">
+<span>Savings destination</span>
+<select id="savingsDestinationSelect">
+<option value="General Savings">General Savings</option>
+</select>
+</label>
+<div class="decision-impact-field split-apply-summary" hidden="" id="splitApplySummary">
+<span>Your recorded share</span>
+<strong id="splitShareAmount">₱0</strong>
+<small id="splitShareText">
+                Enter at least two members.
+            </small>
 </div>
 </div>
-</section></div><div aria-labelledby="showPlannerTab" class="budget-tool-view" data-budget-panel="planner" hidden="" id="plannerView" role="tabpanel"><section class="card planner-card">
+<button class="apply-decision-button" disabled="" id="applyDecisionButton" type="button">
+<span id="applyDecisionButtonText">Apply Expense</span>
+</button>
+<p class="decision-action-hint" id="decisionActionHint">
+        Enter an amount, choose a category, and add an expense name.
+    </p>
+</section>
+</div><div aria-labelledby="showPlannerTab" class="budget-tool-view" data-budget-panel="planner" hidden="" id="plannerView" role="tabpanel">
+<section class="card planner-card household-allocation-card">
 <div class="planner-header">
 <div>
-<h2>Household Allocation</h2>
+<h2>
+                    Household Allocation
+                </h2>
+<p>Allocate the amount you will manage first, then distribute the remaining budget to members.</p>
+</div>
+<div class="planner-date-field">
+<span class="planner-date-label">
+            Planning Month
+        </span>
+<div class="planner-combined-date-dropdown">
+<button aria-controls="plannerDateDropdown" aria-expanded="false" class="planner-date-trigger" id="plannerDateTrigger" type="button">
+<span id="plannerMonthDisplay">
+                    Select month
+                </span>
+<i aria-hidden="true" class="bi bi-chevron-down"></i>
+</button>
+<div class="planner-date-dropdown-panel" hidden="" id="plannerDateDropdown">
+<label class="planner-date-option-group">
+<small>Year</small>
+<div class="planner-date-select-control">
+<select aria-label="Choose a planning year" id="plannerYearSelect"></select>
+<i aria-hidden="true" class="bi bi-chevron-down"></i>
+</div>
+</label>
+<label class="planner-date-option-group">
+<small>Month</small>
+<div class="planner-date-select-control">
+<select aria-label="Choose a future planning month" id="plannerMonthSelect"></select>
+<i aria-hidden="true" class="bi bi-chevron-down"></i>
+</div>
+</label>
+</div>
+</div>
+</div>
+</div>
+<div class="planner-fund-inputs">
+<label class="planner-money-field budget-source-field">
+<span>
+                    Monthly Income / Budget
+                </span>
+<div class="planner-money-control">
+<b>₱</b>
+<input id="incomeInput" inputmode="decimal" min="0" placeholder="0" step="100" type="number"/>
+</div>
+</label>
+<label class="planner-money-field additional-income-field">
+<span>
+                    Additional Income
+                </span>
+<div class="planner-money-control">
+<b>₱</b>
+<input id="additionalInput" inputmode="decimal" min="0" placeholder="0" step="100" type="number"/>
+</div>
+</label>
+</div>
+<div class="planner-total-banner">
+<span>
+                Total Available Funds
+            </span>
+<strong id="plannerTotalAvailable">
+                ₱0
+            </strong>
+</div>
+</section><section class="card allocation-card head-category-allocation-card">
+<div class="allocation-card-heading">
+<div>
+<h2>Personal Category Allocation</h2>
+<p class="allocation-description">Set the categories and amounts you will manage before assigning the remaining budget to members.</p>
+</div>
+</div>
+<div class="head-category-allocation-list"><label class="head-category-row manual-category-row">
+<span class="head-category-icon food">
+<i class="bi bi-basket"></i>
+</span>
+<span class="head-category-copy">
+<strong>Food</strong>
+<small>Meals, groceries, and household food</small>
+</span>
+<div class="head-category-input">
+<b>₱</b>
+<input data-planner-category="food" id="foodAllocationInput" inputmode="decimal" min="0" placeholder="0" step="100" type="number"/>
+</div>
+</label><label class="head-category-row manual-category-row">
+<span class="head-category-icon utilities">
+<i class="bi bi-lightning-charge"></i>
+</span>
+<span class="head-category-copy">
+<strong>Utilities</strong>
+<small>Electricity, water, internet, and services</small>
+</span>
+<div class="head-category-input">
+<b>₱</b>
+<input data-planner-category="utilities" id="utilitiesAllocationInput" inputmode="decimal" min="0" placeholder="0" step="100" type="number"/>
+</div>
+</label><label class="head-category-row manual-category-row">
+<span class="head-category-icon transportation">
+<i class="bi bi-bus-front"></i>
+</span>
+<span class="head-category-copy">
+<strong>Transportation</strong>
+<small>Travel and commuting costs</small>
+</span>
+<div class="head-category-input">
+<b>₱</b>
+<input data-planner-category="transportation" id="transportAllocationInput" inputmode="decimal" min="0" placeholder="0" step="100" type="number"/>
+</div>
+</label><label class="head-category-row manual-category-row">
+<span class="head-category-icon health">
+<i class="bi bi-heart-pulse"></i>
+</span>
+<span class="head-category-copy">
+<strong>Health</strong>
+<small>Medicine and healthcare</small>
+</span>
+<div class="head-category-input">
+<b>₱</b>
+<input data-planner-category="health" id="healthAllocationInput" inputmode="decimal" min="0" placeholder="0" step="100" type="number"/>
+</div>
+</label><label class="head-category-row manual-category-row">
+<span class="head-category-icon education">
+<i class="bi bi-book"></i>
+</span>
+<span class="head-category-copy">
+<strong>Education</strong>
+<small>School and learning needs</small>
+</span>
+<div class="head-category-input">
+<b>₱</b>
+<input data-planner-category="education" id="educationAllocationInput" inputmode="decimal" min="0" placeholder="0" step="100" type="number"/>
+</div>
+</label><label class="head-category-row manual-category-row">
+<span class="head-category-icon rent">
+<i class="bi bi-house-door"></i>
+</span>
+<span class="head-category-copy">
+<strong>Rent</strong>
+<small>Home rental or housing costs</small>
+</span>
+<div class="head-category-input">
+<b>₱</b>
+<input data-planner-category="rent" id="rentAllocationInput" inputmode="decimal" min="0" placeholder="0" step="100" type="number"/>
+</div>
+</label><label class="head-category-row manual-category-row">
+<span class="head-category-icon debt">
+<i class="bi bi-wallet2"></i>
+</span>
+<span class="head-category-copy">
+<strong>Debt</strong>
+<small>Planned debt payments</small>
+</span>
+<div class="head-category-input">
+<b>₱</b>
+<input data-planner-category="debt" id="debtInput" inputmode="decimal" min="0" placeholder="0" step="100" type="number"/>
+</div>
+</label><label class="head-category-row manual-category-row">
+<span class="head-category-icon other">
+<i class="bi bi-three-dots"></i>
+</span>
+<span class="head-category-copy">
+<strong>Other</strong>
+<small>Other expenses you will manage</small>
+</span>
+<div class="head-category-input">
+<b>₱</b>
+<input data-planner-category="other" id="otherAllocationInput" inputmode="decimal" min="0" placeholder="0" step="100" type="number"/>
+</div>
+</label><label class="head-category-row manual-category-row">
+<span class="head-category-icon seasonal">
+<i class="bi bi-calendar-event"></i>
+</span>
+<span class="head-category-copy">
+<strong>Seasonal Plans</strong>
+<small>Events and special plans</small>
+</span>
+<div class="head-category-input">
+<b>₱</b>
+<input data-planner-category="seasonalPlans" id="seasonalInput" inputmode="decimal" min="0" placeholder="0" step="100" type="number"/>
+</div>
+</label></div>
+<div class="head-allocation-summary">
+<div>
+<span>Total Personal Allocation</span>
+<strong id="headAllocationTotal">
+                    ₱0
+                </strong>
+</div>
+<div>
+<span>Remaining for Members</span>
+<strong id="remainingForMembers">
+                    ₱0
+                </strong>
+</div>
+</div>
+</section><section class="card planner-member-card"><div class="planner-subsection-heading">
+<div>
+<h3>
+                    Member Allocation
+                </h3>
 <p>
-Plan your household allocation
-</p>
+                    Members will allocate their assigned amounts for themselves.
+                </p>
 </div>
-<button aria-controls="advancedPlanner" aria-expanded="false" id="plannerToggle" type="button">
-<i class="bi bi-chevron-down"></i>
-</button>
+<strong id="availableForMembersChip">
+                ₱0 available
+            </strong>
+</div><div class="member-allocation-list" id="plannerMemberAllocationList"></div><div class="member-allocation-summary">
+<div>
+<span>
+                    Total Assigned to Members
+                </span>
+<strong id="plannerMemberTotal">
+                    ₱0
+                </strong>
 </div>
-<div id="plannerBody">
-<div class="planner-input">
-<label>
-Monthly Income / Budget
-</label>
-<input id="incomeInput" placeholder="0" type="number"/>
+<div>
+<span>
+                    Unassigned Member Funds
+                </span>
+<strong id="plannerMemberUnassigned">
+                    ₱0
+                </strong>
 </div>
-<div class="planner-input">
-<label>
-Fixed Bills
-</label>
-<input id="billsInput" placeholder="0" type="number"/>
-</div>
-<div class="planner-input">
-<label>
-Target Savings
-</label>
-<input id="savingsInput" placeholder="0" type="number"/>
-</div>
-<div class="hidden" id="advancedPlanner">
-<div class="planner-input">
-<label>
-Additional / Seasonal Income
-</label>
-<input id="additionalInput" placeholder="0" type="number"/>
-</div>
-<div class="planner-input">
-<label>
-Debt Payments
-</label>
-<input id="debtInput" placeholder="0" type="number"/>
-</div>
-<div class="planner-input">
-<label>
-Seasonal / Special Expenses
-</label>
-<input id="seasonalInput" placeholder="0" type="number"/>
-</div>
-<div class="planner-input">
-<label>
-Planned Purchase
-</label>
-<input id="purchaseInput" placeholder="0" type="number"/>
-</div>
-</div>
-</div>
-</section><section class="card">
+</div></section><section class="card planner-results-card">
 <h2>
-Auto-Calculation Results
-</h2>
-<div class="result-grid">
+            Auto-Calculation Results
+        </h2>
+<div class="result-grid planner-result-grid">
 <div>
 <span>
-After Fixed Obligations
-</span>
-<strong id="afterBills">
-₱0
-</strong>
+                    Total Available Funds
+                </span>
+<strong id="plannerResultAvailable">
+                    ₱0
+                </strong>
 </div>
 <div>
-<span>
-After Savings
-</span>
-<strong id="afterSavings">
-₱0
-</strong>
-</div>
-<div>
-<span>
-Daily Spending Limit
-</span>
-<strong id="dailyLimit">
-₱0/day
-</strong>
+<span>Personal Allocation</span>
+<strong id="plannerResultHead">
+                    ₱0
+                </strong>
 </div>
 <div>
 <span>
-Per Household Member
-</span>
-<strong id="perMember">
-₱0
-</strong>
-</div>
-</div>
-<div class="plan-status">
-
-
-Overall Plan Status:
-
-<strong id="planStatus">
-Balanced
-</strong>
-</div>
-</section><section class="card allocation-card">
-<h2>
-Category Allocation
-</h2>
-<p class="allocation-description">
-See how your budget is distributed across household needs.
-</p>
-<div class="allocation-list">
-<div class="allocation-item">
-<div>
-<strong>
-Food
-</strong>
-<span>
-Daily meals and groceries
-</span>
-</div>
-<strong id="foodAllocation">
-₱0
-</strong>
-</div>
-<div class="allocation-item">
-<div>
-<strong>
-Transportation
-</strong>
-<span>
-Travel and commuting
-</span>
-</div>
-<strong id="transportAllocation">
-₱0
-</strong>
-</div>
-<div class="allocation-item">
-<div>
-<strong>
-Utilities
-</strong>
-<span>
-Bills and household services
-</span>
-</div>
-<strong id="utilitiesAllocation">
-₱0
-</strong>
-</div>
-<div class="allocation-item">
-<div>
-<strong>
-Health
-</strong>
-<span>
-Medicine and healthcare
-</span>
-</div>
-<strong id="healthAllocation">
-₱0
-</strong>
-</div>
-<div class="allocation-item">
-<div>
-<strong>
-Savings
-</strong>
-<span>
-Future household goals
-</span>
-</div>
-<strong id="savingsAllocation">
-₱0
-</strong>
-</div>
-<div class="allocation-item">
-<div>
-<strong>
-Seasonal Plans
-</strong>
-<span>
-Events and special expenses
-</span>
-</div>
-<strong id="seasonalAllocation">
-₱0
-</strong>
-</div>
-<div class="allocation-item">
-<div>
-<strong>
-Other Expenses
-</strong>
-<span>
-Flexible spending
-</span>
-</div>
-<strong id="otherAllocation">
-₱0
-</strong>
-</div>
-</div>
-<div class="allocation-summary">
-<div>
-<span>
-Total Allocated
-</span>
-<strong id="totalAllocated">
-₱0
-</strong>
+                    Member Allocations
+                </span>
+<strong id="plannerResultMembers">
+                    ₱0
+                </strong>
 </div>
 <div>
 <span>
-Unallocated Balance
-</span>
-<strong id="unallocatedBalance">
-₱0
-</strong>
+                    Unassigned Balance
+                </span>
+<strong id="plannerResultUnassigned">
+                    ₱0
+                </strong>
+</div>
+<div class="planner-status-result planner-status-result-wide">
+<span>
+                    Plan Status
+                </span>
+<strong class="funds-remaining" id="planStatus">
+                    Funds Remaining
+                </strong>
 </div>
 </div>
-<button class="adjust-button" type="button">
-
-Adjust Categories
-
-</button>
 </section><div class="bottom-actions">
 <button id="resetButton" type="button">
-
-Reset
-
-</button>
+            Reset
+        </button>
 <button id="saveDraftButton" type="button">
-
-Save Draft
-
-</button>
-<button class="apply" id="applyPlanButton" type="button">
-
-
-Apply Plan
-
-</button>
-</div></div>
+            Save Draft
+        </button>
+<button aria-describedby="applyPlanHint" class="apply" id="applyPlanButton" type="button">
+            Apply Plan
+        </button>
+</div><p aria-live="polite" class="apply-plan-hint" id="applyPlanHint">
+        Apply Plan is available for the current month only.
+    </p></div>
 <!-- =====================
 DECISION CALCULATOR
 ===================== -->
-
 <!-- =====================
 BUDGET IMPACT
 ===================== -->
-
 <!-- =====================
 BUDGET PLANNER
 ===================== -->
-
 <!-- =====================
 AUTO CALCULATION RESULTS
 ===================== -->
-
 <!-- =====================
 CATEGORY ALLOCATION
 ===================== -->
-
 <!-- =====================
 ACTIONS
 ===================== -->
-
 </main>
+<div aria-live="polite" class="calculator-success-overlay" hidden="" id="calculatorSuccessOverlay">
+<div class="calculator-success-card">
+<div aria-hidden="true" class="calculator-success-check">
+<svg viewbox="0 0 52 52">
+<circle class="calculator-success-circle" cx="26" cy="26" r="24"></circle>
+<path class="calculator-success-path" d="M14 27 L22 35 L38 18"></path>
+</svg>
+</div>
+<strong id="calculatorSuccessTitle">Expense Recorded</strong>
+<p id="calculatorSuccessMessage">Your expense has been saved successfully.</p>
+</div>
+</div>
+<div aria-live="polite" class="calculator-toast" id="calculatorToast" role="status"></div>
 <script src="budget-calculator.js"></script>
 </body>
 </html>

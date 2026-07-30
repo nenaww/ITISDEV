@@ -1561,3 +1561,1874 @@ button {
     .category-menu { grid-template-columns: 1fr; }
     .function-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+
+/* v42 refinements */
+.back-button{position:static!important;width:38px!important;height:38px!important;border:none!important;border-radius:50%!important;background:rgba(255,255,255,.88)!important;color:var(--budget-text)!important;display:grid!important;place-items:center!important;padding:0!important;font-size:17px!important;line-height:1!important;box-shadow:0 8px 18px rgba(92,83,78,.08)!important;align-self:center!important;justify-self:start!important}.back-button i{display:block;line-height:1}
+.function{min-height:42px!important;border-radius:14px!important;background:#F4EFEC!important;color:#5C534E!important;font-size:11.5px!important;line-height:1.15!important;font-weight:800!important}.function.active{background:#F7C8B4!important;color:#251F1D!important;box-shadow:0 8px 16px rgba(247,200,180,.24)!important}.more-functions{background:#F4EFEC!important;border:1px solid rgba(92,83,78,.07)!important;box-shadow:none!important}
+.category-select-shell{position:relative;width:100%;min-height:54px;border:1px solid rgba(92,83,78,.09);border-radius:18px;background:var(--selected-soft);display:grid;grid-template-columns:36px minmax(0,1fr) 22px;align-items:center;gap:10px;padding:0 13px;color:var(--selected-accent);box-shadow:0 7px 16px rgba(92,83,78,.05);overflow:hidden}.category-select-icon{width:34px;height:34px;border-radius:12px;background:rgba(255,255,255,.82);display:grid;place-items:center;color:var(--selected-accent);font-size:15px;pointer-events:none}.category-select-label{min-width:0;color:#251F1D;font-size:11.5px;line-height:1.2;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}.category-select-shell select{position:absolute;inset:0;width:100%;height:100%;border:0;outline:0;appearance:none;background:transparent;color:transparent;cursor:pointer;opacity:.01}.category-select-shell select option{color:#251F1D;background:#fff}.category-select-chevron{justify-self:end;color:var(--selected-accent);font-size:13px;pointer-events:none}
+.seasonal-plan-picker{margin-top:12px;border-radius:22px;background:#fff;padding:14px;box-shadow:var(--budget-soft-shadow)}.seasonal-plan-picker-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}.seasonal-plan-picker-heading span{display:block;color:#8A817C;font-size:9px;line-height:1.2;font-weight:800}.seasonal-plan-picker-heading h3{margin:4px 0 0;color:#251F1D;font-size:14px;line-height:1.2;font-weight:800}.seasonal-plan-picker-heading small{color:#8A817C;font-size:9px;font-weight:700}.calculator-seasonal-plan-list{margin-top:11px;display:grid;gap:9px}.calculator-seasonal-plan{width:100%;min-height:66px;border:1.5px solid transparent;border-radius:18px;background:var(--plan-soft);color:#251F1D;padding:10px;display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:10px;text-align:left}.calculator-seasonal-plan.selected{border-color:var(--plan-accent);box-shadow:0 8px 18px rgba(92,83,78,.09)}.calculator-seasonal-icon{width:38px;height:38px;border-radius:13px;background:rgba(255,255,255,.84);color:var(--plan-accent);display:grid;place-items:center;font-size:16px}.calculator-seasonal-copy{min-width:0}.calculator-seasonal-copy strong,.calculator-seasonal-copy small,.calculator-seasonal-values strong,.calculator-seasonal-values small{display:block}.calculator-seasonal-copy strong{color:#251F1D;font-size:11px;line-height:1.25;font-weight:800}.calculator-seasonal-copy small{margin-top:4px;color:#5C534E;font-size:8.8px;line-height:1.3;font-weight:600}.calculator-seasonal-values{text-align:right}.calculator-seasonal-values strong{color:var(--plan-accent);font-size:11px;line-height:1.2;font-weight:800;white-space:nowrap}.calculator-seasonal-values small{margin-top:3px;color:#8A817C;font-size:8px;font-weight:700}
+.impact-grid div{min-height:92px!important;padding:14px!important;display:grid!important;place-items:center!important;align-content:center!important;text-align:center!important;gap:8px!important}.impact-grid span{font-size:10px!important;line-height:1.25!important;text-align:center!important}.impact-grid strong{width:100%;color:#251F1D!important;font-size:18px!important;line-height:1.15!important;font-weight:800!important;text-align:center!important;overflow-wrap:anywhere}
+@media(max-width:370px){.function{font-size:11px!important}.calculator-seasonal-plan{grid-template-columns:36px minmax(0,1fr)}.calculator-seasonal-values{grid-column:2;text-align:left}.impact-grid strong{font-size:16px!important}}
+
+
+/* =========================================================
+   v43 — mode inputs, impact status, and danger colors
+   ========================================================= */
+
+.more-functions {
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr)) !important;
+}
+
+.extra-inputs:has(#memberInputField:not(.hidden)),
+.extra-inputs:has(#daysInputField:not(.hidden)) {
+    grid-template-columns: 1fr !important;
+}
+
+#memberInputField,
+#daysInputField {
+    width: 100%;
+}
+
+#memberInputField input,
+#daysInputField input {
+    width: 100% !important;
+}
+
+.impact-grid strong.safe {
+    color: #4F916B !important;
+}
+
+.impact-grid strong.manageable {
+    color: #4F7F99 !important;
+}
+
+.impact-grid strong.caution {
+    color: #B47A24 !important;
+}
+
+.impact-grid strong.danger {
+    color: #C4513F !important;
+}
+
+
+/* =========================================================
+   v44 — Spend, Save, Split application workflow
+   ========================================================= */
+
+.function-row {
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr)) !important;
+}
+
+.more-functions {
+    display: none !important;
+}
+
+/* White equals key requested for the calculator keypad. */
+.keypad .equals {
+    background: #FFFFFF !important;
+    color: #C96E4B !important;
+    box-shadow:
+        0 6px 15px
+        rgba(92, 83, 78, 0.08) !important;
+}
+
+.keypad .equals i {
+    color: #C96E4B !important;
+}
+
+.category-select-shell:has(select:disabled) {
+    opacity: 0.76;
+}
+
+.category-select-shell select:disabled {
+    cursor: default;
+}
+
+.decision-apply-card {
+    --apply-soft: #FFF1E8;
+    --apply-accent: #C96E4B;
+}
+
+.decision-apply-card.mode-save {
+    --apply-soft: #EEF6F0;
+    --apply-accent: #5C8F6C;
+}
+
+.decision-apply-card.mode-split {
+    --apply-soft: #EAF3F8;
+    --apply-accent: #4F7F99;
+}
+
+.decision-apply-heading {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        44px;
+    align-items: start;
+    gap: 12px;
+}
+
+.decision-apply-heading > div {
+    min-width: 0;
+}
+
+.decision-apply-heading span {
+    display: block;
+    color: #8A817C;
+    font-size: 9px;
+    line-height: 1.2;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.45px;
+}
+
+.decision-apply-heading h2 {
+    margin: 5px 0 0 !important;
+}
+
+.decision-apply-heading p {
+    margin: 6px 0 0;
+    color: #5C534E;
+    font-size: 10px;
+    line-height: 1.45;
+    font-weight: 600;
+}
+
+.decision-apply-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 15px;
+    background: var(--apply-soft);
+    color: var(--apply-accent);
+    display: grid !important;
+    place-items: center;
+    font-size: 19px !important;
+}
+
+.decision-apply-fields {
+    margin-top: 15px;
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 0.72fr);
+    gap: 10px;
+}
+
+.decision-apply-fields[hidden] {
+    display: none !important;
+}
+
+.decision-field {
+    min-width: 0;
+    display: grid;
+    gap: 7px;
+}
+
+.decision-field.full-width {
+    grid-column: 1 / -1;
+}
+
+.decision-field > span {
+    color: #5C534E;
+    font-size: 10px;
+    line-height: 1.2;
+    font-weight: 800;
+}
+
+.decision-field input,
+.decision-field select {
+    width: 100%;
+    min-height: 44px;
+    border:
+        1px solid
+        rgba(92, 83, 78, 0.10);
+    border-radius: 15px;
+    outline: none;
+    background: #FAF7F5;
+    color: #251F1D;
+    padding: 0 12px;
+    font-size: 10.5px;
+    font-weight: 700;
+}
+
+.decision-field input:focus,
+.decision-field select:focus {
+    border-color: var(--apply-accent);
+    box-shadow:
+        0 0 0 3px
+        rgba(92, 83, 78, 0.08);
+}
+
+.split-apply-summary {
+    margin-top: 13px;
+    border-radius: 17px;
+    background: var(--apply-soft);
+    padding: 13px;
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto;
+    align-items: center;
+    gap: 5px 12px;
+}
+
+.split-apply-summary[hidden] {
+    display: none !important;
+}
+
+.split-apply-summary span {
+    color: #5C534E;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.split-apply-summary strong {
+    color: var(--apply-accent);
+    font-size: 17px;
+    line-height: 1;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.split-apply-summary small {
+    grid-column: 1 / -1;
+    color: #8A817C;
+    font-size: 9px;
+    line-height: 1.35;
+    font-weight: 600;
+}
+
+.apply-decision-button {
+    width: 100%;
+    min-height: 48px;
+    margin-top: 14px;
+    border: 0;
+    border-radius: 16px;
+    background: var(--apply-accent);
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 15px;
+    font-size: 11px;
+    line-height: 1.2;
+    font-weight: 800;
+    box-shadow:
+        0 10px 22px
+        rgba(92, 83, 78, 0.11);
+}
+
+.apply-decision-button:disabled {
+    background: #E8E1DD;
+    color: #A89E98;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.decision-action-hint {
+    margin: 9px 2px 0;
+    color: #8A817C;
+    font-size: 9px;
+    line-height: 1.4;
+    font-weight: 600;
+    text-align: center;
+}
+
+.calculator-toast {
+    position: fixed;
+    left: 22px;
+    right: 22px;
+    bottom:
+        calc(
+            env(safe-area-inset-bottom, 0px) +
+            22px
+        );
+    z-index: 100;
+    border-radius: 18px;
+    background: #5C534E;
+    color: #FFFFFF;
+    padding: 13px 15px;
+    font-size: 10.5px;
+    line-height: 1.4;
+    font-weight: 700;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(32px);
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+    box-shadow:
+        0 14px 28px
+        rgba(92, 83, 78, 0.20);
+}
+
+.calculator-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (max-width: 370px) {
+    .function-row {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr)) !important;
+    }
+
+    .decision-apply-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .decision-field.full-width {
+        grid-column: auto;
+    }
+}
+
+
+/* =========================================================
+   v45 — Enter key, live expression, compact apply grid,
+   automatic current user, and save animation
+   ========================================================= */
+
+.calculation-expression {
+    min-height: 18px;
+    margin: 8px 0 2px;
+    color: #8A817C;
+    font-size: 11px;
+    line-height: 1.35;
+    font-weight: 700;
+    letter-spacing: 0.1px;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.keypad .equals {
+    background: var(--budget-primary) !important;
+    color: #FFFFFF !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.25px;
+    text-transform: uppercase;
+    box-shadow:
+        0 10px 20px
+        rgba(233, 139, 95, 0.24) !important;
+}
+
+.decision-apply-card {
+    padding: 18px !important;
+}
+
+.decision-apply-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.decision-impact-field {
+    min-width: 0;
+    min-height: 92px;
+    border: 0;
+    border-radius: 18px;
+    padding: 13px;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 7px;
+    text-align: center;
+}
+
+.decision-impact-field[hidden] {
+    display: none !important;
+}
+
+.expense-name-field {
+    background: #FFF1E8;
+}
+
+.paid-by-field {
+    background: #EAF3F8;
+}
+
+.savings-destination-field {
+    background: #EEF6F0;
+}
+
+.decision-apply-card.mode-split .expense-name-field {
+    background: #EAF3F8;
+}
+
+.decision-apply-card.mode-split .paid-by-field {
+    background: #FFF1E8;
+}
+
+.decision-impact-field > span {
+    color: #8A817C;
+    font-size: 10px;
+    line-height: 1.25;
+    font-weight: 800;
+}
+
+.decision-impact-field > strong {
+    max-width: 100%;
+    color: #251F1D;
+    font-size: 14px;
+    line-height: 1.25;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+.decision-impact-field > small {
+    color: #8A817C;
+    font-size: 8.5px;
+    line-height: 1.3;
+    font-weight: 600;
+}
+
+.decision-impact-field input,
+.decision-impact-field select {
+    width: 100%;
+    min-height: 40px;
+    border:
+        1px solid
+        rgba(92, 83, 78, 0.10);
+    border-radius: 13px;
+    outline: 0;
+    background: rgba(255, 255, 255, 0.84);
+    color: #251F1D;
+    padding: 0 10px;
+    font-size: 10px;
+    line-height: 1.2;
+    font-weight: 800;
+    text-align: center;
+}
+
+.decision-impact-field input::placeholder {
+    color: #A69A94;
+}
+
+.split-apply-summary {
+    margin-top: 0 !important;
+    background: #EAF3F8 !important;
+    grid-template-columns: 1fr !important;
+    grid-column: 1 / -1;
+}
+
+.split-apply-summary strong {
+    color: #4F7F99 !important;
+    font-size: 18px !important;
+}
+
+.split-apply-summary small {
+    grid-column: auto !important;
+}
+
+.apply-decision-button {
+    margin-top: 13px;
+}
+
+.apply-decision-button i {
+    display: none !important;
+}
+
+.decision-action-hint.attention {
+    color: #C4513F !important;
+    font-weight: 800 !important;
+}
+
+.calculator-success-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 140;
+    background: rgba(37, 31, 29, 0.18);
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.calculator-success-overlay[hidden] {
+    display: none !important;
+}
+
+.calculator-success-overlay.show {
+    opacity: 1;
+}
+
+.calculator-success-card {
+    width: min(290px, calc(100vw - 48px));
+    border-radius: 28px;
+    background: #FFFFFF;
+    box-shadow:
+        0 18px 42px
+        rgba(92, 83, 78, 0.18);
+    padding: 24px 22px 22px;
+    text-align: center;
+    transform: translateY(8px) scale(0.96);
+    transition: transform 0.28s ease;
+}
+
+.calculator-success-overlay.show .calculator-success-card {
+    transform: translateY(0) scale(1);
+}
+
+.calculator-success-check {
+    width: 74px;
+    height: 74px;
+    margin: 0 auto 14px;
+}
+
+.calculator-success-check svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.calculator-success-circle {
+    fill: none;
+    stroke: #F3CBAF;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 151;
+    stroke-dashoffset: 151;
+}
+
+.calculator-success-path {
+    fill: none;
+    stroke: #E98B5F;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 36;
+    stroke-dashoffset: 36;
+}
+
+.calculator-success-overlay.show .calculator-success-circle {
+    animation: calculatorSuccessCircleDraw 0.55s ease forwards;
+}
+
+.calculator-success-overlay.show .calculator-success-path {
+    animation: calculatorSuccessCheckDraw 0.35s ease 0.35s forwards;
+}
+
+.calculator-success-card strong {
+    display: block;
+    color: #251F1D;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.calculator-success-card p {
+    margin: 7px 0 0;
+    color: #5C534E;
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+@keyframes calculatorSuccessCircleDraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes calculatorSuccessCheckDraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@media (max-width: 370px) {
+    .decision-apply-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .split-apply-summary {
+        grid-column: auto;
+    }
+}
+
+
+/* =========================================================
+   v46 — apply panel title and savings-goal consistency
+   ========================================================= */
+
+.decision-apply-title {
+    margin: 0 0 13px !important;
+    color: #251F1D !important;
+    font-size: 17px !important;
+    line-height: 1.2 !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.4px !important;
+}
+
+.savings-destination-field select {
+    font-size: 11px !important;
+}
+
+.savings-destination-field select option {
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   v47 — Split member stepper and Head/Member Budget Planner
+   ========================================================= */
+
+/* Split member stepper */
+#memberInputField {
+    width: 100%;
+}
+
+.member-count-stepper {
+    width: 100%;
+    min-height: 48px;
+    margin-top: 7px;
+    border:
+        1px solid
+        rgba(92, 83, 78, 0.09);
+    border-radius: 16px;
+    background: #FFFFFF;
+    display: grid;
+    grid-template-columns:
+        48px
+        minmax(0, 1fr)
+        48px;
+    align-items: center;
+    overflow: hidden;
+    box-shadow:
+        0 7px 16px
+        rgba(92, 83, 78, 0.05);
+}
+
+.member-stepper-button {
+    width: 48px;
+    height: 48px;
+    border: 0;
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+}
+
+.member-stepper-button.decrease {
+    background: #F1EDFF;
+    color: #6B5CA5;
+}
+
+.member-stepper-button.increase {
+    background: #F7C8B4;
+    color: #251F1D;
+}
+
+.member-stepper-button:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+}
+
+.member-count-stepper #memberInput {
+    width: 100% !important;
+    height: 48px;
+    border: 0 !important;
+    border-left:
+        1px solid
+        rgba(92, 83, 78, 0.07) !important;
+    border-right:
+        1px solid
+        rgba(92, 83, 78, 0.07) !important;
+    border-radius: 0 !important;
+    background: #FFF9F5 !important;
+    color: #251F1D !important;
+    padding: 0 !important;
+    text-align: center !important;
+    font-size: 17px !important;
+    line-height: 1 !important;
+    font-weight: 800 !important;
+    appearance: textfield;
+    box-shadow: none !important;
+}
+
+.member-count-stepper #memberInput::-webkit-inner-spin-button,
+.member-count-stepper #memberInput::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
+}
+
+#memberStepperLimit {
+    display: block;
+    margin-top: 6px;
+    color: #8A817C;
+    font-size: 9px;
+    line-height: 1.35;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* Planner role and month */
+.household-allocation-card .planner-header {
+    align-items: flex-start;
+}
+
+.planner-role-label {
+    display: block;
+    margin-bottom: 5px;
+    color: #C96E4B;
+    font-size: 9px;
+    line-height: 1.2;
+    font-weight: 800;
+    letter-spacing: 0.45px;
+    text-transform: uppercase;
+}
+
+.planner-month-chip {
+    flex: 0 0 auto;
+    min-height: 34px;
+    border-radius: 999px;
+    background: #EAF3F8;
+    color: #4F7F99;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9.5px;
+    line-height: 1;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+/* Available funds */
+.planner-fund-inputs {
+    margin-top: 15px;
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.planner-money-field {
+    min-width: 0;
+    border-radius: 18px;
+    padding: 12px;
+}
+
+.planner-money-field.budget-source-field {
+    background: #FFF1E8;
+}
+
+.planner-money-field.additional-income-field {
+    background: #EEF6F0;
+}
+
+.planner-money-field > span {
+    display: block;
+    color: #5C534E;
+    font-size: 9.5px;
+    line-height: 1.3;
+    font-weight: 800;
+}
+
+.planner-money-control {
+    min-height: 38px;
+    margin-top: 8px;
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.86);
+    display: grid;
+    grid-template-columns:
+        auto
+        minmax(0, 1fr);
+    align-items: center;
+    gap: 4px;
+    padding: 0 10px;
+}
+
+.planner-money-control b {
+    color: #8A817C;
+    font-size: 11px;
+}
+
+.planner-money-control input {
+    min-width: 0;
+    width: 100%;
+    height: 38px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #251F1D;
+    padding: 0;
+    text-align: right;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.planner-total-banner {
+    min-height: 56px;
+    margin-top: 11px;
+    border-radius: 18px;
+    background: #FFF5D8;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.planner-total-banner span {
+    color: #8A817C;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.planner-total-banner strong {
+    color: #251F1D;
+    font-size: 17px;
+    line-height: 1;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+/* Member allocation */
+.planner-subsection-heading {
+    margin-top: 18px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.planner-subsection-heading h3 {
+    margin: 0;
+    color: #251F1D;
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 800;
+}
+
+.planner-subsection-heading p {
+    margin: 4px 0 0;
+    color: #8A817C;
+    font-size: 9.5px;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+#availableForMembersChip {
+    flex: 0 0 auto;
+    min-height: 31px;
+    border-radius: 999px;
+    background: #F1EDFF;
+    color: #6B5CA5;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    line-height: 1;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+#availableForMembersChip.negative {
+    background: #FBE5D8;
+    color: #C4513F;
+}
+
+.member-allocation-list {
+    margin-top: 11px;
+    display: grid;
+    gap: 9px;
+}
+
+.member-allocation-row {
+    min-height: 66px;
+    border-radius: 18px;
+    background: var(--member-soft);
+    padding: 10px;
+    display: grid;
+    grid-template-columns:
+        40px
+        minmax(0, 1fr)
+        104px;
+    align-items: center;
+    gap: 10px;
+}
+
+.member-allocation-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--member-accent);
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.member-allocation-copy {
+    min-width: 0;
+}
+
+.member-allocation-copy strong,
+.member-allocation-copy small {
+    display: block;
+}
+
+.member-allocation-copy strong {
+    color: #251F1D;
+    font-size: 11px;
+    line-height: 1.25;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.member-allocation-copy small {
+    margin-top: 4px;
+    color: #5C534E;
+    font-size: 8.5px;
+    line-height: 1.3;
+    font-weight: 600;
+}
+
+.member-allocation-input {
+    min-height: 38px;
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.86);
+    display: grid;
+    grid-template-columns:
+        auto
+        minmax(0, 1fr);
+    align-items: center;
+    gap: 4px;
+    padding: 0 9px;
+}
+
+.member-allocation-input b {
+    color: var(--member-accent);
+    font-size: 10px;
+}
+
+.member-allocation-input input {
+    min-width: 0;
+    width: 100%;
+    height: 38px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #251F1D;
+    padding: 0;
+    text-align: right;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.member-allocation-summary,
+.head-allocation-summary {
+    margin-top: 13px;
+    border-top:
+        1px solid
+        rgba(92, 83, 78, 0.09);
+    padding-top: 12px;
+    display: grid;
+    gap: 8px;
+}
+
+.member-allocation-summary > div,
+.head-allocation-summary > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.member-allocation-summary span,
+.head-allocation-summary span {
+    color: #8A817C;
+    font-size: 9.5px;
+    font-weight: 700;
+}
+
+.member-allocation-summary strong,
+.head-allocation-summary strong {
+    color: #251F1D;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.member-allocation-summary strong.negative,
+.head-allocation-summary strong.negative {
+    color: #C4513F;
+}
+
+.planner-member-empty {
+    border-radius: 18px;
+    background: #F4EFEC;
+    padding: 18px;
+    display: grid;
+    place-items: center;
+    text-align: center;
+}
+
+.planner-member-empty i {
+    color: #8A817C;
+    font-size: 22px;
+}
+
+.planner-member-empty strong {
+    margin-top: 7px;
+    color: #251F1D;
+    font-size: 11px;
+}
+
+.planner-member-empty span {
+    margin-top: 4px;
+    color: #8A817C;
+    font-size: 9px;
+    line-height: 1.4;
+}
+
+/* Auto results */
+.planner-result-grid {
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+}
+
+.planner-result-grid div {
+    min-height: 82px;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 7px;
+    text-align: center;
+}
+
+.planner-result-grid div:nth-child(1) {
+    background: #FFF5D8;
+}
+
+.planner-result-grid div:nth-child(2) {
+    background: #FFF1E8;
+}
+
+.planner-result-grid div:nth-child(3) {
+    background: #EAF3F8;
+}
+
+.planner-result-grid div:nth-child(4) {
+    background: #F1EDFF;
+}
+
+.planner-result-grid div:nth-child(5) {
+    background: #EEF6F0;
+}
+
+.planner-result-grid div:nth-child(6) {
+    background: #F4EFEC;
+}
+
+.planner-result-grid strong {
+    font-size: 15px !important;
+    text-align: center;
+}
+
+#planStatus {
+    font-size: 13px !important;
+}
+
+#planStatus.balanced {
+    color: #5C8F6C;
+}
+
+#planStatus.funds-remaining,
+#planStatus.ready-to-assign {
+    color: #4F7F99;
+}
+
+#planStatus.needs-adjustment,
+#planStatus.overallocated {
+    color: #C4513F;
+}
+
+/* Head category allocation */
+.allocation-card-heading h2 {
+    margin-bottom: 5px;
+}
+
+.planner-auto-note {
+    margin: 12px 0;
+    border-radius: 16px;
+    background: #EAF3F8;
+    color: #4F7F99;
+    padding: 11px;
+    display: grid;
+    grid-template-columns:
+        24px
+        minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+}
+
+.planner-auto-note i {
+    width: 24px;
+    height: 24px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.76);
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+}
+
+.planner-auto-note span {
+    font-size: 9px;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+.head-category-allocation-list {
+    display: grid;
+    gap: 9px;
+}
+
+.head-category-row {
+    min-height: 66px;
+    border-radius: 18px;
+    background: #FFF9F5;
+    padding: 10px;
+    display: grid;
+    grid-template-columns:
+        40px
+        minmax(0, 1fr)
+        auto
+        100px;
+    align-items: center;
+    gap: 9px;
+}
+
+.head-category-row.manual-category-row {
+    grid-template-columns:
+        40px
+        minmax(0, 1fr)
+        100px;
+}
+
+.head-category-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+}
+
+.head-category-icon.bills {
+    background: #EAF3F8;
+    color: #4F7F99;
+}
+
+.head-category-icon.debt {
+    background: #E0F0EC;
+    color: #4F8B78;
+}
+
+.head-category-icon.savings {
+    background: #EEF6F0;
+    color: #5C8F6C;
+}
+
+.head-category-icon.seasonal {
+    background: #FFF1E8;
+    color: #C96E4B;
+}
+
+.head-category-icon.grocery {
+    background: #F1EDFF;
+    color: #6B5CA5;
+}
+
+.head-category-icon.utilities {
+    background: #FFF5D8;
+    color: #A77E20;
+}
+
+.head-category-icon.rent {
+    background: #F6E1EC;
+    color: #B35A82;
+}
+
+.head-category-icon.health {
+    background: #EEF6F0;
+    color: #5C8F6C;
+}
+
+.head-category-icon.transportation {
+    background: #EAF3F8;
+    color: #4F7F99;
+}
+
+.head-category-icon.education {
+    background: #FFF1E8;
+    color: #C96E4B;
+}
+
+.head-category-icon.other {
+    background: #F4EFEC;
+    color: #5C534E;
+}
+
+.head-category-copy {
+    min-width: 0;
+}
+
+.head-category-copy strong,
+.head-category-copy small {
+    display: block;
+}
+
+.head-category-copy strong {
+    color: #251F1D;
+    font-size: 11px;
+    line-height: 1.25;
+    font-weight: 800;
+}
+
+.head-category-copy small {
+    margin-top: 4px;
+    color: #8A817C;
+    font-size: 8.5px;
+    line-height: 1.3;
+    font-weight: 600;
+}
+
+.auto-editable-badge {
+    min-height: 24px;
+    border-radius: 999px;
+    background: #FFFFFF;
+    color: #4F7F99;
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    font-weight: 800;
+}
+
+.head-category-input {
+    min-height: 38px;
+    border-radius: 13px;
+    background: #FFFFFF;
+    display: grid;
+    grid-template-columns:
+        auto
+        minmax(0, 1fr);
+    align-items: center;
+    gap: 4px;
+    padding: 0 9px;
+    box-shadow:
+        inset 0 0 0 1px
+        rgba(92, 83, 78, 0.07);
+}
+
+.head-category-input b {
+    color: #8A817C;
+    font-size: 10px;
+}
+
+.head-category-input input {
+    min-width: 0;
+    width: 100%;
+    height: 38px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #251F1D;
+    padding: 0;
+    text-align: right;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+/* Planner actions */
+#applyPlanButton:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+@media (max-width: 390px) {
+    .planner-fund-inputs {
+        grid-template-columns: 1fr;
+    }
+
+    .planner-subsection-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .member-allocation-row {
+        grid-template-columns:
+            38px
+            minmax(0, 1fr);
+    }
+
+    .member-allocation-input {
+        grid-column:
+            1 / -1;
+    }
+
+    .head-category-row,
+    .head-category-row.manual-category-row {
+        grid-template-columns:
+            38px
+            minmax(0, 1fr)
+            auto;
+    }
+
+    .head-category-input {
+        grid-column:
+            1 / -1;
+    }
+
+    .auto-editable-badge {
+        grid-column:
+            3;
+    }
+}
+
+
+/* =========================================================
+   v48 — future month selector and planner section order
+   ========================================================= */
+
+/* Split has no maximum member count. */
+#memberStepperLimit {
+    display: none !important;
+}
+
+/* Planner header and combined month/year select. */
+.household-allocation-card .planner-header {
+    display: grid !important;
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(138px, 42%) !important;
+    align-items: start !important;
+    gap: 14px !important;
+}
+
+.planner-month-field {
+    min-width: 0;
+    display: block;
+}
+
+.planner-month-field > span {
+    display: block;
+    margin: 0 0 6px;
+    color: #8A817C;
+    font-size: 9px;
+    line-height: 1.2;
+    font-weight: 800;
+}
+
+.planner-month-select-control {
+    position: relative;
+    min-height: 42px;
+    border:
+        1px solid
+        rgba(79, 127, 153, 0.14);
+    border-radius: 14px;
+    background: #EAF3F8;
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        18px;
+    align-items: center;
+    gap: 7px;
+    padding: 0 11px;
+    color: #4F7F99;
+}
+
+.planner-month-select-control select {
+    min-width: 0;
+    width: 100%;
+    height: 42px;
+    border: 0;
+    outline: 0;
+    appearance: none;
+    background: transparent;
+    color: #251F1D;
+    padding: 0;
+    font-size: 10.5px;
+    line-height: 1;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.planner-month-select-control i {
+    justify-self: end;
+    color: #4F7F99;
+    font-size: 12px;
+    pointer-events: none;
+}
+
+/* Personal allocation comes before member distribution. */
+.head-category-allocation-card {
+    margin-top: 0;
+}
+
+.head-category-row,
+.head-category-row.manual-category-row {
+    grid-template-columns:
+        40px
+        minmax(0, 1fr)
+        104px !important;
+}
+
+.planner-member-card .planner-subsection-heading {
+    margin-top: 0;
+}
+
+.auto-editable-badge,
+.planner-auto-note,
+.planner-role-label {
+    display: none !important;
+}
+
+@media (max-width: 390px) {
+    .household-allocation-card .planner-header {
+        grid-template-columns: 1fr !important;
+    }
+
+    .planner-month-field {
+        width: 100%;
+    }
+
+    .head-category-row,
+    .head-category-row.manual-category-row {
+        grid-template-columns:
+            38px
+            minmax(0, 1fr) !important;
+    }
+
+    .head-category-input {
+        grid-column:
+            1 / -1 !important;
+    }
+}
+
+
+/* =========================================================
+   v49 — separate future month/year selects and category parity
+   ========================================================= */
+
+/* Month and year are separate controls but remain one field. */
+.household-allocation-card .planner-header {
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(190px, 46%) !important;
+}
+
+.planner-date-field {
+    min-width: 0;
+}
+
+.planner-date-label {
+    display: block;
+    margin: 0 0 7px;
+    color: #8A817C;
+    font-size: 9px;
+    line-height: 1.2;
+    font-weight: 800;
+}
+
+.planner-date-selects {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1.25fr)
+        minmax(76px, 0.75fr);
+    gap: 8px;
+}
+
+.planner-date-select-group {
+    min-width: 0;
+}
+
+.planner-date-select-group > small {
+    display: block;
+    margin: 0 0 5px;
+    color: #8A817C;
+    font-size: 8px;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.planner-date-select-control {
+    position: relative;
+    min-height: 42px;
+    border:
+        1px solid
+        rgba(79, 127, 153, 0.14);
+    border-radius: 14px;
+    background: #EAF3F8;
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        16px;
+    align-items: center;
+    gap: 6px;
+    padding: 0 10px;
+}
+
+.planner-date-select-control select {
+    min-width: 0;
+    width: 100%;
+    height: 42px;
+    border: 0;
+    outline: 0;
+    appearance: none;
+    background: transparent;
+    color: #251F1D;
+    padding: 0;
+    font-size: 10.5px;
+    line-height: 1;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.planner-date-select-control i {
+    justify-self: end;
+    color: #4F7F99;
+    font-size: 11px;
+    pointer-events: none;
+}
+
+/* Match the description spacing used by Household Allocation. */
+.head-category-allocation-card .allocation-card-heading {
+    margin-bottom: 0;
+}
+
+.head-category-allocation-card
+.allocation-card-heading h2 {
+    margin: 0;
+}
+
+.head-category-allocation-card
+.allocation-description {
+    margin: 5px 0 0 !important;
+}
+
+.head-category-allocation-list {
+    margin-top: 15px;
+}
+
+/* Existing Expenses category colors. */
+.head-category-icon.food {
+    background: #F0E0F2;
+    color: #B164AE;
+}
+
+.head-category-icon.utilities {
+    background: #FAF0C6;
+    color: #AA8024;
+}
+
+.head-category-icon.transportation {
+    background: #E0EEF4;
+    color: #50849F;
+}
+
+.head-category-icon.health {
+    background: #E5F1E8;
+    color: #5C8F6C;
+}
+
+.head-category-icon.education {
+    background: #FBE5D8;
+    color: #C96E4B;
+}
+
+.head-category-icon.rent {
+    background: #F6E1EC;
+    color: #B35A82;
+}
+
+.head-category-icon.debt {
+    background: #E0F0EC;
+    color: #4F8B78;
+}
+
+.head-category-icon.other {
+    background: #EBE6F5;
+    color: #6E618E;
+}
+
+.head-category-icon.savings {
+    background: #EEF6F0;
+    color: #5C8F6C;
+}
+
+.head-category-icon.seasonal {
+    background: #FFF1E8;
+    color: #C96E4B;
+}
+
+/* Available member money uses a clearer warm available-funds color. */
+#availableForMembersChip {
+    background: #FFF5D8 !important;
+    color: #A77E20 !important;
+}
+
+#availableForMembersChip.negative {
+    background: #FBE5D8 !important;
+    color: #C4513F !important;
+}
+
+/* Apply Plan is the positive final planner action. */
+#applyPlanButton {
+    border-color: transparent !important;
+    background: #8FAE9A !important;
+    color: #FFFFFF !important;
+    box-shadow:
+        0 9px 18px
+        rgba(108, 146, 120, 0.20) !important;
+}
+
+#applyPlanButton:disabled {
+    background: #C9D8CD !important;
+    color: rgba(255, 255, 255, 0.90) !important;
+    box-shadow: none !important;
+}
+
+@media (max-width: 390px) {
+    .household-allocation-card .planner-header {
+        grid-template-columns: 1fr !important;
+    }
+
+    .planner-date-selects {
+        grid-template-columns:
+            minmax(0, 1fr)
+            minmax(84px, 0.72fr);
+    }
+}
+
+
+/* =========================================================
+   v50 — combined month field, extra-funds status, result layout
+   ========================================================= */
+
+/* Revert to one compact Planning Month control. */
+.household-allocation-card .planner-header {
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(144px, 42%) !important;
+}
+
+.planner-combined-date-dropdown {
+    position: relative;
+    min-width: 0;
+}
+
+.planner-date-trigger {
+    width: 100%;
+    min-height: 42px;
+    border:
+        1px solid
+        rgba(79, 127, 153, 0.14);
+    border-radius: 14px;
+    outline: 0;
+    background: #EAF3F8;
+    color: #251F1D;
+    padding: 0 11px;
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        16px;
+    align-items: center;
+    gap: 7px;
+    text-align: left;
+    font-size: 10.5px;
+    line-height: 1;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.planner-date-trigger i {
+    justify-self: end;
+    color: #4F7F99;
+    font-size: 11px;
+    transition:
+        transform 0.18s ease;
+}
+
+.planner-date-trigger.open i {
+    transform: rotate(180deg);
+}
+
+.planner-date-dropdown-panel {
+    position: absolute;
+    z-index: 35;
+    top: calc(100% + 7px);
+    right: 0;
+    width: min(230px, 76vw);
+    border:
+        1px solid
+        rgba(84, 69, 61, 0.10);
+    border-radius: 17px;
+    background: #FFFFFF;
+    box-shadow:
+        0 14px 30px
+        rgba(84, 69, 61, 0.16);
+    padding: 11px;
+    display: grid;
+    grid-template-columns:
+        minmax(82px, 0.82fr)
+        minmax(0, 1.18fr);
+    gap: 8px;
+}
+
+.planner-date-dropdown-panel[hidden] {
+    display: none !important;
+}
+
+.planner-date-option-group {
+    min-width: 0;
+}
+
+.planner-date-option-group > small {
+    display: block;
+    margin: 0 0 5px;
+    color: #8A817C;
+    font-size: 8px;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+/* Savings is now represented by the final unassigned balance. */
+.head-category-icon.savings {
+    display: none;
+}
+
+/* Results: two rows of two metrics, then one full-width status panel. */
+.planner-result-grid {
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr)) !important;
+}
+
+.planner-result-grid .planner-status-result-wide {
+    grid-column: 1 / -1;
+    min-height: 76px;
+    background: #F4EFEC !important;
+}
+
+.planner-result-grid div:nth-child(1) {
+    background: #FFF5D8;
+}
+
+.planner-result-grid div:nth-child(2) {
+    background: #FFF1E8;
+}
+
+.planner-result-grid div:nth-child(3) {
+    background: #F1EDFF;
+}
+
+.planner-result-grid div:nth-child(4) {
+    background: #EEF6F0;
+}
+
+#planStatus.extra-funds {
+    color: #4F7F99;
+}
+
+@media (max-width: 390px) {
+    .household-allocation-card .planner-header {
+        grid-template-columns: 1fr !important;
+    }
+
+    .planner-date-dropdown-panel {
+        left: 0;
+        right: auto;
+        width: min(250px, 100%);
+    }
+}
+
+
+/* =========================================================
+   v51 — fix collapsed Planning Month trigger
+   ========================================================= */
+
+/*
+   The general .planner-header button rule was forcing this
+   control into a 38px square. These more-specific rules keep
+   the existing opened dropdown layout while restoring the
+   full-width closed field.
+*/
+.household-allocation-card
+.planner-header
+.planner-date-trigger {
+    flex: none !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    border:
+        1px solid
+        rgba(79, 127, 153, 0.14) !important;
+    border-radius: 14px !important;
+    padding: 0 11px !important;
+    display: grid !important;
+    grid-template-columns:
+        minmax(0, 1fr)
+        16px !important;
+    place-items: initial !important;
+    align-items: center !important;
+    justify-content: initial !important;
+    gap: 7px !important;
+    text-align: left !important;
+}
+
+.household-allocation-card
+.planner-date-field {
+    width: 100%;
+    min-width: 0;
+    justify-self: stretch;
+}
+
+.household-allocation-card
+.planner-date-trigger
+#plannerMonthDisplay {
+    min-width: 0;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.household-allocation-card
+.planner-date-trigger i {
+    justify-self: end;
+}
+
+
+/* =========================================================
+   v52 — Apply Plan is current-month only
+   ========================================================= */
+
+.apply-plan-hint {
+    margin: 8px 2px 0;
+    color: #A06E58;
+    font-size: 9px;
+    line-height: 1.45;
+    font-weight: 700;
+    text-align: right;
+}
+
+.apply-plan-hint.current-month {
+    color: #6E8E78;
+}
+
+#applyPlanButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.78;
+}

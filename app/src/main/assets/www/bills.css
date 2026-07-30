@@ -5661,3 +5661,68 @@ body[data-page="bills"] {
         font-size: 9.5px !important;
     }
 }
+
+
+/* =========================================================
+   Monthly Overview calendar action
+   - Uses the same pill layout as View All / View More actions
+   - Removes the calendar control from the Paid summary area
+   ========================================================= */
+
+.bills-overview-heading {
+    margin: 28px 0 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+}
+
+.bills-overview-heading .bills-overview-title {
+    margin: 0 !important;
+}
+
+.bills-overview-heading #openBillsCalendar {
+    min-height: 32px !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    background: #FFFFFF !important;
+    color: var(--bills-muted) !important;
+    padding: 0 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    font-size: 10.5px !important;
+    font-weight: 800 !important;
+    box-shadow: 0 6px 14px rgba(92, 83, 78, 0.05) !important;
+}
+
+.bills-overview-heading #openBillsCalendar:active {
+    background: #F7F5F3 !important;
+}
+
+.bills-overview-heading #openBillsCalendar:focus-visible {
+    outline: 3px solid rgba(233, 139, 95, 0.18) !important;
+    outline-offset: 2px !important;
+}
+
+.summary-paid-block {
+    grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.summary-paid-copy,
+.summary-progress-track {
+    grid-column: 1 !important;
+}
+
+@media (max-width: 360px) {
+    .bills-overview-heading {
+        gap: 8px !important;
+    }
+
+    .bills-overview-heading #openBillsCalendar {
+        min-height: 30px !important;
+        padding: 0 11px !important;
+        font-size: 9.5px !important;
+    }
+}
