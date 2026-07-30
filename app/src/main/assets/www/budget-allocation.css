@@ -1,0 +1,625 @@
+:root {
+    --primary: #E98B5F;
+    --primary-dark: #D86E49;
+    --primary-soft: #FBD4C2;
+    --background: #FFF9F5;
+    --white: #FFFFFF;
+    --neutral-dark: #251F1D;
+    --neutral: #5C534E;
+    --muted: #8A817C;
+    --neutral-light: #ADA19A;
+    --lavender: #C9A1C8;
+    --lavender-soft: #F1EDFF;
+    --yellow-soft: #FFF5D8;
+    --blue: #AFCBDD;
+    --blue-soft: #EAF3F8;
+    --green: #8FAE9A;
+    --green-soft: #EEF6F0;
+    --peach-soft: #FFF1E8;
+    --line: rgba(92, 83, 78, 0.10);
+    --soft-shadow: 0 10px 24px rgba(92, 83, 78, 0.075);
+    --shadow: 0 18px 40px rgba(92, 83, 78, 0.12);
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button {
+    -webkit-tap-highlight-color: transparent;
+}
+
+[hidden],
+.hidden {
+    display: none !important;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--background);
+}
+
+body {
+    color: var(--neutral-dark);
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+}
+
+.related-page {
+    position: relative;
+    width: 100%;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 18% 8%, rgba(175, 203, 221, 0.22), transparent 28%),
+        radial-gradient(circle at 85% 24%, rgba(255, 218, 185, 0.28), transparent 26%),
+        var(--background);
+}
+
+.related-scroll-area {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding:
+        calc(env(safe-area-inset-top, 0px) + 24px)
+        24px
+        calc(env(safe-area-inset-bottom, 0px) + 150px);
+}
+
+.related-scroll-area::-webkit-scrollbar {
+    display: none;
+    width: 0;
+}
+
+.related-header {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    align-items: start;
+    gap: 14px;
+}
+
+.related-header > button {
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.86);
+    color: var(--primary-dark);
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    box-shadow: var(--soft-shadow);
+    cursor: pointer;
+}
+
+.related-header h1 {
+    margin: 0;
+    color: var(--neutral-dark);
+    font-size: 21px;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.65px;
+}
+
+.related-header p {
+    margin: 7px 0 0;
+    color: var(--neutral);
+    font-size: 10.5px;
+    line-height: 1.45;
+    font-weight: 600;
+}
+
+.related-card {
+    margin-top: 20px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 20px;
+    box-shadow: var(--soft-shadow);
+}
+
+.related-card h2,
+.allocation-status-card h2 {
+    margin: 0;
+    color: var(--neutral-dark);
+    font-size: 15px;
+    line-height: 1.3;
+    font-weight: 800;
+    letter-spacing: -0.25px;
+}
+
+.amount-input {
+    width: 100%;
+    min-height: 50px;
+    margin-top: 15px;
+    border: 1px solid rgba(92, 83, 78, 0.08);
+    border-radius: 16px;
+    background: #FFFFFF;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.amount-input b {
+    color: var(--neutral);
+    font-size: 12px;
+}
+
+.amount-input input {
+    min-width: 0;
+    width: 100%;
+    height: 48px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--neutral-dark);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.primary-page-button {
+    width: 100%;
+    min-height: 50px;
+    margin-top: 18px;
+    border: 0;
+    border-radius: 16px;
+    background: var(--primary);
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 800;
+    box-shadow: 0 12px 26px rgba(233, 139, 95, 0.23);
+    cursor: pointer;
+}
+
+.related-toast {
+    position: fixed;
+    left: 24px;
+    right: 24px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 102px);
+    z-index: 100;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: var(--neutral);
+    color: #FFFFFF;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    transform: translateY(120px);
+    transition: 0.25s ease;
+    pointer-events: none;
+    font-size: 10.5px;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+.related-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (max-width: 430px) {
+    .related-scroll-area {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+}
+
+.budget-hero-card {
+    margin-top: 20px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.96);
+    padding: 22px;
+    box-shadow: var(--shadow);
+}
+
+.budget-hero-card > span {
+    display: block;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.budget-hero-card > strong {
+    display: block;
+    margin-top: 9px;
+    color: var(--neutral-dark);
+    font-size: 34px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.available-funds-row {
+    min-height: 48px;
+    margin-top: 17px;
+    border-radius: 17px;
+    background: var(--blue-soft);
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.available-funds-row span {
+    color: #4F7F99;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.available-funds-row strong {
+    color: var(--neutral-dark);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.allocation-section {
+    margin-top: 28px;
+}
+
+.allocation-section-heading {
+    margin-bottom: 14px;
+}
+
+.allocation-section-heading h2 {
+    margin: 0;
+    color: var(--neutral-dark);
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+}
+
+.budget-allocation-card {
+    margin-top: 12px;
+    border-radius: 26px;
+    background: rgba(255, 255, 255, 0.96);
+    padding: 17px;
+    box-shadow: var(--soft-shadow);
+}
+
+.allocation-card-header {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 34px;
+    align-items: center;
+    gap: 12px;
+}
+
+.allocation-card-header > div {
+    min-width: 0;
+}
+
+.allocation-card-header h3 {
+    margin: 0;
+    color: var(--neutral-dark);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.allocation-card-header p {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.allocation-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    color: var(--neutral);
+    font-size: 18px;
+}
+
+.allocation-card-icon.lavender {
+    background: var(--lavender-soft);
+}
+
+.allocation-card-icon.yellow {
+    background: var(--yellow-soft);
+}
+
+.allocation-card-icon.green {
+    background: var(--green-soft);
+}
+
+.allocation-card-icon.blue {
+    background: var(--blue-soft);
+}
+
+.allocation-card-header > button {
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #FFFFFF;
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.allocation-item-list {
+    display: grid;
+    gap: 9px;
+    margin-top: 13px;
+}
+
+.allocation-item {
+    min-width: 0;
+    min-height: 50px;
+    border-radius: 16px;
+    background: #FAF7F5;
+    padding: 7px 10px 7px 13px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 104px 26px;
+    align-items: center;
+    gap: 8px;
+}
+
+.allocation-item > span {
+    min-width: 0;
+    color: var(--neutral-dark);
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.allocation-item-value {
+    min-width: 0;
+    height: 36px;
+    border-radius: 12px;
+    background: #FFFFFF;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.allocation-item-value b {
+    color: var(--muted);
+    font-size: 9px;
+}
+
+.allocation-item-value input {
+    min-width: 0;
+    width: 100%;
+    height: 34px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--neutral-dark);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.allocation-item > button {
+    width: 26px;
+    height: 26px;
+    border: 0;
+    background: transparent;
+    color: #C66A62;
+    display: grid;
+    place-items: center;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.single-allocation-row {
+    min-height: 50px;
+    margin-top: 13px;
+    border-radius: 16px;
+    background: #FAF7F5;
+    padding: 7px 10px 7px 13px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 112px;
+    align-items: center;
+    gap: 10px;
+}
+
+.single-allocation-row > span {
+    color: var(--neutral-dark);
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.single-allocation-row > div {
+    height: 36px;
+    border-radius: 12px;
+    background: #FFFFFF;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.single-allocation-row b {
+    color: var(--muted);
+    font-size: 9px;
+}
+
+.single-allocation-row input {
+    min-width: 0;
+    width: 100%;
+    height: 34px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--neutral-dark);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.budget-status-card {
+    margin-top: 20px;
+    border-radius: 26px;
+    background: var(--yellow-soft);
+    padding: 19px;
+}
+
+.budget-status-card h2 {
+    margin: 0;
+    color: var(--neutral-dark);
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.status-row {
+    margin-top: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.status-row span {
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.status-row strong {
+    color: var(--neutral-dark);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.status-badge {
+    min-height: 40px;
+    margin-top: 15px;
+    border-radius: 15px;
+    background: #FFFFFF;
+    color: #5E7868;
+    display: grid;
+    place-items: center;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+@media (max-width: 360px) {
+    .allocation-item {
+        grid-template-columns: minmax(0, 1fr) 92px 24px;
+    }
+
+    .single-allocation-row {
+        grid-template-columns: minmax(0, 1fr) 100px;
+    }
+}
+
+.app-bottom-nav {
+    position: fixed;
+    left: 24px;
+    right: 24px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+    height: 74px;
+    border: 1px solid rgba(92, 83, 78, 0.08);
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 18px 40px rgba(92, 83, 78, 0.14);
+    backdrop-filter: blur(12px);
+    display: grid;
+    grid-template-columns: 1fr 1fr 72px 1fr 1fr;
+    align-items: center;
+    z-index: 45;
+}
+
+.app-bottom-nav button {
+    border: 0;
+    background: transparent;
+    color: var(--neutral-light);
+    display: grid;
+    place-items: center;
+    gap: 2px;
+    font-size: 20px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.app-bottom-nav button span {
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.app-bottom-nav button.active {
+    color: var(--primary-dark);
+}
+
+.app-bottom-nav .app-nav-scan {
+    width: 62px;
+    height: 62px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #FFFFFF;
+    font-size: 28px;
+    transform: translateY(-16px);
+    box-shadow: 0 16px 30px rgba(233, 139, 95, 0.30);
+}
+
+@media (max-width: 430px) {
+    .app-bottom-nav {
+        left: 18px;
+        right: 18px;
+    }
+}
+
+
+/* =========================================================
+   v64 — exact Scanner back button
+   ========================================================= */
+
+.related-header {
+    grid-template-columns:
+        38px
+        minmax(0, 1fr);
+}
+
+.related-header > button.scan-back-button {
+    position: static;
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 50%;
+    background:
+        rgba(255, 255, 255, 0.88);
+    color: var(--neutral-dark);
+    display: grid;
+    place-items: center;
+    padding: 0;
+    font-size: 17px;
+    line-height: 1;
+    box-shadow:
+        0 8px 18px
+        rgba(92, 83, 78, 0.08);
+    align-self: start;
+    justify-self: start;
+    z-index: 20;
+    cursor: pointer;
+}
+
+.related-header
+> button.scan-back-button i {
+    display: block;
+    font-size: 17px;
+    line-height: 1;
+}

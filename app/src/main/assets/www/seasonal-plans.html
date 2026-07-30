@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>KABALIKAT Seasonal Plans</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="seasonal-plans.css?v=64" rel="stylesheet"/>
+</head>
+<body data-page="seasonal-plans">
+<main class="seasonal-page">
+<div class="seasonal-scroll-area">
+<header class="seasonal-header">
+<button aria-label="Back" class="scan-back-button" id="seasonalBackButton" type="button">
+<i class="bi bi-arrow-left"></i>
+</button>
+<div class="seasonal-header-copy">
+<h1>Seasonal Plans</h1>
+<p>Prepare for upcoming family expenses.</p>
+</div>
+<button class="seasonal-add-button" id="openAddPlan" type="button">
+<i class="bi bi-plus-lg"></i>
+<span>Add Plan</span>
+</button>
+</header>
+<section aria-labelledby="seasonalOverviewTitle" class="seasonal-overview-section">
+<h2 class="seasonal-section-title" id="seasonalOverviewTitle">
+                Seasonal Overview
+            </h2>
+<article class="seasonal-overview-card">
+<div class="seasonal-total-row">
+<div>
+<span>Total Seasonal Savings</span>
+<strong id="totalSaved">₱5,050</strong>
+</div>
+<span class="seasonal-overview-badge">
+<i class="bi bi-arrow-up-right"></i>
+<span id="monthlyContributionSummary">
+                            ₱2,300 monthly
+                        </span>
+</span>
+</div>
+<div class="seasonal-overview-grid">
+<div>
+<span>Active Plans</span>
+<strong id="activePlanCount">2</strong>
+</div>
+<div>
+<span>Total Target</span>
+<strong id="totalTarget">₱15,000</strong>
+</div>
+</div>
+</article>
+</section>
+<section class="seasonal-content-section">
+<div class="seasonal-section-heading">
+<h2 class="seasonal-section-title">Active Plans</h2>
+</div>
+<div class="seasonal-plan-list" id="plans-container"></div>
+</section>
+<section class="seasonal-content-section">
+<div class="seasonal-section-heading">
+<h2 class="seasonal-section-title">Upcoming Plans</h2>
+</div>
+<article class="upcoming-plan-card">
+<div class="upcoming-plan-icon">
+<i class="bi bi-airplane"></i>
+</div>
+<div class="upcoming-plan-copy">
+<strong>Family Vacation</strong>
+<span>Starts January 2027</span>
+</div>
+<i class="bi bi-chevron-right"></i>
+</article>
+</section>
+</div>
+<nav class="expenses-bottom-nav">
+<button id="navHome" type="button">
+<i class="bi bi-house"></i>
+<span>Home</span>
+</button>
+<button id="navExpenses" type="button">
+<i class="bi bi-receipt"></i>
+<span>Expenses</span>
+</button>
+<button aria-label="Scan receipt" class="expenses-nav-scan" id="navScan" type="button">
+<i class="bi bi-upc-scan"></i>
+</button>
+<button id="navBills" type="button">
+<i class="bi bi-calendar-check"></i>
+<span>Bills</span>
+</button>
+<button class="active" id="navSavings" type="button">
+<i class="bi bi-piggy-bank-fill"></i>
+<span>Savings</span>
+</button>
+</nav>
+</main>
+<section class="full-panel" hidden="" id="addPlanPanel">
+<header>
+<button aria-label="Close Add Seasonal Plan" data-close-plan-panel="" type="button">
+<i class="bi bi-x-lg"></i>
+</button>
+<h2>Add Seasonal Plan</h2>
+<button aria-label="Save seasonal plan" class="header-save" id="savePlanTop" type="button">
+<i class="bi bi-check-lg"></i>
+</button>
+</header>
+<form class="panel-content add-form" id="addPlanForm" novalidate="">
+<div class="category-form-field">
+<label class="field-label">Plan Type</label>
+<div class="add-category-picker" id="planTypePicker"></div>
+</div>
+<label class="form-field" hidden="" id="customPlanTypeField">
+<span>Custom Plan Type</span>
+<input id="customPlanType" placeholder="Enter plan type" type="text"/>
+</label>
+<label class="form-field">
+<span>Plan Name</span>
+<input id="planName" placeholder="Example: Christmas Fund" required="" type="text"/>
+</label>
+<label class="form-field">
+<span>Target Amount</span>
+<div class="amount-input">
+<b>₱</b>
+<input id="target" min="1" placeholder="0.00" required="" step="0.01" type="number"/>
+</div>
+</label>
+<label class="form-field">
+<span>
+                Current Saved
+                <small>(optional)</small>
+</span>
+<div class="amount-input">
+<b>₱</b>
+<input id="saved" min="0" placeholder="0.00" step="0.01" type="number"/>
+</div>
+</label>
+<label class="form-field">
+<span>
+                Monthly Contribution
+                <small>(optional)</small>
+</span>
+<div class="amount-input">
+<b>₱</b>
+<input id="monthly" min="0" placeholder="0.00" step="0.01" type="number"/>
+</div>
+</label>
+<label class="form-field">
+<span>
+                Start Date
+                <small>(optional)</small>
+</span>
+<input id="startDate" type="date"/>
+</label>
+<label class="form-field">
+<span>
+                Notes
+                <small>(optional)</small>
+</span>
+<textarea id="planNotes" placeholder="Add any notes..."></textarea>
+</label>
+</form>
+</section>
+<div class="expense-success-overlay" hidden="" id="planSuccessOverlay">
+<div class="expense-success-card">
+<div aria-hidden="true" class="expense-success-check">
+<svg viewbox="0 0 52 52">
+<circle class="success-circle" cx="26" cy="26" r="24"></circle>
+<path class="success-check" d="M14 27 L22 35 L38 18"></path>
+</svg>
+</div>
+<strong id="planSuccessTitle">Plan Created</strong>
+<p id="planSuccessMessage">
+            Your seasonal plan has been saved successfully.
+        </p>
+</div>
+</div>
+<div aria-live="polite" class="seasonal-toast" id="seasonalToast" role="status"></div>
+<script src="seasonal-plans.js"></script>
+</body>
+</html>

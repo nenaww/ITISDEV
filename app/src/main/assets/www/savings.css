@@ -1,0 +1,2510 @@
+:root {
+    --primary: #E98B5F;
+    --primary-dark: #D86E49;
+    --primary-soft: #FBD4C2;
+    --background: #FFF9F5;
+    --white: #FFFFFF;
+    --neutral-dark: #251F1D;
+    --neutral: #5C534E;
+    --muted: #8A817C;
+    --neutral-light: #ADA19A;
+    --lavender: #C9A1C8;
+    --lavender-soft: #F1EDFF;
+    --yellow-soft: #FFF5D8;
+    --blue: #AFCBDD;
+    --blue-soft: #EAF3F8;
+    --green: #8FAE9A;
+    --green-soft: #EEF6F0;
+    --peach-soft: #FFF1E8;
+    --line: rgba(92, 83, 78, 0.10);
+    --soft-shadow: 0 10px 24px rgba(92, 83, 78, 0.075);
+    --shadow: 0 18px 40px rgba(92, 83, 78, 0.12);
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button {
+    -webkit-tap-highlight-color: transparent;
+}
+
+[hidden],
+.hidden {
+    display: none !important;
+}
+
+html,
+body[data-page="savings"] {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--background);
+}
+
+body[data-page="savings"] {
+    color: var(--neutral-dark);
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+}
+
+.savings-page {
+    position: relative;
+    width: 100%;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 18% 8%, rgba(175, 203, 221, 0.25), transparent 28%),
+        radial-gradient(circle at 85% 24%, rgba(255, 218, 185, 0.30), transparent 26%),
+        var(--background);
+}
+
+.savings-scroll-area {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
+    padding:
+        calc(env(safe-area-inset-top, 0px) + 26px)
+        24px
+        calc(env(safe-area-inset-bottom, 0px) + 150px);
+}
+
+.savings-scroll-area::-webkit-scrollbar {
+    width: 0;
+    display: none;
+}
+
+.savings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.savings-header h1 {
+    margin: 0;
+    color: var(--neutral-dark);
+    font-size: 23px;
+    line-height: 1.05;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+}
+
+.savings-header p {
+    margin: 7px 0 0;
+    color: var(--neutral);
+    font-size: 11px;
+    line-height: 1.45;
+    font-weight: 600;
+}
+
+.savings-add-top {
+    min-height: 48px;
+    border: none;
+    border-radius: 999px;
+    padding: 0 20px;
+    background: var(--primary);
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 0 16px 30px rgba(233, 139, 95, 0.24);
+    cursor: pointer;
+}
+
+.savings-hero-card,
+.savings-card,
+.goal-card {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: var(--soft-shadow);
+}
+
+.savings-hero-card {
+    margin-top: 22px;
+    border-radius: 30px;
+    padding: 22px;
+}
+
+.hero-eyebrow {
+    display: block;
+    color: var(--neutral);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.savings-total {
+    margin-top: 14px;
+}
+
+.savings-total strong {
+    display: block;
+    color: var(--neutral-dark);
+    font-size: 36px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -1.2px;
+}
+
+.savings-total p {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.savings-growth {
+    margin-top: 18px;
+    min-height: 44px;
+    border-radius: 18px;
+    background: var(--green-soft);
+    color: #5E7868;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.savings-mini-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.savings-mini-card {
+    min-width: 0;
+    border-radius: 20px;
+    padding: 14px;
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr);
+    align-items: center;
+    gap: 10px;
+}
+
+.savings-mini-card.lavender {
+    background: var(--lavender-soft);
+}
+
+.savings-mini-card.blue {
+    background: var(--blue-soft);
+}
+
+.mini-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.70);
+    color: var(--neutral);
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+}
+
+.savings-mini-card span {
+    display: block;
+    color: var(--muted);
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.savings-mini-card strong {
+    display: block;
+    margin-top: 5px;
+    color: var(--neutral-dark);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.savings-card {
+    margin-top: 18px;
+    border-radius: 28px;
+    padding: 20px;
+}
+
+.savings-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.section-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    font-size: 19px;
+}
+
+.section-icon.green {
+    background: var(--green-soft);
+    color: #5E7868;
+}
+
+.savings-card-header h2,
+.savings-section-heading h2 {
+    margin: 0;
+    color: var(--neutral-dark);
+    font-weight: 800;
+}
+
+.savings-card-header h2 {
+    font-size: 15px;
+    letter-spacing: -0.25px;
+}
+
+.savings-card-header p {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.money-row {
+    margin: 18px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.money-row > div {
+    min-width: 0;
+    border-radius: 17px;
+    background: #FAF7F5;
+    padding: 13px;
+}
+
+.money-row span {
+    display: block;
+    color: var(--muted);
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.money-row strong {
+    display: block;
+    margin-top: 6px;
+    color: var(--neutral-dark);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.money-row .green-text {
+    color: #5E8A6B;
+}
+
+.soft-action-button {
+    width: 100%;
+    min-height: 44px;
+    border: 0;
+    border-radius: 16px;
+    background: var(--lavender-soft);
+    color: var(--neutral-dark);
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.savings-section {
+    margin-top: 28px;
+}
+
+.savings-section-heading {
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.savings-section-heading h2 {
+    font-size: 18px;
+    letter-spacing: -0.4px;
+}
+
+.section-action {
+    min-height: 36px;
+    border: 0;
+    border-radius: 999px;
+    background: #FFFFFF;
+    color: var(--primary-dark);
+    padding: 0 14px;
+    font-size: 10px;
+    font-weight: 800;
+    box-shadow: var(--soft-shadow);
+    cursor: pointer;
+}
+
+.management-actions,
+.goal-container {
+    display: grid;
+    gap: 12px;
+}
+
+.management-actions button {
+    width: 100%;
+    min-height: 78px;
+    border: 0;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: var(--soft-shadow);
+    padding: 15px;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 18px;
+    align-items: center;
+    gap: 12px;
+    color: var(--neutral);
+    text-align: left;
+    cursor: pointer;
+}
+
+.management-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    font-size: 19px;
+}
+
+.management-icon.lavender {
+    background: var(--lavender-soft);
+    color: #8057D8;
+}
+
+.management-icon.blue {
+    background: var(--blue-soft);
+    color: #4F7F99;
+}
+
+.management-copy {
+    min-width: 0;
+}
+
+.management-copy strong {
+    display: block;
+    color: var(--neutral-dark);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.management-copy small {
+    display: block;
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.goal-card {
+    border-radius: 26px;
+    padding: 17px;
+}
+
+.goal-top {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+}
+
+.goal-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    font-size: 19px;
+}
+
+.goal-icon.green {
+    background: var(--green-soft);
+    color: #5E7868;
+}
+
+.goal-icon.purple,
+.goal-icon.lavender {
+    background: var(--lavender-soft);
+    color: #8057D8;
+}
+
+.goal-icon.blue {
+    background: var(--blue-soft);
+    color: #4F7F99;
+}
+
+.goal-icon.peach {
+    background: var(--peach-soft);
+    color: var(--primary-dark);
+}
+
+.goal-name {
+    min-width: 0;
+}
+
+.goal-name strong {
+    display: block;
+    color: var(--neutral-dark);
+    font-size: 13px;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.goal-name span {
+    display: block;
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.goal-percent {
+    color: var(--primary-dark);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.progress {
+    height: 8px;
+    margin: 14px 0;
+    border-radius: 999px;
+    background: #F0E8E4;
+    overflow: hidden;
+}
+
+.progress span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--primary);
+}
+
+.goal-card button {
+    width: 100%;
+    min-height: 42px;
+    border: 0;
+    border-radius: 15px;
+    background: var(--primary);
+    color: #FFFFFF;
+    font-size: 10.5px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+/*
+   Original Recent Savings Activity layout:
+   date -> title/subtitle -> amount.
+*/
+.activity-card {
+    margin-top: 0;
+    padding: 5px 18px;
+}
+
+.transaction {
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.transaction:last-child {
+    border-bottom: 0;
+}
+
+.date {
+    flex: 0 0 48px;
+    color: var(--primary-dark);
+    font-size: 9px;
+    line-height: 1.2;
+    font-weight: 800;
+}
+
+.transaction-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.transaction-info strong {
+    display: block;
+    color: var(--neutral-dark);
+    font-size: 12px;
+    line-height: 1.3;
+    font-weight: 800;
+}
+
+.transaction-info span {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 9.5px;
+    line-height: 1.3;
+    font-weight: 600;
+}
+
+.transaction > strong {
+    flex: 0 0 auto;
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.transaction > strong.income {
+    color: #5E8A6B;
+}
+
+.transaction > strong.expense {
+    color: var(--primary-dark);
+}
+
+.savings-toast {
+    position: fixed;
+    left: 24px;
+    right: 24px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 102px);
+    z-index: 100;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: var(--neutral);
+    color: #FFFFFF;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    transform: translateY(120px);
+    transition: 0.25s ease;
+    pointer-events: none;
+    font-size: 11px;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+.savings-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (max-width: 430px) {
+    .savings-scroll-area {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .savings-add-top {
+        min-height: 44px;
+        padding: 0 15px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 360px) {
+    .savings-mini-grid,
+    .money-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.app-bottom-nav {
+    position: fixed;
+    left: 24px;
+    right: 24px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+    height: 74px;
+    border: 1px solid rgba(92, 83, 78, 0.08);
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 18px 40px rgba(92, 83, 78, 0.14);
+    backdrop-filter: blur(12px);
+    display: grid;
+    grid-template-columns: 1fr 1fr 72px 1fr 1fr;
+    align-items: center;
+    z-index: 45;
+}
+
+.app-bottom-nav button {
+    border: 0;
+    background: transparent;
+    color: var(--neutral-light);
+    display: grid;
+    place-items: center;
+    gap: 2px;
+    font-size: 20px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.app-bottom-nav button span {
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.app-bottom-nav button.active {
+    color: var(--primary-dark);
+}
+
+.app-bottom-nav .app-nav-scan {
+    width: 62px;
+    height: 62px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #FFFFFF;
+    font-size: 28px;
+    transform: translateY(-16px);
+    box-shadow: 0 16px 30px rgba(233, 139, 95, 0.30);
+}
+
+@media (max-width: 430px) {
+    .app-bottom-nav {
+        left: 18px;
+        right: 18px;
+    }
+}
+
+
+/* =========================================================
+   v54 — integrated Add Goal matching Add Expense exactly
+   ========================================================= */
+
+/* Savings page title now carries the full page meaning. */
+.savings-header > div {
+    min-width: 0;
+}
+
+.savings-header h1 {
+    font-size: clamp(19px, 5.5vw, 23px);
+    white-space: normal;
+}
+
+.savings-header p {
+    display: none !important;
+}
+
+/* Exact Expenses full-panel geometry. */
+.full-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background: var(--background);
+    overflow: auto;
+}
+
+.full-panel > header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    min-height: 82px;
+    padding:
+        calc(env(safe-area-inset-top, 0px) + 14px)
+        18px
+        14px;
+    background: #FFF9F5;
+    border-bottom:
+        1px solid
+        rgba(92, 83, 78, 0.10);
+    box-shadow:
+        0 2px 0
+        rgba(255, 249, 245, 1);
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    align-items: end;
+    backdrop-filter: blur(12px);
+    isolation: isolate;
+}
+
+.full-panel > header h2 {
+    align-self: end;
+    margin: 0;
+    padding-bottom: 12px;
+    color: var(--neutral-dark);
+    text-align: center;
+    font-size: 17px;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+}
+
+.full-panel > header button {
+    align-self: end;
+    width: 36px;
+    height: 36px;
+    margin-bottom: 4px;
+    border: none;
+    background: transparent;
+    color: var(--neutral-dark);
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.full-panel > header .header-save {
+    color: var(--primary);
+}
+
+#saveGoalTop,
+#saveGoalTop i {
+    color: var(--primary);
+    font-size: 30px;
+    line-height: 1;
+}
+
+/* Exact Expenses panel-content and Add Expense form spacing. */
+.panel-content {
+    padding:
+        18px
+        24px
+        calc(env(safe-area-inset-bottom, 0px) + 30px);
+}
+
+#addGoalForm {
+    display: block;
+    padding-top: 30px;
+}
+
+#addGoalForm > * + * {
+    margin-top: 20px;
+}
+
+#addGoalForm .category-form-field {
+    margin-top: 10px;
+}
+
+.field-label,
+.form-field > span {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--neutral-dark);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+#addGoalForm .field-label,
+#addGoalForm .form-field > span {
+    margin-bottom: 10px;
+    font-size: 12px;
+}
+
+#addGoalForm .form-field > span small {
+    color: #9B928D;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* Exact final Add Expense category-picker layout. */
+.add-category-picker {
+    display: grid;
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.add-category-option {
+    min-width: 0;
+    min-height: 78px;
+    padding: 8px 4px;
+    border: 1.5px solid transparent;
+    border-radius: 16px;
+    background: transparent;
+    color: var(--neutral);
+    display: grid;
+    place-items: center;
+    gap: 7px;
+    font-size: 9px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.add-category-option i {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    background: var(--category-soft);
+    display: grid;
+    place-items: center;
+    color: var(--category-accent);
+    font-size: 18px;
+}
+
+.add-category-option span {
+    font-size: 9px;
+    line-height: 1.2;
+    font-weight: 600;
+}
+
+.add-category-option.active {
+    border-color: #9B928D;
+    background: rgba(255, 255, 255, 0.56);
+}
+
+.add-category-option.active i {
+    outline: none;
+}
+
+.add-category-option.active span {
+    color: var(--neutral-dark);
+    font-weight: 800;
+}
+
+/* Exact Add Expense controls. */
+.form-field input,
+.form-field textarea,
+.form-field select,
+.amount-input {
+    width: 100%;
+    min-height: 50px;
+    border:
+        1px solid
+        rgba(92, 83, 78, 0.08);
+    border-radius: 16px;
+    background: #FFFFFF;
+    padding: 14px;
+    color: var(--neutral-dark);
+    font-size: 12px;
+    font-weight: 600;
+    outline: 0;
+}
+
+.form-field textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.amount-input {
+    min-height: 44px !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.amount-input b {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.amount-input input {
+    min-height: 42px !important;
+    border: 0;
+    padding: 0;
+    background: transparent;
+}
+
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus,
+.amount-input:focus-within {
+    border-color: rgba(233, 139, 95, 0.34);
+}
+
+/* Exact Add Expense success animation and colors. */
+.expense-success-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    background: rgba(37, 31, 29, 0.18);
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+}
+
+.expense-success-overlay[hidden] {
+    display: none !important;
+}
+
+.expense-success-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.expense-success-card {
+    width: min(290px, calc(100vw - 48px));
+    border-radius: 28px;
+    background: #FFFFFF;
+    box-shadow:
+        0 18px 42px
+        rgba(92, 83, 78, 0.18);
+    padding: 24px 22px 22px;
+    text-align: center;
+    transform: translateY(8px) scale(0.96);
+    transition: transform 0.28s ease;
+}
+
+.expense-success-overlay.show
+.expense-success-card {
+    transform: translateY(0) scale(1);
+}
+
+.expense-success-check {
+    width: 74px;
+    height: 74px;
+    margin: 0 auto 14px;
+}
+
+.expense-success-check svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.success-circle {
+    fill: none;
+    stroke: #F3CBAF;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 151;
+    stroke-dashoffset: 151;
+}
+
+.success-check {
+    fill: none;
+    stroke: #E98B5F;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 36;
+    stroke-dashoffset: 36;
+}
+
+.expense-success-overlay.show
+.success-circle {
+    animation:
+        goalSuccessCircleDraw
+        0.55s
+        ease
+        forwards;
+}
+
+.expense-success-overlay.show
+.success-check {
+    animation:
+        goalSuccessCheckDraw
+        0.35s
+        ease
+        0.35s
+        forwards;
+}
+
+.expense-success-card strong {
+    display: block;
+    color: var(--neutral-dark);
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.expense-success-card p {
+    margin: 7px 0 0;
+    color: var(--neutral);
+    font-size: 13px;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+@keyframes goalSuccessCircleDraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes goalSuccessCheckDraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Correct icon treatments for the Savings surface. */
+.management-icon i,
+.section-icon i,
+.mini-icon i,
+.goal-icon i {
+    line-height: 1;
+}
+
+.management-icon.lavender {
+    color: #8057D8;
+}
+
+.management-icon.blue {
+    color: #4F7F99;
+}
+
+@media (max-width: 430px) {
+    .panel-content {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+}
+
+@media (max-width: 380px) {
+    .full-panel > header {
+        min-height: 72px;
+        padding:
+            calc(env(safe-area-inset-top, 0px) + 12px)
+            16px
+            10px;
+    }
+
+    #addGoalForm {
+        padding-top: 26px;
+    }
+
+    #addGoalForm .category-form-field {
+        margin-top: 8px;
+    }
+}
+
+
+/* =========================================================
+   v55 — exact shared navigation and Savings dashboard fixes
+   ========================================================= */
+
+/* Exact Expenses background. */
+.savings-page {
+    background:
+        radial-gradient(
+            circle at 18% 8%,
+            rgba(175, 203, 221, 0.25),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 85% 24%,
+            rgba(255, 218, 185, 0.30),
+            transparent 26%
+        ),
+        #FFF9F5 !important;
+}
+
+/* Match the Expenses top action color exactly. */
+.savings-add-top {
+    background: #E98B5F !important;
+    color: #FFFFFF !important;
+}
+
+/* Fix icon placement in Emergency Fund and Active Goals. */
+.savings-mini-card {
+    grid-template-columns:
+        48px
+        minmax(0, 1fr) !important;
+    align-items: center !important;
+}
+
+.savings-mini-card .mini-icon {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px;
+    border-radius: 17px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: rgba(255, 255, 255, 0.74) !important;
+    color: var(--neutral) !important;
+    display: grid !important;
+    place-items: center !important;
+    justify-self: start;
+    font-size: 20px !important;
+    line-height: 1 !important;
+}
+
+.savings-mini-card .mini-icon i {
+    display: block;
+    margin: 0;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.savings-mini-card .mini-card-copy {
+    min-width: 0;
+}
+
+.savings-mini-card .mini-card-copy > span {
+    display: block;
+    color: var(--muted);
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.savings-mini-card .mini-card-copy > strong {
+    display: block;
+    margin-top: 5px;
+    color: var(--neutral-dark);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+/* Two new compact Savings actions. */
+.savings-quick-actions {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.savings-quick-actions > button {
+    min-width: 0;
+    min-height: 78px;
+    border: 0;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: var(--soft-shadow);
+    padding: 13px;
+    color: var(--neutral);
+    display: grid;
+    grid-template-columns:
+        40px
+        minmax(0, 1fr)
+        14px;
+    align-items: center;
+    gap: 9px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.quick-action-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+}
+
+.quick-action-icon.blue {
+    background: var(--blue-soft);
+    color: #4F7F99;
+}
+
+.quick-action-icon.green {
+    background: var(--green-soft);
+    color: #5E7868;
+}
+
+.quick-action-copy {
+    min-width: 0;
+}
+
+.quick-action-copy strong {
+    display: block;
+    color: var(--neutral-dark);
+    font-size: 11px;
+    line-height: 1.2;
+    font-weight: 800;
+}
+
+.quick-action-copy small {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 8px;
+    line-height: 1.3;
+    font-weight: 700;
+}
+
+/* 13th month not-received dashboard state. */
+.thirteenth-summary.not-received
+.money-row > div:first-child {
+    background: var(--yellow-soft);
+}
+
+.thirteenth-summary.not-received
+#thirteenthReceivedAmount {
+    color: #8A6B1D;
+    font-size: 12px;
+}
+
+.thirteenth-summary.not-received
+#thirteenthSavingsAmount {
+    color: var(--muted);
+}
+
+.thirteenth-summary.not-received
+.soft-action-button {
+    background: var(--primary);
+    color: #FFFFFF;
+}
+
+/*
+   Exact Expenses bottom navigation.
+   No max-width and no max-430 shortening.
+*/
+.expenses-bottom-nav {
+    position: fixed;
+    left: 24px;
+    right: 24px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+    height: 74px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(92, 83, 78, 0.08);
+    border-radius: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 72px 1fr 1fr;
+    align-items: center;
+    box-shadow: 0 18px 40px rgba(92, 83, 78, 0.14);
+    z-index: 30;
+    backdrop-filter: blur(12px);
+}
+
+.expenses-bottom-nav button {
+    border: none;
+    background: transparent;
+    color: var(--neutral-light);
+    display: grid;
+    place-items: center;
+    gap: 2px;
+    font-size: 20px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.expenses-bottom-nav button span {
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.expenses-bottom-nav button.active {
+    color: var(--primary-dark);
+}
+
+.expenses-bottom-nav .expenses-nav-scan {
+    width: 62px;
+    height: 62px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #FFFFFF;
+    font-size: 28px;
+    transform: translateY(-16px);
+    box-shadow: 0 16px 30px rgba(233, 139, 95, 0.30);
+}
+
+@media (max-width: 380px) {
+    .expenses-bottom-nav {
+        left: 18px;
+        right: 18px;
+    }
+}
+
+/* Exact final Add Expense panel header geometry. */
+#addGoalPanel > header,
+#addSavingsPanel > header {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    min-height: 110px;
+    padding:
+        calc(env(safe-area-inset-top, 0px) + 14px)
+        18px
+        30px;
+    align-items: end;
+    background: #FFF9F5;
+    border-bottom:
+        1px solid
+        rgba(92, 83, 78, 0.10);
+    box-shadow: 0 6px 0 #FFF9F5;
+}
+
+#addGoalPanel > header::before,
+#addSavingsPanel > header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #FFF9F5;
+    z-index: -1;
+}
+
+#addGoalPanel > header::after,
+#addSavingsPanel > header::after,
+#addGoalPanel > header h2::after,
+#addSavingsPanel > header h2::after {
+    display: none !important;
+}
+
+#addGoalPanel > header h2,
+#addSavingsPanel > header h2 {
+    align-self: end;
+    margin: 0;
+    padding: 0;
+    line-height: 1.05;
+}
+
+#addGoalPanel > header button,
+#addSavingsPanel > header button {
+    align-self: end;
+    margin-bottom: 0;
+}
+
+#saveGoalTop,
+#saveGoalTop i,
+#saveSavingsTop,
+#saveSavingsTop i {
+    color: #E98B5F !important;
+    font-size: 30px !important;
+    line-height: 1 !important;
+}
+
+/* Exact Add Expense field rhythm, including Goal Name spacing. */
+#addGoalForm,
+#addSavingsForm {
+    display: block;
+    padding-top: 26px;
+}
+
+#addGoalForm > * + *,
+#addSavingsForm > * + * {
+    margin-top: 20px;
+}
+
+#addGoalForm > .category-form-field:first-child {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+#addGoalForm .category-form-field {
+    margin-top: 0;
+}
+
+/*
+   Explicitly preserve the same 20px space before Goal Name,
+   even when the Custom Goal Type field is hidden.
+*/
+#addGoalForm
+.category-form-field
++
+.form-field:not([hidden]) {
+    margin-top: 20px;
+}
+
+#addGoalForm
+.category-form-field
++
+.form-field[hidden]
++
+.goal-name-field {
+    margin-top: 20px;
+}
+
+#addGoalForm .field-label,
+#addGoalForm .form-field > span,
+#addSavingsForm .field-label,
+#addSavingsForm .form-field > span {
+    margin-bottom: 10px;
+    font-size: 12px;
+}
+
+@media (max-width: 380px) {
+    #addGoalPanel > header,
+    #addSavingsPanel > header {
+        min-height: 102px;
+        padding:
+            calc(env(safe-area-inset-top, 0px) + 12px)
+            16px
+            26px;
+    }
+
+    #addGoalForm,
+    #addSavingsForm {
+        padding-top: 22px;
+    }
+}
+
+/* Match the exact Add Expense save animation names and timing. */
+.expense-success-overlay.show .success-circle {
+    animation:
+        successCircleDraw
+        0.55s
+        ease
+        forwards !important;
+}
+
+.expense-success-overlay.show .success-check {
+    animation:
+        successCheckDraw
+        0.35s
+        ease
+        0.35s
+        forwards !important;
+}
+
+@keyframes successCircleDraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes successCheckDraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@media (max-width: 370px) {
+    .savings-quick-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* =========================================================
+   v56 — Expenses spacing, action colors, and pastel panels
+   ========================================================= */
+
+/*
+   Savings Overview follows the same outside-heading treatment
+   as the Expenses Budget Overview section.
+*/
+.savings-overview-section {
+    margin-top: 28px;
+}
+
+.savings-overview-title {
+    margin: 0 0 16px;
+    color: #251F1D;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 22px;
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -0.7px;
+}
+
+.savings-hero-card {
+    margin-top: 0 !important;
+    background: #FFF1E8 !important;
+}
+
+.savings-total {
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.68);
+    padding: 18px;
+}
+
+.savings-growth {
+    background: #EEF6F0;
+}
+
+/*
+   Use the final Add Expense action treatment:
+   soft peach, dark text, and the same subtle peach shadow.
+*/
+.savings-add-top,
+.goal-card button {
+    background: #F7C8B4 !important;
+    color: #251F1D !important;
+    box-shadow:
+        0 12px 26px
+        rgba(233, 139, 95, 0.16) !important;
+}
+
+.savings-add-top {
+    min-height: 48px !important;
+    padding: 0 20px !important;
+    font-size: 13px !important;
+}
+
+.thirteenth-summary.not-received
+.soft-action-button {
+    background: #F7C8B4 !important;
+    color: #251F1D !important;
+    box-shadow:
+        0 12px 26px
+        rgba(233, 139, 95, 0.16);
+}
+
+/* Keep the received-state View Allocation treatment separate. */
+.thirteenth-summary:not(.not-received)
+.soft-action-button {
+    background: #F1EDFF;
+    color: #251F1D;
+}
+
+/*
+   The six goal types wrap into two rows. A slightly stronger
+   visual break keeps Goal Name from crowding the second row.
+*/
+#addGoalForm
+#customGoalTypeField[hidden]
++
+.goal-name-field {
+    margin-top: 28px !important;
+}
+
+#addGoalForm
+#customGoalTypeField:not([hidden])
++
+.goal-name-field {
+    margin-top: 20px !important;
+}
+
+/*
+   Exact Expenses horizontal page spacing:
+   24px normally and 18px only at 380px or below.
+*/
+.savings-scroll-area {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+}
+
+.panel-content {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+}
+
+/* Add pastel color to the main Savings panels. */
+.savings-quick-actions > button:first-child {
+    background: #EAF3F8;
+}
+
+.savings-quick-actions > button:last-child {
+    background: #EEF6F0;
+}
+
+.thirteenth-summary {
+    background: #F7E4D8 !important;
+}
+
+.thirteenth-summary.not-received {
+    background: #FFF5D8 !important;
+}
+
+.management-actions > button:first-child {
+    background: #F1EDFF;
+}
+
+.management-actions > button:last-child {
+    background: #EAF3F8;
+}
+
+.goal-container .goal-card:nth-child(4n + 1) {
+    background: #EEF6F0;
+}
+
+.goal-container .goal-card:nth-child(4n + 2) {
+    background: #F1EDFF;
+}
+
+.goal-container .goal-card:nth-child(4n + 3) {
+    background: #EAF3F8;
+}
+
+.goal-container .goal-card:nth-child(4n + 4) {
+    background: #FFF1E8;
+}
+
+@media (max-width: 430px) {
+    /*
+       Cancel the older 430px narrowing. Expenses keeps 24px
+       until the viewport reaches 380px.
+    */
+    .savings-scroll-area,
+    .panel-content {
+        padding-left: 24px !important;
+        padding-right: 24px !important;
+    }
+
+    .savings-add-top {
+        min-height: 48px !important;
+        padding: 0 20px !important;
+        font-size: 13px !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .savings-scroll-area,
+    .panel-content {
+        padding-left: 18px !important;
+        padding-right: 18px !important;
+    }
+}
+
+
+/* =========================================================
+   v57 — final Expenses typography, neutral cards, Add Goal rhythm
+   ========================================================= */
+
+/* Revert the panel-color experiment. */
+.savings-hero-card,
+.thirteenth-summary,
+.thirteenth-summary.not-received,
+.management-actions > button,
+.goal-container .goal-card,
+.activity-card {
+    background: rgba(255, 255, 255, 0.95) !important;
+}
+
+.savings-total {
+    border-radius: 0 !important;
+    background: transparent !important;
+    padding: 0 !important;
+}
+
+/* Calculator and Add Savings keep their supporting colors. */
+.savings-quick-actions > button:first-child {
+    background: #EAF3F8 !important;
+}
+
+.savings-quick-actions > button:last-child {
+    background: #EEF6F0 !important;
+}
+
+/*
+   All major Savings section headings now copy Budget Overview:
+   22px, Plus Jakarta Sans, dark text, and -0.7px tracking.
+*/
+.savings-overview-title,
+.savings-section-heading h2 {
+    margin-top: 0;
+    color: #251F1D;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 22px !important;
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -0.7px !important;
+}
+
+.savings-overview-title {
+    margin-bottom: 16px;
+}
+
+.savings-section-heading {
+    margin-bottom: 16px;
+}
+
+/* General Savings type scale aligned with Expenses. */
+.savings-card-header h2 {
+    font-size: 17px;
+    line-height: 1.2;
+    letter-spacing: -0.4px;
+}
+
+.savings-card-header p {
+    font-size: 12px;
+    line-height: 1.35;
+    font-weight: 700;
+}
+
+.management-copy strong,
+.goal-name strong {
+    font-size: 14px;
+    line-height: 1.25;
+}
+
+.management-copy small,
+.goal-name span {
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+.quick-action-copy strong {
+    font-size: 13px;
+    line-height: 1.25;
+}
+
+.quick-action-copy small {
+    font-size: 10px;
+    line-height: 1.35;
+}
+
+.transaction-info strong {
+    font-size: 14px;
+    line-height: 1.3;
+}
+
+.transaction-info span {
+    font-size: 12px;
+    line-height: 1.3;
+}
+
+.transaction > strong {
+    font-size: 14px;
+}
+
+.date {
+    font-size: 10px;
+}
+
+/*
+   Exact Expenses bottom navigation.
+   Important declarations prevent earlier Savings rules from
+   changing the rendered icon scale or bar dimensions.
+*/
+.expenses-bottom-nav {
+    position: fixed !important;
+    left: 24px !important;
+    right: 24px !important;
+    bottom:
+        calc(
+            env(safe-area-inset-bottom, 0px)
+            + 16px
+        ) !important;
+    width: auto !important;
+    max-width: none !important;
+    height: 74px !important;
+    padding: 0 !important;
+    background: rgba(255, 255, 255, 0.94) !important;
+    border:
+        1px solid
+        rgba(92, 83, 78, 0.08) !important;
+    border-radius: 30px !important;
+    display: grid !important;
+    grid-template-columns:
+        1fr
+        1fr
+        72px
+        1fr
+        1fr !important;
+    align-items: center !important;
+    box-shadow:
+        0 18px 40px
+        rgba(92, 83, 78, 0.14) !important;
+    z-index: 30 !important;
+    backdrop-filter: blur(12px);
+}
+
+.expenses-bottom-nav button {
+    width: auto !important;
+    height: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: var(--neutral-light) !important;
+    display: grid !important;
+    place-items: center !important;
+    gap: 2px !important;
+    font-size: 20px !important;
+    line-height: 1 !important;
+    font-weight: 800 !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+.expenses-bottom-nav button > i {
+    display: block;
+    font-size: 20px !important;
+    line-height: 1 !important;
+}
+
+.expenses-bottom-nav button > span {
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+    font-weight: 800 !important;
+}
+
+.expenses-bottom-nav button.active {
+    color: var(--primary-dark) !important;
+}
+
+/* Slight optical correction for the piggy-bank glyph. */
+.expenses-bottom-nav #navSavings > i {
+    font-size: 22px !important;
+}
+
+.expenses-bottom-nav .expenses-nav-scan {
+    width: 62px !important;
+    height: 62px !important;
+    margin: 0 auto !important;
+    border-radius: 50% !important;
+    background: var(--primary) !important;
+    color: #FFFFFF !important;
+    font-size: 28px !important;
+    transform: translateY(-16px) !important;
+    box-shadow:
+        0 16px 30px
+        rgba(233, 139, 95, 0.30) !important;
+}
+
+.expenses-bottom-nav
+.expenses-nav-scan > i {
+    font-size: 28px !important;
+}
+
+/*
+   Add Goal now copies the latest Add Expense spacing exactly:
+   110px sticky header, 26px content start, 20px field rhythm,
+   and the same category control dimensions.
+*/
+#addGoalPanel > header {
+    position: sticky !important;
+    top: 0;
+    z-index: 60;
+    min-height: 110px !important;
+    padding:
+        calc(env(safe-area-inset-top, 0px) + 14px)
+        18px
+        30px !important;
+    display: grid;
+    grid-template-columns:
+        42px
+        1fr
+        42px;
+    align-items: end !important;
+    background: #FFF9F5 !important;
+    border-bottom:
+        1px solid
+        rgba(92, 83, 78, 0.10) !important;
+    box-shadow:
+        0 6px 0
+        #FFF9F5 !important;
+}
+
+#addGoalPanel > header h2 {
+    align-self: end;
+    margin: 0;
+    padding: 0;
+    color: var(--neutral-dark);
+    text-align: center;
+    font-size: 17px;
+    line-height: 1.05;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+}
+
+#addGoalPanel > header button {
+    width: 42px;
+    height: 42px;
+    align-self: end;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    place-items: center;
+}
+
+#addGoalForm {
+    display: block !important;
+    padding:
+        26px
+        24px
+        calc(env(safe-area-inset-bottom, 0px) + 30px)
+        !important;
+}
+
+#addGoalForm > * {
+    margin-top: 0 !important;
+}
+
+#addGoalForm > * + * {
+    margin-top: 20px !important;
+}
+
+#addGoalForm
+> .category-form-field:first-child {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+#addGoalForm
+#customGoalTypeField[hidden]
++
+.goal-name-field,
+#addGoalForm
+#customGoalTypeField:not([hidden])
++
+.goal-name-field {
+    margin-top: 20px !important;
+}
+
+#addGoalForm .field-label,
+#addGoalForm .form-field > span {
+    margin-bottom: 10px !important;
+    color: var(--neutral-dark);
+    font-size: 12px !important;
+    font-weight: 800;
+}
+
+#addGoalForm .form-field > span small {
+    color: #9B928D;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+#addGoalForm .add-category-picker {
+    display: grid;
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+    gap: 9px;
+}
+
+#addGoalForm .add-category-option {
+    min-width: 0;
+    min-height: 78px;
+    padding: 8px 4px;
+    border:
+        1.5px solid
+        transparent;
+    border-radius: 16px;
+    background: transparent;
+    color: var(--neutral);
+    display: grid;
+    place-items: center;
+    gap: 7px;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+#addGoalForm
+.add-category-option i {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+}
+
+#addGoalForm
+.add-category-option span {
+    font-size: 9px;
+    line-height: 1.2;
+    font-weight: 600;
+}
+
+#addGoalForm
+.add-category-option.active {
+    border-color: #9B928D;
+    background:
+        rgba(255, 255, 255, 0.56);
+}
+
+#addGoalForm
+.add-category-option.active i {
+    outline: none;
+}
+
+#addGoalForm
+.add-category-option.active span {
+    color: var(--neutral-dark);
+    font-weight: 800;
+}
+
+#addGoalForm .form-field input,
+#addGoalForm .form-field textarea,
+#addGoalForm .form-field select,
+#addGoalForm .amount-input {
+    min-height: 50px;
+}
+
+#addGoalForm .amount-input input {
+    min-height: 48px;
+}
+
+#addGoalForm .form-field textarea {
+    min-height: 90px;
+}
+
+@media (max-width: 380px) {
+    .expenses-bottom-nav {
+        left: 18px !important;
+        right: 18px !important;
+    }
+
+    #addGoalPanel > header {
+        min-height: 102px !important;
+        padding:
+            calc(env(safe-area-inset-top, 0px) + 12px)
+            16px
+            26px !important;
+    }
+
+    #addGoalForm {
+        padding:
+            22px
+            18px
+            calc(env(safe-area-inset-bottom, 0px) + 30px)
+            !important;
+    }
+
+    #addGoalForm .add-category-picker {
+        gap: 7px;
+    }
+
+    #addGoalForm .add-category-option {
+        min-height: 74px;
+    }
+}
+
+
+/* =========================================================
+   v58 — Expenses section headings, goals, and savings history
+   ========================================================= */
+
+/* Exact Expenses section-heading scale. */
+.savings-overview-title,
+.savings-section-heading h2 {
+    margin: 0;
+    color: #251F1D;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 22px !important;
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -0.7px !important;
+}
+
+.savings-overview-title {
+    margin-bottom: 16px;
+}
+
+.savings-section-heading {
+    margin-bottom: 16px;
+}
+
+/* Total Family Savings and the monthly increase share one row. */
+.savings-total-meta {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.savings-total-meta > p {
+    min-width: 0;
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.35;
+    font-weight: 700;
+}
+
+.savings-total-meta
+.savings-growth {
+    flex: 0 0 auto;
+    min-height: 32px;
+    margin: 0;
+    border-radius: 999px;
+    padding: 0 11px;
+    display: inline-flex;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+/* Emergency Fund and Active Goals no longer use decorative icons. */
+.savings-mini-card {
+    grid-template-columns: 1fr !important;
+    min-height: 86px;
+    align-content: center;
+    padding: 16px 18px;
+}
+
+.savings-mini-card .mini-card-copy {
+    width: 100%;
+}
+
+.savings-mini-card
+.mini-card-copy > span {
+    font-size: 11px;
+}
+
+.savings-mini-card
+.mini-card-copy > strong {
+    margin-top: 7px;
+    font-size: 16px;
+}
+
+/* 13th Month Pay no longer reserves a column for an icon. */
+.thirteenth-summary
+.savings-card-header {
+    display: block;
+}
+
+.thirteenth-summary
+.savings-card-header > div {
+    width: 100%;
+}
+
+/* Match the Expenses View All control. */
+.section-action {
+    min-height: 38px;
+    border: 1px solid rgba(92, 83, 78, 0.08);
+    border-radius: 999px;
+    background: #FFFFFF;
+    color: var(--neutral);
+    padding: 0 14px;
+    font-size: 12px;
+    font-weight: 800;
+    box-shadow: 0 8px 18px rgba(92, 83, 78, 0.06);
+}
+
+/* Each goal uses the same accent for its icon, percentage, and bar. */
+.goal-percent {
+    color: var(--goal-accent);
+}
+
+.goal-card .progress span {
+    background: var(--goal-accent);
+}
+
+/*
+   Exact Recent Transactions structure from Expenses:
+   date heading followed by individual rounded transaction rows.
+*/
+.savings-history-list,
+.dated-history-list {
+    display: grid;
+    gap: 17px;
+}
+
+.dated-history-group {
+    display: grid;
+    gap: 8px;
+}
+
+.dated-history-date {
+    padding-left: 6px;
+    color: #948A85;
+    font-size: 10px;
+    line-height: 1.2;
+    font-weight: 800;
+    letter-spacing: 0.25px;
+}
+
+.dated-history-rows {
+    display: grid;
+    gap: 10px;
+}
+
+.dated-history-row {
+    min-height: 74px;
+    border: 1px solid rgba(92, 83, 78, 0.07);
+    border-radius: 23px;
+    padding: 13px 15px;
+    background: rgba(255, 255, 255, 0.80);
+    box-shadow: 0 9px 21px rgba(92, 83, 78, 0.055);
+    display: grid;
+    grid-template-columns:
+        42px
+        minmax(0, 1fr)
+        auto;
+    align-items: center;
+    gap: 11px;
+}
+
+.dated-history-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    color: #251F1D;
+    font-size: 17px;
+}
+
+.dated-history-copy {
+    min-width: 0;
+}
+
+.dated-history-copy h4 {
+    margin: 0;
+    color: var(--neutral-dark);
+    font-size: 13px;
+    line-height: 1.25;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dated-history-copy p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 10px;
+    line-height: 1.3;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dated-history-copy p b {
+    margin: 0 4px;
+    color: #B4AAA5;
+}
+
+.dated-history-amount {
+    color: var(--primary-dark);
+    font-size: 13px;
+    font-weight: 800;
+    white-space: nowrap;
+    text-align: right;
+}
+
+.dated-history-amount.income {
+    color: #5E8A6B;
+}
+
+.dated-history-amount.expense {
+    color: var(--primary-dark);
+}
+
+/* The outer legacy activity card is no longer used. */
+.savings-history-list.activity-card {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+/* All Goals panel follows the existing full-panel spacing. */
+#allGoalsPanel .panel-content {
+    padding-top: 24px;
+}
+
+#allGoalsPanel .header-save {
+    color: var(--primary);
+    font-size: 23px;
+}
+
+.all-goals-container {
+    padding-bottom:
+        calc(
+            env(safe-area-inset-bottom, 0px)
+            + 20px
+        );
+}
+
+@media (max-width: 380px) {
+    .savings-total-meta {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .savings-total-meta
+    .savings-growth {
+        min-height: 30px;
+    }
+
+    .dated-history-row {
+        grid-template-columns:
+            40px
+            minmax(0, 1fr)
+            auto;
+        padding: 12px 13px;
+        gap: 9px;
+    }
+
+    .dated-history-icon {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+
+/* =========================================================
+   v59 — exact Expenses Budget Overview heading size
+   ========================================================= */
+
+.expenses-section-title {
+    margin: 0 !important;
+    color: #251F1D !important;
+    font-family:
+        "Plus Jakarta Sans",
+        sans-serif !important;
+    font-size: 22px !important;
+    line-height: 1.15 !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.7px !important;
+    transform: none !important;
+    zoom: 1 !important;
+}
+
+.savings-overview-title.expenses-section-title {
+    margin-bottom: 16px !important;
+}
+
+.savings-section-heading
+.expenses-section-title {
+    margin: 0 !important;
+}
+
+
+/* =========================================================
+   v61 — hard 22px headings and final pastel Active Goals
+   ========================================================= */
+
+/*
+   Exact Expenses Budget Overview typography.
+   Inline styles in the HTML and this final rule both use 22px
+   so earlier cached or higher-specificity Savings rules cannot
+   reduce these four headings.
+*/
+h2.expenses-section-title,
+.savings-overview-title.expenses-section-title,
+.savings-section-heading h2.expenses-section-title {
+    font-family:
+        "Plus Jakarta Sans",
+        sans-serif !important;
+    font-size: 22px !important;
+    line-height: 1.15 !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.7px !important;
+    color: #251F1D !important;
+}
+
+/* Pastel goal card and colored icon panel. */
+.goal-container .goal-card,
+#allGoalsContainer .goal-card {
+    background:
+        var(--goal-card, #F5ECF6) !important;
+    border:
+        1px solid
+        rgba(92, 83, 78, 0.045) !important;
+    box-shadow:
+        0 10px 24px
+        rgba(92, 83, 78, 0.07) !important;
+}
+
+/*
+   Bring back the colored icon panel rather than the white panel
+   introduced in the previous revision.
+*/
+.goal-container
+.goal-card
+.goal-icon,
+#allGoalsContainer
+.goal-card
+.goal-icon {
+    background:
+        var(--goal-icon-panel, #E7D4EA) !important;
+    color:
+        var(--goal-accent, #A05AA0) !important;
+    box-shadow: none !important;
+}
+
+.goal-container
+.goal-card
+.goal-icon i,
+#allGoalsContainer
+.goal-card
+.goal-icon i {
+    color:
+        var(--goal-accent, #A05AA0) !important;
+}
+
+.goal-container
+.goal-card
+.goal-percent,
+#allGoalsContainer
+.goal-card
+.goal-percent {
+    color:
+        var(--goal-accent, #A05AA0) !important;
+}
+
+.goal-container
+.goal-card
+.progress,
+#allGoalsContainer
+.goal-card
+.progress {
+    background:
+        rgba(255, 255, 255, 0.68) !important;
+}
+
+.goal-container
+.goal-card
+.progress span,
+#allGoalsContainer
+.goal-card
+.progress span {
+    background:
+        var(--goal-accent, #A05AA0) !important;
+}
+
+.goal-container
+.goal-card
+button[data-add-money],
+#allGoalsContainer
+.goal-card
+button[data-add-money] {
+    background:
+        var(--goal-button, #824682) !important;
+    color: #FFFFFF !important;
+    box-shadow:
+        0 9px 18px
+        rgba(92, 83, 78, 0.10) !important;
+}
+
+
+/* =========================================================
+   v63 — softer pastel Add Money buttons
+   ========================================================= */
+
+.goal-container
+.goal-card
+button[data-add-money],
+#allGoalsContainer
+.goal-card
+button[data-add-money] {
+    background:
+        var(--goal-button, #D3B5D8) !important;
+    color: #251F1D !important;
+    border:
+        1px solid
+        rgba(92, 83, 78, 0.05) !important;
+    box-shadow:
+        0 8px 16px
+        rgba(92, 83, 78, 0.08) !important;
+}
+
+
+/* =========================================================
+   v64 — absolute 22px Savings section-heading enforcement
+   ========================================================= */
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+#savingsOverviewTitle,
+#planManageTitle,
+#activeGoalsTitle,
+#recentSavingsActivityTitle {
+    margin-top: 0 !important;
+    color: #251F1D !important;
+    font-family:
+        "Plus Jakarta Sans",
+        sans-serif !important;
+    font-size: 22px !important;
+    line-height: 1.15 !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.7px !important;
+    text-transform: none !important;
+    transform: none !important;
+    zoom: 1 !important;
+    -webkit-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+}
+
+#savingsOverviewTitle {
+    margin-bottom: 16px !important;
+}
+
+#planManageTitle,
+#activeGoalsTitle,
+#recentSavingsActivityTitle {
+    margin-bottom: 0 !important;
+}

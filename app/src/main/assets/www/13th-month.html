@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>13th Month Pay</title>
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    >
+
+    <link rel="stylesheet" href="13th-month.css">
+</head>
+
+<body data-page="thirteenth">
+<main class="related-page">
+    <div class="related-scroll-area">
+        <header class="related-header">
+            <button
+                id="pageBackButton"
+                type="button"
+                aria-label="Back"
+            >
+                <i class="bi bi-arrow-left"></i>
+            </button>
+
+            <div>
+                <h1>13th Month Pay</h1>
+                <p>Plan your year-end bonus wisely.</p>
+            </div>
+        </header>
+
+        <section class="pay-summary-card">
+            <span class="summary-icon">
+                <i class="bi bi-gift"></i>
+            </span>
+
+            <p>Amount Received</p>
+
+            <strong id="displayAmount">
+                ₱0
+            </strong>
+
+            <span class="received-badge">
+                Received
+            </span>
+        </section>
+
+        <section class="related-card">
+            <h2>Amount Received</h2>
+
+            <div class="amount-input">
+                <b>₱</b>
+
+                <input
+                    id="amountInput"
+                    type="number"
+                    min="0"
+                    placeholder="0.00"
+                >
+            </div>
+        </section>
+
+        <section class="related-card">
+            <h2>Your Allocation</h2>
+
+            <label class="allocation-entry green">
+                <span class="allocation-icon">
+                    <i class="bi bi-piggy-bank"></i>
+                </span>
+
+                <span class="allocation-copy">
+                    <strong>Savings</strong>
+                    <small>Money kept for future needs</small>
+                </span>
+
+                <div class="allocation-input">
+                    <b>₱</b>
+
+                    <input
+                        id="savingInput"
+                        type="number"
+                        min="0"
+                        placeholder="0.00"
+                    >
+                </div>
+            </label>
+
+            <label class="allocation-entry lavender">
+                <span class="allocation-icon">
+                    <i class="bi bi-bullseye"></i>
+                </span>
+
+                <span class="allocation-copy">
+                    <strong>Goals</strong>
+                    <small>Contributions to active goals</small>
+                </span>
+
+                <div class="allocation-input">
+                    <b>₱</b>
+
+                    <input
+                        id="goalInput"
+                        type="number"
+                        min="0"
+                        placeholder="0.00"
+                    >
+                </div>
+            </label>
+
+            <label class="allocation-entry peach">
+                <span class="allocation-icon">
+                    <i class="bi bi-basket"></i>
+                </span>
+
+                <span class="allocation-copy">
+                    <strong>Expenses</strong>
+                    <small>Planned household spending</small>
+                </span>
+
+                <div class="allocation-input">
+                    <b>₱</b>
+
+                    <input
+                        id="expenseInput"
+                        type="number"
+                        min="0"
+                        placeholder="0.00"
+                    >
+                </div>
+            </label>
+        </section>
+
+        <section class="allocation-status-card">
+            <h2>Allocation Status</h2>
+
+            <div class="status-row">
+                <span>Allocated</span>
+                <strong id="allocated">₱0</strong>
+            </div>
+
+            <div class="status-row">
+                <span>Remaining</span>
+                <strong id="remaining">₱0</strong>
+            </div>
+
+            <div
+                id="statusBadge"
+                class="status-badge"
+            >
+                Extra Funds Available
+            </div>
+        </section>
+
+        <button
+            id="reviewAllocation"
+            class="primary-page-button"
+            type="button"
+        >
+            Save Allocation
+        </button>
+    </div>
+
+    
+<nav class="expenses-bottom-nav" aria-label="Main navigation">
+    <button id="navHome" type="button">
+        <i class="bi bi-house"></i>
+        <span>Home</span>
+    </button>
+
+    <button id="navExpenses" type="button">
+        <i class="bi bi-receipt"></i>
+        <span>Expenses</span>
+    </button>
+
+    <button id="navScan" class="expenses-nav-scan" type="button" aria-label="Scan receipt">
+        <i class="bi bi-upc-scan"></i>
+    </button>
+
+    <button id="navBills" type="button">
+        <i class="bi bi-calendar-check"></i>
+        <span>Bills</span>
+    </button>
+
+    <button class="active" id="navSavings" type="button">
+        <i class="bi bi-piggy-bank"></i>
+        <span>Savings</span>
+    </button>
+</nav>
+
+</main>
+
+<div
+    id="thirteenthSuccessOverlay"
+    class="expense-success-overlay"
+    hidden
+>
+    <div class="expense-success-card">
+        <div class="expense-success-check" aria-hidden="true">
+            <svg viewBox="0 0 52 52">
+                <circle class="success-circle" cx="26" cy="26" r="24"></circle>
+                <path class="success-check" d="M14 27 L22 35 L38 18"></path>
+            </svg>
+        </div>
+
+        <strong>Allocation Saved</strong>
+        <p>Your 13th month allocation has been updated successfully.</p>
+    </div>
+</div>
+
+<div
+    id="thirteenthToast"
+    class="related-toast"
+    aria-live="polite"
+></div>
+
+<script src="13th-month.js"></script>
+</body>
+</html>
