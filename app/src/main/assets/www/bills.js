@@ -747,7 +747,7 @@ function bindEvents() {
         .getElementById("navSavings")
         ?.addEventListener(
             "click",
-            () => navigateTo("expenses.html#budget-overview")
+            () => navigateTo("savings.html")
         );
 
     document
@@ -770,7 +770,7 @@ function bindEvents() {
                 }
 
                 if (destination === "savings") {
-                    navigateTo("expenses.html#budget-overview");
+                    navigateTo("savings.html");
                 }
             });
         });
