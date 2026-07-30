@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>KABALIKAT Savings &amp; Allocation</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="savings.css?v=64" rel="stylesheet"/>
+</head>
+<body data-page="savings">
+<main class="savings-page">
+<div class="savings-scroll-area">
+<header class="savings-header">
+<h1>Savings &amp; Allocation</h1>
+<button class="savings-add-top" id="openAddGoal" type="button">
+<i class="bi bi-plus-lg"></i>
+<span>Add Goal</span>
+</button>
+</header>
+<section aria-labelledby="savingsOverviewTitle" class="savings-overview-section"><h2 class="savings-overview-title expenses-section-title" id="savingsOverviewTitle" style='font-family:"Plus Jakarta Sans",sans-serif !important;font-size:22px !important;line-height:1.15 !important;font-weight:800 !important;letter-spacing:-0.7px !important;color:#251F1D !important;text-size-adjust:100% !important;-webkit-text-size-adjust:100% !important;'>Savings Overview</h2><section aria-label="Savings overview" class="savings-hero-card">
+<div class="savings-total">
+<strong id="totalSavings">
+                    ₱32,560
+                </strong>
+<div class="savings-total-meta"><p>Total Family Savings</p><div class="savings-growth">
+<i class="bi bi-arrow-up-right"></i>
+<span id="monthlyExcess">
+                    +₱2,350 saved this month
+                </span>
+</div></div></div>
+<div class="savings-mini-grid">
+<article class="savings-mini-card lavender">
+<div class="mini-card-copy">
+<span>Emergency Fund</span>
+<strong id="emergencyFund">₱12,000</strong>
+</div>
+</article>
+<article class="savings-mini-card blue">
+<div class="mini-card-copy">
+<span>Active Goals</span>
+<strong id="goalCount">2 Goals</strong>
+</div>
+</article>
+</div>
+</section></section>
+<section aria-label="Savings quick actions" class="savings-quick-actions">
+<button id="openBudgetCalculator" type="button">
+<span class="quick-action-icon blue">
+<i class="bi bi-calculator"></i>
+</span>
+<span class="quick-action-copy">
+<strong>Calculator</strong>
+<small>Check a budget decision</small>
+</span>
+<i class="bi bi-chevron-right"></i>
+</button>
+<button id="openAddSavings" type="button">
+<span class="quick-action-icon green">
+<i class="bi bi-cash-coin"></i>
+</span>
+<span class="quick-action-copy">
+<strong>Add Savings</strong>
+<small>Record money saved</small>
+</span>
+<i class="bi bi-plus-lg"></i>
+</button>
+</section>
+<section class="savings-card thirteenth-summary" id="thirteenthMonthCard">
+<div class="savings-card-header">
+<div>
+<h2>13th Month Pay</h2>
+<p id="thirteenthDashboardDescription">
+                        Manage your bonus income
+                    </p>
+</div>
+</div>
+<div class="money-row">
+<div>
+<span id="thirteenthPrimaryLabel">
+                        Received
+                    </span>
+<strong id="thirteenthReceivedAmount">
+                        ₱18,000
+                    </strong>
+</div>
+<div>
+<span>Moved to Savings</span>
+<strong class="green-text" id="thirteenthSavingsAmount">
+                        ₱8,000
+                    </strong>
+</div>
+</div>
+<button class="soft-action-button" id="thirteenthActionButton" type="button">
+                View Allocation
+            </button>
+</section>
+<section class="savings-section">
+<div class="savings-section-heading">
+<h2 class="expenses-section-title" id="planManageTitle" style='font-family:"Plus Jakarta Sans",sans-serif !important;font-size:22px !important;line-height:1.15 !important;font-weight:800 !important;letter-spacing:-0.7px !important;color:#251F1D !important;text-size-adjust:100% !important;-webkit-text-size-adjust:100% !important;'>Plan &amp; Manage</h2>
+</div>
+<div class="management-actions">
+<button data-navigate="budget-allocation.html" type="button">
+<span class="management-icon lavender">
+<i class="bi bi-pie-chart"></i>
+</span>
+<span class="management-copy">
+<strong>Budget Allocation</strong>
+<small>Plan this month's funds</small>
+</span>
+<i class="bi bi-chevron-right"></i>
+</button>
+<button data-navigate="seasonal-plans.html" type="button">
+<span class="management-icon blue">
+<i class="bi bi-calendar-event"></i>
+</span>
+<span class="management-copy">
+<strong>Seasonal Plans</strong>
+<small>Prepare future expenses</small>
+</span>
+<i class="bi bi-chevron-right"></i>
+</button>
+</div>
+</section>
+<section class="savings-section">
+<div class="savings-section-heading">
+<h2 class="expenses-section-title" id="activeGoalsTitle" style='font-family:"Plus Jakarta Sans",sans-serif !important;font-size:22px !important;line-height:1.15 !important;font-weight:800 !important;letter-spacing:-0.7px !important;color:#251F1D !important;text-size-adjust:100% !important;-webkit-text-size-adjust:100% !important;'>Active Goals</h2>
+<button class="section-action" id="viewAllGoals" type="button">View All</button>
+</div>
+<div class="goal-container" id="goal-container"></div>
+</section>
+<section class="savings-section">
+<div class="savings-section-heading">
+<h2 class="expenses-section-title" id="recentSavingsActivityTitle" style='font-family:"Plus Jakarta Sans",sans-serif !important;font-size:22px !important;line-height:1.15 !important;font-weight:800 !important;letter-spacing:-0.7px !important;color:#251F1D !important;text-size-adjust:100% !important;-webkit-text-size-adjust:100% !important;'>Recent Savings Activity</h2>
+</div>
+<div class="dated-history-list savings-history-list" id="activity-container"></div>
+</section>
+</div>
+<nav class="expenses-bottom-nav">
+<button id="navHome" type="button">
+<i class="bi bi-house"></i>
+<span>Home</span>
+</button>
+<button id="navExpenses" type="button">
+<i class="bi bi-receipt"></i>
+<span>Expenses</span>
+</button>
+<button aria-label="Scan receipt" class="expenses-nav-scan" id="navScan" type="button">
+<i class="bi bi-upc-scan"></i>
+</button>
+<button id="navBills" type="button">
+<i class="bi bi-calendar-check"></i>
+<span>Bills</span>
+</button>
+<button class="active" id="navSavings" type="button">
+<i class="bi bi-piggy-bank-fill"></i>
+<span>Savings</span>
+</button>
+</nav>
+</main>
+<section class="full-panel" hidden="" id="allGoalsPanel">
+<header>
+<button aria-label="Back to Savings" data-close-panel="" type="button">
+<i class="bi bi-arrow-left"></i>
+</button>
+<h2>All Goals</h2>
+<button aria-label="Add goal" class="header-save" id="addGoalFromAllGoals" type="button">
+<i class="bi bi-plus-lg"></i>
+</button>
+</header>
+<div class="panel-content">
+<div class="goal-container all-goals-container" id="allGoalsContainer"></div>
+</div>
+</section><section class="full-panel" hidden="" id="addGoalPanel">
+<header>
+<button aria-label="Close Add Goal" data-close-panel="" type="button">
+<i class="bi bi-x-lg"></i>
+</button>
+<h2>Add Goal</h2>
+<button aria-label="Save goal" class="header-save" id="saveGoalTop" type="button">
+<i class="bi bi-check-lg"></i>
+</button>
+</header>
+<form class="panel-content add-form" id="addGoalForm" novalidate="">
+<div class="category-form-field">
+<label class="field-label">
+                Goal Type
+            </label>
+<div class="add-category-picker" id="addGoalTypePicker"></div>
+</div>
+<label class="form-field" hidden="" id="customGoalTypeField">
+<span>Custom Goal Type</span>
+<input id="customGoalType" placeholder="Enter goal type" type="text"/>
+</label>
+<label class="form-field goal-name-field">
+<span>Goal Name</span>
+<input id="newGoalName" placeholder="Enter goal name" required="" type="text"/>
+</label>
+<label class="form-field">
+<span>Target Amount</span>
+<div class="amount-input">
+<b>₱</b>
+<input id="newGoalTarget" min="0" placeholder="0.00" required="" step="0.01" type="number"/>
+</div>
+</label>
+<label class="form-field">
+<span>
+                Initial Savings
+                <small>(optional)</small>
+</span>
+<div class="amount-input">
+<b>₱</b>
+<input id="newGoalInitial" min="0" placeholder="0.00" step="0.01" type="number"/>
+</div>
+</label>
+<label class="form-field">
+<span>
+                Target Date
+                <small>(optional)</small>
+</span>
+<input id="newGoalDate" type="date"/>
+</label>
+<label class="form-field">
+<span>
+                Notes
+                <small>(optional)</small>
+</span>
+<textarea id="newGoalNotes" placeholder="Add any notes..."></textarea>
+</label>
+</form>
+</section>
+<section class="full-panel" hidden="" id="addSavingsPanel">
+<header>
+<button aria-label="Close Add Savings" data-close-panel="" type="button">
+<i class="bi bi-x-lg"></i>
+</button>
+<h2>Add Savings</h2>
+<button aria-label="Save savings" class="header-save" id="saveSavingsTop" type="button">
+<i class="bi bi-check-lg"></i>
+</button>
+</header>
+<form class="panel-content add-form" id="addSavingsForm" novalidate="">
+<label class="form-field">
+<span>Amount</span>
+<div class="amount-input">
+<b>₱</b>
+<input id="newSavingsAmount" min="0" placeholder="0.00" required="" step="0.01" type="number"/>
+</div>
+</label>
+<label class="form-field">
+<span>Save To</span>
+<select id="newSavingsDestination">
+<option value="general">
+                    General Savings
+                </option>
+<option value="emergency">
+                    Emergency Fund
+                </option>
+</select>
+</label>
+<label class="form-field">
+<span>Source</span>
+<select id="newSavingsSource">
+<option>Monthly Excess</option>
+<option>Salary</option>
+<option>Additional Income</option>
+<option>13th Month Pay</option>
+<option>Other</option>
+</select>
+</label>
+<label class="form-field">
+<span>Date</span>
+<input id="newSavingsDate" required="" type="date"/>
+</label>
+<label class="form-field">
+<span>
+                Notes
+                <small>(optional)</small>
+</span>
+<textarea id="newSavingsNotes" placeholder="Add any notes..."></textarea>
+</label>
+</form>
+</section>
+<div class="expense-success-overlay" hidden="" id="savingsSuccessOverlay">
+<div class="expense-success-card">
+<div aria-hidden="true" class="expense-success-check">
+<svg viewbox="0 0 52 52">
+<circle class="success-circle" cx="26" cy="26" r="24"></circle>
+<path class="success-check" d="M14 27 L22 35 L38 18"></path>
+</svg>
+</div>
+<strong id="savingsSuccessTitle">Saved</strong>
+<p id="savingsSuccessMessage">Your changes were saved successfully.</p>
+</div>
+</div>
+<div aria-live="polite" class="savings-toast" id="savingsToast" role="status"></div>
+<script src="savings.js"></script>
+</body>
+</html>

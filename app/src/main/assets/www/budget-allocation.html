@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Budget Allocation</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="budget-allocation.css?v=64" rel="stylesheet"/>
+</head>
+<body data-page="budget-allocation">
+<main class="related-page">
+<div class="related-scroll-area">
+<header class="related-header">
+<button aria-label="Back" class="scan-back-button" id="pageBackButton" type="button">
+<i class="bi bi-arrow-left"></i>
+</button>
+<div>
+<h1>Budget Allocation</h1>
+<p>Plan where your money goes.</p>
+</div>
+</header>
+<section class="budget-hero-card">
+<span>Monthly Income</span>
+<strong id="incomeDisplay">₱25,000</strong>
+<div class="available-funds-row">
+<span>Available Funds</span>
+<strong id="availableDisplay">₱25,000</strong>
+</div>
+</section>
+<section class="allocation-section">
+<div class="allocation-section-heading">
+<h2>Where will your money go?</h2>
+</div>
+<section class="budget-allocation-card">
+<div class="allocation-card-header">
+<span class="allocation-card-icon lavender">
+<i class="bi bi-basket"></i>
+</span>
+<div>
+<h3>Categories</h3>
+<p>Daily household expenses</p>
+</div>
+<button aria-label="Add category" data-add-item="category" type="button">
+<i class="bi bi-plus-lg"></i>
+</button>
+</div>
+<div class="allocation-item-list" id="categoryList"></div>
+</section>
+<section class="budget-allocation-card">
+<div class="allocation-card-header">
+<span class="allocation-card-icon yellow">
+<i class="bi bi-calendar-event"></i>
+</span>
+<div>
+<h3>Seasonal Plans</h3>
+<p>Prepare future expenses</p>
+</div>
+<button aria-label="Add seasonal plan" data-add-item="seasonal" type="button">
+<i class="bi bi-plus-lg"></i>
+</button>
+</div>
+<div class="allocation-item-list" id="seasonalList"></div>
+</section>
+<section class="budget-allocation-card">
+<div class="allocation-card-header">
+<span class="allocation-card-icon green">
+<i class="bi bi-piggy-bank"></i>
+</span>
+<div>
+<h3>Savings</h3>
+<p>Money set aside</p>
+</div>
+</div>
+<label class="single-allocation-row">
+<span>Savings Contribution</span>
+<div>
+<b>₱</b>
+<input id="savingsInput" min="0" type="number" value="3000"/>
+</div>
+</label>
+</section>
+<section class="budget-allocation-card">
+<div class="allocation-card-header">
+<span class="allocation-card-icon blue">
+<i class="bi bi-receipt"></i>
+</span>
+<div>
+<h3>Bills &amp; Debt</h3>
+<p>Required payments</p>
+</div>
+<button aria-label="Add bill or debt" data-add-item="bill" type="button">
+<i class="bi bi-plus-lg"></i>
+</button>
+</div>
+<div class="allocation-item-list" id="billList"></div>
+</section>
+</section>
+<section class="budget-status-card">
+<h2>Budget Status</h2>
+<div class="status-row">
+<span>Total Allocated</span>
+<strong id="allocated">₱0</strong>
+</div>
+<div class="status-row">
+<span>Remaining Funds</span>
+<strong id="remaining">₱0</strong>
+</div>
+<div class="status-badge" id="statusBadge">
+                Extra Funds Available
+            </div>
+</section>
+<button class="primary-page-button" id="saveBudgetButton" type="button">
+            Save Budget Plan
+        </button>
+</div>
+<nav aria-label="Main navigation" class="app-bottom-nav">
+<button id="navHome" type="button">
+<i class="bi bi-house"></i>
+<span>Home</span>
+</button>
+<button id="navExpenses" type="button">
+<i class="bi bi-receipt"></i>
+<span>Expenses</span>
+</button>
+<button aria-label="Scan receipt" class="app-nav-scan" id="navScan" type="button">
+<i class="bi bi-upc-scan"></i>
+</button>
+<button id="navBills" type="button">
+<i class="bi bi-calendar-check"></i>
+<span>Bills</span>
+</button>
+<button class="active" id="navSavings" type="button">
+<i class="bi bi-piggy-bank-fill"></i>
+<span>Savings</span>
+</button>
+</nav>
+</main>
+<div aria-live="polite" class="related-toast" id="budgetToast"></div>
+<script src="budget-allocation.js"></script>
+</body>
+</html>
